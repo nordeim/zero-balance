@@ -80,4 +80,56 @@ test.describe("sidebar nav geometry", () => {
     // Reference has NO hover dim on the active link.
     expect(active!.cls).not.toContain("hover:opacity-90");
   });
+
+  // Session-13 audit (docs/remediation-plan-v7.md G4): the reference's rail
+  // brand block renders a 40×40 forest-gradient tile with a 24px lucide-target
+  // (white stroke) and the "ZeroBalance" H2 at text-lg (18px) — its nav
+  // label consequently sits 4px lower than the clone's (which ran a 20px
+  // hand-rolled target + text-base). Structural fidelity: the reference also
+  // wraps the nav ul in a `div.w-full.text-sm`.
+  test("brand block: 24px target icon, text-lg logo, ul in its text-sm wrapper (v7 G4)", async ({ page }) => {
+    const brand = await page.evaluate(() => {
+      const h2 = [...document.querySelectorAll("aside h2")].find(
+        (h) => (h.textContent || "").trim() === "ZeroBalance",
+      );
+      if (!h2) return null;
+      const tile = h2.parentElement?.previousElementSibling ?? null;
+      const icon = tile?.querySelector("svg") ?? null;
+      const ul = document.querySelector("nav ul");
+      return {
+        logo: { size: getComputedStyle(h2).fontSize, weight: getComputedStyle(h2).fontWeight },
+        tile: tile
+          ? {
+              w: Math.round(tile.getBoundingClientRect().width),
+              h: Math.round(tile.getBoundingClientRect().height),
+              radius: getComputedStyle(tile).borderRadius,
+              grad: getComputedStyle(tile).backgroundImage,
+            }
+          : null,
+        icon: icon
+          ? {
+              w: getComputedStyle(icon).width,
+              h: getComputedStyle(icon).height,
+              stroke: getComputedStyle(icon).color,
+            }
+          : null,
+        ulWrapperCls: ul?.parentElement?.className ?? null,
+      };
+    });
+    expect(brand).not.toBeNull();
+    // Reference: 24×24 icon (w-6 h-6), white; text-lg 18px/700 logo.
+    expect(brand!.icon!.w).toBe("24px");
+    expect(brand!.icon!.h).toBe("24px");
+    expect(brand!.icon!.stroke).toBe("rgb(255, 255, 255)");
+    expect(brand!.logo!.size).toBe("18px");
+    expect(brand!.logo!.weight).toBe("700");
+    // 40×40 rounded-xl (12px) forest gradient tile.
+    expect(brand!.tile!.w).toBe(40);
+    expect(brand!.tile!.h).toBe(40);
+    expect(brand!.tile!.radius).toBe("12px");
+    expect(brand!.tile!.grad).toContain("linear-gradient(135deg, rgb(26, 58, 46), rgb(45, 90, 74))");
+    // The reference's ul wrapper.
+    expect(brand!.ulWrapperCls).toContain("w-full");
+    expect(brand!.ulWrapperCls).toContain("text-sm");
+  });
 });

@@ -10,7 +10,8 @@
 //   06-networth · 07-add-item-modal · 08-calculator ·
 //   09-mobile-dashboard (390×844) · 10-mobile-menu (the open sheet) ·
 //   11-breakdown-drilldown (the expandable Net Zero Breakdown) ·
-//   12-mobile-networth (the responsive summary card, superset fix #6)
+//   12-mobile-networth (the responsive summary card, superset fix #6) ·
+//   13-not-found (the reference's custom 404 — plan v7 G7)
 //
 // Usage:   node scripts/capture-screenshots.mjs
 // Requires `bun run build` (the standalone server) + a seeded db/custom.db.
@@ -80,11 +81,12 @@ async function main() {
     await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
     await shoot(page, "01-login.png");
 
-    // 3. real login → dashboard
+    // 3. real login → dashboard (the ROOT route — the reference lands on /
+    //    after sign-in, plan v7 G1)
     await page.getByLabel("Email").fill("demo@zerobalance.app");
     await page.getByLabel("Password").fill("Demo1234!");
     await page.getByRole("button", { name: "Sign in" }).click();
-    await page.waitForURL(/\/dashboard$/);
+    await page.waitForURL(/\/$/);
     await page.getByText("+$2065.00").waitFor();
     await page.locator(".recharts-sector").first().waitFor();
     await wait(600); // donut entrance animation
@@ -187,6 +189,19 @@ async function main() {
     await mpage.getByText("Total Net Worth").waitFor();
     await wait(300);
     await shoot(mpage, "12-mobile-networth.png");
+
+    // 10. the custom 404 (plan v7 G7 — the reference's branded not-found;
+    // needs a logged-OUT context so the demo session is not required)
+    const anon = await browser.newContext({
+      viewport: { width: 1440, height: 900 },
+      deviceScaleFactor: 2,
+    });
+    const apage = await anon.newPage();
+    await apage.goto(`${BASE}/nonexistent-page-xyz`, { waitUntil: "networkidle" });
+    await apage.getByRole("heading", { name: "Page Not Found" }).waitFor();
+    await wait(300);
+    await shoot(apage, "13-not-found.png");
+    await anon.close();
 
     await browser.close();
     console.log("done");

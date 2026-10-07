@@ -34,6 +34,30 @@ test.describe("mobile navigation", () => {
     await expect(page.getByRole("heading", { name: "ZeroBalance" })).toBeVisible();
     // The desktop rail is hidden below md (768px).
     await expect(page.locator("aside")).toBeHidden();
+
+    // Session-13 audit (plan v7 G5): the reference's toggle renders a 16px
+    // panel-left icon in near-black rgb(10,10,10) — pinned with
+    // [&_svg]:size-4 [&_svg]:shrink-0 so the padded 28px box cannot flex-
+    // squeeze it (the clone's icon measured 12px, forestDark).
+    const toggle = await page.evaluate(() => {
+      const btn = [...document.querySelectorAll("button")].find((b) =>
+        (b.querySelector("svg")?.getAttribute("class") || "").includes("panel-left"),
+      );
+      if (!btn) return null;
+      const icon = btn.querySelector("svg");
+      const cs = icon ? getComputedStyle(icon) : null;
+      return {
+        btnW: Math.round(btn.getBoundingClientRect().width),
+        btnH: Math.round(btn.getBoundingClientRect().height),
+        iconW: cs ? cs.width : null,
+        iconColor: cs ? cs.color : null,
+      };
+    });
+    expect(toggle).not.toBeNull();
+    expect(toggle!.btnW).toBe(28);
+    expect(toggle!.btnH).toBe(28);
+    expect(toggle!.iconW).toBe("16px");
+    expect(toggle!.iconColor).toBe("rgb(10, 10, 10)");
   });
 
   test("the empty toast viewport never blocks the hamburger (superset fix #1)", async ({
@@ -78,6 +102,25 @@ test.describe("mobile navigation", () => {
     // The overlay dims the page behind the sheet.
     const overlay = page.locator("[data-state='open'].fixed.inset-0:not(.inset-y-0)").first();
     await expect(overlay).toBeVisible();
+
+    // Session-13 audit (plan v7 G6): the reference's sheet borders with the
+    // shadcn neutral #e5e5e5 (NOT the warm card border #e5e7e3) and its
+    // overlay computes plain rgba(0,0,0,0.8) — v4's bg-black/80 drifts to
+    // oklab, so the clone pins the color inline.
+    const sheetChrome = await page.evaluate(() => {
+      const sheet = document.querySelector<HTMLElement>("[data-state='open'].fixed.inset-y-0");
+      const ov = document.querySelector<HTMLElement>("[data-state='open'].fixed.inset-0:not(.inset-y-0)");
+      if (!sheet || !ov) return null;
+      const scs = getComputedStyle(sheet);
+      const ocs = getComputedStyle(ov);
+      return {
+        borderRight: `${scs.borderRightWidth} ${scs.borderRightColor}`,
+        overlayBg: ocs.backgroundColor,
+      };
+    });
+    expect(sheetChrome).not.toBeNull();
+    expect(sheetChrome!.borderRight).toBe("1px rgb(229, 229, 229)");
+    expect(sheetChrome!.overlayBg).toBe("rgba(0, 0, 0, 0.8)");
 
     // Sheet content: brand, all five nav items, the user footer.
     await expect(sheet.getByText("ZeroBalance").first()).toBeVisible();

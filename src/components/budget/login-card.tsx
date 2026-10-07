@@ -14,6 +14,15 @@ import { ArrowLeftIcon, Loader2Icon, LockIcon, MailIcon } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore } from "./store";
 
+// Parity pins (docs/remediation-plan-v7.md G2): the login page is a measured
+// parity surface, and Tailwind v4 computes every NAMED slate class in Lab
+// color space while the reference emits plain rgb/rgba. All slate values
+// below are arbitrary-hex pins of the reference's computed styles:
+//   900 #0f172a · 800 #1e293b · 700 #334155 · 600 #475569 · 500 #64748b
+//   400 #94a3b8 · 300 #cbd5e1 · 200 #e2e8f0 · 50 #f8fafc
+// (Applied as literal class hexes / inline styles — Tailwind's scanner
+// reads source text, so classes must never interpolate variables.)
+
 type Mode = "signin" | "signup" | "forgot";
 
 const GOOGLE_SVG = (
@@ -40,8 +49,20 @@ const GOOGLE_SVG = (
 function LogoMark() {
   return (
     <div className="group relative">
-      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 opacity-30 blur-xl transition-opacity duration-300 group-hover:opacity-40" />
-      <span className="relative flex h-20 w-20 shrink-0 overflow-hidden rounded-full shadow-lg ring-4 ring-white/50 transition-all duration-300 group-hover:shadow-xl sm:h-24 sm:w-24">
+      <div
+        className="absolute inset-0 rounded-full opacity-30 blur-xl transition-opacity duration-300 group-hover:opacity-40"
+        style={{
+          background: "linear-gradient(to bottom right, #e2e8f0, #cbd5e1)",
+        }}
+      />
+      {/* The 4px white/50 halo (plan v7 G3) as a sibling layer: v4's
+          ring-white/50 computes it in oklab, and inlining boxShadow on the
+          span itself would override its shadow-lg / group-hover:shadow-xl. */}
+      <div
+        className="zb-logo-ring absolute inset-0 rounded-full"
+        style={{ boxShadow: "0 0 0 4px rgba(255, 255, 255, 0.5)" }}
+      />
+      <span className="relative flex h-20 w-20 shrink-0 overflow-hidden rounded-full shadow-lg transition-all duration-300 group-hover:shadow-xl sm:h-24 sm:w-24">
         <img
           src="/zerobalance-logo.png"
           alt="ZeroBudget logo"
@@ -61,7 +82,7 @@ function GoogleBlock({ onUnavailable }: { onUnavailable: () => void }) {
       <div className="space-y-3">
         <button
           type="button"
-          className="group flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3.5 font-medium text-slate-700 text-[16px] transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow-sm"
+          className="group flex w-full items-center justify-center gap-3 rounded-xl border border-[#e2e8f0] bg-white px-5 py-3.5 font-medium text-[16px] text-[#334155] transition-all duration-200 hover:border-[#cbd5e1] hover:bg-[#f8fafc] hover:shadow-sm"
           onClick={onUnavailable}
         >
           <span className="-ml-4 transition-transform duration-200">
@@ -73,10 +94,13 @@ function GoogleBlock({ onUnavailable }: { onUnavailable: () => void }) {
 
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <span className="h-px w-full bg-slate-200" aria-hidden="true" />
+          <span className="h-px w-full bg-[#e2e8f0]" aria-hidden="true" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-3 font-medium tracking-wider text-slate-500">
+          <span
+            className="bg-white px-3 font-medium tracking-wider"
+            style={{ color: "#64748b" }}
+          >
             or
           </span>
         </div>
@@ -85,10 +109,11 @@ function GoogleBlock({ onUnavailable }: { onUnavailable: () => void }) {
   );
 }
 
+// NOTE: literal hexes, not template interpolation — Tailwind's scanner
+// reads source text; a `border-[${VAR}]` class would never be generated.
 const INPUT_CLS =
-  "flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 pl-10 text-base transition-colors placeholder:text-slate-600 focus:border-slate-400 focus:ring-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-12 md:text-sm";
-const LABEL_CLS =
-  "text-sm font-medium text-slate-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
+  "flex h-11 w-full rounded-xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.5)] px-3 py-2 pl-10 text-base text-[#09090b] transition-colors placeholder:text-[#475569] focus:border-[#94a3b8] focus:ring-[#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-12 md:text-sm";
+const LABEL_CLS = "text-sm font-medium text-[#334155] peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
 
 interface AuthFormProps {
   mode: Mode;
@@ -121,7 +146,7 @@ function AuthForm(p: AuthFormProps) {
             Email
           </label>
           <div className="relative">
-            <MailIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <MailIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#64748b]" />
             <input
               id="email"
               type="email"
@@ -141,7 +166,7 @@ function AuthForm(p: AuthFormProps) {
               Password
             </label>
             <div className="relative">
-              <LockIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <LockIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#64748b]" />
               <input
                 id="password"
                 type="password"
@@ -163,7 +188,7 @@ function AuthForm(p: AuthFormProps) {
               Confirm Password
             </label>
             <div className="relative">
-              <LockIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <LockIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#64748b]" />
               <input
                 id="confirm"
                 type="password"
@@ -181,7 +206,7 @@ function AuthForm(p: AuthFormProps) {
       </div>
 
       {p.error && (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="text-sm font-medium text-[#dc2626]">
           {p.error}
         </p>
       )}
@@ -190,7 +215,7 @@ function AuthForm(p: AuthFormProps) {
         <button
           type="submit"
           disabled={p.busy}
-          className="inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-slate-900 px-3 py-2 font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:h-12"
+          className="inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:h-12"
         >
           {p.busy && <Loader2Icon className="h-4 w-4 animate-spin" />}
           {p.mode === "signin" && "Sign in"}
@@ -201,18 +226,18 @@ function AuthForm(p: AuthFormProps) {
           <div className="flex flex-col items-center justify-between gap-2 sm:flex-row sm:gap-0">
             <button
               type="button"
-              className="font-medium text-slate-500 transition-colors hover:text-slate-700"
+              className="text-sm font-medium text-[#64748b] transition-colors hover:text-[#334155]"
               onClick={p.onForgot}
             >
               Forgot password?
             </button>
             <button
               type="button"
-              className="text-slate-500 transition-colors hover:text-slate-700"
+              className="text-sm text-[#64748b] transition-colors hover:text-[#334155]"
               onClick={p.onSignUp}
             >
               Need an account?{" "}
-              <span className="font-medium text-slate-700">Sign up</span>
+              <span className="font-medium text-[#334155]">Sign up</span>
             </button>
           </div>
         )}
@@ -234,7 +259,9 @@ export function LoginCard() {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const fromUrl = searchParams.get("from_url") || "/dashboard";
+  // The reference lands on the ROOT route after login (it renders the
+  // dashboard there) — plan v7 G1. ?from_url= still wins when present.
+  const fromUrl = searchParams.get("from_url") || "/";
 
   const backToSignin = () => {
     setMode("signin");
@@ -270,7 +297,7 @@ export function LoginCard() {
       } else {
         await login(email, password);
       }
-      const target = fromUrl.startsWith("/") ? fromUrl : "/dashboard";
+      const target = fromUrl.startsWith("/") ? fromUrl : "/";
       router.push(target);
     } catch (cause) {
       setError(messageOf(cause));
@@ -300,19 +327,33 @@ export function LoginCard() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+    <div
+      className="flex min-h-screen items-center justify-center p-4"
+      style={{
+        background: "linear-gradient(to bottom right, rgb(248, 250, 252), rgb(241, 245, 249))",
+      }}
+    >
       <div className="w-full max-w-md">
-        <div className="relative overflow-hidden rounded-2xl border-0 bg-white/95 text-card-foreground shadow-2xl backdrop-blur-sm">
-          <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
+        <div
+          className="relative overflow-hidden rounded-2xl border-0 text-card-foreground shadow-2xl backdrop-blur-sm"
+          style={{ backgroundColor: "rgba(255, 255, 255, 0.95)" }}
+        >
+          <div
+            className="absolute top-0 right-0 left-0 h-1"
+            style={{
+              background:
+                "linear-gradient(to right, rgb(226, 232, 240), rgb(203, 213, 225), rgb(226, 232, 240))",
+            }}
+          />
           <div className="p-8 sm:p-10 md:px-10 md:pt-12 md:pb-10">
             {mode === "signin" ? (
               <div className="flex flex-col items-center space-y-6 text-center sm:space-y-8">
                 <LogoMark />
                 <div className="space-y-2 sm:space-y-3">
-                  <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                  <h1 className="text-2xl font-bold tracking-tight text-[#0f172a] sm:text-3xl">
                     Welcome to ZeroBudget
                   </h1>
-                  <p className="text-sm font-medium text-slate-500 sm:text-base">
+                  <p className="text-sm font-medium text-[#64748b] sm:text-base">
                     Sign in to continue
                   </p>
                 </div>
@@ -333,22 +374,22 @@ export function LoginCard() {
                   <div className="space-y-4">
                     <button
                       type="button"
-                      className="-mb-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-700"
+                      className="-mb-2 flex items-center gap-2 text-sm font-medium text-[#64748b] transition-colors hover:text-[#334155]"
                       onClick={backToSignin}
                     >
                       <ArrowLeftIcon className="h-4 w-4" />
                       Back to sign in
                     </button>
                     {mode === "signup" ? (
-                      <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                      <h2 className="text-xl font-bold text-[#0f172a] sm:text-2xl">
                         Create your account
                       </h2>
                     ) : (
                       <div className="space-y-2 text-center">
-                        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                        <h2 className="text-xl font-bold text-[#0f172a] sm:text-2xl">
                           Reset your password
                         </h2>
-                        <p className="text-sm text-slate-600 sm:text-base">
+                        <p className="text-sm text-[#475569] sm:text-base">
                           Enter your email and we&apos;ll send you a link to reset your password
                         </p>
                       </div>

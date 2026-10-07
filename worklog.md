@@ -4,7 +4,60 @@ Rolling log of the engineering sessions on this repo, newest first. Each
 session's detailed narrative lives in `docs/session_<n>.md`; findings ledgers
 live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`,
-`docs/remediation-plan-v5.md`, and `docs/remediation-plan-v6.md`.
+`docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`, and
+`docs/remediation-plan-v7.md`.
+
+---
+
+## Session 13 — Fresh verification & parity iteration v7 (2026-10-07)
+
+**Goal:** workspace was RESET — re-clone, re-provision the environment, then
+a fresh two-site parity audit of the surfaces no prior session had covered
+(the login page's full computed chrome, the rail brand block, the mobile
+topbar toggle, the sheet border/overlay colors, the 404 page, the document
+head); fix what it found. Explicit mobile-navigation re-verification.
+
+- Re-cloned fresh; `.env` + `db/` re-provisioned (seed intact); full doc
+  chain re-read; baseline chain green at `7295906` (96 unit / 73 e2e /
+  30 smoke). v6 fixes confirmed live.
+- Mobile nav re-verified live on both sites: R1 (toast container still
+  swallows the ref's hamburger click), R2 (its sheet still traps after
+  nav — `sheetOpen: true` while the URL changed), R4 (395px overflow)
+  all still live on the reference; the clone's superset fixes verified
+  end-to-end (real-click hamburger, close-on-nav, 390 fit).
+- Fresh probe audit → **8 finding groups**
+  (`docs/remediation-plan-v7.md`): post-login redirect must land on `/`
+  (not `/dashboard`); the login surface — the last one still on named slate
+  classes — computed everything in lab()/oklab() AND its footer links were
+  missing `text-sm` (16px vs the ref's 14px); the logo halo's ring color
+  drifted to oklab (a first probe FALSE-POSITIVED "missing ring" by slicing
+  boxShadow at 60 chars — corrected during plan validation); the rail brand
+  needed a 24px white lucide-target + `text-lg` logo (the clone's 20px +
+  `text-base` sat the whole rail 4px high); the mobile toggle's icon was
+  flex-squeezed to 12px (no shrink-0) in the wrong color; the sheet border
+  (#e5e7e3 vs the ref's neutral #e5e5e5) and overlay (oklab vs rgba)
+  drifted; the clone shipped Next's default 404 (the ref has a branded
+  one with the quoted path + Go Home); and the head lacked the ref's
+  description/OG/Twitter/canonical/manifest/apple meta.
+- All fixes TDD-first (13 specs RED → GREEN): login-card full slate hex
+  pin pass + inline gradients + text-sm links + `.zb-logo-ring` sibling
+  halo layer (an inline boxShadow on the span would kill its
+  shadow-lg/hover), sidebar `TargetIcon h-6 w-6` + `text-lg` + the ref's
+  `div.w-full.text-sm` ul wrapper, toggle `[&_svg]:size-4
+  [&_svg]:shrink-0` in `#0a0a0a`, sheet border/overlay pins, NEW
+  `src/app/not-found.tsx` (quoted-path message via window.location lazy
+  init + suppressHydrationWarning, client-side "Page Name | ZeroBudget"
+  title, Go Home → `/`), and `layout.tsx` metadata +
+  `public/manifest.webmanifest`.
+- Full chain: typecheck · lint · **96/96 unit** · build · **83/83 e2e**
+  (73 + 10 net-new) · 30/30 smoke. Live parity re-verified
+  surface-by-surface (login card identical to the ref on every pinned
+  value; rail label/link y exact at 113/145; toggle 16px near-black;
+  post-login URL `/`; head complete). 13 screenshots regenerated (new:
+  13-not-found), seed arithmetic verified intact after the catalog run.
+- Docs aligned (README/CLAUDE/AGENTS/SKILL/session_13 + plan v7 + probe
+  README). SKILL gained lessons 12.13–12.15 (probe slicing, inline-shadow
+  override, flex-squeeze); AGENTS gained the v7 pin paragraph.
 
 ---
 

@@ -72,7 +72,7 @@ npm run dev         # http://localhost:3000
 
 ### Test Pyramid
 - **Unit (Vitest, 96)**: money math, dashboard aggregations, zod schemas, rate limiter, serializers, SQLite URL resolution
-- **E2E (Playwright, 73)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry, nav geometry, neutral-token parity, dialog action buttons, empty states + content column — against the production standalone build
+- **E2E (Playwright, 83)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry, nav geometry, neutral-token parity, dialog action buttons, empty states + content column, login-surface computed chrome, custom 404 + head metadata — against the production standalone build
 - **Smoke (bash, 30 steps)**: full API surface including rate limiting and session invalidation
 
 ### Test Commands
@@ -130,7 +130,7 @@ SQLite at `db/custom.db`; Prisma models User, BudgetItem, ExpenseLineItem, Asset
 |----------|---------|---------|
 | `DATABASE_URL` | SQLite location, relative to `prisma/schema.prisma` | `file:../db/custom.db` |
 | `AUTH_SECRET` | Session HMAC key (required in prod) | `openssl rand -hex 32` |
-| `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata | `http://localhost:3000` |
+| `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata (OG/Twitter/canonical/manifest) | `http://localhost:3000` |
 
 ## Anti-Patterns to Avoid
 

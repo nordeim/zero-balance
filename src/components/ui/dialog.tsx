@@ -97,7 +97,12 @@ const SheetContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { side?: "left" | "right" }
 >(({ className, children, side = "left", ...props }, ref) => (
   <DialogPortal>
-    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+    {/* Overlay color pinned inline (plan v7 G6): v4 computes the named
+        bg-black/80 as oklab() — the reference renders plain rgba(0,0,0,0.8). */}
+    <DialogPrimitive.Overlay
+      className="fixed inset-0 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+    />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
@@ -113,7 +118,7 @@ const SheetContent = React.forwardRef<
         "max-lg:w-(--sheet-width) [&>button]:hidden",
         className,
       )}
-      style={{ "--sheet-width": "18rem", borderColor: "rgb(229, 231, 227)" } as React.CSSProperties}
+      style={{ "--sheet-width": "18rem", borderColor: "rgb(229, 229, 229)" } as React.CSSProperties}
       {...props}
     >
       {children}

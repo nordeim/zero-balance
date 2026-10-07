@@ -44,3 +44,24 @@ quoting mangles `$` inside regexes):
   markup (the ref has no `role="dialog"`; climb from the heading)
 - `probe-savings-v4.mjs` / `probe-empty-type.mjs` — savings add-button
   gradient + the filtered empty-state check
+
+Session-13 additions (remediation-plan-v7 audit) — head/brand/login/mobile
+surfaces, same run-probe.sh pattern:
+
+- `probe-v7-refdata.mjs` / `probe-v7-dash-sweep.mjs` — reference data state +
+  dashboard broad-sweep (hero/stat/legend/gradient hashes)
+- `probe-v7-headings.mjs` / `probe-v7-sidebar-head.mjs` / `probe-v7-brandfull.mjs`
+  / `probe-v7-iconbg.mjs` / `probe-v7-railgeom.mjs` / `probe-v7-asidehtml.mjs`
+  / `probe-v7-navstruct.mjs` — the rail brand block (found the 20px-vs-24px
+  target + text-base-vs-text-lg logo), label/link geometry, ul wrapper
+- `probe-v7-mobile-topbar.mjs` / `probe-v7-sheet.mjs` / `probe-v7-sheet2.mjs`
+  / `probe-v7-closebtn.mjs` / `probe-v7-mobile-items.mjs` — mobile chrome
+  (found the 12px-squeezed toggle icon + the sheet border/overlay drifts)
+- `probe-v7-login.mjs` / `probe-v7-login2.mjs` / `probe-v7-login3.mjs`
+  / `probe-v7-login-flow.mjs` — the login card's full computed slate map
+  (found the lab/oklab drifts + the missing text-sm) + a form-submit probe
+- `probe-v7-404.mjs` / `probe-v7-head.mjs` — the reference's custom 404
+  structure + its head metadata (description, OG/Twitter, canonical,
+  manifest, apple meta)
+- LESSON (SKILL §12.13): `probe-v7-iconbg.mjs`'s 60-char shadow slice caused
+  a false "missing ring" finding — always dump FULL computed strings.

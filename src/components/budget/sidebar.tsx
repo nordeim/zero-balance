@@ -8,6 +8,7 @@ import {
   PanelLeftIcon,
   PiggyBankIcon,
   ReceiptIcon,
+  TargetIcon,
   TrendingUpIcon,
   WalletIcon,
 } from "lucide-react";
@@ -31,28 +32,16 @@ function isActive(pathname: string, href: string): boolean {
 function BrandMark() {
   return (
     <div className="flex items-center gap-3">
+      {/* Reference chrome (plan v7 G4): 40×40 rounded-xl forest-gradient
+          tile with a 24px white lucide-target + the H2 at text-lg (18px). */}
       <div
         className="flex h-10 w-10 items-center justify-center rounded-xl"
         style={{ background: "linear-gradient(135deg, var(--forest-dark), var(--forest-medium))" }}
       >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <circle cx="12" cy="12" r="6" />
-          <circle cx="12" cy="12" r="2" />
-        </svg>
+        <TargetIcon className="h-6 w-6 text-white" aria-hidden="true" />
       </div>
       <div>
-        <h2 className="text-base font-bold" style={{ color: "var(--forest-dark)" }}>
+        <h2 className="text-lg font-bold" style={{ color: "var(--forest-dark)" }}>
           ZeroBalance
         </h2>
         <p className="text-xs" style={{ color: "var(--forest-medium)" }}>
@@ -68,42 +57,46 @@ function NavList({ onNavigate, highlightActive = true }: { onNavigate?: () => vo
   return (
     <nav aria-label="Primary">
       <div
-        className="flex h-8 shrink-0 items-center rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wider"
+        className="flex h-8 shrink-0 items-center rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wider outline-none ring-sidebar-ring focus-visible:ring-2"
         style={{ color: "var(--forest-medium)" }}
       >
         Navigation
       </div>
-      <ul className="flex w-full min-w-0 flex-col gap-1">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const active = isActive(pathname, href);
-          return (
-            <li key={href} className="relative">
-              <Link
-                href={href}
-                onClick={onNavigate}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex h-8 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 mb-1 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-                  active && highlightActive
-                    ? "font-medium text-white"
-                    : "text-zinc-700 hover:bg-[#f0fdf4] hover:text-sidebar-accent-foreground",
-                )}
-                style={
-                  active && highlightActive
-                    ? {
-                        background:
-                          "linear-gradient(135deg, var(--forest-medium), var(--lime-green))",
-                      }
-                    : undefined
-                }
-              >
-                <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span className="truncate">{label}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      {/* Reference structure (plan v7 G4): the ul sits inside a
+          `div.w-full.text-sm` wrapper (shadcn SidebarMenu). */}
+      <div className="w-full text-sm">
+        <ul className="flex w-full min-w-0 flex-col gap-1">
+          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            const active = isActive(pathname, href);
+            return (
+              <li key={href} className="relative">
+                <Link
+                  href={href}
+                  onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex h-8 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 mb-1 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+                    active && highlightActive
+                      ? "font-medium text-white"
+                      : "text-zinc-700 hover:bg-[#f0fdf4] hover:text-sidebar-accent-foreground",
+                  )}
+                  style={
+                    active && highlightActive
+                      ? {
+                          background:
+                            "linear-gradient(135deg, var(--forest-medium), var(--lime-green))",
+                        }
+                      : undefined
+                  }
+                >
+                  <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <span className="truncate">{label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </nav>
   );
 }
@@ -204,7 +197,11 @@ export function AppSidebar({
 }
 
 /** Mobile top bar — reference chrome (61px tall): py-4 + 28px panel-left
- * toggle (hover:bg-green-50 as #f0fdf4) + text-xl brand, stacked INSIDE <main>. */
+ * toggle (hover:bg-green-50 as #f0fdf4) + text-xl brand, stacked INSIDE <main>.
+ * The toggle pins its svg at 16px with shrink-0 (plan v7 G5): inside the
+ * padded 28px box a bare icon is flex-squeezed to 12px — the reference
+ * carries [&_svg]:size-4 [&_svg]:shrink-0 for exactly that reason. The
+ * icon is near-black rgb(10,10,10), not forestDark. */
 export function MobileTopbar({ onOpenNav }: { onOpenNav: () => void }) {
   return (
     <header
@@ -214,10 +211,10 @@ export function MobileTopbar({ onOpenNav }: { onOpenNav: () => void }) {
       <div className="flex items-center gap-4">
         <button
           type="button"
-          className="inline-flex h-7 w-7 items-center justify-center rounded-lg p-2 transition-colors duration-200 hover:bg-[#f0fdf4]"
+          className="inline-flex h-7 w-7 items-center justify-center rounded-lg p-2 text-[#0a0a0a] transition-colors duration-200 hover:bg-[#f0fdf4] hover:text-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0"
           onClick={onOpenNav}
         >
-          <PanelLeftIcon className="h-4 w-4" style={{ color: "var(--forest-dark)" }} />
+          <PanelLeftIcon aria-hidden="true" />
           <span className="sr-only">Toggle Sidebar</span>
         </button>
         <h1 className="text-xl font-bold" style={{ color: "var(--forest-dark)" }}>

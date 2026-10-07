@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-07
-project_state: 96 unit tests / 73 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 83 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -539,6 +539,19 @@ Numbered institutional lessons. Each traces to a concrete fix in
     initial render you wanted to intercept. Lazy initializers +
     adjust-during-render (§5) are the React-idiomatic fix and satisfy
     react-hooks v6.
+13. **Never slice a computed `boxShadow`/`backgroundImage` when probing.**
+    A 60-char `.slice()` read the transparent ring-offset layers of the
+    login logo's shadow and filed a "missing ring" finding that was really
+    a truncation artifact (plan v7 G3's correction). Always dump the FULL
+    computed string (or assert with `toContain`) before declaring a drift.
+14. **An inline `boxShadow` overrides every shadow utility on the element.**
+    To add a ring WITHOUT losing `shadow-lg`/`group-hover:shadow-xl`, put
+    the ring on a sibling layer (`.zb-logo-ring`) — inline style always
+    wins the cascade against utility classes.
+15. **Flex-squeeze: a fixed-height padded button shrinks its svg.** A 28px
+    `h-7 w-7 p-2` toggle box leaves 12px of content width; a 16px icon
+    silently compresses unless it carries `shrink-0` (the reference ships
+    `[&_svg]:size-4 [&_svg]:shrink-0` for exactly this — plan v7 G5).
 
 ---
 
@@ -855,6 +868,8 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | Session 1 | Recon → build → test-driven remediation → first push (`703ea74`) | All findings A/B/C/D/E/F/G identified and fixed; see `docs/session_1.md` + `docs/remediation-plan.md` |
 | Session 1 (cont.) | Docs + screenshots + final push (`6efc1ce`) | 4 root docs, 10 VLM-verified screenshots |
 | 2026-10-07 | Re-verification (this document) | Full chain re-run green (87/34/30 + tsc + eslint); live reference re-checked — both mobile-nav bugs still present on the reference, both fixes verified on the clone; `zero-balance_SKILL.md` distilled |
+| Sessions 3–11 | Parity iterations v2–v6 (`docs/remediation-plan-v2..v6.md`) | Money formats, drill-down, badges, mobile chrome, tokens, dialog buttons, plain-text menus, empty states, wide column — 96/73/30 green at `42f50da` |
+| 2026-10-07 | Session 13 — parity iteration v7 (`docs/remediation-plan-v7.md`) | Login-surface slate pins + text-sm, logo halo layer, 24px brand target + text-lg, 16px toggle icon, sheet border/overlay pins, custom 404, head metadata, post-login root redirect — 96/83/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

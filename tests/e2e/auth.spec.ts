@@ -15,17 +15,21 @@ test.describe("login route", () => {
     await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
     await expect(page.getByText("Sign in to continue")).toBeVisible();
 
-    // The logo is a white CIRCULAR chip (rounded-full + ring-4
-    // ring-white/50 + shadow-lg). Tailwind v4 computes rounded-full as
-    // calc(infinity * 1px) → Chrome reports 33554432px, and ring-white/50
-    // serializes in oklab() — so the assertions check the geometry and the
-    // 4px ring, not exact strings.
-    const chip = page.locator("span.rounded-full.ring-4").first();
+    // The logo is a white CIRCULAR chip (rounded-full span) wrapped by a
+    // 4px white/50 halo layer (.zb-logo-ring — plan v7 G3: v4's
+    // ring-white/50 computes the halo in oklab, so it is an explicit
+    // sibling layer with a plain-rgba box-shadow; the span keeps its
+    // shadow-lg / group-hover:shadow-xl). rounded-full computes as
+    // calc(infinity * 1px) → Chrome reports 33554432px, so the assertions
+    // check geometry + the ring layer, not exact strings.
+    const chip = page.locator("span.rounded-full").first();
     await expect(chip).toBeVisible();
     const radius = await chip.evaluate((el) => parseFloat(getComputedStyle(el).borderRadius));
     expect(radius).toBeGreaterThan(1000);
-    const shadow = await chip.evaluate((el) => getComputedStyle(el).boxShadow);
-    expect(shadow).toMatch(/0\.5\) 0px 0px 0px 4px/);
+    const halo = await page
+      .locator(".zb-logo-ring")
+      .evaluate((el) => getComputedStyle(el).boxShadow);
+    expect(halo).toMatch(/rgba\(255, 255, 255, 0\.5\) 0px 0px 0px 4px/);
 
     // The card's slate top bar + the Google button (parity chrome).
     await expect(page.getByRole("button", { name: /Continue with Google/i })).toBeVisible();
@@ -142,7 +146,9 @@ test.describe("login route", () => {
     await page.getByLabel("Email").fill(DEMO_EMAIL);
     await page.getByLabel("Password").fill(DEMO_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
-    await expect(page).toHaveURL(/\/dashboard$/, { timeout: 15_000 });
+    // The reference lands on the ROOT route after login (it renders the
+    // dashboard there) — plan v7 G1; the clone previously pushed /dashboard.
+    await expect(page).toHaveURL(/\/$/, { timeout: 15_000 });
     // Desktop chrome: the fixed sidebar (not the mobile app bar) is the
     // visible landmark once signed in.
     await expect(page.locator("aside")).toBeVisible();
