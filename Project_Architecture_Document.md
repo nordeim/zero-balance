@@ -10,7 +10,7 @@
 
 #### Revision Block — v1.0.0 (Tracked Changes)
 
-- `[AUTH]` v1.0.0 — the ZeroBalance application built on the repo scaffolding: all 7 routes, 15 API handlers, the Prisma schema, the three-tier test suite, and the Tailwind v4 trap mitigations. ORBITAL-era specs/scripts replaced.
+- `[AUTH]` v1.0.0 — the ZeroBalance application built on the repo scaffolding: all 7 routes, 21 API handlers across 13 route files, the Prisma schema, the three-tier test suite, and the Tailwind v4 trap mitigations. ORBITAL-era specs/scripts replaced.
 - `[SR]` Both reference mobile-navigation bugs fixed and pinned by e2e (toast click-block, sheet-stays-open).
 - `[SR]` zustand v5 derived-selector re-render loop (React #185) found on production build and fixed with `useShallow`.
 
@@ -65,7 +65,7 @@ Use this PAD to understand, extend, debug, or replicate the system. New engineer
 **ADR-001: Single Next.js application (no monorepo, no separate API service)**
 
 - **Context:** The reference is a Base44 SPA with a generic entity API. The clone must be self-hostable with minimal moving parts, and the e2e suite must exercise the production build end-to-end.
-- **Decision:** One Next.js 16 app: App Router pages for the 7 routes, route handlers for the 15 API endpoints, one Prisma client.
+- **Decision:** One Next.js 16 app: App Router pages for the 7 routes, route handlers for the 21 API endpoints (13 route files), one Prisma client.
 - **Rationale:** The deployment model is single-server SQLite; a separate API would add operational surface with zero benefit. Colocated handlers keep the envelope, validation, and serialization conventions enforceable in one place.
 - **Consequences:** + simple deploys, one typecheck/lint gate. − API and UI share a release cadence (acceptable at this scale).
 - **Alternatives Rejected:** Turborepo monorepo (the scandihaven lineage) — overkill for one app; separate Express/Fastify API — doubles infra.

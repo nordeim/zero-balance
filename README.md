@@ -74,7 +74,7 @@ flowchart TB
 │   └── 📄 schema.prisma           # User, BudgetItem, ExpenseLineItem, Asset, Liability
 │   └── 📄 seed.ts                 # Idempotent demo seed (demo@zerobalance.app / Demo1234!)
 ├── 📂 src/
-│   ├── 📂 app/                    # App Router: 7 routes + 15 API handlers
+│   ├── 📂 app/                    # App Router: 7 routes + 21 API handlers (13 files)
 │   │   ├── 📄 login/page.tsx      # Three-state auth card
 │   │   └── 📄 [dashboard·income·expenses·savings·networth]/page.tsx
 │   ├── 📂 components/
@@ -88,7 +88,7 @@ flowchart TB
 ├── 📂 scripts/
 │   ├── 📄 smoke-test.sh           # 30-step production API smoke test
 │   └── 📄 capture-screenshots.mjs # docs/screenshots generator
-├── 📄 docs/                       # Tailwind v4 report, SSH push runbook, DEPLOYMENT.md
+├── 📄 docs/                       # Tailwind v4 report, SSH push runbook, DEPLOYMENT.md, remediation plan, session log
 └── 📄 db/custom.db                # SQLite database (gitignored)
 ```
 
@@ -169,6 +169,15 @@ Measured from the reference's `:root` (computed styles as ground truth):
 - **Money**: `$5,500.00` (commas, 2 decimals); savings/expenses rows carry `- ` prefixes, Net Balance `+`.
 - **Motion**: sheet slide-in 500ms / slide-out 300ms; `data-[state]`-driven; no reduced-motion needs beyond Radix defaults.
 - Tailwind v4 specifics (bare-HSL theme, oklch drift, shadow scale) are pinned in `src/app/globals.css` — the full trap report is [`docs/Tailwind-V4-Validation-Report.md`](docs/Tailwind-V4-Validation-Report.md).
+
+## Engineering References
+
+| Document | Purpose |
+|----------|---------|
+| [`zero-balance_SKILL.md`](zero-balance_SKILL.md) | Distilled engineering skill — design system, architecture, anti-patterns, debugging guide, pre-ship checklist |
+| [`docs/remediation-plan.md`](docs/remediation-plan.md) | Every issue found (reference bugs, Tailwind v4 traps, app bugs), its fix, and the regression test that pins it |
+| [`docs/session_1.md`](docs/session_1.md) | Narrative log of the build session (recon → TDD → fixes) |
+| [`Project_Architecture_Document.md`](Project_Architecture_Document.md) | 7 ADRs, topology, ER diagram, security model |
 
 ## Deployment
 
