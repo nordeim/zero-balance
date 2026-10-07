@@ -8,7 +8,8 @@
 //
 //   01-login · 02-dashboard · 03-income · 04-expenses · 05-savings ·
 //   06-networth · 07-add-item-modal · 08-calculator ·
-//   09-mobile-dashboard (390×844) · 10-mobile-menu (the open sheet)
+//   09-mobile-dashboard (390×844) · 10-mobile-menu (the open sheet) ·
+//   11-breakdown-drilldown (the expandable Net Zero Breakdown)
 //
 // Usage:   node scripts/capture-screenshots.mjs
 // Requires `bun run build` (the standalone server) + a seeded db/custom.db.
@@ -83,16 +84,16 @@ async function main() {
     await page.getByLabel("Password").fill("Demo1234!");
     await page.getByRole("button", { name: "Sign in" }).click();
     await page.waitForURL(/\/dashboard$/);
-    await page.getByText("+$2,065.00").waitFor();
+    await page.getByText("+$2065.00").waitFor();
     await page.locator(".recharts-sector").first().waitFor();
     await wait(600); // donut entrance animation
     await shoot(page, "02-dashboard.png");
 
     // 4. the four nav views
     for (const [route, name, readyText] of [
-      ["income", "03-income.png", "2 items · $5,550.00"],
-      ["expenses", "04-expenses.png", "3 items · $2,235.00"],
-      ["savings", "05-savings.png", "2 items · $1,250.00"],
+      ["income", "03-income.png", "2 items · $5550.00"],
+      ["expenses", "04-expenses.png", "3 items · $2235.00"],
+      ["savings", "05-savings.png", "2 items · $1250.00"],
       ["networth", "06-networth.png", "Total Net Worth"],
     ]) {
       await page.goto(`${BASE}/${route}`, { waitUntil: "networkidle" });
@@ -103,17 +104,27 @@ async function main() {
 
     // 5. Add Item modal (dashboard context, Expense preselected)
     await page.goto(`${BASE}/dashboard`, { waitUntil: "networkidle" });
-    await page.getByText("+$2,065.00").waitFor();
+    await page.getByText("+$2065.00").waitFor();
     await page.getByRole("button", { name: "Add Item" }).click();
     await page.getByRole("dialog").waitFor();
     await wait(350);
     await shoot(page, "07-add-item-modal.png");
     await page.getByRole("button", { name: "Cancel" }).click();
 
-    // 6. Rent Calculator with one line item
+    // 5b. the breakdown drill-down (expand Income → Salary → item rows)
+    const breakdown = page.locator("div.rounded-2xl").filter({ hasText: "Net Zero Breakdown" }).first();
+    await breakdown.getByRole("button", { name: /Total Income/ }).click();
+    await breakdown.getByRole("button", { name: /^Salary/ }).click();
+    await breakdown.getByText("Net monthly salary").waitFor();
+    await wait(300);
+    await shoot(page, "11-breakdown-drilldown.png");
+
+    // 6. Rent Calculator with one line item (expense cards reveal their
+    // Edit/Calculate row on hover — a real hover first)
     await page.goto(`${BASE}/expenses`, { waitUntil: "networkidle" });
-    await page.getByText("3 items · $2,235.00").waitFor();
+    await page.getByText("3 items · $2235.00").waitFor();
     const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
     await rent.getByRole("button", { name: "Calculate" }).click();
     await page.getByRole("dialog").waitFor();
     await page.getByRole("button", { name: "Add Item" }).click();
@@ -129,20 +140,21 @@ async function main() {
     // run's "3 items · $2,235.00" wait depends on it.
     await page.getByRole("button", { name: "Delete Contents Insurance" }).click();
     await page.getByRole("button", { name: "Delete", exact: true }).click();
-    await page.getByText("Based on 0 items · Will update category total").waitFor();
+    await page.getByText("Based on 0 items").waitFor();
     // Close via the explicit X (Escape can race the delete's re-render and
     // leave the overlay up, blocking every later interaction).
     const calcDialog = page.getByRole("dialog", { name: "Rent Calculator" });
     await calcDialog.getByRole("button", { name: "Close" }).click();
     await calcDialog.waitFor({ state: "hidden" });
     await page.waitForTimeout(500);
+    // Expense cards carry no ellipsis (reference parity) — restore through
+    // the hover-revealed Edit button.
     await rent.hover();
-    await page.getByRole("button", { name: "Actions for Rent" }).click();
-    await page.getByRole("menuitem", { name: "Edit" }).click();
+    await rent.getByRole("button", { name: "Edit", exact: true }).click();
     const editDialog = page.getByRole("dialog", { name: "Edit Budget Item" });
     await editDialog.getByLabel("Amount").fill("1850");
     await editDialog.getByRole("button", { name: "Save Item" }).click();
-    await page.getByText("3 items · $2,235.00").waitFor();
+    await page.getByText("3 items · $2235.00").waitFor();
 
     // 7. mobile chrome (390×844) — a separate context: carry the session
     // over with a real API login (cookies live in the context).

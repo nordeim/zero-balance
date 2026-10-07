@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-07
-project_state: 87 unit tests / 34 e2e tests / 30 smoke steps — all green
+project_state: 95 unit tests / 39 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -375,9 +375,9 @@ category total" and mutations persist immediately. Pinned by
 `tests/e2e/calculator.spec.ts` and `tests/line-item-service.test.ts`.
 
 **Seed** (`prisma/seed.ts`): demo user `demo@zerobalance.app` / `Demo1234!`;
-income $5,550 (3 items), expenses $1,250 (2), savings $1,250 (2) — dashboard
+income $5,550 (2 items), expenses $2,235 (3), savings $1,250 (2) — dashboard
 shows 62.8% allocation, `+$2,065.00` net; assets $65,300 / liabilities
-$311,250 → net −$245,950.00, ratio "0.2 : 1". These figures are load-bearing:
+$311,250 → net −$245,950.00, ratio "0.21:1". These figures are load-bearing:
 `tests/e2e/dashboard.spec.ts` and `networth.spec.ts` assert them, so changing
 the seed means updating those specs in the same commit.
 
@@ -642,10 +642,11 @@ const { amount, count } = await recalcParent(prisma, lineItem.budgetItemId);
 ```ts
 toCents(1500.5)            // 150050  — input boundary
 sumAmounts([150050, -500]) // 149550  — integer math only
-formatMoney(fromCents(149550))   // "$1,495.50"
-formatSignedMoney(fromCents(206500)) // "+$2,065.00" (no space — parity)
-formatMoneyShort(fromCents(80300))   // "$80,300" (tab-count style)
-formatRatio(0.2)           // "0.2 : 1"; null → "∞ : 1" when debt-free
+formatMoney(1495.5)      // "$1495.50" — PLAIN, no grouping (dashboard/items/calculator)
+formatSignedMoney(2065)  // "+$2065.00" (breakdown Net Balance)
+formatMoneyGrouped(25000) // "$25,000.00" — net worth ONLY
+formatMoneyShort(80300)   // "$80,300" (networth tab counts)
+formatRatio(0.21)          // "0.21" (toFixed(2); caller appends ":1"); null → "∞"
 ```
 
 **Store action** (client) — `src/components/budget/store.ts` shape:
@@ -791,6 +792,7 @@ interface BudgetStore {
 toCents(amount: number): number;            fromCents(cents: number): number;
 sumAmounts(amounts: number[]): number;
 formatMoney(amount: number): string;        formatSignedMoney(amount: number): string;
+formatMoneyGrouped(amount: number): string; // net worth surfaces
 formatNetWorth(amount: number): string;     formatMoneyShort(amount: number): string;
 formatRatio(ratio: number | null): string;  formatPercent(part: number, whole: number): string;
 percentValue(part: number, whole: number): number;

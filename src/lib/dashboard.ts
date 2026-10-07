@@ -53,12 +53,14 @@ export function goalStatusLabel(status: GoalStatus): string {
   return status === "under-budget" ? "Under Budget" : "Over Budget";
 }
 
-/** Spending Breakdown — amounts grouped by classification over ALL items. */
+/** Spending Breakdown — amounts grouped by classification over ALL items.
+ * Slice order mirrors the reference's donut + legend: [Savings, Want, Need]
+ * (live DOM sector fills: ['#8fbc3f', '#3b7ea1', '#e07a3b']). */
 export function spendingBreakdown(items: BudgetItem[]): SpendingSlice[] {
   const groups: { key: Classification; label: string }[] = [
-    { key: "need", label: "Need" },
-    { key: "want", label: "Want" },
     { key: "savings", label: "Savings" },
+    { key: "want", label: "Want" },
+    { key: "need", label: "Need" },
   ];
   const total = sumAmounts(items.map((i) => i.amount));
   return groups.map(({ key, label }) => {

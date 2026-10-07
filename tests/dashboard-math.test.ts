@@ -93,22 +93,24 @@ describe("goalStatus", () => {
 });
 
 describe("spendingBreakdown", () => {
-  it("groups by classification over ALL items with one-decimal pcts", () => {
+  it("groups by classification in the reference's legend order [Savings, Want, Need]", () => {
     const rows = spendingBreakdown(SEED);
-    expect(rows.map((r) => r.label)).toEqual(["Need", "Want", "Savings"]);
-    expect(rows[0]).toMatchObject({ amount: 7370 });
-    expect(rows[0].percent).toBeCloseTo(81.57, 1);
+    // The reference's donut sectors + legend render Savings first (live DOM:
+    // sector fills ['#8fbc3f','#3b7ea1','#e07a3b'] = [Savings, Want, Need]).
+    expect(rows.map((r) => r.label)).toEqual(["Savings", "Want", "Need"]);
+    expect(rows[0]).toMatchObject({ amount: 1250 });
+    expect(rows[0].percent).toBeCloseTo(13.83, 1);
     expect(rows[1]).toMatchObject({ amount: 415 });
     expect(rows[1].percent).toBeCloseTo(4.59, 1);
-    expect(rows[2]).toMatchObject({ amount: 1250 });
-    expect(rows[2].percent).toBeCloseTo(13.83, 1);
+    expect(rows[2]).toMatchObject({ amount: 7370 });
+    expect(rows[2].percent).toBeCloseTo(81.57, 1);
   });
 
   it("zeroes every slice when there are no items", () => {
     expect(spendingBreakdown([])).toEqual([
-      { key: "need", label: "Need", amount: 0, percent: 0 },
-      { key: "want", label: "Want", amount: 0, percent: 0 },
       { key: "savings", label: "Savings", amount: 0, percent: 0 },
+      { key: "want", label: "Want", amount: 0, percent: 0 },
+      { key: "need", label: "Need", amount: 0, percent: 0 },
     ]);
   });
 });

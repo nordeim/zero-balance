@@ -114,7 +114,9 @@
    repeated inline patterns — plain declarations, no composed v4 vars).
    ============================================================================ */
 
-/* The lime primary action button (Add Item / Add Income / …). */
+/* The lime primary action button (legacy session-1 primitive; kept for
+   surfaces the reference still renders solid — none remain after the
+   session-3 audit, retained for dialogs' secondary buttons). */
 .zb-btn-primary {
   display: inline-flex;
   align-items: center;
@@ -133,6 +135,47 @@
 }
 .zb-btn-primary:disabled {
   opacity: 0.6;
+}
+
+/* Gradient add-button chrome (session-3 parity): the reference renders a
+   DIFFERENT 135deg gradient per surface (measured computed styles — see
+   ADD_BUTTON_GRADIENTS in src/lib/constants.ts). The gradient itself comes
+   from an inline `style.background` (engine-independent, trap 3). */
+.zb-btn-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem; /* rounded-md */
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.875rem;
+  height: 2.25rem; /* h-9 */
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  box-shadow: var(--shadow-sm);
+  transition: opacity 150ms ease;
+  white-space: nowrap;
+}
+.zb-btn-add:hover {
+  opacity: 0.9;
+}
+/* shadcn `size="sm"` variant (calculator "Add Item"). */
+.zb-btn-add.zb-btn-add-sm {
+  height: 2rem; /* h-8 */
+  padding: 0.5rem 0.75rem; /* px-3 */
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+}
+/* Outline variant (calculator empty state "Add First Item"). */
+.zb-btn-add.zb-btn-add-outline {
+  background-color: #ffffff;
+  color: rgb(31 41 55);
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+.zb-btn-add.zb-btn-add-outline:hover {
+  background-color: rgb(249 250 251);
+  opacity: 1;
 }
 
 /* Modal overlay + panel (the reference's Base44 dialog chrome). */

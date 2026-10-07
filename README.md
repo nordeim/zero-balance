@@ -18,11 +18,11 @@ ZeroBalance tracks income, savings, and expenses as budget items, computes your 
 | Feature | Description |
 |---------|-------------|
 | 🎯 **Net Zero Goal hero** | Forest-gradient dashboard card computing `Income − Savings − Expenses`, allocation %, and Under Budget / NET ZERO / Over Budget status |
-| 📊 **Net Zero Breakdown** | Sign-prefixed income/savings/expenses rows (`+ $5,550.00` / `- $1,250.00`) with Net Balance; every row navigates to its view |
-| 📈 **Spending Breakdown donut** | recharts pie with the reference's measured palette (Need `#e07a3b`, Want `#3b7ea1`, Savings `#8fbc3f`) and tinted legend rows |
+| 📊 **Net Zero Breakdown** | A 3-level expandable drill-down (section → category → subcategory → item, accordion-style) with sign-prefixed rows (`$5,550.00` → plain format `- $1250.00`) and a sign-conditional Net Balance (lime/orange/blue) |
+| 📈 **Spending Breakdown donut** | recharts pie in the reference's sector order [Savings, Want, Need] (`#8fbc3f` / `#3b7ea1` / `#e07a3b`) with piggy-bank / heart / circle-alert legend icons |
 | 🧮 **Category Calculator** | Break any expense category into line items (name, amount, frequency, provider, policy #); each mutation recalculates and persists the parent item's amount server-side, with category-adaptive chrome ("Rent Calculator / Break down your rent…") |
-| 💰 **Net Worth tracker** | Assets vs liabilities tabs, gradient summary card with the "∞ : 1" asset-to-liability ratio when debt-free |
-| 🔍 **Filterable item views** | Search + category + frequency (+ payment method on expenses) filters; classification/frequency/status badges; inline Edit/Calculate buttons on expense cards |
+| 💰 **Net Worth tracker** | Assets vs liabilities tabs grouped **by type** under capitalize headers, gradient summary card with the `0.21:1` / `∞:1` asset-to-liability ratio |
+| 🔍 **Filterable item views** | Search + category + frequency (+ payment method on expenses) filters; per-classification/per-frequency badge maps, capitalized green Recurring badge; hover-revealed Edit/Calculate buttons on expense cards (plus a superset delete in the edit dialog) |
 | 📱 **Working mobile navigation** | Hamburger + slide-in sheet at 288px — with both reference bugs fixed (below) |
 | 🔐 **Cookie-session auth** | scrypt password hashing + HMAC-signed sessions, per-IP rate limiting (10 attempts / 15 min), zod-validated API, three-state login card (sign-in / sign-up / forgot) |
 
@@ -83,8 +83,8 @@ flowchart TB
 │   └── 📂 lib/                    # Domain seams: money, dashboard, validation,
 │                                  #   auth, rate-limit, serializers, db-path
 ├── 📂 tests/
-│   ├── 📄 *.test.ts               # Vitest unit suites (87 tests)
-│   └── 📂 e2e/                    # Playwright specs (34 tests) + global setup
+│   ├── 📄 *.test.ts               # Vitest unit suites (95 tests)
+│   └── 📂 e2e/                    # Playwright specs (39 tests) + global setup
 ├── 📂 scripts/
 │   ├── 📄 smoke-test.sh           # 30-step production API smoke test
 │   └── 📄 capture-screenshots.mjs # docs/screenshots generator
@@ -140,14 +140,14 @@ npm start            # boots .next/standalone/server.js
 ## Testing
 
 ```bash
-npm test            # Vitest unit suite (87 tests) — pure domain seams
-npm run test:e2e    # Playwright e2e (34 tests) — needs `npm run build` first
+npm test            # Vitest unit suite (95 tests) — pure domain seams
+npm run test:e2e    # Playwright e2e (39 tests) — needs `npm run build` first
 bash scripts/smoke-test.sh   # 30-step production API smoke (own server, port 3210)
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint (react-hooks v6 rules enforced)
 ```
 
-- The e2e suite boots the **production standalone server** on `:3100` with its own `db/e2e.db`, deleted and re-seeded **every run** — specs assert the seed's exact arithmetic (e.g. `+$2,065.00` net balance) and restore their fixtures after themselves.
+- The e2e suite boots the **production standalone server** on `:3100` with its own `db/e2e.db`, deleted and re-seeded **every run** — specs assert the seed's exact arithmetic (e.g. `+$2065.00` net balance) and restore their fixtures after themselves.
 - One worker: the specs share a single seeded SQLite file (`playwright.config.ts`).
 - Auth is signed in once by the `setup` project and replayed via storageState — the auth endpoints are rate-limited (10/IP/15 min), so per-test logins would trip the limiter.
 - Unit tests cover the money arithmetic (integer-cent sums — no IEEE-754 drift), dashboard aggregations, every zod schema (including empty-string optional dates and impossible calendar dates), the rate limiter, and the SQLite URL resolution contract.
@@ -166,7 +166,7 @@ Measured from the reference's `:root` (computed styles as ground truth):
 | `--neutral-warm` | `#fafaf8` | Page background |
 
 - **Typography**: the system font stack (`ui-sans-serif, system-ui, …`) — no webfonts.
-- **Money**: `$5,500.00` (commas, 2 decimals); savings/expenses rows carry `- ` prefixes, Net Balance `+`.
+- **Money — two formatters (measured in the reference bundle)**: plain `"$" + toFixed(2)` without thousands separators on the dashboard / items views / calculator (`$5550.00`); `toLocaleString` grouping on net worth only (`$25,000.00`). Savings/expenses breakdown rows carry `- ` prefixes, Net Balance `+`. Add buttons carry per-surface 135deg gradients (forest→lime, lime→limeLight, blue→blue, orange→orangeLight).
 - **Motion**: sheet slide-in 500ms / slide-out 300ms; `data-[state]`-driven; no reduced-motion needs beyond Radix defaults.
 - Tailwind v4 specifics (bare-HSL theme, oklch drift, shadow scale) are pinned in `src/app/globals.css` — the full trap report is [`docs/Tailwind-V4-Validation-Report.md`](docs/Tailwind-V4-Validation-Report.md).
 
@@ -175,8 +175,10 @@ Measured from the reference's `:root` (computed styles as ground truth):
 | Document | Purpose |
 |----------|---------|
 | [`zero-balance_SKILL.md`](zero-balance_SKILL.md) | Distilled engineering skill — design system, architecture, anti-patterns, debugging guide, pre-ship checklist |
-| [`docs/remediation-plan.md`](docs/remediation-plan.md) | Every issue found (reference bugs, Tailwind v4 traps, app bugs), its fix, and the regression test that pins it |
-| [`docs/session_1.md`](docs/session_1.md) | Narrative log of the build session (recon → TDD → fixes) |
+| [`docs/remediation-plan.md`](docs/remediation-plan.md) | Session-1/2 findings ledger (reference bugs, Tailwind v4 traps, app bugs) with fixes and regression pins |
+| [`docs/remediation-plan-v2.md`](docs/remediation-plan-v2.md) | Session-3 deep parity audit — money format split, drill-down, badge maps, gradients, networth grouping (14 finding groups) |
+| [`docs/session_1.md`](docs/session_1.md) · [`docs/session_2.md`](docs/session_2.md) | Narrative logs of the build + re-verification sessions |
+| [`worklog.md`](worklog.md) | Rolling project worklog (all sessions, latest first) |
 | [`Project_Architecture_Document.md`](Project_Architecture_Document.md) | 7 ADRs, topology, ER diagram, security model |
 
 ## Deployment

@@ -1,18 +1,28 @@
 "use client";
 
-// One budget item card — the dot + name header, the ellipsis action menu
-// (Edit/Delete; expenses carry inline Edit + Calculate buttons), the colored
-// amount, the classification/frequency/status badges and the date + payment
-// footer. Classes and inline colors mirror the measured reference card.
+// One budget item card — the dot + name header, the per-classification /
+// per-frequency badges, the conditional green "Recurring" badge, the always-
+// slate status badge, the colored amount and the date + payment footer.
+//
+// Action chrome (live reference DOM):
+//   - expense cards: a hover-revealed absolute Edit + Calculate button row
+//     (white, shadow-md; Calculate carries text-orange-600 + orange border)
+//   - income/savings cards: a hover-revealed ellipsis menu (Edit / Delete)
+// The reference has NO delete affordance on expense cards; the clone keeps a
+// superset delete via the edit dialog.
 
 import * as React from "react";
 import {
-  CalendarIcon,
   CalculatorIcon,
+  CalendarIcon,
   CircleAlertIcon,
   CreditCardIcon,
   EllipsisVerticalIcon,
+  HeartIcon,
+  PenIcon,
+  PiggyBankIcon,
   PencilIcon,
+  RepeatIcon,
   Trash2Icon,
 } from "lucide-react";
 import {
@@ -23,23 +33,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useBudgetStore } from "./store";
 import { formatMoney } from "@/lib/money";
-import { TYPE_COLORS, rgb } from "@/lib/constants";
-import type { BudgetItem } from "@/lib/types";
+import {
+  CLASSIFICATION_BADGES,
+  FREQUENCY_BADGES,
+  TYPE_COLORS,
+  rgb,
+} from "@/lib/constants";
+import type { BudgetItem, Classification } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const CLASSIFICATION_BADGES: Record<
-  BudgetItem["classification"],
-  { chip: string; text: string; border: string }
+/** Classification badge icons (reference map x1e: circle-alert / heart / piggy-bank). */
+const CLASSIFICATION_ICONS: Record<
+  Classification,
+  React.ComponentType<{ className?: string }>
 > = {
-  need: { chip: "bg-red-50", text: "text-red-700", border: "border-red-200" },
-  want: { chip: "bg-blue-50", text: "text-blue-700", border: "border-transparent" },
-  savings: { chip: "bg-green-50", text: "text-green-700", border: "border-transparent" },
-};
-
-const STATUS_BADGES: Record<BudgetItem["status"], { chip: string; text: string }> = {
-  planned: { chip: "bg-amber-50", text: "text-amber-700" },
-  active: { chip: "bg-slate-50", text: "text-slate-700" },
-  completed: { chip: "bg-green-50", text: "text-green-700" },
+  need: CircleAlertIcon,
+  want: HeartIcon,
+  savings: PiggyBankIcon,
 };
 
 function formatDate(iso: string): string {
@@ -55,15 +65,45 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
   const [confirming, setConfirming] = React.useState(false);
   const accent = TYPE_COLORS[item.type];
   const clsBadge = CLASSIFICATION_BADGES[item.classification];
-  const statusBadge = STATUS_BADGES[item.status];
+  const ClsIcon = CLASSIFICATION_ICONS[item.classification];
+  const freqBadge = FREQUENCY_BADGES[item.frequency] ?? "bg-gray-100 text-gray-700";
 
   return (
     <div
-      className="group cursor-pointer rounded-xl bg-white p-5 transition-all duration-200 hover:shadow-lg"
+      className={cn(
+        "group cursor-pointer rounded-xl bg-white p-5 transition-all duration-200 hover:shadow-lg",
+        item.type === "expense" && "relative",
+      )}
       style={{ border: `1px solid ${rgb.border}`, boxShadow: "rgba(0, 0, 0, 0.04) 0px 2px 8px" }}
     >
+      {item.type === "expense" && (
+        /* Hover-revealed action row (reference: absolute top-3 right-3, z-10,
+           opacity-0 → group-hover:opacity-100; Edit = white/border-input with
+           a pen icon, Calculate = white/text-orange-600/border-orange-200). */
+        <div className="absolute top-3 right-3 z-10 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            type="button"
+            title="Edit Category"
+            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-input bg-white px-3 text-xs font-medium shadow-md transition-colors hover:bg-gray-50"
+            onClick={() => openItemModal({ mode: "edit", item })}
+          >
+            <PenIcon className="mr-1 h-3.5 w-3.5" />
+            Edit
+          </button>
+          <button
+            type="button"
+            title="Open Calculator"
+            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-orange-200 bg-white px-3 text-xs font-medium text-orange-600 shadow-md transition-colors hover:bg-orange-50"
+            onClick={() => openCalculator(item)}
+          >
+            <CalculatorIcon className="mr-1 h-3.5 w-3.5" />
+            Calculate
+          </button>
+        </div>
+      )}
+
       <div className="mb-3 flex items-start justify-between">
-        <div className="flex-1">
+        <div className={cn("flex-1", item.type === "expense" && "pr-24")}>
           <div className="mb-1 flex items-center gap-2">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: accent }} />
             <h4 className="font-semibold" style={{ color: rgb.forestDark }}>
@@ -74,29 +114,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
             {item.subcategory ?? ""}
           </p>
         </div>
-        <div className="flex items-center gap-1">
-          {item.type === "expense" && (
-            <>
-              <button
-                type="button"
-                className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: accent }}
-                onClick={() => openItemModal({ mode: "edit", item })}
-              >
-                <PencilIcon className="h-3.5 w-3.5" />
-                Edit
-              </button>
-              <button
-                type="button"
-                className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: rgb.forestMedium }}
-                onClick={() => openCalculator(item)}
-              >
-                <CalculatorIcon className="h-3.5 w-3.5" />
-                Calculate
-              </button>
-            </>
-          )}
+        {item.type !== "expense" && (
           <DropdownMenu>
             <DropdownMenuTrigger
               className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
@@ -118,7 +136,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        )}
       </div>
 
       <div className="mb-4">
@@ -132,30 +150,28 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
           className={cn(
             "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold",
             clsBadge.chip,
-            clsBadge.text,
-            clsBadge.border,
           )}
         >
-          <CircleAlertIcon className="mr-1 h-3 w-3" />
+          <ClsIcon className="mr-1 h-3 w-3" />
           {item.classification}
-        </span>
-        <span className="inline-flex items-center rounded-md border border-transparent bg-purple-50 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
-          {item.frequency}
         </span>
         <span
           className={cn(
             "inline-flex items-center rounded-md border border-transparent px-2.5 py-0.5 text-xs font-semibold",
-            statusBadge.chip,
-            statusBadge.text,
+            freqBadge,
           )}
         >
-          {item.status}
+          {item.frequency}
         </span>
         {item.recurring && (
-          <span className="inline-flex items-center rounded-md border border-transparent bg-slate-50 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
-            recurring
+          <span className="inline-flex items-center rounded-md border border-transparent bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-700">
+            <RepeatIcon className="mr-1 h-3 w-3" />
+            Recurring
           </span>
         )}
+        <span className="inline-flex items-center rounded-md border border-transparent bg-slate-50 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
+          {item.status}
+        </span>
       </div>
 
       <div className="flex items-center justify-between text-xs" style={{ color: rgb.gray }}>

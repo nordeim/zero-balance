@@ -6,7 +6,7 @@
 // preset type; editing loads the item's values.
 
 import * as React from "react";
-import { CalendarIcon, CreditCardIcon, Loader2Icon } from "lucide-react";
+import { CalendarIcon, CreditCardIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -71,6 +71,7 @@ export function BudgetItemDialog() {
   const closeModals = useBudgetStore((s) => s.closeModals);
   const createItem = useBudgetStore((s) => s.createItem);
   const updateItem = useBudgetStore((s) => s.updateItem);
+  const deleteItem = useBudgetStore((s) => s.deleteItem);
   const { toast } = useToast();
 
   // The form derives from the modal AT MOUNT (the ModalHost only mounts
@@ -79,6 +80,7 @@ export function BudgetItemDialog() {
   // during-render — no effect, no cascading render).
   const [form, setForm] = React.useState<BudgetItemFormData>(() => initialForm(modal));
   const [saving, setSaving] = React.useState(false);
+  const [confirmingDelete, setConfirmingDelete] = React.useState(false);
   const editing = modal?.mode === "edit" ? modal.item : null;
 
   const modalKey = modal
@@ -118,6 +120,17 @@ export function BudgetItemDialog() {
       toast({ title: "Could not save the item", description: messageOf(error), variant: "error" });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const onDelete = async () => {
+    if (!editing) return;
+    try {
+      await deleteItem(editing.id);
+      toast({ title: "Budget item deleted", variant: "success" });
+      closeModals();
+    } catch (error) {
+      toast({ title: "Could not delete the item", description: messageOf(error), variant: "error" });
     }
   };
 
@@ -288,20 +301,59 @@ export function BudgetItemDialog() {
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3">
-            <button
-              type="button"
-              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
-              style={{ color: rgb.gray }}
-              onClick={closeModals}
+          {/* Superset affordance: the reference has NO delete on expense
+              cards (only income/savings carry the ellipsis menu), so the
+              edit dialog gains a delete path — visible in edit mode only,
+              keeping the card chrome identical to the reference. */}
+          {editing && confirmingDelete ? (
+            <div
+              className="flex items-center justify-between rounded-lg p-3"
+              style={{ backgroundColor: "rgb(254, 242, 242)" }}
             >
-              Cancel
-            </button>
-            <button type="submit" className="zb-btn-primary" disabled={saving}>
-              {saving && <Loader2Icon className="h-4 w-4 animate-spin" />}
-              Save Item
-            </button>
-          </div>
+              <p className="text-sm text-red-700">Delete this item?</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="rounded-md bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-sm"
+                  onClick={() => setConfirmingDelete(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white"
+                  onClick={() => void onDelete()}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-end gap-3">
+              {editing && (
+                <button
+                  type="button"
+                  className="mr-auto inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                  onClick={() => setConfirmingDelete(true)}
+                >
+                  <Trash2Icon className="h-4 w-4" />
+                  Delete
+                </button>
+              )}
+              <button
+                type="button"
+                className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+                style={{ color: rgb.gray }}
+                onClick={closeModals}
+              >
+                Cancel
+              </button>
+              <button type="submit" className="zb-btn-primary" disabled={saving}>
+                {saving && <Loader2Icon className="h-4 w-4 animate-spin" />}
+                Save Item
+              </button>
+            </div>
+          )}
         </form>
       </DialogContent>
     </Dialog>

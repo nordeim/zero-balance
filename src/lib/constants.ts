@@ -116,3 +116,86 @@ export const STATUS_LABELS: Record<ItemStatus, string> = {
   active: "active",
   completed: "completed",
 };
+
+// ---------------------------------------------------------------------------
+// Badge style maps — extracted verbatim from the reference's minified bundle
+// (maps `b1e` for frequencies, `x1e` for classifications) and verified on the
+// live DOM. `icon` names map to lucide components at the call sites.
+// ---------------------------------------------------------------------------
+
+/** Frequency badge chip classes (reference map b1e). */
+export const FREQUENCY_BADGES: Record<Frequency, string> = {
+  "one-time": "bg-gray-100 text-gray-700",
+  weekly: "bg-blue-50 text-blue-700",
+  "bi-weekly": "bg-blue-50 text-blue-700",
+  monthly: "bg-purple-50 text-purple-700",
+  quarterly: "bg-indigo-50 text-indigo-700",
+  annually: "bg-pink-50 text-pink-700",
+};
+
+/** Classification badge styles (reference map x1e). */
+export const CLASSIFICATION_BADGES: Record<
+  Classification,
+  { chip: string; icon: "circle-alert" | "heart" | "piggy-bank" }
+> = {
+  need: { chip: "bg-red-50 text-red-700 border-red-200", icon: "circle-alert" },
+  want: { chip: "bg-blue-50 text-blue-700 border-blue-200", icon: "heart" },
+  savings: { chip: "bg-green-50 text-green-700 border-green-200", icon: "piggy-bank" },
+};
+
+// ---------------------------------------------------------------------------
+// Per-view gradients — measured as computed styles on the live reference
+// (135deg pairs). The reference renders a DIFFERENT gradient per surface; the
+// clone's solid-lime button was a session-1 approximation.
+// ---------------------------------------------------------------------------
+
+export const ADD_BUTTON_GRADIENTS = {
+  /** Dashboard header "Add Item" + networth "Add Asset" — forest → lime. */
+  dashboard: "linear-gradient(135deg, #2d5a4a, #8fbc3f)",
+  income: "linear-gradient(135deg, #8fbc3f, #b8d87e)",
+  savings: "linear-gradient(135deg, #2c5f7c, #3b7ea1)",
+  expense: "linear-gradient(135deg, #e07a3b, #f5a962)",
+  asset: "linear-gradient(135deg, #2d5a4a, #8fbc3f)",
+  liability: "linear-gradient(135deg, #e07a3b, #f5a962)",
+  /** Calculator "Add Item" (sm) — orange. */
+  calculator: "linear-gradient(135deg, #e07a3b, #f5a962)",
+} as const;
+
+/** Items-view header icon chips — white icons over type gradients. */
+export const HEADER_CHIP_GRADIENTS: Record<ItemType, string> = {
+  income: "linear-gradient(135deg, #8fbc3f, #b8d87e)",
+  savings: "linear-gradient(135deg, #2c5f7c, #3b7ea1)",
+  expense: "linear-gradient(135deg, #e07a3b, #f5a962)",
+};
+
+// ---------------------------------------------------------------------------
+// Budget Guidelines rows — tinted, bordered cards (live DOM), replacing the
+// session-1 bare-chip approximation.
+// ---------------------------------------------------------------------------
+
+export const GUIDELINE_ROWS = [
+  {
+    label: "Needs",
+    percent: "~50%",
+    description: "Essential expenses like rent, utilities, groceries",
+    bgColor: "#fff7f5",
+    borderColor: "#fcddd5",
+    color: "#e07a3b",
+  },
+  {
+    label: "Wants",
+    percent: "~30%",
+    description: "Discretionary spending like entertainment, dining out",
+    bgColor: "#f0f7fb",
+    borderColor: "#d4e9f5",
+    color: "#3b7ea1",
+  },
+  {
+    label: "Savings",
+    percent: "~20%",
+    description: "Emergency fund, retirement, investments",
+    bgColor: "#f5f9f0",
+    borderColor: "#dfecd0",
+    color: "#8fbc3f",
+  },
+] as const;

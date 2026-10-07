@@ -89,7 +89,7 @@ Use this PAD to understand, extend, debug, or replicate the system. New engineer
 **ADR-004: Integer-cent money arithmetic behind a plain-number wire format**
 
 - **Context:** The reference API exchanges plain JSON numbers; naive float sums drift (`0.1 + 0.2`).
-- **Decision:** Amounts are stored and exchanged as user-entered decimals; **every** aggregation converts to integer cents first (`src/lib/money.ts`), then formats via `Intl` (`$5,550.00`).
+- **Decision:** Amounts are stored and exchanged as user-entered decimals; **every** aggregation converts to integer cents first (`src/lib/money.ts`). Display uses TWO formatters, mirroring the reference bundle: plain `"$" + toFixed(2)` without grouping for the dashboard / items views / calculator (`$5550.00`), and `toLocaleString` grouping for net worth only (`$25,000.00`).
 - **Rationale:** API parity with the reference without inheriting its float math; totals are exact and deterministic (the e2e suite asserts them to the cent).
 - **Consequences:** + exact totals; format functions are the single display authority. − the wire format permits more decimals than cents (rounded at conversion).
 - **Alternatives Rejected:** Storing integer cents in the DB (breaks wire parity); decimal libraries (unnecessary at this scale).
@@ -235,7 +235,7 @@ export function sumAmounts(amounts: number[]): number {
 }
 ```
 
-*Why this pattern:* the wire format is plain numbers (reference parity), but totals must be exact — the e2e suite asserts `+$2,065.00` computed from seven seeded decimals. Centralizing the conversion means no view can accidentally sum floats.
+*Why this pattern:* the wire format is plain numbers (reference parity), but totals must be exact — the e2e suite asserts `+$2065.00` computed from seven seeded decimals. Centralizing the conversion means no view can accidentally sum floats.
 
 **Pattern 2 — useShallow on derived Zustand selectors**
 
@@ -495,7 +495,7 @@ Single-role model: a signed-in user owns every row they create. Session cookie (
 
 ### 7.2 Test Patterns
 
-- **Unit tests target pure seams only** — money, dashboard math, validators, limiter, serializers — with the reference's own numbers as fixtures (the seed arithmetic: income 5550 / savings 1250 / expenses 2235 → `+$2,065.00`, allocation 62.8%, need 81.6% / want 4.6% / savings 13.8%).
+- **Unit tests target pure seams only** — money, dashboard math, validators, limiter, serializers — with the reference's own numbers as fixtures (the seed arithmetic: income 5550 / savings 1250 / expenses 2235 → `+$2065.00`, allocation 62.8%, savings 13.8% / want 4.6% / need 81.6% — the donut renders [Savings, Want, Need]).
 - **E2E drives the production standalone build** (`playwright.config.ts` webServer → `bun .next/standalone/server.js` on :3100 with `db/e2e.db`), signing in once via the `setup` project and replaying `storageState` — never per-test logins (rate-limit budget).
 - **Global setup wipes and re-seeds the e2e database every run**; specs restore their own fixtures (delete created items; restore edited amounts through the real edit flow) because the suite shares one file in one worker.
 - **Both superset fixes have dedicated specs**: the hamburger is clicked for real (a covering overlay would fail the hit-test) and every nav link's tap asserts the sheet closes.

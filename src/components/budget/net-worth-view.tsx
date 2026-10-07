@@ -1,25 +1,23 @@
 "use client";
 
 // Net Worth — the forest→lime gradient summary card (Total Net Worth, Total
-// Assets, Total Liabilities, Asset-to-Liability Ratio) and the Assets /
-// Liabilities tabs with their cards, add buttons and empty states.
+// Assets, Total Liabilities, Asset-to-Liability Ratio "0.21:1" / "∞:1") and
+// the Assets / Liabilities tabs. Lists are grouped BY TYPE under capitalize
+// h3 headers; cards carry the dot + name + gray type badge structure, grouped
+// amounts and stacked footer lines (institution / % interest / Updated).
+// Pinned by the session-3 audit (docs/remediation-plan-v2.md F12).
 
 import * as React from "react";
 import {
-  BanknoteIcon,
   Building2Icon,
-  CarIcon,
-  CreditCardIcon,
+  CalendarIcon,
   EllipsisVerticalIcon,
-  GraduationCapIcon,
-  HandCoinsIcon,
-  HomeIcon,
-  LandmarkIcon,
-  LineChartIcon,
   PencilIcon,
   PlusIcon,
+  PercentIcon,
   Trash2Icon,
   TrendingUpIcon,
+  CreditCardIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -30,28 +28,18 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useBudgetStore } from "./store";
 import { computeNetWorth } from "@/lib/dashboard";
-import { formatMoney, formatMoneyShort, formatRatio } from "@/lib/money";
-import { ASSET_LABELS, LIABILITY_LABELS, rgb } from "@/lib/constants";
-import { hexToRgba } from "@/lib/utils";
-import type { Asset, AssetType, Liability, LiabilityType } from "@/lib/types";
+import { formatMoneyGrouped, formatMoneyShort, formatRatio } from "@/lib/money";
+import {
+  ADD_BUTTON_GRADIENTS,
+  ASSET_LABELS,
+  COLORS,
+  LIABILITY_LABELS,
+  rgb,
+} from "@/lib/constants";
+import type { Asset, Liability } from "@/lib/types";
 
-const ASSET_ICONS: Record<AssetType, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
-  bank_account: BanknoteIcon,
-  superannuation: HandCoinsIcon,
-  property: HomeIcon,
-  investment: LineChartIcon,
-  vehicle: CarIcon,
-  other: Building2Icon,
-};
-
-const LIABILITY_ICONS: Record<LiabilityType, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
-  home_loan: HomeIcon,
-  personal_loan: HandCoinsIcon,
-  credit_card: CreditCardIcon,
-  car_loan: CarIcon,
-  student_loan: GraduationCapIcon,
-  other: LandmarkIcon,
-};
+const ASSET_COLOR = COLORS.limeGreen;
+const LIABILITY_COLOR = COLORS.orangeDark;
 
 function formatDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00`);
@@ -59,36 +47,36 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+/** Type-group key: the raw type with underscores → spaces (the reference's
+ *  h3 headers rely on the CSS `capitalize` class for visual casing). */
+function groupLabel(type: string): string {
+  return type.replace(/_/g, " ");
+}
+
 function AssetCard({ asset }: { asset: Asset }) {
   const openAssetModal = useBudgetStore((s) => s.openAssetModal);
   const deleteAsset = useBudgetStore((s) => s.deleteAsset);
   const [confirming, setConfirming] = React.useState(false);
-  const Icon = ASSET_ICONS[asset.type] ?? Building2Icon;
   return (
     <div
-      className="rounded-xl bg-white p-5 transition-all duration-200 hover:shadow-lg"
-      style={{ border: `1px solid ${rgb.border}`, boxShadow: "rgba(0, 0, 0, 0.04) 0px 2px 8px" }}
+      className="group rounded-xl border bg-white p-5 transition-all duration-200 hover:shadow-lg"
+      style={{ borderColor: rgb.border, boxShadow: "rgba(0, 0, 0, 0.04) 0px 2px 8px" }}
     >
       <div className="mb-3 flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <div
-            className="flex h-10 w-10 items-center justify-center rounded-lg"
-            style={{ backgroundColor: hexToRgba("#8fbc3f", 0.125) }}
-          >
-            <Icon className="h-5 w-5" style={{ color: "#8fbc3f" }} />
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold" style={{ color: rgb.forestMedium }}>
-              {ASSET_LABELS[asset.type]}
-            </h3>
+        <div className="flex-1">
+          <div className="mb-1 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: ASSET_COLOR }} />
             <h4 className="font-semibold" style={{ color: rgb.forestDark }}>
               {asset.name}
             </h4>
           </div>
+          <span className="inline-flex items-center rounded-md border border-transparent bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-700">
+            {ASSET_LABELS[asset.type]}
+          </span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
             aria-label={`Actions for ${asset.name}`}
           >
             <EllipsisVerticalIcon className="h-4 w-4" />
@@ -108,12 +96,20 @@ function AssetCard({ asset }: { asset: Asset }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <p className="mb-2 text-2xl font-bold" style={{ color: "#8fbc3f" }}>
-        {formatMoney(asset.value)}
+      <p className="mb-2 text-2xl font-bold" style={{ color: ASSET_COLOR }}>
+        {formatMoneyGrouped(asset.value)}
       </p>
-      <div className="flex items-center justify-between text-xs" style={{ color: rgb.gray }}>
-        <span>{asset.institution ?? ""}</span>
-        <span>Updated {formatDate(asset.lastUpdated)}</span>
+      <div className="space-y-2 text-xs" style={{ color: rgb.gray }}>
+        {asset.institution && (
+          <div className="flex items-center gap-2">
+            <Building2Icon className="h-3 w-3" />
+            {asset.institution}
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <CalendarIcon className="h-3 w-3" />
+          Updated {formatDate(asset.lastUpdated)}
+        </div>
       </div>
       {confirming && (
         <div
@@ -147,32 +143,26 @@ function LiabilityCard({ liability }: { liability: Liability }) {
   const openLiabilityModal = useBudgetStore((s) => s.openLiabilityModal);
   const deleteLiability = useBudgetStore((s) => s.deleteLiability);
   const [confirming, setConfirming] = React.useState(false);
-  const Icon = LIABILITY_ICONS[liability.type] ?? LandmarkIcon;
   return (
     <div
-      className="rounded-xl bg-white p-5 transition-all duration-200 hover:shadow-lg"
-      style={{ border: `1px solid ${rgb.border}`, boxShadow: "rgba(0, 0, 0, 0.04) 0px 2px 8px" }}
+      className="group rounded-xl border bg-white p-5 transition-all duration-200 hover:shadow-lg"
+      style={{ borderColor: rgb.border, boxShadow: "rgba(0, 0, 0, 0.04) 0px 2px 8px" }}
     >
       <div className="mb-3 flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <div
-            className="flex h-10 w-10 items-center justify-center rounded-lg"
-            style={{ backgroundColor: hexToRgba("#e07a3b", 0.125) }}
-          >
-            <Icon className="h-5 w-5" style={{ color: "#e07a3b" }} />
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold" style={{ color: rgb.forestMedium }}>
-              {LIABILITY_LABELS[liability.type]}
-            </h3>
+        <div className="flex-1">
+          <div className="mb-1 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: LIABILITY_COLOR }} />
             <h4 className="font-semibold" style={{ color: rgb.forestDark }}>
               {liability.name}
             </h4>
           </div>
+          <span className="inline-flex items-center rounded-md border border-transparent bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-700">
+            {LIABILITY_LABELS[liability.type]}
+          </span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
             aria-label={`Actions for ${liability.name}`}
           >
             <EllipsisVerticalIcon className="h-4 w-4" />
@@ -192,17 +182,26 @@ function LiabilityCard({ liability }: { liability: Liability }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <p className="mb-2 text-2xl font-bold" style={{ color: "#e07a3b" }}>
-        {formatMoney(liability.value)}
+      <p className="mb-2 text-2xl font-bold" style={{ color: LIABILITY_COLOR }}>
+        {formatMoneyGrouped(liability.value)}
       </p>
-      <div className="flex items-center justify-between text-xs" style={{ color: rgb.gray }}>
-        <span>{liability.institution ?? ""}</span>
-        <span>
+      <div className="space-y-2 text-xs" style={{ color: rgb.gray }}>
+        {liability.institution && (
+          <div className="flex items-center gap-2">
+            <Building2Icon className="h-3 w-3" />
+            {liability.institution}
+          </div>
+        )}
+        {liability.interestRate !== null && liability.interestRate !== undefined && (
+          <div className="flex items-center gap-2">
+            <PercentIcon className="h-3 w-3" />
+            {liability.interestRate}% interest
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <CalendarIcon className="h-3 w-3" />
           Updated {formatDate(liability.lastUpdated)}
-          {liability.interestRate !== null && liability.interestRate !== undefined
-            ? ` · ${liability.interestRate}%`
-            : ""}
-        </span>
+        </div>
       </div>
       {confirming && (
         <div
@@ -232,14 +231,24 @@ function LiabilityCard({ liability }: { liability: Liability }) {
   );
 }
 
+/** Group entries by type, preserving first-occurrence order (the reference
+ *  iterates Object.entries over its grouping accumulator). */
+function groupByType<T extends { type: string }>(items: T[]): [string, T[]][] {
+  const groups = new Map<string, T[]>();
+  for (const it of items) {
+    const list = groups.get(it.type);
+    if (list) list.push(it);
+    else groups.set(it.type, [it]);
+  }
+  return [...groups.entries()];
+}
+
 export function NetWorthView() {
   const assets = useBudgetStore((s) => s.assets);
   const liabilities = useBudgetStore((s) => s.liabilities);
   const openAssetModal = useBudgetStore((s) => s.openAssetModal);
   const openLiabilityModal = useBudgetStore((s) => s.openLiabilityModal);
   const totals = computeNetWorth(assets, liabilities);
-  const totalAssetsStr = formatMoney(totals.totalAssets);
-  const totalLiabilitiesStr = formatMoney(totals.totalLiabilities);
 
   return (
     <div className="mx-auto w-full max-w-7xl p-4 md:p-8">
@@ -253,7 +262,7 @@ export function NetWorthView() {
       <div
         className="relative mb-6 overflow-hidden rounded-2xl p-8"
         style={{
-          background: `linear-gradient(135deg, ${"#2d5a4a"} 0%, ${"#8fbc3f"} 100%)`,
+          background: `linear-gradient(135deg, ${COLORS.forestMedium} 0%, ${COLORS.limeGreen} 100%)`,
           boxShadow: "rgba(26, 58, 46, 0.3) 0px 20px 60px",
         }}
       >
@@ -270,7 +279,7 @@ export function NetWorthView() {
             <div>
               <p className="mb-2 text-sm text-white/80">Total Net Worth</p>
               <h2 className="text-4xl font-bold text-white md:text-5xl">
-                {formatMoney(totals.netWorth)}
+                {formatMoneyGrouped(totals.netWorth)}
               </h2>
             </div>
             <div
@@ -283,16 +292,18 @@ export function NetWorthView() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="rounded-xl p-4" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
               <p className="mb-1 text-sm text-white/80">Total Assets</p>
-              <p className="text-xl font-bold text-white">{totalAssetsStr}</p>
+              <p className="text-xl font-bold text-white">{formatMoneyGrouped(totals.totalAssets)}</p>
             </div>
             <div className="rounded-xl p-4" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
               <p className="mb-1 text-sm text-white/80">Total Liabilities</p>
-              <p className="text-xl font-bold text-white">{totalLiabilitiesStr}</p>
+              <p className="text-xl font-bold text-white">{formatMoneyGrouped(totals.totalLiabilities)}</p>
             </div>
             <div className="rounded-xl p-4" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
               <p className="mb-1 text-sm text-white/80">Asset to Liability Ratio</p>
+              {/* Reference: ".toFixed(2)" + ":1" with no spaces, "∞" when
+                  debt-free (bundle: [t>0?(e/t).toFixed(2):"∞",":1"]). */}
               <p className="text-xl font-bold text-white">
-                {formatRatio(totals.ratio)} : 1
+                {formatRatio(totals.ratio)}:1
               </p>
             </div>
           </div>
@@ -305,23 +316,23 @@ export function NetWorthView() {
           <TabsTrigger value="liabilities">Liabilities</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="assets">
-          <div className="mb-4 flex items-center justify-between">
+        <TabsContent value="assets" className="mt-2 space-y-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold" style={{ color: rgb.forestDark }}>
+              <h2 className="text-2xl font-bold" style={{ color: rgb.forestDark }}>
                 Assets
               </h2>
               <p style={{ color: rgb.gray }}>
-                {assets.length} {assets.length === 1 ? "item" : "items"} ·{" "}
-                {formatMoneyShort(totals.totalAssets)}
+                {assets.length} items · {formatMoneyShort(totals.totalAssets)}
               </p>
             </div>
             <button
               type="button"
-              className="zb-btn-primary"
+              className="zb-btn-add"
+              style={{ background: ADD_BUTTON_GRADIENTS.asset }}
               onClick={() => openAssetModal({ mode: "create" })}
             >
-              <PlusIcon className="h-4 w-4" />
+              <PlusIcon className="mr-2 h-5 w-5" />
               Add Asset
             </button>
           </div>
@@ -332,9 +343,9 @@ export function NetWorthView() {
             >
               <div
                 className="mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-                style={{ backgroundColor: hexToRgba("#8fbc3f", 0.125) }}
+                style={{ backgroundColor: "rgba(143, 188, 63, 0.125)" }}
               >
-                <TrendingUpIcon className="h-8 w-8" style={{ color: "#8fbc3f" }} />
+                <TrendingUpIcon className="h-8 w-8" style={{ color: ASSET_COLOR }} />
               </div>
               <h3 className="mb-1 text-lg font-semibold" style={{ color: rgb.forestDark }}>
                 No assets yet
@@ -344,39 +355,50 @@ export function NetWorthView() {
               </p>
               <button
                 type="button"
-                className="zb-btn-primary"
+                className="zb-btn-add"
+                style={{ background: ADD_BUTTON_GRADIENTS.asset }}
                 onClick={() => openAssetModal({ mode: "create" })}
               >
-                <PlusIcon className="h-4 w-4" />
+                <PlusIcon className="mr-2 h-5 w-5" />
                 Add Asset
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {assets.map((a) => (
-                <AssetCard key={a.id} asset={a} />
-              ))}
-            </div>
+            groupByType(assets).map(([type, list]) => (
+              <div key={type}>
+                <h3
+                  className="mb-3 text-lg font-semibold capitalize"
+                  style={{ color: COLORS.forestMedium }}
+                >
+                  {groupLabel(type)}
+                </h3>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {list.map((a) => (
+                    <AssetCard key={a.id} asset={a} />
+                  ))}
+                </div>
+              </div>
+            ))
           )}
         </TabsContent>
 
-        <TabsContent value="liabilities">
-          <div className="mb-4 flex items-center justify-between">
+        <TabsContent value="liabilities" className="mt-2 space-y-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold" style={{ color: rgb.forestDark }}>
+              <h2 className="text-2xl font-bold" style={{ color: rgb.forestDark }}>
                 Liabilities
               </h2>
               <p style={{ color: rgb.gray }}>
-                {liabilities.length} {liabilities.length === 1 ? "item" : "items"} ·{" "}
-                {formatMoneyShort(totals.totalLiabilities)}
+                {liabilities.length} items · {formatMoneyShort(totals.totalLiabilities)}
               </p>
             </div>
             <button
               type="button"
-              className="zb-btn-primary"
+              className="zb-btn-add"
+              style={{ background: ADD_BUTTON_GRADIENTS.liability }}
               onClick={() => openLiabilityModal({ mode: "create" })}
             >
-              <PlusIcon className="h-4 w-4" />
+              <PlusIcon className="mr-2 h-5 w-5" />
               Add Liability
             </button>
           </div>
@@ -387,9 +409,9 @@ export function NetWorthView() {
             >
               <div
                 className="mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-                style={{ backgroundColor: hexToRgba("#e07a3b", 0.125) }}
+                style={{ backgroundColor: "rgba(224, 122, 59, 0.125)" }}
               >
-                <CreditCardIcon className="h-8 w-8" style={{ color: "#e07a3b" }} />
+                <CreditCardIcon className="h-8 w-8" style={{ color: LIABILITY_COLOR }} />
               </div>
               <h3 className="mb-1 text-lg font-semibold" style={{ color: rgb.forestDark }}>
                 No liabilities yet
@@ -399,19 +421,30 @@ export function NetWorthView() {
               </p>
               <button
                 type="button"
-                className="zb-btn-primary"
+                className="zb-btn-add"
+                style={{ background: ADD_BUTTON_GRADIENTS.liability }}
                 onClick={() => openLiabilityModal({ mode: "create" })}
               >
-                <PlusIcon className="h-4 w-4" />
+                <PlusIcon className="mr-2 h-5 w-5" />
                 Add Liability
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {liabilities.map((l) => (
-                <LiabilityCard key={l.id} liability={l} />
-              ))}
-            </div>
+            groupByType(liabilities).map(([type, list]) => (
+              <div key={type}>
+                <h3
+                  className="mb-3 text-lg font-semibold capitalize"
+                  style={{ color: LIABILITY_COLOR }}
+                >
+                  {groupLabel(type)}
+                </h3>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {list.map((l) => (
+                    <LiabilityCard key={l.id} liability={l} />
+                  ))}
+                </div>
+              </div>
+            ))
           )}
         </TabsContent>
       </Tabs>

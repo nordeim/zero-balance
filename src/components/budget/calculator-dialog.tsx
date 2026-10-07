@@ -1,34 +1,49 @@
 "use client";
 
-// The Rent Calculator — breaks an expense category into line items; the
+// The {Category} Calculator — breaks an expense category into line items; the
 // "Total Calculated" updates the category's amount (recalculated server-side
 // on every line-item mutation, mirroring the reference).
+//
+// Chrome pinned by the session-3 audit (live DOM + bundle):
+//   - wide panel (max-w-3xl) with a border-b header carrying an orange
+//     gradient icon chip, the h2 title + description, and a Close X button
+//   - an orange-tinted total card: "Total Calculated" left, amount right in
+//     #e07a3b, "Based on N item(s)" + a conditional orange "• Will update
+//     category total" (shown while total !== the category's amount)
+//   - line-item rows: gray rounded-full pills (frequency + conditional
+//     status), "#policy" line, hover-revealed ghost edit/delete, orange
+//     text-xl amount — no "From date"
 
 import * as React from "react";
 import {
   CalculatorIcon,
-  PencilIcon,
+  PenIcon,
   PlusIcon,
   Trash2Icon,
+  XIcon,
 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore } from "./store";
 import { formatMoney, sumAmounts } from "@/lib/money";
-import { rgb } from "@/lib/constants";
-import type { ExpenseLineItem } from "@/lib/types";
+import { ADD_BUTTON_GRADIENTS, COLORS, rgb } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+import type { ExpenseLineItem, ItemStatus } from "@/lib/types";
 
-function formatDate(iso: string | null | undefined): string {
-  if (!iso) return "";
-  const d = new Date(`${iso}T00:00:00`);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+/**
+ * Line-item status pills (reference conditional: active → green,
+ * pending → yellow, else gray; mapped onto our planned/active/completed
+ * enum: planned plays the "pending" role).
+ */
+function statusPill(status: ItemStatus): string {
+  if (status === "active") return "bg-green-50 text-green-700";
+  if (status === "planned") return "bg-yellow-50 text-yellow-700";
+  return "bg-gray-50 text-gray-700";
 }
 
 export function CalculatorDialog() {
@@ -62,75 +77,102 @@ export function CalculatorDialog() {
 
   return (
     <Dialog open onOpenChange={(open) => !open && closeModals()}>
-      <DialogContent>
-        <DialogHeader>
-          {/* Category-adaptive chrome, measured on the reference: the Rent
-              card opens "Rent Calculator / Break down your rent into
-              individual items", the Investments card "Investments
-              Calculator / Break down your investments into individual
-              items" — the title carries the category's case, the
-              description lowercases it. */}
-          <DialogTitle>{item.category} Calculator</DialogTitle>
-          <DialogDescription>
-            Break down your {item.category.toLowerCase()} into individual items
-          </DialogDescription>
-        </DialogHeader>
-        <div className="p-6">
-          <div
-            className="mb-6 flex items-center justify-between rounded-xl p-4"
-            style={{ backgroundColor: rgb.cardTint }}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-lg"
-                style={{ backgroundColor: "rgba(224, 122, 59, 0.125)" }}
-              >
-                <CalculatorIcon className="h-5 w-5" style={{ color: rgb.orangeDark }} />
-              </div>
-              <div>
-                <p className="text-sm" style={{ color: rgb.gray }}>
-                  Total Calculated
-                </p>
-                <p className="text-2xl font-bold" style={{ color: rgb.forestDark }}>
-                  {formatMoney(total)}
-                </p>
-              </div>
+      <DialogContent
+        aria-describedby={undefined}
+        hideClose
+        style={{
+          maxWidth: "48rem" /* max-w-3xl — wider than the form dialogs */,
+          maxHeight: "85vh",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* Header: gradient chip + title/description + Close X (flex child). */}
+        <div
+          className="flex items-center justify-between border-b px-6 py-4"
+          style={{ borderColor: rgb.border }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl"
+              style={{ background: ADD_BUTTON_GRADIENTS.calculator }}
+            >
+              <CalculatorIcon className="h-5 w-5 text-white" />
             </div>
-            <p className="max-w-[220px] text-right text-xs" style={{ color: rgb.gray }}>
-              Based on {lineItems.length} {lineItems.length === 1 ? "item" : "items"} · Will update
-              category total
-            </p>
+            <div>
+              {/* Category-adaptive chrome, measured on the reference: the Rent
+                  card opens "Rent Calculator / Break down your rent into
+                  individual items" — the title carries the category's case,
+                  the description lowercases it. */}
+              <DialogTitle className="text-lg font-bold" style={{ color: rgb.forestDark }}>
+                {item.category} Calculator
+              </DialogTitle>
+              <DialogDescription className="text-sm" style={{ color: rgb.gray }}>
+                Break down your {item.category.toLowerCase()} into individual items
+              </DialogDescription>
+            </div>
+          </div>
+          <button
+            type="button"
+            aria-label="Close"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent"
+            onClick={closeModals}
+          >
+            <XIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6">
+          <div
+            className="mb-6 rounded-xl p-4"
+            style={{ backgroundColor: "#fff7f5", border: "1px solid #fcddd5" }}
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-sm font-medium" style={{ color: rgb.gray }}>
+                Total Calculated
+              </span>
+              <span className="text-2xl font-bold" style={{ color: COLORS.orangeDark }}>
+                {formatMoney(total)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs" style={{ color: rgb.gray }}>
+              <span>
+                Based on {lineItems.length} {lineItems.length === 1 ? "item" : "items"}
+              </span>
+              {total !== item.amount && (
+                <span className="text-orange-600">• Will update category total</span>
+              )}
+            </div>
           </div>
 
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-4 flex items-center justify-between">
             <h3 className="font-semibold" style={{ color: rgb.forestDark }}>
               Line Items
             </h3>
             <button
               type="button"
-              className="zb-btn-primary"
+              className="zb-btn-add zb-btn-add-sm text-white"
+              style={{ background: ADD_BUTTON_GRADIENTS.calculator }}
               onClick={() => openLineItemModal({ mode: "create", budgetItemId: item.id })}
             >
-              <PlusIcon className="h-4 w-4" />
+              <PlusIcon className="mr-2 h-4 w-4" />
               Add Item
             </button>
           </div>
 
           {lineItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <CalculatorIcon className="mb-3 h-10 w-10" style={{ color: "rgb(203, 213, 225)" }} />
-              <p className="mb-1 font-medium" style={{ color: "rgb(156, 163, 175)" }}>
-                No line items yet.
-              </p>
-              <p className="mb-6 max-w-sm text-sm" style={{ color: "rgb(156, 163, 175)" }}>
-                Start by adding individual items that make up this category.
+            <div className="py-12 text-center">
+              <CalculatorIcon className="mx-auto mb-3 h-12 w-12 opacity-20" style={{ color: rgb.forestDark }} />
+              <p className="mb-4 text-sm" style={{ color: rgb.gray }}>
+                No line items yet. Start by adding individual items that make up this category.
               </p>
               <button
                 type="button"
-                className="zb-btn-primary"
+                className="zb-btn-add zb-btn-add-sm zb-btn-add-outline"
                 onClick={() => openLineItemModal({ mode: "create", budgetItemId: item.id })}
               >
-                <PlusIcon className="h-4 w-4" />
+                <PlusIcon className="mr-2 h-4 w-4" />
                 Add First Item
               </button>
             </div>
@@ -139,53 +181,59 @@ export function CalculatorDialog() {
               {lineItems.map((li: ExpenseLineItem) => (
                 <div
                   key={li.id}
-                  className="rounded-xl bg-white p-4"
-                  style={{ border: `1px solid ${rgb.border}` }}
+                  className="group rounded-xl border bg-white p-4 transition-all hover:shadow-md"
+                  style={{ borderColor: rgb.border }}
                 >
                   <div className="mb-2 flex items-start justify-between">
-                    <div>
-                      <h4 className="font-semibold" style={{ color: rgb.forestDark }}>
+                    <div className="flex-1">
+                      <h4 className="mb-1 font-semibold" style={{ color: rgb.forestDark }}>
                         {li.name}
                       </h4>
                       {li.provider && (
                         <p className="text-sm" style={{ color: rgb.gray }}>
                           {li.provider}
-                          {li.policyNumber ? ` · ${li.policyNumber}` : ""}
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                       <button
                         type="button"
                         aria-label={`Edit ${li.name}`}
                         className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent"
                         onClick={() => openLineItemModal({ mode: "edit", lineItem: li })}
                       >
-                        <PencilIcon className="h-4 w-4" style={{ color: rgb.gray }} />
+                        <PenIcon className="h-3.5 w-3.5" style={{ color: rgb.gray }} />
                       </button>
                       <button
                         type="button"
                         aria-label={`Delete ${li.name}`}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-red-50"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-red-600 transition-colors hover:bg-red-50"
                         onClick={() => setConfirmingId(confirmingId === li.id ? null : li.id)}
                       >
-                        <Trash2Icon className="h-4 w-4 text-red-500" />
+                        <Trash2Icon className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
-                  <div className="mb-2 flex flex-wrap gap-2">
-                    <span className="inline-flex items-center rounded-md border border-transparent bg-purple-50 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
-                      {li.frequency}
-                    </span>
-                    <span className="inline-flex items-center rounded-md border border-transparent bg-slate-50 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
-                      {li.status}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm" style={{ color: rgb.gray }}>
-                      {li.startDate ? `From ${formatDate(li.startDate)}` : ""}
-                    </p>
-                    <p className="text-xl font-bold" style={{ color: rgb.orangeDark }}>
+                  <div className="flex items-end justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-xs" style={{ color: rgb.gray }}>
+                        <span
+                          className="rounded-full px-2 py-0.5"
+                          style={{ backgroundColor: "#f3f4f6" }}
+                        >
+                          {li.frequency}
+                        </span>
+                        <span className={cn("rounded-full px-2 py-0.5", statusPill(li.status))}>
+                          {li.status}
+                        </span>
+                      </div>
+                      {li.policyNumber && (
+                        <p className="text-xs" style={{ color: "rgb(156, 163, 175)" }}>
+                          #{li.policyNumber}
+                        </p>
+                      )}
+                    </div>
+                    <p className="text-xl font-bold" style={{ color: COLORS.orangeDark }}>
                       {formatMoney(li.amount)}
                     </p>
                   </div>

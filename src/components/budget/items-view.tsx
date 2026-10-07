@@ -9,7 +9,7 @@ import * as React from "react";
 import {
   PiggyBankIcon,
   PlusIcon,
-  ReceiptTextIcon,
+  ReceiptIcon,
   SearchIcon,
   WalletIcon,
 } from "lucide-react";
@@ -25,7 +25,12 @@ import { useBudgetStore } from "./store";
 import { useShallow } from "zustand/react/shallow";
 import { BudgetItemCard } from "./item-card";
 import { formatMoney, sumAmounts } from "@/lib/money";
-import { COLORS, rgb, TYPE_COLORS } from "@/lib/constants";
+import {
+  ADD_BUTTON_GRADIENTS,
+  HEADER_CHIP_GRADIENTS,
+  TYPE_COLORS,
+  rgb,
+} from "@/lib/constants";
 import { hexToRgba } from "@/lib/utils";
 import type { ItemType } from "@/lib/types";
 
@@ -58,7 +63,7 @@ const META: Record<
   },
   expense: {
     title: "Expenses",
-    icon: ReceiptTextIcon,
+    icon: ReceiptIcon,
     addLabel: "Add Expense",
     searchPlaceholder: "Search expense items...",
     emptyTitle: "No expense items yet",
@@ -116,27 +121,30 @@ export function ItemsView({ type }: { type: ItemType }) {
     <div className="mx-auto w-full max-w-7xl p-4 md:p-8">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
+          {/* Gradient chip with a white icon (live reference DOM). */}
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-xl"
-            style={{ backgroundColor: hexToRgba(accent, 0.125) }}
+            className="flex h-12 w-12 items-center justify-center rounded-xl"
+            style={{ background: HEADER_CHIP_GRADIENTS[type] }}
           >
-            <Icon className="h-5 w-5" style={{ color: accent }} />
+            <Icon className="h-6 w-6 text-white" />
           </div>
           <div>
             <h1 className="text-3xl font-bold" style={{ color: rgb.forestDark }}>
               {meta.title}
             </h1>
+            {/* The reference always renders "N items" here — even for 1. */}
             <p style={{ color: rgb.gray }}>
-              {items.length} {items.length === 1 ? "item" : "items"} · {formatMoney(total)}
+              {items.length} items · {formatMoney(total)}
             </p>
           </div>
         </div>
         <button
           type="button"
-          className="zb-btn-primary shrink-0"
+          className="zb-btn-add shrink-0"
+          style={{ background: ADD_BUTTON_GRADIENTS[type] }}
           onClick={() => openItemModal({ mode: "create", type })}
         >
-          <PlusIcon className="h-4 w-4" />
+          <PlusIcon className="mr-2 h-5 w-5" />
           {meta.addLabel}
         </button>
       </div>
@@ -217,10 +225,11 @@ export function ItemsView({ type }: { type: ItemType }) {
           </p>
           <button
             type="button"
-            className="zb-btn-primary"
+            className="zb-btn-add"
+            style={{ background: ADD_BUTTON_GRADIENTS[type] }}
             onClick={() => openItemModal({ mode: "create", type })}
           >
-            <PlusIcon className="h-4 w-4" />
+            <PlusIcon className="mr-2 h-5 w-5" />
             {meta.addLabel}
           </button>
         </div>
