@@ -188,10 +188,10 @@ test.describe("income view", () => {
     const created = page.locator("div.rounded-xl").filter({ hasText: "Dividends" }).first();
     await expect(created).toBeVisible();
     await expect(created.getByText("$77.50")).toBeVisible();
-    // quarterly → indigo badge (reference frequency map).
+    // quarterly → indigo badge (reference frequency map, hex-pinned v8 G2).
     const quarterlyBadge = created.getByText("quarterly", { exact: true });
     await expect(quarterlyBadge).toBeVisible();
-    await expect(quarterlyBadge).toHaveClass(/bg-indigo-50/);
+    await expect(quarterlyBadge).toHaveClass(/bg-\[#eef2ff\] text-\[#4338ca\]/);
     // The header count + subtitle updated (plain money).
     await expect(page.getByText("3 items · $5627.50")).toBeVisible();
 
@@ -258,15 +258,17 @@ test.describe("expenses view", () => {
     await expect(rent.getByText("$1850.00")).toBeVisible();
     const needBadge = rent.getByText("need", { exact: true });
     await expect(needBadge).toBeVisible();
-    await expect(needBadge).toHaveClass(/bg-red-50 text-red-700 border-red-200/);
-    await expect(rent.getByText("monthly", { exact: true })).toHaveClass(/bg-purple-50/);
-    await expect(rent.getByText("active", { exact: true })).toHaveClass(/bg-slate-50/);
+    // Hex-pinned badge classes (plan v8 G2 — computed values pinned in
+    // tests/e2e/badge-colors.spec.ts).
+    await expect(needBadge).toHaveClass(/bg-\[#fef2f2\] text-\[#b91c1c\] border-\[#fecaca\]/);
+    await expect(rent.getByText("monthly", { exact: true })).toHaveClass(/bg-\[#faf5ff\]/);
+    await expect(rent.getByText("active", { exact: true })).toHaveClass(/bg-\[#f8fafc\]/);
     // Recurring badge: capitalized, green, with the repeat icon (class
     // order interleaves utilities — assert each color class separately).
     const recurring = rent.getByText("Recurring", { exact: true });
     await expect(recurring).toBeVisible();
-    await expect(recurring).toHaveClass(/bg-green-50/);
-    await expect(recurring).toHaveClass(/text-green-700/);
+    await expect(recurring).toHaveClass(/bg-\[#f0fdf4\]/);
+    await expect(recurring).toHaveClass(/text-\[#15803d\]/);
     await expect(recurring.locator("svg.lucide-repeat")).toBeVisible();
   });
 
@@ -280,7 +282,7 @@ test.describe("expenses view", () => {
     await expect(edit).toHaveAttribute("title", "Edit Category");
     await expect(calculate).toBeVisible();
     await expect(calculate).toHaveAttribute("title", "Open Calculator");
-    await expect(calculate).toHaveClass(/text-orange-600/);
+    await expect(calculate).toHaveClass(/text-\[#ea580c\]/);
     // Expense cards have NO ellipsis menu (reference DOM: 0/3 cards).
     await expect(rent.getByRole("button", { name: /Actions for/ })).toHaveCount(0);
   });
@@ -325,7 +327,7 @@ test.describe("savings view", () => {
     // The savings classification badge is green with a piggy-bank icon.
     const fund = page.locator("div.rounded-xl").filter({ hasText: "Emergency Fund" }).first();
     const savingsBadge = fund.getByText("savings", { exact: true });
-    await expect(savingsBadge).toHaveClass(/bg-green-50 text-green-700 border-green-200/);
+    await expect(savingsBadge).toHaveClass(/bg-\[#f0fdf4\] text-\[#15803d\] border-\[#bbf7d0\]/);
     await expect(savingsBadge.locator("svg.lucide-piggy-bank")).toBeVisible();
   });
 });

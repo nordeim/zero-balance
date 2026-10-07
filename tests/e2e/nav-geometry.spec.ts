@@ -132,4 +132,22 @@ test.describe("sidebar nav geometry", () => {
     expect(brand!.ulWrapperCls).toContain("w-full");
     expect(brand!.ulWrapperCls).toContain("text-sm");
   });
+
+  // Session-15 audit (docs/remediation-plan-v8.md G2a): the reference renders
+  // INACTIVE nav links at zinc-600-family rgb(63,63,70) as plain rgb; the
+  // clone's text-zinc-700 computes the same VALUE through lab() (v4 named
+  // palette). Pin the computed style to plain rgb — the hex class keeps the
+  // engine out of Lab space (and renders on browsers without lab() support).
+  test("inactive nav link color computes as plain rgb(63,63,70), not lab (v8 G2a)", async ({
+    page,
+  }) => {
+    const color = await page.evaluate(() => {
+      const link = [...document.querySelectorAll("nav a")].find(
+        (a) => (a.textContent || "").trim() === "Income",
+      );
+      return link ? getComputedStyle(link).color : null;
+    });
+    expect(color).not.toBeNull();
+    expect(color).toBe("rgb(63, 63, 70)");
+  });
 });

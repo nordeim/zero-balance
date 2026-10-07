@@ -239,13 +239,15 @@ export function LiabilityDialog() {
               onChange={(e) => set("notes", e.target.value)}
             />
           </div>
-          <div className="flex items-center justify-end gap-3">
-            <Button type="button" variant="outline" onClick={closeModals}>
+          {/* Reference footer (plan v8 G1): flex gap-3 pt-4 with both buttons
+              at flex-1 (Cancel ≈ 307px + Save Liability ≈ 305px). */}
+          <div className="flex gap-3 pt-4">
+            <Button type="button" variant="outline" className="flex-1" onClick={closeModals}>
               Cancel
             </Button>
             <button
               type="submit"
-              className="zb-btn-add"
+              className="zb-btn-add flex-1"
               style={{ background: ADD_BUTTON_GRADIENTS.liability }}
               disabled={saving}
             >

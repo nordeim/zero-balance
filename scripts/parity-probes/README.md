@@ -65,3 +65,23 @@ surfaces, same run-probe.sh pattern:
   manifest, apple meta)
 - LESSON (SKILL §12.13): `probe-v7-iconbg.mjs`'s 60-char shadow slice caused
   a false "missing ring" finding — always dump FULL computed strings.
+
+Session-15 additions (remediation-plan-v8 audit) — the parity server booted
+detached this session (`(bun .next/standalone/server.js … &)` survives across
+tool calls), so agent-browser sessions `ref8`/`clone8` drove both sites
+directly:
+
+- `probe-v8-data.mjs` — reference data state (hero figure/allocation,
+  stats, legend) for drift detection against the session-13 snapshot
+- `probe-v8-mobile-nav.mjs` / `probe-v8-mobile-nav2.mjs` /
+  `probe-v8-hamburger.mjs` — the mobile topbar/toggle/toast-viewport
+  audit (R1 hit-test, R2 sheet-trap, R4 overflow, toggle geometry)
+- `probe-v8-sheet.mjs` — sheet + overlay geometry with the sheet open
+- `probe-v8-rail.mjs` / `probe-v8-rail-ref.mjs` — desktop rail audit (the
+  ref's rail is NOT an `<aside>` — find it by geometry; found the
+  `text-zinc-700` → `lab()` inactive-link drift)
+- `probe-v8-page.mjs` — per-page mobile sweep (overflow + h1 + card
+  headings on all five routes)
+- Footer/badge findings came from inline `agent-browser eval` probes (the
+  ref's dialogs have no `[role=dialog]` — climb from the Save button; its
+  badges are DIVs, the clone's are SPANs — match by text)

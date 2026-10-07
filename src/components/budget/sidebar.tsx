@@ -78,7 +78,10 @@ function NavList({ onNavigate, highlightActive = true }: { onNavigate?: () => vo
                     "flex h-8 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 mb-1 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                     active && highlightActive
                       ? "font-medium text-white"
-                      : "text-zinc-700 hover:bg-[#f0fdf4] hover:text-sidebar-accent-foreground",
+                      : // Hex pin (plan v8 G2a): the reference renders inactive
+                        // links at zinc-700 rgb(63,63,70) as plain rgb; the
+                        // named text-zinc-700 computes as lab() in v4.
+                        "text-[#3f3f46] hover:bg-[#f0fdf4] hover:text-sidebar-accent-foreground",
                   )}
                   style={
                     active && highlightActive

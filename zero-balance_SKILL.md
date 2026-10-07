@@ -7,8 +7,8 @@ description: >
   suite. This skill captures every design decision, anti-pattern, debugging
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
-last_updated: 2026-10-07
-project_state: 96 unit tests / 83 e2e tests / 30 smoke steps — all green
+last_updated: 2026-10-08
+project_state: 96 unit tests / 92 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -552,6 +552,26 @@ Numbered institutional lessons. Each traces to a concrete fix in
     `h-7 w-7 p-2` toggle box leaves 12px of content width; a 16px icon
     silently compresses unless it carries `shrink-0` (the reference ships
     `[&_svg]:size-4 [&_svg]:shrink-0` for exactly this — plan v7 G5).
+16. **A visual match is not a computed-style match — and the drift is
+    systematic.** The v4 named palette (zinc/slate/purple/red/green/orange…)
+    computes EVERY entry in Lab space: `lab(97.16 3 -4.13)` renders the same
+    pixels as `rgb(250,245,255)` in modern Chromium but drifts on
+    non-color-managed engines and breaks entirely on browsers without Lab
+    support. The v5/v7/v8 passes each found a new family of these; the rule
+    is absolute: NO named palette class on a parity surface — arbitrary hex
+    only (`text-[#3f3f46]`, `bg-[#faf5ff]`).
+17. **Content-sized dialog buttons vs flex-1: the footer is part of the
+    dialog's visual identity.** Every reference form dialog splits its
+    footer as `flex gap-3 pt-4` with both buttons at `flex-1` (~306px each,
+    halves of the 624px content row). A `justify-end` row of content-sized
+    buttons reads instantly as "almost right"; measure button WIDTHS, not
+    just colors/heights, when auditing dialogs.
+18. **Reference data changes under you — re-measure conditional chrome.**
+    The Recurring card badge looked like a clone-only extra until the
+    reference's own items turned out to ship `recurring: false` (its live
+    data changed since the v2 recon measured badge maps). Flip the
+    reference's own switch, observe its conditional render, restore the
+    mutation, THEN classify the difference as data vs structure.
 
 ---
 
@@ -870,6 +890,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-07 | Re-verification (this document) | Full chain re-run green (87/34/30 + tsc + eslint); live reference re-checked — both mobile-nav bugs still present on the reference, both fixes verified on the clone; `zero-balance_SKILL.md` distilled |
 | Sessions 3–11 | Parity iterations v2–v6 (`docs/remediation-plan-v2..v6.md`) | Money formats, drill-down, badges, mobile chrome, tokens, dialog buttons, plain-text menus, empty states, wide column — 96/73/30 green at `42f50da` |
 | 2026-10-07 | Session 13 — parity iteration v7 (`docs/remediation-plan-v7.md`) | Login-surface slate pins + text-sm, logo halo layer, 24px brand target + text-lg, 16px toggle icon, sheet border/overlay pins, custom 404, head metadata, post-login root redirect — 96/83/30 green |
+| 2026-10-08 | Session 15 — parity iteration v8 (`docs/remediation-plan-v8.md`) | Dialog footers rebuilt as the reference's flex-1 full-row split (Cancel ≈ 307px + Save ≈ 305px), all remaining badge/nav/Calculate named classes hex-pinned (plain rgb computed styles), stray `prisma/db/custom.db` untracked; every mobile-nav superset fix + v7 pin re-verified live — 96/92/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

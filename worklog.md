@@ -4,8 +4,54 @@ Rolling log of the engineering sessions on this repo, newest first. Each
 session's detailed narrative lives in `docs/session_<n>.md`; findings ledgers
 live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`,
-`docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`, and
-`docs/remediation-plan-v7.md`.
+`docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`,
+`docs/remediation-plan-v7.md`, and `docs/remediation-plan-v8.md`.
+
+---
+
+## Session 15 — Fresh verification & parity iteration v8 (2026-10-08)
+
+**Goal:** workspace was RESET — re-clone, re-provision the environment, then
+a fresh two-site parity audit at computed-style depth of the surfaces v7 had
+not covered that way (every form dialog's footer-button geometry, the
+item-card badge family's computed colors); fix what it found. Explicit
+mobile-navigation re-verification (the task focus).
+
+- Re-cloned fresh; `.env` + `db/` re-provisioned (seed intact); full doc
+  chain re-read; baseline chain green at `c6d40fa` (96 unit / 83 e2e /
+  30 smoke). v7 fixes confirmed live. Notable environment change: a
+  detached parity-server boot now survives across tool calls, so the audit
+  ran both sites through persistent agent-browser sessions (`ref8`/`clone8`).
+- Mobile nav re-verified live on both sites: R1 (toast container still
+  swallows the ref's hamburger — hit-test returns the container), R2 (its
+  sheet still traps after nav), R4 (395px/464px overflow) all still live on
+  the reference; the clone's superset fixes verified end-to-end (DIRECT
+  hit, close-on-nav, 390px fit on all five routes).
+- Fresh probe audit → **2 finding groups + 1 hygiene item**
+  (`docs/remediation-plan-v8.md`): every form dialog's footer is the
+  reference's `flex gap-3 pt-4` full-row split with Cancel + Save at
+  `flex-1` (≈ 306px each — the clone ran right-aligned 81px/127px buttons);
+  the remaining named-palette classes on parity surfaces all compute as
+  `lab()` in v4 (nav `text-zinc-700`, both badge maps, the Recurring/status
+  badges, the Calculate button's orange) — values identical to the
+  reference's plain rgb, so a full hex-pin pass; and `prisma/db/custom.db`
+  (a session-1 stray tracked at the wrong path) untracked.
+- The instructive non-finding: the "Recurring" card badge — flipping the
+  reference's own Recurring Item switch made the same green badge appear on
+  its card (then restored); the badge is CONDITIONAL on both sides and the
+  difference was pure live-data drift (SKILL lesson 12.18).
+- All fixes TDD-first (12 tests / 13 assertions RED → GREEN): NEW
+  `badge-colors.spec.ts` (8), +1 nav-geometry, +3 dialog-buttons footer
+  geometry; the unit constants pins and items.spec class pins updated to
+  the hex forms (computed values now pinned by the new spec).
+- Full chain: typecheck · lint · **96/96 unit** · build · **92/92 e2e**
+  (83 + 9 net-new) · 30/30 smoke. Live parity re-verified
+  surface-by-surface (footer Cancel 307px + Save 305px — the reference's
+  exact numbers; every badge at the reference's exact rgb; nav links
+  `rgb(63,63,70)`). 13 screenshots regenerated; seed arithmetic intact.
+- Docs aligned (README/CLAUDE/AGENTS/SKILL/session_15 + plan v8 + probe
+  README). SKILL gained lessons 12.16–12.18; AGENTS gained the v8 pin
+  paragraph.
 
 ---
 

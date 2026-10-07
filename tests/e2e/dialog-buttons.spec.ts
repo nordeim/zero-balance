@@ -68,6 +68,39 @@ test.describe("dialog action buttons (v5)", () => {
     expect(buttons.save!.radius).toBe("6px");
     expect(buttons.save!.h).toBe(36);
     expect(buttons.save!.weight).toBe("500");
+
+    // Footer geometry (session-15 audit, plan v8 G1): the reference renders
+    // the dialog footer as `flex gap-3 pt-4` with BOTH buttons at flex-1 —
+    // Cancel ≈ 307px (left half of the 624px content row) + Save Item ≈ 305px
+    // (right half). The clone ran content-sized right-aligned buttons
+    // (81px/127px, no pt-4).
+    const footer = await page.evaluate(() => {
+      const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+      const d = dialogs[dialogs.length - 1];
+      const save = [...d.querySelectorAll("button")].find(
+        (x) => (x.textContent || "").trim() === "Save Item",
+      );
+      if (!save) return null;
+      let row: HTMLElement | null = save.closest("div");
+      while (row && row.getBoundingClientRect().height < 50) row = row.parentElement;
+      if (!row) return null;
+      const cancel = [...row.querySelectorAll("button")].find(
+        (x) => (x.textContent || "").trim() === "Cancel",
+      );
+      const rcs = getComputedStyle(row);
+      return {
+        row: { display: rcs.display, gap: rcs.gap, padTop: rcs.paddingTop },
+        cancelW: cancel ? Math.round(cancel.getBoundingClientRect().width) : null,
+        saveW: Math.round(save.getBoundingClientRect().width),
+      };
+    });
+    expect(footer).not.toBeNull();
+    expect(footer!.row.display).toBe("flex");
+    expect(footer!.row.gap).toBe("12px");
+    expect(footer!.row.padTop).toBe("16px");
+    // flex-1 halves: (624 − 12) / 2 = 306 each on the reference.
+    expect(footer!.cancelW!).toBeGreaterThanOrEqual(300);
+    expect(footer!.saveW).toBeGreaterThanOrEqual(300);
   });
 
   test("calculator: orange-gradient line-item Save + outline Add First Item + orange hint", async ({
@@ -124,6 +157,31 @@ test.describe("dialog action buttons (v5)", () => {
     expect(lineSave!.color).toBe("rgb(255, 255, 255)");
     expect(lineSave!.radius).toBe("6px");
     expect(lineSave!.weight).toBe("500");
+
+    // Footer geometry (plan v8 G1): the line-item dialog's footer matches the
+    // reference's flex-1 split too (Cancel ≈ 307px + Save Item ≈ 305px).
+    const lineFooter = await page.evaluate(() => {
+      const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+      const d = dialogs[dialogs.length - 1];
+      const save = [...d.querySelectorAll("button")].find(
+        (x) => (x.textContent || "").trim() === "Save Item",
+      );
+      if (!save) return null;
+      let row: HTMLElement | null = save.closest("div");
+      while (row && row.getBoundingClientRect().height < 50) row = row.parentElement;
+      const cancel = row
+        ? [...row.querySelectorAll("button")].find(
+            (x) => (x.textContent || "").trim() === "Cancel",
+          )
+        : null;
+      return {
+        saveW: Math.round(save.getBoundingClientRect().width),
+        cancelW: cancel ? Math.round(cancel.getBoundingClientRect().width) : null,
+      };
+    });
+    expect(lineFooter).not.toBeNull();
+    expect(lineFooter!.cancelW!).toBeGreaterThanOrEqual(300);
+    expect(lineFooter!.saveW).toBeGreaterThanOrEqual(300);
   });
 
   test("asset dialog: outline Cancel + forest→lime gradient Save Asset", async ({ page }) => {
@@ -150,6 +208,35 @@ test.describe("dialog action buttons (v5)", () => {
     expect(buttons.save).not.toBeNull();
     expect(buttons.save!.bgImage).toBe(FOREST_GRADIENT);
     expect(buttons.save!.color).toBe("rgb(255, 255, 255)");
+
+    // Footer geometry (plan v8 G1): asset dialog footer = flex-1 halves.
+    const assetFooter = await page.evaluate(() => {
+      const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+      const d = dialogs[dialogs.length - 1];
+      const save = [...d.querySelectorAll("button")].find(
+        (x) => (x.textContent || "").trim() === "Save Asset",
+      );
+      if (!save) return null;
+      let row: HTMLElement | null = save.closest("div");
+      while (row && row.getBoundingClientRect().height < 50) row = row.parentElement;
+      const cancel = row
+        ? [...row.querySelectorAll("button")].find(
+            (x) => (x.textContent || "").trim() === "Cancel",
+          )
+        : null;
+      const rcs = row ? getComputedStyle(row) : null;
+      return {
+        row: rcs ? { display: rcs.display, gap: rcs.gap, padTop: rcs.paddingTop } : null,
+        saveW: Math.round(save.getBoundingClientRect().width),
+        cancelW: cancel ? Math.round(cancel.getBoundingClientRect().width) : null,
+      };
+    });
+    expect(assetFooter).not.toBeNull();
+    expect(assetFooter!.row!.display).toBe("flex");
+    expect(assetFooter!.row!.gap).toBe("12px");
+    expect(assetFooter!.row!.padTop).toBe("16px");
+    expect(assetFooter!.cancelW!).toBeGreaterThanOrEqual(300);
+    expect(assetFooter!.saveW).toBeGreaterThanOrEqual(300);
   });
 
   test("dialogs close on Escape (superset over reference bug R5)", async ({ page }) => {

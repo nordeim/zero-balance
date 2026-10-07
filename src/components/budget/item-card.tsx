@@ -64,7 +64,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
   const accent = TYPE_COLORS[item.type];
   const clsBadge = CLASSIFICATION_BADGES[item.classification];
   const ClsIcon = CLASSIFICATION_ICONS[item.classification];
-  const freqBadge = FREQUENCY_BADGES[item.frequency] ?? "bg-gray-100 text-gray-700";
+  const freqBadge = FREQUENCY_BADGES[item.frequency] ?? "bg-[#f3f4f6] text-[#374151]";
 
   return (
     <div
@@ -82,7 +82,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
           <button
             type="button"
             title="Edit Category"
-            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-input bg-white px-3 text-xs font-medium shadow-md transition-colors hover:bg-gray-50"
+            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-input bg-white px-3 text-xs font-medium shadow-md transition-colors hover:bg-[#f9fafb]"
             onClick={() => openItemModal({ mode: "edit", item })}
           >
             <PenIcon className="mr-1 h-3.5 w-3.5" />
@@ -91,7 +91,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
           <button
             type="button"
             title="Open Calculator"
-            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-orange-200 bg-white px-3 text-xs font-medium text-orange-600 shadow-md transition-colors hover:bg-orange-50"
+            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-[#fed7aa] bg-white px-3 text-xs font-medium text-[#ea580c] shadow-md transition-colors hover:bg-[#fff7ed]"
             onClick={() => openCalculator(item)}
           >
             <CalculatorIcon className="mr-1 h-3.5 w-3.5" />
@@ -161,12 +161,12 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
           {item.frequency}
         </span>
         {item.recurring && (
-          <span className="inline-flex items-center rounded-md border border-transparent bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-700">
+          <span className="inline-flex items-center rounded-md border border-transparent bg-[#f0fdf4] px-2.5 py-0.5 text-xs font-semibold text-[#15803d]">
             <RepeatIcon className="mr-1 h-3 w-3" />
             Recurring
           </span>
         )}
-        <span className="inline-flex items-center rounded-md border border-transparent bg-slate-50 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
+        <span className="inline-flex items-center rounded-md border border-transparent bg-[#f8fafc] px-2.5 py-0.5 text-xs font-semibold text-[#334155]">
           {item.status}
         </span>
       </div>

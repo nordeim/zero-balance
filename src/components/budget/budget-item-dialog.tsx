@@ -338,7 +338,11 @@ export function BudgetItemDialog() {
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-end gap-3">
+            // Reference footer (plan v8 G1): `flex gap-3 pt-4` with BOTH
+            // buttons at flex-1 — Cancel ≈ 307px + Save ≈ 305px (halves of
+            // the 624px content row). The superset Delete link keeps mr-auto
+            // so the pair still splits the remaining row in edit mode.
+            <div className="flex gap-3 pt-4">
               {editing && (
                 <button
                   type="button"
@@ -349,12 +353,12 @@ export function BudgetItemDialog() {
                   Delete
                 </button>
               )}
-              <Button type="button" variant="outline" onClick={closeModals}>
+              <Button type="button" variant="outline" className="flex-1" onClick={closeModals}>
                 Cancel
               </Button>
               <button
                 type="submit"
-                className="zb-btn-add"
+                className="zb-btn-add flex-1"
                 style={{ background: ADD_BUTTON_GRADIENTS.dashboard }}
                 disabled={saving}
               >

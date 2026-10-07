@@ -138,16 +138,26 @@ export const STATUS_LABELS: Record<ItemStatus, string> = {
 // Badge style maps — extracted verbatim from the reference's minified bundle
 // (maps `b1e` for frequencies, `x1e` for classifications) and verified on the
 // live DOM. `icon` names map to lucide components at the call sites.
+//
+// Hex-pin note (plan v8 G2): the maps originally carried the reference's
+// NAMED v3 classes, but Tailwind v4 computes the named palette in Lab color
+// space (`lab(97.16 3 -4.13)`) while the reference emits plain rgb — every
+// value below is the same palette entry pinned as arbitrary hex so the
+// computed style matches the reference exactly (measured 2026-10-08):
+//   need    bg rgb(254,242,242) text rgb(185,28,28)   border rgb(254,202,202)
+//   want    bg rgb(239,246,255) text rgb(29,78,216)   border rgb(191,219,254)
+//   savings bg rgb(240,253,244) text rgb(21,128,61)   border rgb(187,247,208)
+//   monthly bg rgb(250,245,255) text rgb(126,34,206)
 // ---------------------------------------------------------------------------
 
 /** Frequency badge chip classes (reference map b1e). */
 export const FREQUENCY_BADGES: Record<Frequency, string> = {
-  "one-time": "bg-gray-100 text-gray-700",
-  weekly: "bg-blue-50 text-blue-700",
-  "bi-weekly": "bg-blue-50 text-blue-700",
-  monthly: "bg-purple-50 text-purple-700",
-  quarterly: "bg-indigo-50 text-indigo-700",
-  annually: "bg-pink-50 text-pink-700",
+  "one-time": "bg-[#f3f4f6] text-[#374151]",
+  weekly: "bg-[#eff6ff] text-[#1d4ed8]",
+  "bi-weekly": "bg-[#eff6ff] text-[#1d4ed8]",
+  monthly: "bg-[#faf5ff] text-[#7e22ce]",
+  quarterly: "bg-[#eef2ff] text-[#4338ca]",
+  annually: "bg-[#fdf2f8] text-[#be185d]",
 };
 
 /** Classification badge styles (reference map x1e). */
@@ -155,9 +165,9 @@ export const CLASSIFICATION_BADGES: Record<
   Classification,
   { chip: string; icon: "circle-alert" | "heart" | "piggy-bank" }
 > = {
-  need: { chip: "bg-red-50 text-red-700 border-red-200", icon: "circle-alert" },
-  want: { chip: "bg-blue-50 text-blue-700 border-blue-200", icon: "heart" },
-  savings: { chip: "bg-green-50 text-green-700 border-green-200", icon: "piggy-bank" },
+  need: { chip: "bg-[#fef2f2] text-[#b91c1c] border-[#fecaca]", icon: "circle-alert" },
+  want: { chip: "bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]", icon: "heart" },
+  savings: { chip: "bg-[#f0fdf4] text-[#15803d] border-[#bbf7d0]", icon: "piggy-bank" },
 };
 
 // ---------------------------------------------------------------------------

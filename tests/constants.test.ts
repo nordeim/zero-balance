@@ -107,13 +107,17 @@ describe("the reference palette (measured :root vars)", () => {
 // its live DOM (computed styles) and minified bundle (maps b1e / x1e).
 
 describe("frequency badge colors (bundle map b1e)", () => {
+  // Hex-pinned (plan v8 G2): the same palette entries the reference's map
+  // b1e names, expressed as arbitrary hex so v4 computes plain rgb (the
+  // named classes resolve through Lab space). Computed-value pins live in
+  // tests/e2e/badge-colors.spec.ts.
   it("colors each frequency like the reference", () => {
-    expect(FREQUENCY_BADGES["one-time"]).toBe("bg-gray-100 text-gray-700");
-    expect(FREQUENCY_BADGES.weekly).toBe("bg-blue-50 text-blue-700");
-    expect(FREQUENCY_BADGES["bi-weekly"]).toBe("bg-blue-50 text-blue-700");
-    expect(FREQUENCY_BADGES.monthly).toBe("bg-purple-50 text-purple-700");
-    expect(FREQUENCY_BADGES.quarterly).toBe("bg-indigo-50 text-indigo-700");
-    expect(FREQUENCY_BADGES.annually).toBe("bg-pink-50 text-pink-700");
+    expect(FREQUENCY_BADGES["one-time"]).toBe("bg-[#f3f4f6] text-[#374151]");
+    expect(FREQUENCY_BADGES.weekly).toBe("bg-[#eff6ff] text-[#1d4ed8]");
+    expect(FREQUENCY_BADGES["bi-weekly"]).toBe("bg-[#eff6ff] text-[#1d4ed8]");
+    expect(FREQUENCY_BADGES.monthly).toBe("bg-[#faf5ff] text-[#7e22ce]");
+    expect(FREQUENCY_BADGES.quarterly).toBe("bg-[#eef2ff] text-[#4338ca]");
+    expect(FREQUENCY_BADGES.annually).toBe("bg-[#fdf2f8] text-[#be185d]");
   });
 
   it("labels every frequency with a badge class", () => {
@@ -122,12 +126,14 @@ describe("frequency badge colors (bundle map b1e)", () => {
 });
 
 describe("classification badge styles (bundle map x1e)", () => {
+  // Hex-pinned (plan v8 G2) — same palette entries, arbitrary-hex form so
+  // the computed styles match the reference's plain rgb.
   it("matches the reference colors, borders and icons", () => {
-    expect(CLASSIFICATION_BADGES.need.chip).toBe("bg-red-50 text-red-700 border-red-200");
+    expect(CLASSIFICATION_BADGES.need.chip).toBe("bg-[#fef2f2] text-[#b91c1c] border-[#fecaca]");
     expect(CLASSIFICATION_BADGES.need.icon).toBe("circle-alert");
-    expect(CLASSIFICATION_BADGES.want.chip).toBe("bg-blue-50 text-blue-700 border-blue-200");
+    expect(CLASSIFICATION_BADGES.want.chip).toBe("bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]");
     expect(CLASSIFICATION_BADGES.want.icon).toBe("heart");
-    expect(CLASSIFICATION_BADGES.savings.chip).toBe("bg-green-50 text-green-700 border-green-200");
+    expect(CLASSIFICATION_BADGES.savings.chip).toBe("bg-[#f0fdf4] text-[#15803d] border-[#bbf7d0]");
     expect(CLASSIFICATION_BADGES.savings.icon).toBe("piggy-bank");
   });
 });
