@@ -83,7 +83,7 @@ async function main() {
     await page.getByLabel("Password").fill("Demo1234!");
     await page.getByRole("button", { name: "Sign in" }).click();
     await page.waitForURL(/\/dashboard$/);
-    await page.getByText("+ $2,065.00").waitFor();
+    await page.getByText("+$2,065.00").waitFor();
     await page.locator(".recharts-sector").first().waitFor();
     await wait(600); // donut entrance animation
     await shoot(page, "02-dashboard.png");
@@ -103,7 +103,7 @@ async function main() {
 
     // 5. Add Item modal (dashboard context, Expense preselected)
     await page.goto(`${BASE}/dashboard`, { waitUntil: "networkidle" });
-    await page.getByText("+ $2,065.00").waitFor();
+    await page.getByText("+$2,065.00").waitFor();
     await page.getByRole("button", { name: "Add Item" }).click();
     await page.getByRole("dialog").waitFor();
     await wait(350);
@@ -123,18 +123,37 @@ async function main() {
     await page.getByText("Contents Insurance").waitFor();
     await wait(350);
     await shoot(page, "08-calculator.png");
-    // clean up the line item + recalculated parent (seed hygiene)
+    // clean up the line item + recalculated parent (seed hygiene): deleting
+    // the line item leaves the parent at $0.00 (the recalculated line total),
+    // so restore the seed's $1,850.00 through the real edit flow — the next
+    // run's "3 items · $2,235.00" wait depends on it.
     await page.getByRole("button", { name: "Delete Contents Insurance" }).click();
     await page.getByRole("button", { name: "Delete", exact: true }).click();
     await page.getByText("Based on 0 items · Will update category total").waitFor();
-    await page.keyboard.press("Escape");
+    // Close via the explicit X (Escape can race the delete's re-render and
+    // leave the overlay up, blocking every later interaction).
+    const calcDialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await calcDialog.getByRole("button", { name: "Close" }).click();
+    await calcDialog.waitFor({ state: "hidden" });
+    await page.waitForTimeout(500);
+    await rent.hover();
+    await page.getByRole("button", { name: "Actions for Rent" }).click();
+    await page.getByRole("menuitem", { name: "Edit" }).click();
+    const editDialog = page.getByRole("dialog", { name: "Edit Budget Item" });
+    await editDialog.getByLabel("Amount").fill("1850");
+    await editDialog.getByRole("button", { name: "Save Item" }).click();
+    await page.getByText("3 items · $2,235.00").waitFor();
 
-    // 7. mobile chrome (390×844)
+    // 7. mobile chrome (390×844) — a separate context: carry the session
+    // over with a real API login (cookies live in the context).
     const mobile = await browser.newContext({
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 2,
       isMobile: true,
       hasTouch: true,
+    });
+    await mobile.request.post(`${BASE}/api/auth/login`, {
+      data: { email: "demo@zerobalance.app", password: "Demo1234!" },
     });
     const mpage = await mobile.newPage();
     await mpage.goto(`${BASE}/dashboard`, { waitUntil: "networkidle" });
