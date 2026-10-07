@@ -1,102 +1,160 @@
-// Regenerate the docs/screenshots set from the DEV server (:3000).
-// Mirrors the established 16-shot catalog (01–16).
-import { chromium } from "/home/z/my-project/project-management/node_modules/@playwright/test/index.mjs";
-import { mkdirSync } from "node:fs";
+#!/usr/bin/env node
+// capture-screenshots.mjs — regenerate the docs/screenshots set for
+// ZeroBalance in ONE invocation: boots the production standalone server as
+// a child process (the sandbox reaps background processes between shell
+// invocations, so the server and the captures must share one process
+// tree), signs the demo user in through a real page login, then shoots the
+// catalog:
+//
+//   01-login · 02-dashboard · 03-income · 04-expenses · 05-savings ·
+//   06-networth · 07-add-item-modal · 08-calculator ·
+//   09-mobile-dashboard (390×844) · 10-mobile-menu (the open sheet)
+//
+// Usage:   node scripts/capture-screenshots.mjs
+// Requires `bun run build` (the standalone server) + a seeded db/custom.db.
 
-const BASE = "http://localhost:3000";
-const OUT = "/home/z/my-project/project-management/docs/screenshots";
-mkdirSync(OUT, { recursive: true });
+import { spawn } from "node:child_process";
+import { mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { chromium } from "@playwright/test";
 
-const browser = await chromium.launch();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repo = path.resolve(__dirname, "..");
+const outDir = path.join(repo, "docs", "screenshots");
+const BASE = "http://localhost:3100";
 
-// Sign in once (fresh server — the in-memory rate limiter is clear).
-// Page-based login (the APIRequestContext is flaky under bun): fill the
-// form, wait for the workspace, then read the session cookie from the
-// context.
-const loginCtx = await browser.newContext();
-const lp = await loginCtx.newPage();
-await lp.goto(BASE + "/login", { waitUntil: "networkidle" });
-await lp.fill('input[id="email"]', "demo@orbital.app");
-await lp.fill('input[id="password"]', "Demo1234!");
-await lp.click('button[type="submit"]');
-await lp.waitForURL(BASE + "/", { timeout: 20_000 });
-const cookies = await loginCtx.cookies(BASE);
-const session = cookies.find((c) => c.name === "orbital_session");
-if (!session) throw new Error("no orbital_session cookie after login");
-const cookie = `orbital_session=${session.value}`;
-console.log("login: ok | cookie:", cookie.slice(0, 24) + "…");
-await loginCtx.close();
-
-async function shot(name, viewport, fn) {
-  const ctx = await browser.newContext({ viewport, deviceScaleFactor: 1 });
-  await ctx.addCookies([{ name: cookie.split("=")[0], value: cookie.split("=").slice(1).join("="), url: BASE }]);
-  const page = await ctx.newPage();
-  await page.goto(BASE + fn.path, { waitUntil: "networkidle" });
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(1200);
-  if (fn.run) await fn.run(page);
-  await page.screenshot({ path: `${OUT}/${name}.png` });
-  console.log("captured", name);
-  await ctx.close();
+function wait(ms) {
+  return new Promise((r) => setTimeout(r, ms));
 }
 
-const desktop = { width: 1440, height: 900 };
-const mobile = { width: 390, height: 844 };
-const tablet = { width: 768, height: 1024 };
+async function waitForServer(url, tries = 60) {
+  for (let i = 0; i < tries; i++) {
+    try {
+      const res = await fetch(`${url}/api/health`);
+      if (res.ok) return true;
+    } catch {
+      // not up yet
+    }
+    await wait(1000);
+  }
+  return false;
+}
 
-await shot("01-dashboard", desktop, { path: "/" });
-await shot("02-goals", desktop, { path: "/goals" });
+async function shoot(page, name) {
+  const file = path.join(outDir, name);
+  await page.screenshot({ path: file, fullPage: false });
+  console.log(`captured ${name}`);
+}
 
-// goal-detail: navigate into the first seeded goal
-await shot("03-goal-detail", desktop, {
-  path: "/goals",
-  run: async (page) => {
-    await page.getByRole("link", { name: /Product Onboarding Redesign/ }).first().click();
-    await page.waitForTimeout(1200);
-  },
+async function main() {
+  mkdirSync(outDir, { recursive: true });
+
+  // 1. boot the standalone server on :3100 (child of THIS process tree)
+  const server = spawn("bun", [".next/standalone/server.js"], {
+    cwd: repo,
+    env: {
+      ...process.env,
+      DATABASE_URL: "file:../db/custom.db",
+      PORT: "3100",
+      NODE_ENV: "production",
+      HOSTNAME: "127.0.0.1",
+    },
+    stdio: ["ignore", "inherit", "inherit"],
+  });
+
+  try {
+    if (!(await waitForServer(BASE))) throw new Error("server did not become ready");
+    console.log("server ready");
+
+    const browser = await chromium.launch();
+    const ctx = await browser.newContext({
+      viewport: { width: 1440, height: 900 },
+      deviceScaleFactor: 2,
+    });
+    const page = await ctx.newPage();
+
+    // 2. login page (logged-out state)
+    await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+    await shoot(page, "01-login.png");
+
+    // 3. real login → dashboard
+    await page.getByLabel("Email").fill("demo@zerobalance.app");
+    await page.getByLabel("Password").fill("Demo1234!");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.waitForURL(/\/dashboard$/);
+    await page.getByText("+ $2,065.00").waitFor();
+    await page.locator(".recharts-sector").first().waitFor();
+    await wait(600); // donut entrance animation
+    await shoot(page, "02-dashboard.png");
+
+    // 4. the four nav views
+    for (const [route, name, readyText] of [
+      ["income", "03-income.png", "2 items · $5,550.00"],
+      ["expenses", "04-expenses.png", "3 items · $2,235.00"],
+      ["savings", "05-savings.png", "2 items · $1,250.00"],
+      ["networth", "06-networth.png", "Total Net Worth"],
+    ]) {
+      await page.goto(`${BASE}/${route}`, { waitUntil: "networkidle" });
+      await page.getByText(readyText).first().waitFor();
+      await wait(250);
+      await shoot(page, name);
+    }
+
+    // 5. Add Item modal (dashboard context, Expense preselected)
+    await page.goto(`${BASE}/dashboard`, { waitUntil: "networkidle" });
+    await page.getByText("+ $2,065.00").waitFor();
+    await page.getByRole("button", { name: "Add Item" }).click();
+    await page.getByRole("dialog").waitFor();
+    await wait(350);
+    await shoot(page, "07-add-item-modal.png");
+    await page.getByRole("button", { name: "Cancel" }).click();
+
+    // 6. Rent Calculator with one line item
+    await page.goto(`${BASE}/expenses`, { waitUntil: "networkidle" });
+    await page.getByText("3 items · $2,235.00").waitFor();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    await page.getByRole("dialog").waitFor();
+    await page.getByRole("button", { name: "Add Item" }).click();
+    await page.getByLabel("Item Name *").fill("Contents Insurance");
+    await page.getByLabel("Amount *").fill("25");
+    await page.getByRole("button", { name: "Save Item" }).click();
+    await page.getByText("Contents Insurance").waitFor();
+    await wait(350);
+    await shoot(page, "08-calculator.png");
+    // clean up the line item + recalculated parent (seed hygiene)
+    await page.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await page.getByRole("button", { name: "Delete", exact: true }).click();
+    await page.getByText("Based on 0 items · Will update category total").waitFor();
+    await page.keyboard.press("Escape");
+
+    // 7. mobile chrome (390×844)
+    const mobile = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+    });
+    const mpage = await mobile.newPage();
+    await mpage.goto(`${BASE}/dashboard`, { waitUntil: "networkidle" });
+    await mpage.getByRole("heading", { name: "Budget Dashboard" }).waitFor();
+    await shoot(mpage, "09-mobile-dashboard.png");
+
+    // 8. the open mobile menu (proves the hamburger works — superset fix #1)
+    await mpage.getByRole("button", { name: "Toggle Sidebar" }).click();
+    await mpage.locator("[data-state='open'].fixed.inset-y-0").waitFor();
+    await wait(450);
+    await shoot(mpage, "10-mobile-menu.png");
+
+    await browser.close();
+    console.log("done");
+  } finally {
+    server.kill("SIGTERM");
+  }
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exitCode = 1;
 });
-
-// the v2.10 dialog generation — add-task open
-await shot("04-task-dialog", desktop, {
-  path: "/goals",
-  run: async (page) => {
-    await page.getByRole("link", { name: /Product Onboarding Redesign/ }).first().click();
-    await page.waitForTimeout(900);
-    await page.getByRole("button", { name: "Add Task", exact: true }).first().click();
-    await page.waitForTimeout(700);
-  },
-});
-
-await shot("07-my-tasks", desktop, { path: "/my-tasks" });
-await shot("08-activity", desktop, { path: "/activity" });
-await shot("09-team", desktop, { path: "/team" });
-await shot("10-settings", desktop, { path: "/settings" });
-
-await shot("11-mobile-goals", mobile, { path: "/goals" });
-
-// the MORE sheet open (mobile navigation — the operator's focus)
-await shot("12-mobile-menu", mobile, {
-  path: "/",
-  run: async (page) => {
-    await page.getByRole("button", { name: "More" }).click();
-    await page.waitForTimeout(700);
-  },
-});
-
-await shot("13-mobile-dashboard", mobile, { path: "/" });
-
-// logged-out login (restructured: 54px inputs, footer inside the form)
-const loCtx = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
-const loPage = await loCtx.newPage();
-await loPage.goto(BASE + "/login", { waitUntil: "networkidle" });
-await loPage.evaluate(() => document.fonts.ready);
-await loPage.waitForTimeout(1000);
-await loPage.screenshot({ path: `${OUT}/14-login.png` });
-console.log("captured 14-login");
-await loCtx.close();
-
-await shot("15-tablet-dashboard", tablet, { path: "/" });
-await shot("16-tasks", desktop, { path: "/tasks" });
-
-await browser.close();
-console.log("done");

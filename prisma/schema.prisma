@@ -1,0 +1,120 @@
+// ZeroBalance — data model.
+//
+// Mirrors the reference app's four entities (BudgetItem, ExpenseLineItem,
+// Asset, Liability) with relational integrity the reference's generic
+// document store did not enforce: ownership (userId) on every row, cascade
+// deletes, and query indexes for the list views. Amounts are stored as the
+// user-entered decimal (API parity with the reference, which exchanges plain
+// numbers); every aggregation goes through src/lib/money.ts, which converts
+// to integer cents before summing so float drift can never reach a total.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String            @id @default(cuid())
+  email        String            @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  budgetItems  BudgetItem[]
+  lineItems    ExpenseLineItem[]
+  assets       Asset[]
+  liabilities  Liability[]
+}
+
+model BudgetItem {
+  id             String           @id @default(cuid())
+  userId         String
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // "income" | "savings" | "expense" — validated at the API boundary.
+  type           String
+  // "need" | "want" | "savings"
+  classification String
+  amount         Float
+  category       String
+  subcategory    String?
+  paymentMethod  String?
+  // "one-time" | "weekly" | "bi-weekly" | "monthly" | "quarterly" | "annually"
+  frequency      String
+  // ISO date string (YYYY-MM-DD) — matches the reference and the <input type="date"> contract.
+  date           String
+  recurring      Boolean          @default(false)
+  // "planned" | "active" | "completed"
+  status         String           @default("active")
+  notes          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  lineItems      ExpenseLineItem[]
+
+  @@index([userId, type])
+  @@index([userId, createdAt])
+}
+
+model ExpenseLineItem {
+  id            String      @id @default(cuid())
+  budgetItemId  String
+  budgetItem    BudgetItem  @relation(fields: [budgetItemId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  amount        Float
+  frequency     String      @default("monthly")
+  provider      String?
+  policyNumber  String?
+  paymentMethod String?
+  startDate     String?
+  endDate       String?
+  status        String      @default("active")
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([budgetItemId])
+  @@index([userId])
+}
+
+model Asset {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // "bank_account" | "superannuation" | "property" | "investment" | "vehicle" | "other"
+  type          String
+  name          String
+  institution   String?
+  accountNumber String?
+  value         Float
+  lastUpdated   String
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Liability {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // "home_loan" | "personal_loan" | "credit_card" | "car_loan" | "student_loan" | "other"
+  type           String
+  name           String
+  institution    String?
+  accountNumber  String?
+  value          Float
+  interestRate   Float?
+  monthlyPayment Float?
+  lastUpdated    String
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}

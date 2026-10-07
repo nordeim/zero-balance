@@ -1,23 +1,26 @@
 #!/usr/bin/env bash
-# ORBITAL end-to-end API smoke test.
-# Boots the production standalone server, exercises auth + CRUD + status-update
-# pipeline, prints PASS/FAIL per step, cleans up, exits non-zero on any failure.
+# ZeroBalance end-to-end API smoke test.
+# Boots the production standalone server, exercises auth + budget-item CRUD
+# + the calculator's parent-recalculation pipeline + asset/liability CRUD,
+# prints PASS/FAIL per step, cleans up, exits non-zero on any failure.
 set -u
 cd "$(dirname "$0")/.."
 PROJECT_DIR="$(pwd)"
 
-BASE="http://localhost:3000"
-CJ="/tmp/orbital-smoke-cookies.txt"
+BASE="${SMOKE_BASE:-http://localhost:3210}"
+CJ="/tmp/zb-smoke-cookies.txt"
 PASS=0; FAIL=0
 
 say() { printf '%s\n' "$*"; }
 ok()  { PASS=$((PASS+1)); say "PASS: $*"; }
 bad() { FAIL=$((FAIL+1)); say "FAIL: $*"; }
 
+jqget() { python3 -c "import json,sys;d=json.load(open('$1'));print(d$2)" 2>/dev/null; }
+
 # ---- 0. clean slate: kill any server holding port 3000 ----
 pkill -f "standalone/server.js" 2>/dev/null
 sleep 1
-rm -f "$CJ" /tmp/smoke-*.json
+rm -f "$CJ" /tmp/zb-smoke-*.json
 
 # ---- 1. boot server ----
 # Pin the DB URL explicitly: a relative `file:` URL resolves against
@@ -27,7 +30,8 @@ rm -f "$CJ" /tmp/smoke-*.json
 # against a database that does not exist (Error code 14). The Playwright
 # webServer pins its own value the same way (playwright.config.ts).
 DATABASE_URL="file:../db/custom.db" \
-bun .next/standalone/server.js > /tmp/smoke-server.log 2>&1 < /dev/null &
+PORT="${SMOKE_PORT:-3210}" HOSTNAME="127.0.0.1" \
+bun .next/standalone/server.js > /tmp/zb-smoke-server.log 2>&1 < /dev/null &
 SRV=$!
 disown $SRV 2>/dev/null || true
 
@@ -42,128 +46,129 @@ fi
 ok "server ready (health check)"
 
 # ---- 2. login ----
-code=$(curl -s -o /tmp/smoke-login.json -w "%{http_code}" --max-time 10 \
+code=$(curl -s -o /tmp/zb-smoke-login.json -w "%{http_code}" --max-time 10 \
   -c "$CJ" -X POST "$BASE/api/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"demo@orbital.app","password":"Demo1234!"}')
-if [ "$code" = "200" ] && grep -q '"ok":true' /tmp/smoke-login.json; then ok "login (200)"; else bad "login -> $code $(cat /tmp/smoke-login.json)"; fi
+  -d '{"email":"demo@zerobalance.app","password":"Demo1234!"}')
+if [ "$code" = "200" ] && grep -q '"ok":true' /tmp/zb-smoke-login.json; then ok "login (200)"; else bad "login -> $code $(cat /tmp/zb-smoke-login.json)"; fi
 
 # ---- 3. wrong password must be rejected ----
 code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 \
   -X POST "$BASE/api/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"demo@orbital.app","password":"WrongPassword!"}')
+  -d '{"email":"demo@zerobalance.app","password":"WrongPassword!"}')
 if [ "$code" = "401" ]; then ok "wrong password rejected (401)"; else bad "wrong password -> $code"; fi
 
 # ---- 4. unauthenticated access must be 401 ----
-code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE/api/stats")
-if [ "$code" = "401" ]; then ok "unauthenticated stats blocked (401)"; else bad "unauth stats -> $code"; fi
+code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE/api/budget-items")
+if [ "$code" = "401" ]; then ok "unauthenticated budget-items blocked (401)"; else bad "unauth budget-items -> $code"; fi
 
 # ---- 5. reads ----
-for ep in stats goals tasks team activity settings; do
-  code=$(curl -s -o "/tmp/smoke-$ep.json" -w "%{http_code}" --max-time 10 -b "$CJ" "$BASE/api/$ep")
-  if [ "$code" = "200" ] && grep -q '"ok":true' "/tmp/smoke-$ep.json"; then ok "GET /api/$ep"; else bad "GET /api/$ep -> $code"; fi
+for ep in auth/me budget-items assets liabilities; do
+  case "$ep" in
+    auth/me) path="auth/me"; file="auth-me";;
+    *) path="$ep"; file="$ep";;
+  esac
+  code=$(curl -s -o "/tmp/zb-smoke-$file.json" -w "%{http_code}" --max-time 10 -b "$CJ" "$BASE/api/$path")
+  if [ "$code" = "200" ] && grep -q '"ok":true' "/tmp/zb-smoke-$file.json"; then ok "GET /api/$path"; else bad "GET /api/$path -> $code"; fi
 done
-
-GOAL_ID=$(python3 -c "import json;print(json.load(open('/tmp/smoke-goals.json'))['data'][0]['id'])")
-
-# ---- 6. create task ----
-code=$(curl -s -o /tmp/smoke-task.json -w "%{http_code}" --max-time 10 -b "$CJ" \
-  -X POST "$BASE/api/tasks" -H "Content-Type: application/json" \
-  -d "{\"title\":\"SMOKE verify pipeline\",\"description\":\"temp\",\"goalId\":\"$GOAL_ID\",\"status\":\"pending\",\"estimatedHours\":1}")
-if [ "$code" = "201" ] && grep -q '"ok":true' /tmp/smoke-task.json; then ok "create task (201)"; else bad "create task -> $code $(cat /tmp/smoke-task.json)"; fi
-TASK_ID=$(python3 -c "import json;print(json.load(open('/tmp/smoke-task.json'))['data']['id'])" 2>/dev/null)
-
-# ---- 7. invalid status must be rejected ----
-code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" \
-  -X POST "$BASE/api/tasks" -H "Content-Type: application/json" \
-  -d "{\"title\":\"bad\",\"goalId\":\"$GOAL_ID\",\"status\":\"todo\"}")
-if [ "$code" = "400" ]; then ok "invalid status rejected (400)"; else bad "invalid status -> $code"; fi
-
-if [ -n "${TASK_ID:-}" ]; then
-  # ---- 8. post status update (done + note) ----
-  code=$(curl -s -o /tmp/smoke-upd.json -w "%{http_code}" --max-time 10 -b "$CJ" \
-    -X POST "$BASE/api/tasks/$TASK_ID/updates" -H "Content-Type: application/json" \
-    -d '{"status":"done","note":"smoke test note"}')
-  if [ "$code" = "201" ]; then ok "post status update (201)"; else bad "status update -> $code"; fi
-
-  # ---- 9. verify task status flipped + update recorded ----
-  curl -s --max-time 10 -b "$CJ" "$BASE/api/tasks/$TASK_ID" -o /tmp/smoke-verify.json
-  if python3 -c "import json,sys; d=json.load(open('/tmp/smoke-verify.json'))['data']; sys.exit(0 if (d['status']=='done' and len(d.get('updates',[]))>=1) else 1)"; then
-    ok "task status flipped + update recorded"
-  else
-    bad "status flip verification"
-  fi
-
-  # ---- 10. delete ----
-  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" -X DELETE "$BASE/api/tasks/$TASK_ID")
-  if [ "$code" = "200" ]; then ok "delete task (200)"; else bad "delete task -> $code"; fi
+if [ "$(jqget /tmp/zb-smoke-budget-items.json "['data'].__len__()")" -ge 1 ]; then
+  ok "seeded budget items listed"
+else
+  bad "seeded budget items missing"
 fi
 
-# ---- 11. logout ----
+# ---- 6. create a budget item ----
+code=$(curl -s -o /tmp/zb-smoke-item.json -w "%{http_code}" --max-time 10 -b "$CJ" \
+  -X POST "$BASE/api/budget-items" -H "Content-Type: application/json" \
+  -d '{"type":"expense","classification":"need","amount":100,"category":"SMOKE Utilities","frequency":"monthly","date":"2026-10-07"}')
+if [ "$code" = "201" ] && grep -q '"ok":true' /tmp/zb-smoke-item.json; then ok "create budget item (201)"; else bad "create item -> $code $(cat /tmp/zb-smoke-item.json)"; fi
+ITEM_ID=$(jqget /tmp/zb-smoke-item.json "['data']['id']")
+
+# ---- 7. invalid payloads must be rejected ----
+code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" \
+  -X POST "$BASE/api/budget-items" -H "Content-Type: application/json" \
+  -d '{"type":"windfall","classification":"need","amount":1,"category":"x","frequency":"monthly","date":"2026-10-07"}')
+if [ "$code" = "400" ]; then ok "invalid type rejected (400)"; else bad "invalid type -> $code"; fi
+code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" \
+  -X POST "$BASE/api/budget-items" -H "Content-Type: application/json" \
+  -d '{"type":"expense","classification":"need","amount":1,"category":"x","frequency":"monthly","date":"2026-02-30"}')
+if [ "$code" = "400" ]; then ok "impossible calendar date rejected (400)"; else bad "impossible date -> $code"; fi
+code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" \
+  -X POST "$BASE/api/budget-items" -H "Content-Type: application/json" \
+  -d '{"type":"expense","classification":"need","amount":-5,"category":"x","frequency":"monthly","date":"2026-10-07"}')
+if [ "$code" = "400" ]; then ok "negative amount rejected (400)"; else bad "negative amount -> $code"; fi
+
+if [ -n "${ITEM_ID:-}" ]; then
+  # ---- 8. patch the item (calculator prep: rename + set amount 0) ----
+  code=$(curl -s -o /tmp/zb-smoke-patch.json -w "%{http_code}" --max-time 10 -b "$CJ" \
+    -X PATCH "$BASE/api/budget-items/$ITEM_ID" -H "Content-Type: application/json" \
+    -d '{"amount":150,"subcategory":"Smoke Sub"}')
+  if [ "$code" = "200" ] && grep -q '"ok":true' /tmp/zb-smoke-patch.json; then ok "patch budget item (200)"; else bad "patch item -> $code"; fi
+
+  # ---- 9. calculator: line items recalculate the parent ----
+  code=$(curl -s -o /tmp/zb-smoke-line.json -w "%{http_code}" --max-time 10 -b "$CJ" \
+    -X POST "$BASE/api/line-items" -H "Content-Type: application/json" \
+    -d "{\"budgetItemId\":\"$ITEM_ID\",\"name\":\"SMOKE Line\",\"amount\":25}")
+  if [ "$code" = "201" ] && grep -q '"ok":true' /tmp/zb-smoke-line.json; then ok "create line item (201)"; else bad "create line -> $code $(cat /tmp/zb-smoke-line.json)"; fi
+  LINE_ID=$(jqget /tmp/zb-smoke-line.json "['data']['lineItem']['id']")
+  PARENT=$(jqget /tmp/zb-smoke-line.json "['data']['parentAmount']")
+  if [ "$PARENT" = "25" ]; then ok "parent recalculated to line total (25)"; else bad "parent recalc -> $PARENT"; fi
+
+  # ---- 10. delete the line item; parent returns to 0 ----
+  code=$(curl -s -o /tmp/zb-smoke-linedel.json -w "%{http_code}" --max-time 10 -b "$CJ" \
+    -X DELETE "$BASE/api/line-items/$LINE_ID")
+  PARENT=$(jqget /tmp/zb-smoke-linedel.json "['data']['parentAmount']")
+  if [ "$code" = "200" ] && [ "$PARENT" = "0" ]; then ok "delete line item + parent back to 0"; else bad "line delete -> $code parent=$PARENT"; fi
+
+  # ---- 11. delete the budget item ----
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" -X DELETE "$BASE/api/budget-items/$ITEM_ID")
+  if [ "$code" = "200" ]; then ok "delete budget item (200)"; else bad "delete item -> $code"; fi
+fi
+
+# ---- 12. asset round-trip ----
+code=$(curl -s -o /tmp/zb-smoke-asset.json -w "%{http_code}" --max-time 10 -b "$CJ" \
+  -X POST "$BASE/api/assets" -H "Content-Type: application/json" \
+  -d '{"type":"vehicle","name":"SMOKE Car","value":1,"lastUpdated":"2026-10-07"}')
+ASSET_ID=$(jqget /tmp/zb-smoke-asset.json "['data']['id']")
+if [ "$code" = "201" ] && [ -n "$ASSET_ID" ]; then ok "create asset (201)"; else bad "create asset -> $code"; fi
+if [ -n "${ASSET_ID:-}" ]; then
+  curl -s -o /dev/null --max-time 10 -b "$CJ" -X DELETE "$BASE/api/assets/$ASSET_ID"
+fi
+
+# ---- 13. logout + session invalidated ----
 code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" -c "$CJ" -X POST "$BASE/api/auth/logout")
 if [ "$code" = "200" ]; then ok "logout (200)"; else bad "logout -> $code"; fi
+code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" "$BASE/api/budget-items")
+if [ "$code" = "401" ]; then ok "post-logout budget-items blocked (401)"; else bad "post-logout -> $code"; fi
 
-# ---- 12. session cookie invalidated after logout ----
-code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" "$BASE/api/stats")
-if [ "$code" = "401" ]; then ok "post-logout stats blocked (401)"; else bad "post-logout stats -> $code"; fi
+# ---- 14. page render ----
+code=$(curl -s -o /tmp/zb-smoke-page.html -w "%{http_code}" --max-time 15 "$BASE/login")
+if [ "$code" = "200" ] && grep -q "<!DOCTYPE html" /tmp/zb-smoke-page.html; then ok "login page renders (200)"; else bad "login page -> $code"; fi
 
-# ---- 13. page render ----
-code=$(curl -s -o /tmp/smoke-page.html -w "%{http_code}" --max-time 15 "$BASE/")
-if [ "$code" = "200" ] && grep -q "<!DOCTYPE html" /tmp/smoke-page.html; then ok "page renders (200)"; else bad "page render -> $code"; fi
-
-# ---- 14. path-based SPA routes serve the app shell (rewrites) ----
-for path in goals my-tasks activity team settings; do
-  code=$(curl -s -o /tmp/smoke-path.html -w "%{http_code}" --max-time 10 "$BASE/$path")
-  if [ "$code" = "200" ] && grep -q "<!DOCTYPE html" /tmp/smoke-path.html; then ok "GET /$path serves the SPA (200)"; else bad "GET /$path -> $code"; fi
+# ---- 15. app routes render the client shell ----
+for path in "" dashboard income expenses savings networth; do
+  code=$(curl -s -o /tmp/zb-smoke-path.html -w "%{http_code}" --max-time 10 "$BASE/$path")
+  if [ "$code" = "200" ] && grep -q "<!DOCTYPE html" /tmp/zb-smoke-path.html; then ok "GET /$path (200)"; else bad "GET /$path -> $code"; fi
 done
-code=$(curl -s -o /tmp/smoke-path.html -w "%{http_code}" --max-time 10 "$BASE/goals/$GOAL_ID")
-if [ "$code" = "200" ] && grep -q "<!DOCTYPE html" /tmp/smoke-path.html; then ok "GET /goals/<id> serves the SPA (200)"; else bad "GET /goals/<id> -> $code"; fi
 code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE/not-a-real-page")
-if [ "$code" = "404" ]; then ok "unknown path 404s (no blanket rewrite)"; else bad "unknown path -> $code"; fi
+if [ "$code" = "404" ]; then ok "unknown path 404s"; else bad "unknown path -> $code"; fi
 
-# ---- 15. wizard clarify endpoint (auth + envelope + 3 questions) ----
-# Re-login: step 11 logged us out.
-curl -s -o /dev/null --max-time 10 -c "$CJ" -X POST "$BASE/api/auth/login" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"demo@orbital.app","password":"Demo1234!"}'
-code=$(curl -s -o /tmp/smoke-clarify.json -w "%{http_code}" --max-time 30 -b "$CJ" \
-  -X POST "$BASE/api/goals/clarify" -H "Content-Type: application/json" \
-  -d '{"title":"Smoke clarify goal","description":"verify the wizard step"}')
-if [ "$code" = "200" ] && python3 -c "import json,sys; d=json.load(open('/tmp/smoke-clarify.json')); sys.exit(0 if (d.get('ok') is True and len(d['data']['questions'])==3) else 1)"; then
-  ok "POST /api/goals/clarify (3 questions)"
-else
-  bad "clarify -> $code $(cat /tmp/smoke-clarify.json)"
-fi
-code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -b "$CJ" \
-  -X POST "$BASE/api/goals/clarify" -H "Content-Type: application/json" -d '{"description":"no title"}')
-if [ "$code" = "400" ]; then ok "clarify without title rejected (400)"; else bad "clarify no-title -> $code"; fi
-
-# ---- 16. team endpoint validation (reference-app form contracts) ----
-code=$(curl -s -o /tmp/smoke-team-bad.json -w "%{http_code}" --max-time 10 -b "$CJ" \
-  -X POST "$BASE/api/team" -H "Content-Type: application/json" \
-  -d '{"kind":"human","email":"not-an-email","role":"member"}')
-if [ "$code" = "400" ]; then ok "invite with invalid email rejected (400)"; else bad "invite bad email -> $code"; fi
-
-code=$(curl -s -o /tmp/smoke-team-agent.json -w "%{http_code}" --max-time 10 -b "$CJ" \
-  -X POST "$BASE/api/team" -H "Content-Type: application/json" \
-  -d '{"kind":"agent","name":"   "}')
-if [ "$code" = "400" ]; then ok "agent without name rejected (400)"; else bad "agent no name -> $code"; fi
-
-# ---- 17. rate limiting on /api/auth/login (10 attempts / 15 min / IP) ----
-# Steps 2, 3 and 15 consumed 3 attempts; 7 more reach the limit, so attempt
-# 11 must answer 429 RATE_LIMITED with a Retry-After header.
+# ---- 16. rate limiting on /api/auth/login (10 attempts / 15 min / IP) ----
+# Steps 2 and 3 consumed 2 attempts; the 10th attempt is still ALLOWED
+# (the limiter blocks when the bucket is already AT the limit), so the
+# 11th attempt — one more than the loop's earlier count — must 429.
 limited=0
-for i in $(seq 1 8); do
-  code=$(curl -s -o /tmp/smoke-rl.json -w "%{http_code}" --max-time 10 \
+for i in $(seq 1 9); do
+  code=$(curl -s -o /tmp/zb-smoke-rl.json -w "%{http_code}" --max-time 10 \
     -X POST "$BASE/api/auth/login" -H "Content-Type: application/json" \
-    -d '{"email":"demo@orbital.app","password":"WrongPassword!"}')
+    -d '{"email":"demo@zerobalance.app","password":"WrongPassword!"}')
   if [ "$code" = "429" ]; then limited=$((limited+1)); fi
 done
-if [ "$limited" -ge 1 ] && grep -q 'RATE_LIMITED' /tmp/smoke-rl.json; then
-  ok "login rate limit engages (429 RATE_LIMITED)"
+if [ "$limited" -ge 1 ] && grep -q 'Too many attempts' /tmp/zb-smoke-rl.json; then
+  ok "login rate limit engages (429)"
 else
-  bad "rate limit -> last code $code $(cat /tmp/smoke-rl.json)"
+  bad "rate limit -> last code $code $(cat /tmp/zb-smoke-rl.json)"
 fi
 
 # ---- shutdown ----

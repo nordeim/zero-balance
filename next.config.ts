@@ -7,25 +7,11 @@ const nextConfig: NextConfig = {
   // at .next/standalone/server.js — even when the repo is cloned inside a
   // parent workspace that has its own lockfile.
   outputFileTracingRoot: path.join(import.meta.dirname, "."),
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  // Next 16's dev-origin protection silently blocks dev chunks when the app
+  // is reached via 127.0.0.1 instead of localhost (unhydrated page, native
+  // form GET fallbacks) — allow both origins (trap log, session 12c).
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   reactStrictMode: false,
-  // Path-based SPA routing: the reference app's views live at real paths
-  // (/goals, /goals/<id>, /my-tasks, /activity, /team, /settings). We keep
-  // ONE page (src/app/page.tsx) and rewrite those paths onto it; the client
-  // store syncs view state with location.pathname (see src/lib/router.ts).
-  async rewrites() {
-    return [
-      { source: "/goals", destination: "/" },
-      { source: "/goals/:goalId", destination: "/" },
-      { source: "/my-tasks", destination: "/" },
-      { source: "/tasks", destination: "/" },
-      { source: "/activity", destination: "/" },
-      { source: "/team", destination: "/" },
-      { source: "/settings", destination: "/" },
-    ];
-  },
 };
 
 export default nextConfig;
