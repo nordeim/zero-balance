@@ -21,9 +21,7 @@ import {
   HeartIcon,
   PenIcon,
   PiggyBankIcon,
-  PencilIcon,
   RepeatIcon,
-  Trash2Icon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -117,21 +115,20 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
         {item.type !== "expense" && (
           <DropdownMenu>
             <DropdownMenuTrigger
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
               aria-label={`Actions for ${item.category}`}
             >
               <EllipsisVerticalIcon className="h-4 w-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {/* Reference menu items are PLAIN TEXT — no icons (v6 G1). */}
               <DropdownMenuItem onSelect={() => openItemModal({ mode: "edit", item })}>
-                <PencilIcon />
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-[#dc2626] focus:text-[#dc2626]"
                 onSelect={() => setConfirming(true)}
               >
-                <Trash2Icon />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>

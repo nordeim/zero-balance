@@ -4,7 +4,7 @@
 // Account/Reference Number, Last Updated, Notes.
 
 import * as React from "react";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, SaveIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,7 +119,9 @@ export function AssetDialog() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="asset-type">Asset Type</Label>
-              <Select value={form.type} onValueChange={(v) => set("type", v as AssetType)}>
+              {/* The reference disables the type select while EDITING an
+                  asset (enabled on create) — v6 G5. */}
+              <Select value={form.type} onValueChange={(v) => set("type", v as AssetType)} disabled={!!editing}>
                 <SelectTrigger id="asset-type" aria-label="Asset Type">
                   <SelectValue />
                 </SelectTrigger>
@@ -145,7 +147,9 @@ export function AssetDialog() {
                 onChange={(e) => set("value", Number(e.target.value))}
               />
             </div>
-            <div className="space-y-2">
+            {/* Name + Last Updated span the full 2-col row on the reference
+                (md:col-span-2 → 624px) — v6 G4. */}
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="asset-name">Name</Label>
               <Input
                 id="asset-name"
@@ -173,7 +177,7 @@ export function AssetDialog() {
                 onChange={(e) => set("accountNumber", e.target.value)}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="asset-date">Last Updated</Label>
               <Input
                 id="asset-date"
@@ -204,7 +208,11 @@ export function AssetDialog() {
               style={{ background: ADD_BUTTON_GRADIENTS.asset }}
               disabled={saving}
             >
-              {saving && <Loader2Icon className="h-4 w-4 animate-spin" />}
+              {saving ? (
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+              ) : (
+                <SaveIcon className="h-4 w-4" />
+              )}
               Save Asset
             </button>
           </div>

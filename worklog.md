@@ -3,8 +3,53 @@
 Rolling log of the engineering sessions on this repo, newest first. Each
 session's detailed narrative lives in `docs/session_<n>.md`; findings ledgers
 live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
-`docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`, and
-`docs/remediation-plan-v5.md`.
+`docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`,
+`docs/remediation-plan-v5.md`, and `docs/remediation-plan-v6.md`.
+
+---
+
+## Session 11 — Fresh verification & parity iteration v6 (2026-10-07)
+
+**Goal:** workspace refresh + a fresh two-site parity audit of the surfaces
+v2–v5 had NOT covered (net-worth cards/menus, every dialog's EDIT variant,
+the calculator's populated rows, ALL empty states, wide-viewport geometry,
+overlay dismissal); fix what it found.
+
+- Pulled to `bd2e4be` (session-10 = session-9's narrative record);
+  re-validated all docs against the codebase; re-ran the full chain green
+  (96 unit / 65 e2e / 30 smoke). v5 fixes confirmed live in code.
+- New sandbox behavior (D-9): every background process is reaped at command
+  exit and the standalone server crashes under `node` — built
+  `scripts/parity-probes/with-server.sh` (per-command bun boot + health
+  wait + teardown) and audited through it.
+- Fresh probe audit of the un-audited surfaces → **14 finding groups**
+  (`docs/remediation-plan-v6.md`): menu items must be plain text (no
+  pencil/trash icons), all four Save buttons carry the lucide Save icon,
+  asset/liability Name + Last Updated span 624px (`md:col-span-2`) with the
+  Type select disabled on edit, the reference's bare-icon empty-state
+  pattern (wallet/piggy-bank/receipt/circle-arrow-up/down, no tinted
+  circles; items views render it card-less, net-worth carded), the
+  calculator's always-visible row actions (32px/16px, near-black/red),
+  placeholder strings, hex-pinned status pills, and the padding-outside-
+  max-w-7xl content column (the clone was 64px narrow at ≥1568px).
+- Measured **reference bug R7** (its dialogs ignore outside-click too) and
+  discovered the reference's live DATA changed since the recon (seed
+  unchanged — pinned by tests). R1/R5/R6 re-confirmed live; every reference
+  mutation this session (test line item, one asset, one recalculated
+  category) restored and verified.
+- All fixes TDD-first (8 new/extended specs, all RED first): NEW
+  `empty-states.spec.ts` (3, incl. an API delete/restore fixture dance that
+  re-creates liabilities in reverse capture order to preserve `createdAt`
+  ordering — D-10), +1 dialog-buttons (Save icons), +2 networth (dialog
+  grid spans, disabled-on-edit type), +1 tokens (plain-text menus + red
+  pins + trigger hover class), +1 calculator (row chrome + placeholders +
+  pills + empty icon).
+- Full chain: typecheck · lint · **96/96 unit** · build · **73/73 e2e** ·
+  30/30 smoke. Live parity re-verified surface-by-surface; 12 screenshots
+  regenerated.
+- Docs aligned (README/CLAUDE/AGENTS/SKILL/session_11 + plan v6). SKILL
+  gained D-9/D-10; AGENTS gained the v6 parity pin paragraph and the
+  fixture-order restore rule.
 
 ---
 

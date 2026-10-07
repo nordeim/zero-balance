@@ -184,6 +184,99 @@ test.describe("rent calculator", () => {
     // --- cleanup: restore the seed's Rent amount via the edit flow.
     await restoreRent(page);
   });
+
+  test("line-item row chrome + dialog placeholders match the reference (v6 G7-G11)", async ({ page }) => {
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+
+    // G7: the empty-state calculator icon inherits the near-black foreground
+    // (the clone pinned forestDark — the ref is rgb(10,10,10)), 48px, 0.2.
+    const emptyIcon = await page.evaluate(() => {
+      const dlg = document.querySelector('[role="dialog"]');
+      const svg = dlg?.querySelector("svg.opacity-20") ?? null;
+      if (!svg) return null;
+      const cs = getComputedStyle(svg);
+      const r = svg.getBoundingClientRect();
+      return { color: cs.color, opacity: cs.opacity, w: Math.round(r.width) };
+    });
+    expect(emptyIcon).not.toBeNull();
+    expect(emptyIcon!.color).toBe("rgb(10, 10, 10)");
+    expect(emptyIcon!.opacity).toBe("0.2");
+    expect(emptyIcon!.w).toBe(48);
+
+    // G8: the reference's placeholders for Payment Method + Notes.
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await expect(lineDialog).toBeVisible();
+    await expect(lineDialog.getByLabel("Payment Method")).toHaveAttribute(
+      "placeholder",
+      "e.g., Direct Debit, Credit Card",
+    );
+    await expect(lineDialog.getByLabel("Notes")).toHaveAttribute(
+      "placeholder",
+      "Additional details about this item...",
+    );
+
+    await lineDialog.getByLabel("Item Name *").fill("Contents Insurance");
+    await lineDialog.getByLabel("Amount *").fill("25");
+    await lineDialog.getByRole("button", { name: "Save Item" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Based on 1 item")).toBeVisible();
+
+    // G9/G10: the row's edit/delete buttons are ALWAYS visible on the
+    // reference (no hover-gating) — 32px buttons, 16px icons, edit icon
+    // near-black, delete red — measured with the mouse outside the row.
+    await page.mouse.move(8, 400); // park the pointer far from the row
+    const rowChrome = await page.evaluate(() => {
+      const dlg = document.querySelector('[role="dialog"]');
+      const editBtn = dlg?.querySelector<HTMLButtonElement>('button[aria-label="Edit Contents Insurance"]');
+      const delBtn = dlg?.querySelector<HTMLButtonElement>('button[aria-label="Delete Contents Insurance"]');
+      if (!editBtn || !delBtn) return null;
+      const shape = (b: HTMLButtonElement) => {
+        const cs = getComputedStyle(b);
+        const svg = b.querySelector("svg");
+        const r = svg ? svg.getBoundingClientRect() : null;
+        return {
+          opacity: cs.opacity,
+          w: Math.round(b.getBoundingClientRect().width),
+          iconW: r ? Math.round(r.width) : null,
+          color: cs.color,
+        };
+      };
+      // the "active" status pill
+      const pill = [...(dlg?.querySelectorAll("span") || [])].find(
+        (s) => (s.textContent || "").trim() === "active",
+      );
+      const pcs = pill ? getComputedStyle(pill) : null;
+      return {
+        edit: shape(editBtn),
+        del: shape(delBtn),
+        pill: pill ? { bg: pcs!.backgroundColor, color: pcs!.color } : null,
+      };
+    });
+    expect(rowChrome).not.toBeNull();
+    expect(rowChrome!.edit.opacity).toBe("1");
+    expect(rowChrome!.del.opacity).toBe("1");
+    expect(rowChrome!.edit.w).toBe(32);
+    expect(rowChrome!.del.w).toBe(32);
+    expect(rowChrome!.edit.iconW).toBe(16);
+    expect(rowChrome!.del.iconW).toBe(16);
+    expect(rowChrome!.edit.color).toBe("rgb(10, 10, 10)");
+    expect(rowChrome!.del.color).toBe("rgb(220, 38, 38)");
+    // G11: the active status pill = green-50/green-700 in plain rgb.
+    expect(rowChrome!.pill!.bg).toBe("rgb(240, 253, 244)");
+    expect(rowChrome!.pill!.color).toBe("rgb(21, 128, 61)");
+
+    // --- cleanup: remove the row, restore the seed's Rent amount.
+    await dialog.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await dialog.getByText("Based on 0 items").waitFor();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await restoreRent(page);
+  });
 });
 
 /** Restore the seed's Rent amount through the real edit flow (the expense

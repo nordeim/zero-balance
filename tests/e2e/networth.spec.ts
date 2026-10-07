@@ -288,3 +288,88 @@ test.describe("net worth tabs (v5 — remediation-plan-v5.md G3)", () => {
     expect(labels.ratio).toBe("rgba(255, 255, 255, 0.8)");
   });
 });
+
+test.describe("net-worth dialogs (v6 — remediation-plan-v6.md G4/G5)", () => {
+  test("asset + liability dialogs: Name and Last Updated span the full 624px row", async ({ page }) => {
+    // Measured on the reference's asset + Add Liability dialogs (2-col grid
+    // of 304px cells + 16px gap): Name and Last Updated carry
+    // md:col-span-2 → 624px wrappers; the other fields stay 304px.
+    const widths = () =>
+      page.evaluate(() => {
+        const dlg = document.querySelector('[role="dialog"]');
+        if (!dlg) return null;
+        const grab = (id: string) => {
+          const input = dlg.querySelector(`#${id}`);
+          if (!input) return null;
+          const wrap = input.closest(".space-y-2") as HTMLElement;
+          return { w: Math.round(wrap.getBoundingClientRect().width), span: /col-span-2/.test(wrap.className) };
+        };
+        return {
+          type: grab("asset-type"),
+          value: grab("asset-value"),
+          name: grab("asset-name"),
+          account: grab("asset-account"),
+          date: grab("asset-date"),
+        };
+      });
+
+    await page.goto("/networth");
+    await expect(page.getByText("3 items · $65,300")).toBeVisible();
+    await page.getByRole("button", { name: "Add Asset" }).first().click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    const asset = await widths();
+    expect(asset).not.toBeNull();
+    expect(asset!.type!.w).toBe(304);
+    expect(asset!.value!.w).toBe(304);
+    expect(asset!.name!.w).toBe(624);
+    expect(asset!.name!.span).toBe(true);
+    expect(asset!.account!.w).toBe(304);
+    expect(asset!.date!.w).toBe(624);
+    expect(asset!.date!.span).toBe(true);
+    await page.keyboard.press("Escape");
+
+    await page.getByRole("tab", { name: "Liabilities" }).click();
+    await expect(page.getByText("2 items · $311,250")).toBeVisible();
+    await page.getByRole("button", { name: "Add Liability" }).first().click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    const liab = await page.evaluate(() => {
+      const dlg = document.querySelector('[role="dialog"]');
+      if (!dlg) return null;
+      const grab = (id: string) => {
+        const input = dlg.querySelector(`#${id}`);
+        if (!input) return null;
+        const wrap = input.closest(".space-y-2") as HTMLElement;
+        return { w: Math.round(wrap.getBoundingClientRect().width), span: /col-span-2/.test(wrap.className) };
+      };
+      return { name: grab("liability-name"), institution: grab("liability-institution"), date: grab("liability-date") };
+    });
+    expect(liab).not.toBeNull();
+    expect(liab!.name!.w).toBe(624);
+    expect(liab!.name!.span).toBe(true);
+    expect(liab!.institution!.w).toBe(304);
+    expect(liab!.date!.w).toBe(624);
+    expect(liab!.date!.span).toBe(true);
+  });
+
+  test("asset/liability Type select is disabled when editing (reference behavior)", async ({ page }) => {
+    // The reference disables the Asset Type combobox in edit mode (enabled
+    // on create). Same pattern for the liability dialog.
+    await page.goto("/networth");
+    await expect(page.getByText("3 items · $65,300")).toBeVisible();
+
+    // Edit the first asset via its card menu.
+    const card = page.locator("main .group", { hasText: "Share Portfolio" }).first();
+    await card.hover();
+    await card.getByRole("button", { name: "Actions for Share Portfolio" }).click();
+    await page.getByRole("menuitem", { name: "Edit" }).click();
+    const editDlg = page.getByRole("dialog", { name: "Edit Asset" });
+    await expect(editDlg).toBeVisible();
+    await expect(editDlg.locator("#asset-type")).toBeDisabled();
+    // Enabled on create (checked via the Add dialog in the same run).
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: "Add Asset" }).first().click();
+    const addDlg = page.getByRole("dialog", { name: "Add Asset" });
+    await expect(addDlg).toBeVisible();
+    await expect(addDlg.locator("#asset-type")).toBeEnabled();
+  });
+});

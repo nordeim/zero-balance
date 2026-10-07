@@ -6,7 +6,7 @@ IMPORTANT: File is read fresh for every conversation. Be brief and practical.
 
 ## Core Identity & Purpose
 
-ZeroBalance is a self-hosted budget-planner web app built around the net-zero rule (Income = Savings + Expenses). It is a production-grade, **superset** clone of the ZeroBudget reference app (`zero-balance-4885a8f3.base44.app`): visual parity with the reference, plus its two mobile-navigation bugs, its mobile horizontal overflow, its non-Escape-closable dialogs and its unconfirmed deletes fixed. Maintained as a single Next.js application (no monorepo) with cookie-session auth, a Prisma/SQLite store, and a three-tier test suite (Vitest unit, Playwright e2e, bash API smoke).
+ZeroBalance is a self-hosted budget-planner web app built around the net-zero rule (Income = Savings + Expenses). It is a production-grade, **superset** clone of the ZeroBudget reference app (`zero-balance-4885a8f3.base44.app`): visual parity with the reference, plus its two mobile-navigation bugs, its mobile horizontal overflow, its dialogs that ignore Escape/outside-click and its unconfirmed deletes fixed. Maintained as a single Next.js application (no monorepo) with cookie-session auth, a Prisma/SQLite store, and a three-tier test suite (Vitest unit, Playwright e2e, bash API smoke).
 
 ## Foundational Principles
 
@@ -72,7 +72,7 @@ npm run dev         # http://localhost:3000
 
 ### Test Pyramid
 - **Unit (Vitest, 96)**: money math, dashboard aggregations, zod schemas, rate limiter, serializers, SQLite URL resolution
-- **E2E (Playwright, 65)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry, nav geometry, neutral-token parity, dialog action buttons — against the production standalone build
+- **E2E (Playwright, 73)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry, nav geometry, neutral-token parity, dialog action buttons, empty states + content column — against the production standalone build
 - **Smoke (bash, 30 steps)**: full API surface including rate limiting and session invalidation
 
 ### Test Commands
@@ -84,7 +84,7 @@ npm run build && npm run test:e2e         # e2e (needs the build)
 npx playwright test tests/e2e/items.spec.ts -g "round-trip"   # one spec
 ```
 
-**E2E contract**: `db/e2e.db` is wiped and re-seeded every run; specs assert the seed's exact arithmetic and **must restore their fixtures**; one worker, one shared database; a single storageState login (the auth endpoints are rate-limited — never add per-test logins). The item-view pages are prerendered with an EMPTY store — until hydration + the boot fetch land, the header AND empty-state "Add …" buttons coexist in the DOM. Wait for a seeded card heading before clicking an "Add …" button by role, or the strict-mode locator resolves to two elements (the dialog-buttons spec shows the settle pattern).
+**E2E contract**: `db/e2e.db` is wiped and re-seeded every run; specs assert the seed's exact arithmetic and **must restore their fixtures** — in the ORIGINAL relative order when the fixture's display order depends on `createdAt` (the net-worth tabs order by `createdAt` DESC; the empty-states spec re-creates its deleted liabilities in reverse capture order); one worker, one shared database; a single storageState login (the auth endpoints are rate-limited — never add per-test logins). The item-view pages are prerendered with an EMPTY store — until hydration + the boot fetch land, the header AND empty-state "Add …" buttons coexist in the DOM. Wait for a seeded card heading before clicking an "Add …" button by role, or the strict-mode locator resolves to two elements (the dialog-buttons spec shows the settle pattern).
 
 ## Code Quality Standards
 

@@ -34,8 +34,8 @@ The live reference app has quirks and bugs, measured against the clone:
 2. **Menu stays open after nav** — tapping a nav link in the reference's sheet changes the route but leaves the sheet + overlay trapping the user. The clone closes the sheet on every navigation. Pinned by the same spec.
 3. **Root URL nav highlight** — the reference marks NO nav item active when you sit on `/` after login (its active check compares the pathname to `/dashboard`). The clone highlights Dashboard on the root route — the page you are actually viewing.
 4. **Mobile horizontal overflow** — the reference's own pages scroll sideways on a 390px phone: the dashboard measures 395px and the net-worth page 464px (its fixed `text-5xl` net figure + fixed 2-col summary grid stretch `main` past the viewport). The clone fits exactly (390px) via `min-w-0` on `main` plus a responsive summary card (`text-2xl` on phones, `sm:grid-cols-2`). Pinned by `tests/e2e/mobile-layout.spec.ts` + the net-worth mobile spec.
-5. **Dialogs ignore Escape** — the reference's modal overlays are plain `fixed` divs with no keyboard dismissal (verified on its budget-item and line-item dialogs: Escape with focus inside leaves the overlay up; only X/Cancel close it). The clone's Radix dialogs close on Escape. Pinned by `tests/e2e/dialog-buttons.spec.ts`.
-6. **Delete without confirmation** — the reference's card menu Delete destroys the item immediately (verified live). The clone's delete paths confirm first (the edit dialog's inline confirm / the alert dialog).
+5. **Dialogs ignore Escape AND outside-click** — the reference's modal overlays are plain `fixed` divs with no keyboard dismissal and no overlay-click dismissal (verified on its budget-item and line-item dialogs: Escape with focus inside and real clicks on the overlay corner both leave it up; only X/Cancel close it). The clone's Radix dialogs close on Escape and overlay click. Pinned by `tests/e2e/dialog-buttons.spec.ts`.
+6. **Delete without confirmation** — the reference's card menu Delete destroys the item immediately (verified live — the same for its calculator line-item rows). The clone's delete paths confirm first (the edit dialog's inline confirm / the alert dialog).
 
 The mobile layout itself (top bar stacked inside `main` at the reference's 61px geometry, no horizontal overflow) is pinned by `tests/e2e/mobile-layout.spec.ts`.
 
@@ -88,7 +88,7 @@ flowchart TB
 │                                  #   auth, rate-limit, serializers, db-path
 ├── 📂 tests/
 │   ├── 📄 *.test.ts               # Vitest unit suites (96 tests)
-│   └── 📂 e2e/                    # Playwright specs (65 tests) + global setup
+│   └── 📂 e2e/                    # Playwright specs (73 tests) + global setup
 ├── 📂 scripts/
 │   ├── 📄 smoke-test.sh           # 30-step production API smoke test
 │   └── 📄 capture-screenshots.mjs # docs/screenshots generator
@@ -145,7 +145,7 @@ npm start            # boots .next/standalone/server.js
 
 ```bash
 npm test            # Vitest unit suite (96 tests) — pure domain seams
-npm run test:e2e    # Playwright e2e (65 tests) — needs `npm run build` first
+npm run test:e2e    # Playwright e2e (73 tests) — needs `npm run build` first
 bash scripts/smoke-test.sh   # 30-step production API smoke (own server, port 3210)
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint (react-hooks v6 rules enforced)
@@ -184,6 +184,7 @@ Measured from the reference's `:root` (computed styles as ground truth):
 | [`docs/remediation-plan-v3.md`](docs/remediation-plan-v3.md) | Session-5 parity iteration — mobile top-bar layout bug, filter card, classification tiles, line-item status enum, login states (6 finding groups) |
 | [`docs/remediation-plan-v4.md`](docs/remediation-plan-v4.md) | Session-7 parity iteration — nav-link geometry, net-worth summary card + mobile overflow, filter-aware header counts (6 finding groups, 2 new reference bugs) |
 | [`docs/remediation-plan-v5.md`](docs/remediation-plan-v5.md) | Session-9 parity iteration — reference-token alignment (neutrals, accent, input, rings), net-worth tab grid + green active state, dialog action buttons (outline Cancel + per-dialog gradient Saves), hover-variant v3 semantics (10 finding groups, 2 new reference bugs R5/R6) |
+| [`docs/remediation-plan-v6.md`](docs/remediation-plan-v6.md) | Session-11 parity iteration — plain-text action menus, Save-button icons, asset/liability dialog grid spans + edit-disabled type, reference empty-state pattern (bare icons, no circles), always-visible calculator row actions, padding-outside-max-w content column (14 finding groups + reference bug R7) |
 | [`docs/session_1.md`](docs/session_1.md) · [`docs/session_2.md`](docs/session_2.md) · [`docs/session_3.md`](docs/session_3.md) | Narrative logs of the build + re-verification sessions |
 | [`worklog.md`](worklog.md) | Rolling project worklog (all sessions, latest first) |
 | [`Project_Architecture_Document.md`](Project_Architecture_Document.md) | 7 ADRs, topology, ER diagram, security model |

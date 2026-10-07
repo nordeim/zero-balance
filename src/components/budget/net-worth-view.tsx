@@ -11,13 +11,12 @@ import * as React from "react";
 import {
   Building2Icon,
   CalendarIcon,
+  CircleArrowDownIcon,
+  CircleArrowUpIcon,
   EllipsisVerticalIcon,
-  PencilIcon,
   PlusIcon,
   PercentIcon,
-  Trash2Icon,
   TrendingUpIcon,
-  CreditCardIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -76,21 +75,20 @@ function AssetCard({ asset }: { asset: Asset }) {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
             aria-label={`Actions for ${asset.name}`}
           >
             <EllipsisVerticalIcon className="h-4 w-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {/* Plain-text items + hex-pinned red (reference — v6 G1/G2). */}
             <DropdownMenuItem onSelect={() => openAssetModal({ mode: "edit", asset })}>
-              <PencilIcon />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="text-red-600 focus:text-red-600"
+              className="text-[#dc2626] focus:text-[#dc2626]"
               onSelect={() => setConfirming(true)}
             >
-              <Trash2Icon />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -162,21 +160,19 @@ function LiabilityCard({ liability }: { liability: Liability }) {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
             aria-label={`Actions for ${liability.name}`}
           >
             <EllipsisVerticalIcon className="h-4 w-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => openLiabilityModal({ mode: "edit", liability })}>
-              <PencilIcon />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="text-red-600 focus:text-red-600"
+              className="text-[#dc2626] focus:text-[#dc2626]"
               onSelect={() => setConfirming(true)}
             >
-              <Trash2Icon />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -250,8 +246,12 @@ export function NetWorthView() {
   const openLiabilityModal = useBudgetStore((s) => s.openLiabilityModal);
   const totals = computeNetWorth(assets, liabilities);
 
+  // G13: the reference wraps `max-w-7xl mx-auto` INSIDE `min-h-screen
+  // p-4 md:p-8` — padding OUTSIDE the 1280px cap, so the column is
+  // min(vw − 256 − 64, 1280) at every viewport.
   return (
-    <div className="mx-auto w-full max-w-7xl p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
+    <div className="mx-auto w-full max-w-7xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold" style={{ color: rgb.forestDark }}>
           Net Worth
@@ -363,19 +363,17 @@ export function NetWorthView() {
           </div>
           {assets.length === 0 ? (
             <div
-              className="flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center"
+              className="rounded-2xl bg-white py-16 text-center"
               style={{ border: `1px solid ${rgb.border}` }}
             >
-              <div
-                className="mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-                style={{ backgroundColor: "rgba(143, 188, 63, 0.125)" }}
-              >
-                <TrendingUpIcon className="h-8 w-8" style={{ color: ASSET_COLOR }} />
-              </div>
-              <h3 className="mb-1 text-lg font-semibold" style={{ color: rgb.forestDark }}>
+              {/* Reference empty state: a BARE icon (circle-arrow-up) w-16
+                  h-16 mx-auto mb-4 opacity-20 in the near-black foreground —
+                  no tinted circle wrapper (v6 G6). */}
+              <CircleArrowUpIcon className="mx-auto mb-4 h-16 w-16 text-[#0a0a0a] opacity-20" />
+              <h3 className="mb-2 text-lg font-semibold" style={{ color: rgb.forestDark }}>
                 No assets yet
               </h3>
-              <p className="mb-6 text-sm" style={{ color: rgb.gray }}>
+              <p className="mb-6 text-base" style={{ color: rgb.gray }}>
                 Start by adding your first asset
               </p>
               <button
@@ -429,19 +427,16 @@ export function NetWorthView() {
           </div>
           {liabilities.length === 0 ? (
             <div
-              className="flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center"
+              className="rounded-2xl bg-white py-16 text-center"
               style={{ border: `1px solid ${rgb.border}` }}
             >
-              <div
-                className="mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-                style={{ backgroundColor: "rgba(224, 122, 59, 0.125)" }}
-              >
-                <CreditCardIcon className="h-8 w-8" style={{ color: LIABILITY_COLOR }} />
-              </div>
-              <h3 className="mb-1 text-lg font-semibold" style={{ color: rgb.forestDark }}>
+              {/* Reference empty state: a BARE circle-arrow-down icon —
+                  no tinted circle wrapper (v6 G6). */}
+              <CircleArrowDownIcon className="mx-auto mb-4 h-16 w-16 text-[#0a0a0a] opacity-20" />
+              <h3 className="mb-2 text-lg font-semibold" style={{ color: rgb.forestDark }}>
                 No liabilities yet
               </h3>
-              <p className="mb-6 text-sm" style={{ color: rgb.gray }}>
+              <p className="mb-6 text-base" style={{ color: rgb.gray }}>
                 Add any outstanding debts or loans
               </p>
               <button
@@ -473,6 +468,7 @@ export function NetWorthView() {
           )}
         </TabsContent>
       </Tabs>
+    </div>
     </div>
   );
 }

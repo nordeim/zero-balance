@@ -175,4 +175,64 @@ test.describe("neutral token parity (v5)", () => {
     expect(labels.alloc).toBe("rgba(255, 255, 255, 0.8)");
     expect(labels.balance).toBe("rgba(255, 255, 255, 0.6)");
   });
+
+  test("card action menus render PLAIN-TEXT items — no icons (v6 G1/G2/G14)", async ({ page }) => {
+    // The reference's card menus (income items AND net-worth asset/liability
+    // cards) render Edit/Delete as plain text — zero SVGs, label starting at
+    // the item's left padding. The clone rendered pencil/trash icons.
+    const menuShape = () =>
+      page.evaluate(() => {
+        const menu = document.querySelector('[role="menu"]');
+        if (!menu) return null;
+        const grab = (txt: string) => {
+          const el = [...menu.querySelectorAll('[role="menuitem"]')].find(
+            (x) => (x.textContent || "").trim() === txt,
+          );
+          if (!el) return null;
+          const r = el.getBoundingClientRect();
+          const label = el.firstChild?.textContent ?? "";
+          return {
+            svg: el.querySelectorAll("svg").length,
+            color: getComputedStyle(el).color,
+            labelStartsText: /^\s*(Edit|Delete)\s*$/.test((el.textContent || "")),
+            itemX: Math.round(r.x),
+          };
+        };
+        return { edit: grab("Edit"), del: grab("Delete") };
+      });
+
+    // 1. Income card menu (item-card).
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    const card = page.locator("main .group", { hasText: "Salary" }).first();
+    await card.hover();
+    await page.getByRole("button", { name: "Actions for Salary" }).click({ force: true });
+    await expect(page.locator('[role="menu"]')).toBeVisible();
+    let shape = await menuShape();
+    expect(shape!.edit!.svg).toBe(0);
+    expect(shape!.del!.svg).toBe(0);
+    expect(shape!.edit!.color).toBe("rgb(10, 10, 10)");
+    expect(shape!.del!.color).toBe("rgb(220, 38, 38)");
+    // The trigger carries the reference's hover:text-accent-foreground (G14).
+    const trigCls = await page.evaluate(() => {
+      const b = [...document.querySelectorAll('button[aria-label="Actions for Salary"]')][0];
+      return b ? b.className : null;
+    });
+    expect(trigCls).toContain("hover:text-accent-foreground");
+    await page.keyboard.press("Escape");
+
+    // 2. Net-worth asset menu — same plain-text shape, and its Delete must
+    // compute plain rgb (the old named text-red-600 emitted lab()).
+    await page.goto("/networth");
+    await expect(page.getByText("3 items · $65,300")).toBeVisible();
+    const aCard = page.locator("main .group", { hasText: "Share Portfolio" }).first();
+    await aCard.hover();
+    await aCard.getByRole("button", { name: "Actions for Share Portfolio" }).click({ force: true });
+    await expect(page.locator('[role="menu"]')).toBeVisible();
+    shape = await menuShape();
+    expect(shape!.edit!.svg).toBe(0);
+    expect(shape!.del!.svg).toBe(0);
+    expect(shape!.del!.color).toBe("rgb(220, 38, 38)");
+    await page.keyboard.press("Escape");
+  });
 });

@@ -6,7 +6,7 @@
 // line-item-specific Active/Pending/Cancelled trio), Notes.
 
 import * as React from "react";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, SaveIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -197,7 +197,7 @@ export function LineItemDialog() {
               <Label htmlFor="line-payment">Payment Method</Label>
               <Input
                 id="line-payment"
-                placeholder="e.g., Bank Account"
+                placeholder="e.g., Direct Debit, Credit Card"
                 value={form.paymentMethod}
                 onChange={(e) => set("paymentMethod", e.target.value)}
               />
@@ -222,7 +222,7 @@ export function LineItemDialog() {
             <Label htmlFor="line-notes">Notes</Label>
             <Textarea
               id="line-notes"
-              placeholder="Additional details..."
+              placeholder="Additional details about this item..."
               rows={3}
               value={form.notes}
               onChange={(e) => set("notes", e.target.value)}
@@ -238,7 +238,11 @@ export function LineItemDialog() {
               style={{ background: ADD_BUTTON_GRADIENTS.expense }}
               disabled={saving}
             >
-              {saving && <Loader2Icon className="h-4 w-4 animate-spin" />}
+              {saving ? (
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+              ) : (
+                <SaveIcon className="h-4 w-4" />
+              )}
               Save Item
             </button>
           </div>

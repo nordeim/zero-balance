@@ -5,7 +5,7 @@
 // Last Updated, Notes.
 
 import * as React from "react";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, SaveIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -134,7 +134,9 @@ export function LiabilityDialog() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="liability-type">Liability Type</Label>
-              <Select value={form.type} onValueChange={(v) => set("type", v as LiabilityType)}>
+              {/* The reference disables the type select while EDITING
+                  (asset-dialog pattern — v6 G5). */}
+              <Select value={form.type} onValueChange={(v) => set("type", v as LiabilityType)} disabled={!!editing}>
                 <SelectTrigger id="liability-type" aria-label="Liability Type">
                   <SelectValue />
                 </SelectTrigger>
@@ -160,7 +162,10 @@ export function LiabilityDialog() {
                 onChange={(e) => set("value", Number(e.target.value))}
               />
             </div>
-            <div className="space-y-2">
+            {/* Name + Last Updated span the full 2-col row on the reference
+                (md:col-span-2 → 624px, measured on its Add Liability
+                dialog) — v6 G4. */}
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="liability-name">Name</Label>
               <Input
                 id="liability-name"
@@ -213,7 +218,7 @@ export function LiabilityDialog() {
                 onChange={(e) => set("monthlyPayment", e.target.value)}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="liability-date">Last Updated</Label>
               <Input
                 id="liability-date"
@@ -244,7 +249,11 @@ export function LiabilityDialog() {
               style={{ background: ADD_BUTTON_GRADIENTS.liability }}
               disabled={saving}
             >
-              {saving && <Loader2Icon className="h-4 w-4 animate-spin" />}
+              {saving ? (
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+              ) : (
+                <SaveIcon className="h-4 w-4" />
+              )}
               Save Liability
             </button>
           </div>

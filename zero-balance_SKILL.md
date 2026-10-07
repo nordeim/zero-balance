@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-07
-project_state: 96 unit tests / 65 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 73 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -430,6 +430,8 @@ Historical bugs — each fixed and pinned. Severity = recurrence blast radius.
 | D-6 | Tailwind v4 media-gates `hover:` variants behind `@media (hover: hover)` — hover tints vanish on `hover: none` devices (the reference's v3 engine applies `:hover` everywhere) | Nav hover computes `rgba(0,0,0,0)` in a `hover: none` session while the reference shows its tint | v4 compiles `hover:` utilities inside a media query; v3 emitted plain `:hover` | `@variant hover (&:hover);` right after the `@import`s (`globals.css`) — restores v3 semantics | mobile-nav e2e (hover:none emulation spec) | Medium |
 | D-7 | Prerendered item-view pages carry the empty-store state: the header AND empty-state "Add …" buttons coexist until hydration + boot fetch | `getByRole('button', { name: 'Add Income' })` strict-mode violation resolving 2 elements on a freshly-seeded run | Static prerender happens at build time with `items: []`; the fetched state replaces the empty state only after hydration | Wait for a seeded card heading before clicking "Add …" by role (the dialog-buttons spec settle pattern) | dialog-buttons e2e | Medium |
 | D-8 | v4 named palette utilities emit `lab()`/`oklab()` computed colors (text-red-600, bg-green-50, text-white/70…) while the reference emits plain rgb/rgba | Computed-style probes show `lab(...)` where the reference shows `rgb(...)` — visually identical, computed-different | v4 stores the default palette in oklch/Lab; named utilities reference it | Arbitrary hex classes (`text-[#dc2626]`, `hover:bg-[#f0fdf4]`) or inline rgba on parity surfaces | tokens e2e + dialog-buttons e2e | Low |
+| D-9 | The agent sandbox REAPS every background process at command exit (setsid/nohup/disown all die); the standalone server also CRASHES under `node` on the first API request in this environment | A detached `:3200` parity server is gone by the next command; `node .next/standalone/server.js` boots then dies on login POST (no log output) | Process-tree kill between shell invocations; Prisma engine vs node runtime mismatch | Boot per-command via `scripts/parity-probes/with-server.sh` (bun + health wait + teardown); pure DOM probes need no server once the page is loaded | with-server.sh + parity probes | Medium |
+| D-10 | e2e fixture restores that re-create rows via the API flip the display order when a view orders by `createdAt` DESC | Re-created liabilities re-appear in reversed type-group order; downstream specs asserting the order fail (they pass in isolation) | POST re-stamps `createdAt` at restore time; GET orders DESC so the newest-first capture order inverts | Re-create in REVERSE capture order (empty-states spec), or assert order-agnostically | empty-states e2e | Medium |
 | G-1 | Shared e2e DB without reset | Seed-dependent assertions fail after any earlier failure | Failed runs leave mutated rows | `global-setup.ts` resets `db/e2e.db` every run; specs clean up | consecutive full-suite runs | High |
 | G-4 | Smoke test on a shared port | Requests served by a stale dev server | Orphan process holds :3000 | Dedicated port 3210 + orphan kill (`smoke-test.sh`) | smoke run | Medium |
 

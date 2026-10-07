@@ -42,9 +42,11 @@ import type { ExpenseLineItem, LineItemStatus } from "@/lib/types";
  * trio) — see docs/remediation-plan-v3.md F4.
  */
 function statusPill(status: LineItemStatus): string {
-  if (status === "active") return "bg-green-50 text-green-700";
-  if (status === "pending") return "bg-yellow-50 text-yellow-700";
-  return "bg-gray-50 text-gray-700";
+  // Arbitrary hex pins — v4 computes the named green/yellow/gray classes
+  // as oklab (reference: green-50 #f0fdf4 / green-700 #15803d etc., v6 G11).
+  if (status === "active") return "bg-[#f0fdf4] text-[#15803d]";
+  if (status === "pending") return "bg-[#fefce0] text-[#a16207]";
+  return "bg-[#f9fafb] text-[#374151]";
 }
 
 export function CalculatorDialog() {
@@ -164,7 +166,7 @@ export function CalculatorDialog() {
 
           {lineItems.length === 0 ? (
             <div className="py-12 text-center">
-              <CalculatorIcon className="mx-auto mb-3 h-12 w-12 opacity-20" style={{ color: rgb.forestDark }} />
+              <CalculatorIcon className="mx-auto mb-3 h-12 w-12 text-[#0a0a0a] opacity-20" />
               <p className="mb-4 text-sm" style={{ color: rgb.gray }}>
                 No line items yet. Start by adding individual items that make up this category.
               </p>
@@ -196,22 +198,25 @@ export function CalculatorDialog() {
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                    {/* Reference row actions are ALWAYS visible (opacity 1 at
+                        rest — no hover gating), 32px buttons with 16px icons,
+                        edit near-black, delete red (v6 G9/G10). */}
+                    <div className="flex items-center gap-1">
                       <button
                         type="button"
                         aria-label={`Edit ${li.name}`}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent"
                         onClick={() => openLineItemModal({ mode: "edit", lineItem: li })}
                       >
-                        <PenIcon className="h-3.5 w-3.5" style={{ color: rgb.gray }} />
+                        <PenIcon className="h-4 w-4" />
                       </button>
                       <button
                         type="button"
                         aria-label={`Delete ${li.name}`}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-red-600 transition-colors hover:bg-red-50"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#dc2626] transition-colors hover:bg-accent"
                         onClick={() => setConfirmingId(confirmingId === li.id ? null : li.id)}
                       >
-                        <Trash2Icon className="h-3.5 w-3.5" />
+                        <Trash2Icon className="h-4 w-4" />
                       </button>
                     </div>
                   </div>

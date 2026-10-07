@@ -6,7 +6,7 @@
 // preset type; editing loads the item's values.
 
 import * as React from "react";
-import { CalendarIcon, CreditCardIcon, Loader2Icon, Trash2Icon } from "lucide-react";
+import { CalendarIcon, CreditCardIcon, Loader2Icon, SaveIcon, Trash2Icon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -358,7 +358,11 @@ export function BudgetItemDialog() {
                 style={{ background: ADD_BUTTON_GRADIENTS.dashboard }}
                 disabled={saving}
               >
-                {saving && <Loader2Icon className="h-4 w-4 animate-spin" />}
+                {saving ? (
+                  <Loader2Icon className="h-4 w-4 animate-spin" />
+                ) : (
+                  <SaveIcon className="h-4 w-4" />
+                )}
                 Save Item
               </button>
             </div>

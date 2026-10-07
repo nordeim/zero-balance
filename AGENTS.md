@@ -45,6 +45,7 @@ ZeroBalance — a Next.js 16 + React 19 budget planner (self-hosted superset clo
 - The auth setup project signs in once; storageState replays the session. Total real login attempts per run must stay well under the rate-limit budget (10/IP/15 min) — don't add per-test logins.
 - Known interaction race: after a state-changing click inside a dialog (e.g. a radio check), wait one beat before clicking a Radix Select trigger — clicking mid-re-render can land on a stale node and the dropdown never opens (see `tests/e2e/items.spec.ts` for the settle-wait precedent).
 - The item-view pages are **prerendered with an empty store**: until hydration + the boot fetch land, the header AND empty-state "Add …" buttons coexist in the static HTML. Wait for a seeded card heading before clicking an "Add …" button by role — otherwise the strict-mode locator resolves two elements (see the dialog-buttons spec's settle pattern). Transitions (`transition-all 200ms` on nav links, ring fade-ins) also need a ~300ms settle before reading computed styles.
+- Fixture restores that re-create rows via the API must preserve the ORIGINAL relative `createdAt` order when a view orders by it (the net-worth tabs order `createdAt` DESC — the empty-states spec re-creates its deleted liabilities in REVERSE capture order; otherwise the type-group order flips and downstream specs fail).
 
 ## Tailwind CSS v4 — known traps
 
@@ -65,10 +66,12 @@ The target is a **superset**: visual parity with the reference site plus fixed b
 2. Mobile nav sheet closes after tapping a nav link.
 3. Dashboard highlighted on the root `/` route (the reference marks nothing active there).
 4. No mobile horizontal overflow — `min-w-0` on `main` + the responsive net-worth summary card (the reference scrolls to 395px on `/dashboard` and 464px on `/networth` at 390px).
-5. Dialogs close on Escape (the reference's modal overlays have no keyboard dismissal at all — only X/Cancel close them).
-6. Deletes confirm first (the reference's card menu deletes immediately, no confirmation).
+5. Dialogs close on Escape AND overlay click (the reference's modal overlays have no keyboard or outside-click dismissal at all — only X/Cancel close them).
+6. Deletes confirm first (the reference's card menu deletes immediately, no confirmation — its calculator row delete too).
 
 The neutral tokens are the reference's shadcn NEUTRAL scale, measured live on its `:root` (see the token comment in `globals.css`): foreground `#0a0a0a`, accent/muted `#f5f5f5`, accent-foreground `#171717`, input `#e5e5e5`, sidebar-accent-foreground `#18181b`, ring `#0a0a0a`, sidebar-ring `#3b82f6`. Only `--color-border` (`#e5e7e3`, the reference's CARD border) intentionally differs from `--color-input`.
+
+Reference surfaces pinned by the v6 iteration (`docs/remediation-plan-v6.md`): card action menus render PLAIN-TEXT items (never icons); every dialog Save button carries the lucide Save icon; the asset/liability Name + Last Updated fields span the full 624px row (`md:col-span-2`) and the Type select is disabled while editing; the reference's empty states are a bare lucide icon (`w-16 h-16 mx-auto mb-4 opacity-20` in `#0a0a0a` — wallet / piggy-bank / receipt / circle-arrow-up / circle-arrow-down; the calculator's is `h-12 w-12 mb-3`) with heading `mb-2` and `text-base` descriptions — no tinted icon circles, and the ITEMS views render the block bare while net-worth cards it (`bg-white rounded-2xl` + border); the calculator's line-item row actions are ALWAYS visible (32px buttons, 16px icons); the page column wraps `max-w-7xl mx-auto` inside `min-h-screen p-4 md:p-8` (padding OUTSIDE the 1280px cap).
 
 ## Git
 

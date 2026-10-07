@@ -722,8 +722,11 @@ export function DashboardView() {
     expense: items.filter((i) => i.type === "expense").length,
   };
 
+  // G13: padding OUTSIDE the max-w-7xl cap (reference structure) — see
+  // net-worth-view.tsx.
   return (
-    <div className="mx-auto w-full max-w-7xl p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
+    <div className="mx-auto w-full max-w-7xl">
       <div className="mb-8 flex flex-col justify-between items-start gap-4 md:flex-row md:items-center">
         <div>
           <h1 className="mb-2 text-3xl font-bold md:text-4xl" style={{ color: rgb.forestDark }}>
@@ -803,6 +806,7 @@ export function DashboardView() {
           onClick={() => openItemModal({ mode: "create", type: "expense" })}
         />
       </div>
+    </div>
     </div>
   );
 }

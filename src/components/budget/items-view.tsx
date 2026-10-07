@@ -28,10 +28,9 @@ import { formatMoney, sumAmounts } from "@/lib/money";
 import {
   ADD_BUTTON_GRADIENTS,
   HEADER_CHIP_GRADIENTS,
-  TYPE_COLORS,
   rgb,
 } from "@/lib/constants";
-import { hexToRgba } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { ItemType } from "@/lib/types";
 
 const META: Record<
@@ -86,7 +85,6 @@ export function ItemsView({ type }: { type: ItemType }) {
   const openItemModal = useBudgetStore((s) => s.openItemModal);
   const meta = META[type];
   const Icon = meta.icon;
-  const accent = TYPE_COLORS[type];
 
   const [search, setSearch] = React.useState("");
   const [category, setCategory] = React.useState(ALL);
@@ -117,8 +115,11 @@ export function ItemsView({ type }: { type: ItemType }) {
 
   const total = sumAmounts(filtered.map((i) => i.amount));
 
+  // G13: padding OUTSIDE the max-w-7xl cap (reference structure) — see
+  // net-worth-view.tsx.
   return (
-    <div className="mx-auto w-full max-w-7xl p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
+    <div className="mx-auto w-full max-w-7xl">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
           {/* Gradient chip with a white icon (live reference DOM). */}
@@ -226,17 +227,17 @@ export function ItemsView({ type }: { type: ItemType }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center" style={{ border: `1px solid ${rgb.border}` }}>
-          <div
-            className="mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-            style={{ backgroundColor: hexToRgba(accent, 0.125) }}
-          >
-            <Icon className="h-8 w-8" style={{ color: accent }} />
-          </div>
-          <h3 className="mb-1 text-lg font-semibold" style={{ color: rgb.forestDark }}>
+        // Reference empty state (measured via filter-to-zero): a BARE block —
+        // `text-center py-16` directly on the warm page bg, no card, no
+        // tinted circle. The icon is the bare lucide type icon (wallet /
+        // piggy-bank / receipt) w-16 h-16 mx-auto mb-4 opacity-20 in the
+        // near-black foreground; heading mb-2; description text-base (v6 G12).
+        <div className="py-16 text-center">
+          <Icon className="mx-auto mb-4 h-16 w-16 text-[#0a0a0a] opacity-20" />
+          <h3 className="mb-2 text-lg font-semibold" style={{ color: rgb.forestDark }}>
             {meta.emptyTitle}
           </h3>
-          <p className="mb-6 text-sm" style={{ color: rgb.gray }}>
+          <p className="mb-6 text-base" style={{ color: rgb.gray }}>
             {meta.emptyText}
           </p>
           <button
@@ -256,6 +257,7 @@ export function ItemsView({ type }: { type: ItemType }) {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 }

@@ -164,4 +164,56 @@ test.describe("dialog action buttons (v5)", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
   });
+
+  test("every Save button carries the reference's lucide Save icon (v6 G3)", async ({ page }) => {
+    // Measured on the reference's Add/Edit budget-item, line-item and asset
+    // dialogs: the gradient Save buttons all carry the lucide Save icon
+    // (16px) before the label. The superset Loader2 spinner may replace it
+    // while saving — assert the resting state.
+    const saveIconCount = () =>
+      page.evaluate(() => {
+        const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+        const d = dialogs[dialogs.length - 1];
+        if (!d) return -1;
+        const b = [...d.querySelectorAll('button[type="submit"]')].pop();
+        if (!b) return -1;
+        return [...b.querySelectorAll("svg")].filter((s) => !(s.getAttribute("class") || "").includes("animate-spin")).length;
+      });
+
+    // 1. budget-item dialog (Save Item, forest gradient).
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    expect(await saveIconCount()).toBe(1);
+    await page.keyboard.press("Escape");
+
+    // 2. line-item dialog via the calculator (Save Item, orange gradient).
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+    const rent = page.locator("main .group", { hasText: "Rent" }).first();
+    await rent.hover();
+    await page.getByRole("button", { name: "Calculate" }).first().click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    await page.getByRole("button", { name: "Add First Item" }).click();
+    await expect(page.locator('[role="dialog"]').nth(1)).toBeVisible();
+    expect(await saveIconCount()).toBe(1);
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("Escape");
+
+    // 3. asset dialog (Save Asset, forest gradient).
+    await page.goto("/networth");
+    await expect(page.getByText("3 items · $65,300")).toBeVisible();
+    await page.getByRole("button", { name: "Add Asset" }).first().click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    expect(await saveIconCount()).toBe(1);
+    await page.keyboard.press("Escape");
+
+    // 4. liability dialog (Save Liability, orange gradient).
+    await page.getByRole("tab", { name: "Liabilities" }).click();
+    await expect(page.getByText("2 items · $311,250")).toBeVisible();
+    await page.getByRole("button", { name: "Add Liability" }).first().click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    expect(await saveIconCount()).toBe(1);
+  });
 });
