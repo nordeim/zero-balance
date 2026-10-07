@@ -6,7 +6,7 @@ IMPORTANT: File is read fresh for every conversation. Be brief and practical.
 
 ## Core Identity & Purpose
 
-ZeroBalance is a self-hosted budget-planner web app built around the net-zero rule (Income = Savings + Expenses). It is a production-grade, **superset** clone of the ZeroBudget reference app (`zero-balance-4885a8f3.base44.app`): visual parity with the reference, plus its two mobile-navigation bugs fixed. Maintained as a single Next.js application (no monorepo) with cookie-session auth, a Prisma/SQLite store, and a three-tier test suite (Vitest unit, Playwright e2e, bash API smoke).
+ZeroBalance is a self-hosted budget-planner web app built around the net-zero rule (Income = Savings + Expenses). It is a production-grade, **superset** clone of the ZeroBudget reference app (`zero-balance-4885a8f3.base44.app`): visual parity with the reference, plus its two mobile-navigation bugs and its mobile horizontal overflow fixed. Maintained as a single Next.js application (no monorepo) with cookie-session auth, a Prisma/SQLite store, and a three-tier test suite (Vitest unit, Playwright e2e, bash API smoke).
 
 ## Foundational Principles
 
@@ -71,8 +71,8 @@ npm run dev         # http://localhost:3000
 ## Testing Strategy
 
 ### Test Pyramid
-- **Unit (Vitest, 87)**: money math, dashboard aggregations, zod schemas, rate limiter, serializers, SQLite URL resolution
-- **E2E (Playwright, 34)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation — against the production standalone build
+- **Unit (Vitest, 96)**: money math, dashboard aggregations, zod schemas, rate limiter, serializers, SQLite URL resolution
+- **E2E (Playwright, 52)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry, nav geometry — against the production standalone build
 - **Smoke (bash, 30 steps)**: full API surface including rate limiting and session invalidation
 
 ### Test Commands

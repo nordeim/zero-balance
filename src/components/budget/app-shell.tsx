@@ -42,7 +42,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-svh w-full">
       <AppSidebar navOpen={navOpen} onNavOpenChange={setNavOpen} />
-      <main className="flex flex-1 flex-col md:pl-(--sidebar-width)">
+      {/* min-w-0: as a flex-1 item, main's automatic minimum size is its
+          content's min-content width — an unbreakable string (e.g. a long
+          net-worth figure) would stretch main past the mobile viewport
+          exactly like the reference's own 464px overflow (reference bug R4,
+          remediation-plan-v4 G5). min-w-0 pins main to the available space;
+          inner overflow-hidden cards clip gracefully instead. */}
+      <main className="flex min-w-0 flex-1 flex-col md:pl-(--sidebar-width)">
         <MobileTopbar onOpenNav={() => setNavOpen(true)} />
         {booted ? (
           children

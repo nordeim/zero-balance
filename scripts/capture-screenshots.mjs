@@ -9,7 +9,8 @@
 //   01-login · 02-dashboard · 03-income · 04-expenses · 05-savings ·
 //   06-networth · 07-add-item-modal · 08-calculator ·
 //   09-mobile-dashboard (390×844) · 10-mobile-menu (the open sheet) ·
-//   11-breakdown-drilldown (the expandable Net Zero Breakdown)
+//   11-breakdown-drilldown (the expandable Net Zero Breakdown) ·
+//   12-mobile-networth (the responsive summary card, superset fix #6)
 //
 // Usage:   node scripts/capture-screenshots.mjs
 // Requires `bun run build` (the standalone server) + a seeded db/custom.db.
@@ -177,6 +178,15 @@ async function main() {
     await mpage.locator("[data-state='open'].fixed.inset-y-0").waitFor();
     await wait(450);
     await shoot(mpage, "10-mobile-menu.png");
+    await mpage.getByRole("link", { name: "Dashboard" }).click();
+    await mpage.waitForTimeout(400); // sheet closes on nav (superset fix #2)
+
+    // 9. mobile net worth — documents superset fix #6 (the responsive
+    // summary card; the reference's own /networth overflows to 464px here)
+    await mpage.goto(`${BASE}/networth`, { waitUntil: "networkidle" });
+    await mpage.getByText("Total Net Worth").waitFor();
+    await wait(300);
+    await shoot(mpage, "12-mobile-networth.png");
 
     await browser.close();
     console.log("done");

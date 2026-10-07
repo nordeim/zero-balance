@@ -275,36 +275,61 @@ export function NetWorthView() {
           }}
         />
         <div className="relative z-10">
-          <div className="mb-8 flex items-center justify-between">
-            <div>
+          <div className="mb-8 flex items-center justify-between gap-4">
+            <div className="min-w-0">
               <p className="mb-2 text-sm text-white/80">Total Net Worth</p>
-              <h2 className="text-4xl font-bold text-white md:text-5xl">
+              {/* text-2xl on phones so long figures fit beside the icon in
+                 the 390px content box (the reference's fixed text-5xl
+                 overflows its mobile viewport by 74px — reference bug R4,
+                 superset fix #6); 48px from sm up = reference parity.
+                 break-words guards pathological figures. */}
+              <h2 className="break-words text-2xl font-bold text-white sm:text-5xl">
                 {formatMoneyGrouped(totals.netWorth)}
               </h2>
             </div>
             <div
-              className="flex h-16 w-16 items-center justify-center rounded-full"
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
               style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
             >
               <TrendingUpIcon className="h-8 w-8 text-white" />
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-xl p-4" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-              <p className="mb-1 text-sm text-white/80">Total Assets</p>
-              <p className="text-xl font-bold text-white">{formatMoneyGrouped(totals.totalAssets)}</p>
+          {/* Reference layout (session-7 audit, remediation-plan-v4 G4):
+              TWO stat cards (Assets, Liabilities) in a 2-col grid — labels
+              text-xs text-white/70, amounts text-2xl, backdrop blur — with
+              the ratio in a separate border-t footer row (text-lg). The
+              grid stacks to 1 col on phones so the amounts never crush
+              (the reference's fixed 2-col grid overflows at 390px). */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div
+              className="rounded-xl p-4"
+              style={{ backgroundColor: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)" }}
+            >
+              <p className="mb-1 text-xs text-white/70">Total Assets</p>
+              <p className="text-2xl font-bold text-white">{formatMoneyGrouped(totals.totalAssets)}</p>
             </div>
-            <div className="rounded-xl p-4" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-              <p className="mb-1 text-sm text-white/80">Total Liabilities</p>
-              <p className="text-xl font-bold text-white">{formatMoneyGrouped(totals.totalLiabilities)}</p>
+            <div
+              className="rounded-xl p-4"
+              style={{ backgroundColor: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)" }}
+            >
+              <p className="mb-1 text-xs text-white/70">Total Liabilities</p>
+              <p className="text-2xl font-bold text-white">{formatMoneyGrouped(totals.totalLiabilities)}</p>
             </div>
-            <div className="rounded-xl p-4" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-              <p className="mb-1 text-sm text-white/80">Asset to Liability Ratio</p>
+          </div>
+          {/* Inline border color — Tailwind v4 emits border-white/20 as
+              oklab(...) (the oklch-drift trap); the inline rgba matches the
+              reference's computed rgba(255,255,255,0.2) byte-for-byte. */}
+          <div
+            className="mt-6 pt-6"
+            style={{ borderTop: "1px solid rgba(255, 255, 255, 0.2)" }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/80">Asset to Liability Ratio</span>
               {/* Reference: ".toFixed(2)" + ":1" with no spaces, "∞" when
                   debt-free (bundle: [t>0?(e/t).toFixed(2):"∞",":1"]). */}
-              <p className="text-xl font-bold text-white">
+              <span className="text-lg font-bold text-white">
                 {formatRatio(totals.ratio)}:1
-              </p>
+              </span>
             </div>
           </div>
         </div>

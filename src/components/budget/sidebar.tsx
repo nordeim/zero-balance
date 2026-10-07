@@ -83,10 +83,10 @@ function NavList({ onNavigate, highlightActive = true }: { onNavigate?: () => vo
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 mb-1 outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "flex h-8 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 mb-1 outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   active && highlightActive
-                    ? "font-medium text-white hover:opacity-90"
-                    : "text-zinc-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    ? "font-medium text-white"
+                    : "text-zinc-700 hover:bg-green-50 hover:text-sidebar-accent-foreground",
                 )}
                 style={
                   active && highlightActive

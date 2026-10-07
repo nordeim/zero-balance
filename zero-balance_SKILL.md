@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-07
-project_state: 96 unit tests / 46 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 52 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -63,8 +63,9 @@ calculator.
    Prisma/SQLite store, and zod-validated JSON APIs.
 2. **A parity superset clone** of the hosted ZeroBudget reference app
    (`zero-balance-4885a8f3.base44.app`): pixel-level visual parity by design,
-   plus two reference mobile-navigation bugs deliberately fixed (§9 D-1/D-2,
-   `docs/remediation-plan.md`).
+   plus four reference bugs deliberately fixed — the two mobile-navigation
+   bugs (§9 D-1/D-2), the root-URL active-nav gap, and the reference's own
+   mobile horizontal overflow (§9 D-5, `docs/remediation-plan-v4.md`).
 
 **Design thesis — "organic fintech calm":** deep forest greens with a lime
 accent, warm off-white paper (`#fafaf8`), 135° forest gradient surfaces for
@@ -425,6 +426,7 @@ Historical bugs — each fixed and pinned. Severity = recurrence blast radius.
 | D-2 | Mobile sheet stays open after nav (reference bug) | User taps a link, page changes behind the stuck sheet | Sheet close never wired to link clicks | Nav links call `onNavOpenChange(false)`; pathname change closes too (`sidebar.tsx`) | mobile-nav e2e #4 | High |
 | D-3 | Sheet `h-full` under mobile emulation | Sheet measures 1044px on a 844px viewport | `%` height resolves against the *layout* viewport (collapsed-URL bars) | `h-svh` (`dialog.tsx`, matches reference rail) | mobile-nav e2e #3 | Medium |
 | D-4 | Mobile top bar rendered as a row-flex SIBLING of `<main>` (session-1..4 bug, found session 5) | 390px viewport: 222px column squeezes main to 214px; `scrollWidth` 480 | React fragment child of `div.flex` becomes a flex item; `md:hidden` only hides it ≥768px | Top bar lives INSIDE `<main>` (reference structure), state hoisted to `AppShell` (`app-shell.tsx`/`sidebar.tsx`) | mobile-layout e2e | Critical |
+| D-5 | `flex-1` item's automatic minimum size (min-width:auto) stretches the page past the viewport (reference bug R3/R4: its own dashboard scrolls 5px, net-worth 74px; the clone had a 38px net-worth case) | `document.documentElement.scrollWidth` > `clientWidth` on mobile; hiding an inner row shrinks it back | An unbreakable string (long currency figure) inside a flex row sets the min-content width of every block ancestor up to the flex item | `min-w-0` on `<main>` (`app-shell.tsx`) + responsive figures (`text-2xl sm:text-5xl`, `break-words`, `min-w-0` on the text block — `net-worth-view.tsx`). NOTE: `overflow-wrap: break-word` does NOT reduce min-content (only `anywhere` does) | networth e2e (mobile overflow spec) | High |
 | G-1 | Shared e2e DB without reset | Seed-dependent assertions fail after any earlier failure | Failed runs leave mutated rows | `global-setup.ts` resets `db/e2e.db` every run; specs clean up | consecutive full-suite runs | High |
 | G-4 | Smoke test on a shared port | Requests served by a stale dev server | Orphan process holds :3000 | Dedicated port 3210 + orphan kill (`smoke-test.sh`) | smoke run | Medium |
 

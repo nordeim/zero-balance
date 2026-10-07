@@ -50,6 +50,24 @@ test.describe("income view", () => {
     await expect(page.getByText("Salary")).toHaveCount(0);
   });
 
+  test("the header count follows the active filters (reference recomputes it)", async ({ page }) => {
+    // Reference (session-7 audit, remediation-plan-v4 G6): the "N items · $X"
+    // subtitle recomputes BOTH count and total from the FILTERED list.
+    await expect(page.getByText("2 items · $5550.00")).toBeVisible();
+
+    // Partial match → one item, its amount.
+    await page.getByPlaceholder("Search income items...").fill("salary");
+    await expect(page.getByText("1 items · $5200.00")).toBeVisible();
+
+    // No match → zero items, zero total.
+    await page.getByPlaceholder("Search income items...").fill("zzz-no-match");
+    await expect(page.getByText("0 items · $0.00")).toBeVisible();
+
+    // Clearing the search restores the full count.
+    await page.getByPlaceholder("Search income items...").fill("");
+    await expect(page.getByText("2 items · $5550.00")).toBeVisible();
+  });
+
   test("filters sit inside the white rounded-2xl card with the reference search chrome", async ({
     page,
   }) => {

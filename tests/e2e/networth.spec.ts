@@ -97,6 +97,106 @@ test.describe("net worth view", () => {
     expect(addBg).toContain("linear-gradient(135deg, rgb(224, 122, 59), rgb(245, 169, 98))");
   });
 
+  test("summary card structure: 2-col grid + ratio in the border-t footer row", async ({ page }) => {
+    // Reference (session-7 audit, remediation-plan-v4 G4): exactly TWO stat
+    // cards (Assets, Liabilities) in a 2-col grid with text-xs/70 labels and
+    // text-2xl amounts + backdrop blur; the ratio lives in a separate
+    // mt-6 pt-6 border-t border-white/20 footer row with a text-sm/80 label
+    // and a text-lg bold value.
+    const card = await page.evaluate(() => {
+      const sum = [...document.querySelectorAll("div")].find((d) =>
+        (d.className || "").toString().includes("rounded-2xl") &&
+        /Total Net Worth/.test(d.textContent || ""),
+      );
+      if (!sum) return null;
+      const grid = [...sum.querySelectorAll("div")].find(
+        (d) => /grid-cols-2/.test((d.className || "").toString()) && /Total Assets/.test(d.textContent || ""),
+      );
+      if (!grid) return { gridFound: false };
+      const cards = [...grid.children].map((c) => ({
+        label: (c.querySelector("p") as HTMLElement | null)?.textContent?.trim() ?? "",
+        labelSize: c.querySelector("p") ? getComputedStyle(c.querySelector("p")!).fontSize : "",
+        amountSize: c.lastElementChild ? getComputedStyle(c.lastElementChild).fontSize : "",
+        backdropFilter: getComputedStyle(c).backdropFilter,
+      }));
+      // The footer row: under the grid with the ratio spans. The border is
+      // an INLINE rgba style (Tailwind v4 would emit border-white/20 as
+      // oklab(...) — the oklch-drift trap), so assert the computed border.
+      const footer = [...sum.querySelectorAll("div")].find(
+        (d) => (d.className || "").toString().includes("mt-6") && /Asset to Liability Ratio/.test(d.textContent || ""),
+      );
+      const ratioEl = footer?.querySelector("span:last-child");
+      return {
+        gridFound: true,
+        gridCls: (grid.className || "").toString(),
+        cards,
+        footerFound: !!footer,
+        footerCls: footer ? (footer.className || "").toString() : "",
+        footerBorderWidth: footer ? getComputedStyle(footer).borderTopWidth : "",
+        footerBorderStyle: footer ? getComputedStyle(footer).borderTopStyle : "",
+        footerBorderColor: footer ? getComputedStyle(footer).borderTopColor : "",
+        ratioSize: ratioEl ? getComputedStyle(ratioEl).fontSize : "",
+        ratioWeight: ratioEl ? getComputedStyle(ratioEl).fontWeight : "",
+      };
+    });
+    expect(card).not.toBeNull();
+    expect(card!.gridFound).toBe(true);
+    // Exactly two cards at ≥sm: Assets + Liabilities (NOT the ratio).
+    const cards = card!.cards ?? [];
+    expect(cards).toHaveLength(2);
+    const [assetCard, liabilityCard] = cards;
+    expect(assetCard?.label).toBe("Total Assets");
+    expect(liabilityCard?.label).toBe("Total Liabilities");
+    // Reference typography: 12px labels, 24px amounts.
+    expect(assetCard?.labelSize).toBe("12px");
+    expect(assetCard?.amountSize).toBe("24px");
+    expect(assetCard?.backdropFilter).toContain("blur(10px)");
+    // The ratio sits in the footer row (1px solid rgba white/20), 18px bold.
+    expect(card!.footerFound).toBe(true);
+    expect(card!.footerCls).toContain("mt-6");
+    expect(card!.footerBorderWidth).toBe("1px");
+    expect(card!.footerBorderStyle).toBe("solid");
+    expect(card!.footerBorderColor).toBe("rgba(255, 255, 255, 0.2)");
+    expect(card!.ratioSize).toBe("18px");
+    expect(card!.ratioWeight).toBe("700");
+    await expect(page.getByText("0.21:1")).toBeVisible();
+  });
+
+  test("mobile net-worth page has no horizontal overflow (superset fix)", async ({ page }) => {
+    // The REFERENCE overflows to 464px at 390 (text-5xl H2 + fixed 2-col
+    // grid); the clone must fit the viewport exactly (remediation-plan-v4
+    // G5 + R4). The responsive H2 is text-3xl at mobile / text-5xl ≥sm.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+    const dims = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+      h2Size: (() => {
+        const sum = [...document.querySelectorAll("div")].find((d) =>
+          (d.className || "").toString().includes("rounded-2xl") && /Total Net Worth/.test(d.textContent || ""),
+        );
+        const h2 = sum?.querySelector("h2");
+        return h2 ? getComputedStyle(h2).fontSize : "";
+      })(),
+      gridCls: (() => {
+        const sum = [...document.querySelectorAll("div")].find((d) =>
+          (d.className || "").toString().includes("rounded-2xl") && /Total Net Worth/.test(d.textContent || ""),
+        );
+        const grid = [...(sum?.querySelectorAll("div") ?? [])].find(
+          (d) => /Total Assets/.test(d.textContent || "") && /grid-cols/.test((d.className || "").toString()),
+        );
+        return grid ? (grid.className || "").toString() : "";
+      })(),
+    }));
+    expect(dims.scrollWidth).toBeLessThanOrEqual(dims.clientWidth + 1);
+    // 24px H2 on phones (text-2xl — fits beside the 64px icon), 48px from
+    // sm up (reference parity).
+    expect(dims.h2Size).toBe("24px");
+    expect(dims.gridCls).toContain("grid-cols-1");
+    expect(dims.gridCls).toContain("sm:grid-cols-2");
+  });
+
   test("add → delete asset round-trip through the dialog", async ({ page }) => {
     await page.getByRole("button", { name: "Add Asset" }).first().click();
     const dialog = page.getByRole("dialog");

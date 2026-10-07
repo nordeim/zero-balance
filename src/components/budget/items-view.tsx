@@ -132,9 +132,11 @@ export function ItemsView({ type }: { type: ItemType }) {
             <h1 className="text-3xl font-bold" style={{ color: rgb.forestDark }}>
               {meta.title}
             </h1>
-            {/* The reference always renders "N items" here — even for 1. */}
+            {/* The reference always renders "N items" here — even for 1 —
+                and recomputes BOTH count and total from the FILTERED list
+                (session-7 audit, remediation-plan-v4 G6). */}
             <p style={{ color: rgb.gray }}>
-              {items.length} items · {formatMoney(total)}
+              {filtered.length} items · {formatMoney(total)}
             </p>
           </div>
         </div>

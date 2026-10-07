@@ -2,8 +2,46 @@
 
 Rolling log of the engineering sessions on this repo, newest first. Each
 session's detailed narrative lives in `docs/session_<n>.md`; findings ledgers
-live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`, and
-`docs/remediation-plan-v3.md`.
+live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
+`docs/remediation-plan-v3.md`, and `docs/remediation-plan-v4.md`.
+
+---
+
+## Session 7 — Fresh verification & parity iteration v4 (2026-10-07)
+
+**Goal:** workspace refresh + a fresh two-site parity audit of every
+surface; fix what it found.
+
+- Pulled to `4f9cb28` (session-6 = session-5's narrative record);
+  re-validated all docs against the codebase; re-ran the full chain green
+  (96 unit / 46 e2e / 30 smoke). Found CLAUDE.md carrying stale session-2
+  test counts — fixed in the docs pass.
+- Fresh probe-based audit (clone vs live reference, desktop 1280×800 +
+  mobile 390×844) → **6 finding groups** (`docs/remediation-plan-v4.md`):
+  nav-link height (40px vs the reference's `h-8` 32px), inactive hover
+  tint (sidebar-accent vs green-50), active hover dim, the net-worth
+  summary card's structure (3-col ratio grid vs the reference's 2-col
+  grid + border-t ratio footer row), a 38px mobile net-worth overflow
+  (unbreakable `text-4xl` figure stretching the flex-1 `main`), and the
+  items-view header count ignoring active filters.
+- Measured **two new reference mobile bugs**: its own `/dashboard` scrolls
+  to 395px and `/networth` to 464px at 390px (R3/R4). Both prior reference
+  mobile-nav bugs re-confirmed live; the clone's fixes re-verified.
+- All fixes TDD-first: new `nav-geometry.spec.ts` (3), +2 networth specs,
+  +1 items spec — all verified red before implementing. Key changes:
+  `h-8` + `hover:bg-green-50` nav links, the reference's summary-card
+  layout (2-col grid, xs/70 labels, 2xl amounts, blur, ratio footer row
+  with an inline rgba border — dodging the v4 oklab drift), responsive
+  `text-2xl sm:text-5xl` net figure, **`min-w-0` on `main`** (the
+  structural superset fix for flex min-width:auto overflows), and
+  `filtered.length` header counts.
+- Full chain: typecheck · lint · **96/96 unit** · build · **52/52 e2e** ·
+  30/30 smoke. Live parity re-verified (nav 32px, summary card
+  leaf-identical at desktop, all mobile views exactly 390px).
+- Screenshot catalog regenerated — now 12 shots (new
+  `12-mobile-networth.png`). README/CLAUDE/AGENTS/SKILL/session_7
+  aligned; SKILL gained the D-5 row (min-width:auto trap +
+  `overflow-wrap: break-word` ≠ min-content).
 
 ---
 

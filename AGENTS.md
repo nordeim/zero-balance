@@ -56,10 +56,12 @@ ZeroBalance — a Next.js 16 + React 19 budget planner (self-hosted superset clo
 
 ## Reference-parity rules
 
-The target is a **superset**: visual parity with the reference site plus fixed bugs. When in doubt about a visual detail, the extracted design tokens are in `src/lib/constants.ts` (measured `:root` vars + per-type accents) and the recon notes live in the repo history. Two superset fixes are pinned by tests and must not regress:
+The target is a **superset**: visual parity with the reference site plus fixed bugs. When in doubt about a visual detail, the extracted design tokens are in `src/lib/constants.ts` (measured `:root` vars + per-type accents) and the recon notes live in the repo history. Four superset fixes are pinned by tests and must not regress:
 
 1. Mobile hamburger always clickable (toast viewport `pointer-events: none`).
 2. Mobile nav sheet closes after tapping a nav link.
+3. Dashboard highlighted on the root `/` route (the reference marks nothing active there).
+4. No mobile horizontal overflow — `min-w-0` on `main` + the responsive net-worth summary card (the reference scrolls to 395px on `/dashboard` and 464px on `/networth` at 390px).
 
 ## Git
 
