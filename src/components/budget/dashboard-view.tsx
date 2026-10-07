@@ -100,12 +100,12 @@ function NetZeroGoalCard() {
           </div>
           <div>
             <h3 className="text-lg font-bold text-white">NET ZERO GOAL</h3>
-            <p className="text-sm text-white/60">Income = Savings + Expenses</p>
+            <p className="text-sm" style={{ color: "rgba(255, 255, 255, 0.6)" }}>Income = Savings + Expenses</p>
           </div>
         </div>
         <div className="mb-6">
           <div className="mb-2 flex items-baseline justify-between">
-            <span className="text-sm text-white/80">Budget Allocation</span>
+            <span className="text-sm" style={{ color: "rgba(255, 255, 255, 0.8)" }}>Budget Allocation</span>
             <span className="text-lg font-semibold text-white">
               {totals.allocationPercent.toFixed(1)}%
             </span>
@@ -122,7 +122,7 @@ function NetZeroGoalCard() {
           style={{ backgroundColor: "rgba(255,255,255,0.05)", backdropFilter: "blur(10px)" }}
         >
           <div>
-            <p className="mb-1 text-sm text-white/60">Balance</p>
+            <p className="mb-1 text-sm" style={{ color: "rgba(255, 255, 255, 0.6)" }}>Balance</p>
             {/* Reference: "$" + Math.abs(balance).toFixed(2) — the sign is
                 carried by the status chip, never the amount. */}
             <p className="text-3xl font-bold text-white">{formatMoney(Math.abs(totals.balance))}</p>

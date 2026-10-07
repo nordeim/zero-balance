@@ -165,3 +165,34 @@ test.describe("desktop navigation (≥768px)", () => {
     expect(bg).toContain("linear-gradient(135deg, rgb(45, 90, 74)");
   });
 });
+
+test.describe("hover semantics on touch-capable contexts (v5 — plan G7)", () => {
+  // Tailwind v4 media-gates `hover:` utilities behind @media (hover: hover);
+  // the reference's v3-era engine applies :hover on EVERY device. The pin
+  // `@variant hover (&:hover)` in globals.css restores v3 semantics. This
+  // spec runs in the mobile context (isMobile + hasTouch → hover: none)
+  // and asserts the nav tint STILL applies — as it does on the reference.
+  test("nav hover tint applies under hover:none emulation (v3 semantics)", async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(page.getByRole("heading", { name: "Budget Dashboard" })).toBeVisible();
+
+    // Sanity: this context must really report hover: none.
+    const hoverNone = await page.evaluate(() => matchMedia("(hover: none)").matches);
+    expect(hoverNone).toBe(true);
+
+    // Open the sheet and hover the Income link.
+    await page.getByRole("button", { name: "Toggle Sidebar" }).click();
+    const sheetLink = page.locator("a", { hasText: "Income" }).last();
+    await expect(sheetLink).toBeVisible();
+    await sheetLink.hover();
+    await page.waitForTimeout(300); // transition-all 200ms — let it settle
+    const hovered = await sheetLink.evaluate((el) => ({
+      bg: getComputedStyle(el).backgroundColor,
+      color: getComputedStyle(el).color,
+    }));
+    // Reference behavior: the green-50 tint + zinc-900 text render even
+    // when the device reports no hover capability.
+    expect(hovered.bg).toBe("rgb(240, 253, 244)");
+    expect(hovered.color).toBe("rgb(24, 24, 27)");
+  });
+});

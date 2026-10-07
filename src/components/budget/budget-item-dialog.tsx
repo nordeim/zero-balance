@@ -8,6 +8,7 @@
 import * as React from "react";
 import { CalendarIcon, CreditCardIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore, type ModalState } from "./store";
-import { CLASSIFICATION_LABELS, CLASSIFICATION_TILES, rgb } from "@/lib/constants";
+import { ADD_BUTTON_GRADIENTS, CLASSIFICATION_LABELS, CLASSIFICATION_TILES, rgb } from "@/lib/constants";
 import type { BudgetItemFormData, Classification, Frequency, ItemStatus, ItemType } from "@/lib/types";
 
 /** Derive the form state from the modal (create preset / edit hydration). */
@@ -348,15 +349,15 @@ export function BudgetItemDialog() {
                   Delete
                 </button>
               )}
-              <button
-                type="button"
-                className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
-                style={{ color: rgb.gray }}
-                onClick={closeModals}
-              >
+              <Button type="button" variant="outline" onClick={closeModals}>
                 Cancel
-              </button>
-              <button type="submit" className="zb-btn-primary" disabled={saving}>
+              </Button>
+              <button
+                type="submit"
+                className="zb-btn-add"
+                style={{ background: ADD_BUTTON_GRADIENTS.dashboard }}
+                disabled={saving}
+              >
                 {saving && <Loader2Icon className="h-4 w-4 animate-spin" />}
                 Save Item
               </button>

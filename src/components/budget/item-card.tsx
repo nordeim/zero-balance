@@ -128,7 +128,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-red-600 focus:text-red-600"
+                className="text-[#dc2626] focus:text-[#dc2626]"
                 onSelect={() => setConfirming(true)}
               >
                 <Trash2Icon />

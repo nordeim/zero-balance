@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-07
-project_state: 96 unit tests / 52 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 65 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -427,6 +427,9 @@ Historical bugs — each fixed and pinned. Severity = recurrence blast radius.
 | D-3 | Sheet `h-full` under mobile emulation | Sheet measures 1044px on a 844px viewport | `%` height resolves against the *layout* viewport (collapsed-URL bars) | `h-svh` (`dialog.tsx`, matches reference rail) | mobile-nav e2e #3 | Medium |
 | D-4 | Mobile top bar rendered as a row-flex SIBLING of `<main>` (session-1..4 bug, found session 5) | 390px viewport: 222px column squeezes main to 214px; `scrollWidth` 480 | React fragment child of `div.flex` becomes a flex item; `md:hidden` only hides it ≥768px | Top bar lives INSIDE `<main>` (reference structure), state hoisted to `AppShell` (`app-shell.tsx`/`sidebar.tsx`) | mobile-layout e2e | Critical |
 | D-5 | `flex-1` item's automatic minimum size (min-width:auto) stretches the page past the viewport (reference bug R3/R4: its own dashboard scrolls 5px, net-worth 74px; the clone had a 38px net-worth case) | `document.documentElement.scrollWidth` > `clientWidth` on mobile; hiding an inner row shrinks it back | An unbreakable string (long currency figure) inside a flex row sets the min-content width of every block ancestor up to the flex item | `min-w-0` on `<main>` (`app-shell.tsx`) + responsive figures (`text-2xl sm:text-5xl`, `break-words`, `min-w-0` on the text block — `net-worth-view.tsx`). NOTE: `overflow-wrap: break-word` does NOT reduce min-content (only `anywhere` does) | networth e2e (mobile overflow spec) | High |
+| D-6 | Tailwind v4 media-gates `hover:` variants behind `@media (hover: hover)` — hover tints vanish on `hover: none` devices (the reference's v3 engine applies `:hover` everywhere) | Nav hover computes `rgba(0,0,0,0)` in a `hover: none` session while the reference shows its tint | v4 compiles `hover:` utilities inside a media query; v3 emitted plain `:hover` | `@variant hover (&:hover);` right after the `@import`s (`globals.css`) — restores v3 semantics | mobile-nav e2e (hover:none emulation spec) | Medium |
+| D-7 | Prerendered item-view pages carry the empty-store state: the header AND empty-state "Add …" buttons coexist until hydration + boot fetch | `getByRole('button', { name: 'Add Income' })` strict-mode violation resolving 2 elements on a freshly-seeded run | Static prerender happens at build time with `items: []`; the fetched state replaces the empty state only after hydration | Wait for a seeded card heading before clicking "Add …" by role (the dialog-buttons spec settle pattern) | dialog-buttons e2e | Medium |
+| D-8 | v4 named palette utilities emit `lab()`/`oklab()` computed colors (text-red-600, bg-green-50, text-white/70…) while the reference emits plain rgb/rgba | Computed-style probes show `lab(...)` where the reference shows `rgb(...)` — visually identical, computed-different | v4 stores the default palette in oklch/Lab; named utilities reference it | Arbitrary hex classes (`text-[#dc2626]`, `hover:bg-[#f0fdf4]`) or inline rgba on parity surfaces | tokens e2e + dialog-buttons e2e | Low |
 | G-1 | Shared e2e DB without reset | Seed-dependent assertions fail after any earlier failure | Failed runs leave mutated rows | `global-setup.ts` resets `db/e2e.db` every run; specs clean up | consecutive full-suite runs | High |
 | G-4 | Smoke test on a shared port | Requests served by a stale dev server | Orphan process holds :3000 | Dedicated port 3210 + orphan kill (`smoke-test.sh`) | smoke run | Medium |
 

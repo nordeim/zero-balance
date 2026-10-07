@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Tailwind v4 gates every `hover:` utility behind @media (hover: hover);
+   the reference's v3-era engine applies :hover on EVERY device (its
+   touch users still see hover tints). Pin the v3 semantics so hover
+   parity holds on hover:none contexts too (remediation-plan-v5.md G7). */
+@variant hover (&:hover);
+
 /* ============================================================================
    ZeroBalance design tokens — Tailwind CSS v4 (CSS-first).
    ----------------------------------------------------------------------------
@@ -23,34 +29,46 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* shadcn semantic tokens — literal values (trap 1 + trap 2 pins). */
+  /* shadcn semantic tokens — literal values (trap 1 + trap 2 pins).
+     Neutral scale aligned to the reference's OWN :root vars, measured
+     live (remediation-plan-v5.md G1/G2/G5/G6/G8/G10): foreground
+     0 0% 3.9% (#0a0a0a), accent/muted/secondary 0 0% 96.1% (#f5f5f5),
+     accent-foreground 0 0% 9% (#171717), input 0 0% 89.8% (#e5e5e5),
+     sidebar-foreground 240 5.3% 26.1% (#3f3f46), sidebar-accent-
+     foreground 240 5.9% 10% (#18181b), sidebar-ring 217.2 91.2% 59.8%
+     (#3b82f6). --color-border stays #e5e7e3: the reference's CARD
+     borders are that custom warm gray (only its form controls and
+     popover borders are the neutral #e5e5e5). */
   --color-background: #fafaf8;
-  --color-foreground: #3f3f3f;
+  --color-foreground: #0a0a0a;
   --color-card: #ffffff;
-  --color-card-foreground: #3f3f3f;
+  --color-card-foreground: #171717;
   --color-popover: #ffffff;
-  --color-popover-foreground: #3f3f3f;
+  /* The reference's popover surfaces (menu items, select options) render the
+     INHERITED body foreground rgb(10,10,10) — its :root popover-foreground
+     (#171717) never reaches them. Pin the token to the rendered value. */
+  --color-popover-foreground: #0a0a0a;
   --color-primary: #1a3a2e;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #f4f4f5;
-  --color-secondary-foreground: #3f3f3f;
-  --color-muted: #f4f4f5;
+  --color-secondary: #f5f5f5;
+  --color-secondary-foreground: #171717;
+  --color-muted: #f5f5f5;
   --color-muted-foreground: #737373;
-  --color-accent: #f0f2ee;
-  --color-accent-foreground: #1a3a2e;
+  --color-accent: #f5f5f5;
+  --color-accent-foreground: #171717;
   --color-destructive: #bd3228;
   --color-destructive-foreground: #ffffff;
   --color-border: #e5e7e3;
-  --color-input: #e5e7e3;
-  --color-ring: #1a3a2e;
+  --color-input: #e5e5e5;
+  --color-ring: #0a0a0a;
   --color-sidebar: #fafafa;
-  --color-sidebar-foreground: #3f3f3f;
+  --color-sidebar-foreground: #3f3f46;
   --color-sidebar-primary: #1a3a2e;
   --color-sidebar-primary-foreground: #ffffff;
-  --color-sidebar-accent: #f0f2ee;
-  --color-sidebar-accent-foreground: #1a3a2e;
+  --color-sidebar-accent: #f4f4f5;
+  --color-sidebar-accent-foreground: #18181b;
   --color-sidebar-border: #e5e7e3;
-  --color-sidebar-ring: #1a3a2e;
+  --color-sidebar-ring: #3b82f6;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -114,33 +132,15 @@
    repeated inline patterns — plain declarations, no composed v4 vars).
    ============================================================================ */
 
-/* The lime primary action button (legacy session-1 primitive; kept for
-   surfaces the reference still renders solid — none remain after the
-   session-3 audit, retained for dialogs' secondary buttons). */
-.zb-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 0.5rem;
-  background-color: var(--lime-green);
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 0.875rem;
-  padding: 0.5rem 1rem;
-  transition: opacity 150ms ease;
-}
-.zb-btn-primary:hover {
-  opacity: 0.9;
-}
-.zb-btn-primary:disabled {
-  opacity: 0.6;
-}
-
 /* Gradient add-button chrome (session-3 parity): the reference renders a
    DIFFERENT 135deg gradient per surface (measured computed styles — see
    ADD_BUTTON_GRADIENTS in src/lib/constants.ts). The gradient itself comes
-   from an inline `style.background` (engine-independent, trap 3). */
+   from an inline `style.background` (engine-independent, trap 3).
+   Session-8 (plan G4): this shape is ALSO the reference's dialog Save
+   button — 6px radius / 500 / h-9 — with the surface's gradient inline
+   (forest→lime on the budget/asset/liability dialogs, orange on the
+   line-item dialog). The legacy solid-lime `.zb-btn-primary` was removed
+   (no surface renders solid lime anymore). */
 .zb-btn-add {
   display: inline-flex;
   align-items: center;
@@ -166,15 +166,16 @@
   font-size: 0.75rem;
   border-radius: 0.375rem;
 }
-/* Outline variant (calculator empty state "Add First Item"). */
+/* Outline variant (calculator empty state "Add First Item" — reference:
+   #0a0a0a text on the neutral #e5e5e5 form border, plan G4). */
 .zb-btn-add.zb-btn-add-outline {
   background-color: #ffffff;
-  color: rgb(31 41 55);
-  border: 1px solid var(--color-border);
+  color: #0a0a0a;
+  border: 1px solid #e5e5e5;
   box-shadow: none;
 }
 .zb-btn-add.zb-btn-add-outline:hover {
-  background-color: rgb(249 250 251);
+  background-color: #f5f5f5;
   opacity: 1;
 }
 
@@ -252,6 +253,6 @@
   background-color: #ffffff;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
-  color: #3f3f3f;
+  color: #0a0a0a;
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
 }

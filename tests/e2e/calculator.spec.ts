@@ -50,7 +50,10 @@ test.describe("rent calculator", () => {
     await expect(dialog.getByText("Based on 0 items")).toBeVisible();
     const willUpdate = dialog.getByText("• Will update category total");
     await expect(willUpdate).toBeVisible();
-    await expect(willUpdate).toHaveClass(/text-orange-600/);
+    // v5 (plan G9): the hint pins the reference's orange-600 as an arbitrary
+    // hex class — v4 computes the named orange as lab(); assert the computed
+    // color instead of the class name.
+    await expect(willUpdate).toHaveCSS("color", "rgb(234, 88, 12)");
 
     await expect(dialog.getByText("No line items yet. Start by adding individual items that make up this category.")).toBeVisible();
     await expect(dialog.getByRole("button", { name: "Add Item" })).toBeVisible();

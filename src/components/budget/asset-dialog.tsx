@@ -6,6 +6,7 @@
 import * as React from "react";
 import { Loader2Icon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,8 +19,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore, type ModalState } from "./store";
-import { rgb } from "@/lib/constants";
-import { ASSET_LABELS } from "@/lib/constants";
+import { ADD_BUTTON_GRADIENTS, ASSET_LABELS } from "@/lib/constants";
 import type { AssetFormData, AssetType } from "@/lib/types";
 
 function todayIso(): string {
@@ -195,15 +195,15 @@ export function AssetDialog() {
             />
           </div>
           <div className="flex items-center justify-end gap-3">
-            <button
-              type="button"
-              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
-              style={{ color: rgb.gray }}
-              onClick={closeModals}
-            >
+            <Button type="button" variant="outline" onClick={closeModals}>
               Cancel
-            </button>
-            <button type="submit" className="zb-btn-primary" disabled={saving}>
+            </Button>
+            <button
+              type="submit"
+              className="zb-btn-add"
+              style={{ background: ADD_BUTTON_GRADIENTS.asset }}
+              disabled={saving}
+            >
               {saving && <Loader2Icon className="h-4 w-4 animate-spin" />}
               Save Asset
             </button>

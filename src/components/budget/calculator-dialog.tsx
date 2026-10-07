@@ -142,7 +142,7 @@ export function CalculatorDialog() {
                 Based on {lineItems.length} {lineItems.length === 1 ? "item" : "items"}
               </span>
               {total !== item.amount && (
-                <span className="text-orange-600">• Will update category total</span>
+                <span className="text-[#ea580c]">• Will update category total</span>
               )}
             </div>
           </div>

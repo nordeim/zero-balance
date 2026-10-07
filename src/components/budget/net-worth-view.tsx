@@ -277,7 +277,7 @@ export function NetWorthView() {
         <div className="relative z-10">
           <div className="mb-8 flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <p className="mb-2 text-sm text-white/80">Total Net Worth</p>
+              <p className="mb-2 text-sm" style={{ color: "rgba(255, 255, 255, 0.8)" }}>Total Net Worth</p>
               {/* text-2xl on phones so long figures fit beside the icon in
                  the 390px content box (the reference's fixed text-5xl
                  overflows its mobile viewport by 74px — reference bug R4,
@@ -305,14 +305,14 @@ export function NetWorthView() {
               className="rounded-xl p-4"
               style={{ backgroundColor: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)" }}
             >
-              <p className="mb-1 text-xs text-white/70">Total Assets</p>
+              <p className="mb-1 text-xs" style={{ color: "rgba(255, 255, 255, 0.7)" }}>Total Assets</p>
               <p className="text-2xl font-bold text-white">{formatMoneyGrouped(totals.totalAssets)}</p>
             </div>
             <div
               className="rounded-xl p-4"
               style={{ backgroundColor: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)" }}
             >
-              <p className="mb-1 text-xs text-white/70">Total Liabilities</p>
+              <p className="mb-1 text-xs" style={{ color: "rgba(255, 255, 255, 0.7)" }}>Total Liabilities</p>
               <p className="text-2xl font-bold text-white">{formatMoneyGrouped(totals.totalLiabilities)}</p>
             </div>
           </div>
@@ -324,7 +324,7 @@ export function NetWorthView() {
             style={{ borderTop: "1px solid rgba(255, 255, 255, 0.2)" }}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm text-white/80">Asset to Liability Ratio</span>
+              <span className="text-sm" style={{ color: "rgba(255, 255, 255, 0.8)" }}>Asset to Liability Ratio</span>
               {/* Reference: ".toFixed(2)" + ":1" with no spaces, "∞" when
                   debt-free (bundle: [t>0?(e/t).toFixed(2):"∞",":1"]). */}
               <span className="text-lg font-bold text-white">
@@ -336,12 +336,12 @@ export function NetWorthView() {
       </div>
 
       <Tabs defaultValue="assets">
-        <TabsList className="mb-4">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="assets">Assets</TabsTrigger>
           <TabsTrigger value="liabilities">Liabilities</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="assets" className="mt-2 space-y-6">
+        <TabsContent value="assets" className="mt-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold" style={{ color: rgb.forestDark }}>
@@ -407,7 +407,7 @@ export function NetWorthView() {
           )}
         </TabsContent>
 
-        <TabsContent value="liabilities" className="mt-2 space-y-6">
+        <TabsContent value="liabilities" className="mt-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold" style={{ color: rgb.forestDark }}>

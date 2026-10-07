@@ -226,3 +226,65 @@ test.describe("net worth view", () => {
     await expect(page.getByText("3 items · $65,300")).toBeVisible();
   });
 });
+
+test.describe("net worth tabs (v5 — remediation-plan-v5.md G3)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/networth");
+    await expect(page.getByRole("heading", { name: "Net Worth" })).toBeVisible();
+  });
+
+  test("tab list is the reference's 2-col grid with the green active state", async ({ page }) => {
+    const tabs = await page.evaluate(() => {
+      const active = [...document.querySelectorAll('button[role="tab"]')].find(
+        (x) => x.getAttribute("aria-selected") === "true",
+      );
+      const inactive = [...document.querySelectorAll('button[role="tab"]')].find(
+        (x) => x.getAttribute("aria-selected") === "false",
+      );
+      const list = document.querySelector('[role="tablist"]') as HTMLElement | null;
+      if (!active || !inactive || !list) return null;
+      const a = getComputedStyle(active);
+      const i = getComputedStyle(inactive.querySelector("span") || inactive);
+      const lr = list.getBoundingClientRect();
+      const ar = active.getBoundingClientRect();
+      return {
+        listW: Math.round(lr.width),
+        listBg: getComputedStyle(list).backgroundColor,
+        triggerW: Math.round(ar.width),
+        triggerH: Math.round(ar.height),
+        activeBg: a.backgroundColor,
+        activeColor: getComputedStyle(active.querySelector("span") || active).color,
+        inactiveColor: i.color,
+        activeCls: active.className,
+      };
+    });
+    expect(tabs).not.toBeNull();
+    // Reference list: grid w-full max-w-md grid-cols-2 → 448px wide,
+    // triggers ~220px, muted bg #f5f5f5.
+    expect(tabs!.listW).toBe(448);
+    expect(tabs!.listBg).toBe("rgb(245, 245, 245)");
+    expect(tabs!.triggerW).toBe(220);
+    expect(tabs!.triggerH).toBe(28);
+    // Active: green-100 bg + green-900 text (measured on the reference).
+    expect(tabs!.activeBg).toBe("rgb(220, 252, 231)");
+    expect(tabs!.activeColor).toBe("rgb(20, 83, 45)");
+    // Inactive: muted-foreground #737373.
+    expect(tabs!.inactiveColor).toBe("rgb(115, 115, 115)");
+    // The trigger base carries no sheet-era extras (no gap-1.5/svg rules).
+    expect(tabs!.activeCls).not.toContain("gap-1.5");
+  });
+
+  test("summary-card labels compute as plain rgba white, not oklab (G9)", async ({ page }) => {
+    const labels = await page.evaluate(() => {
+      const grab = (txt: string) => {
+        const el = [...document.querySelectorAll("main span, main p")].find(
+          (x) => (x.textContent || "").trim() === txt && x.querySelectorAll("*").length === 0,
+        );
+        return el ? getComputedStyle(el).color : null;
+      };
+      return { assets: grab("Total Assets"), ratio: grab("Asset to Liability Ratio") };
+    });
+    expect(labels.assets).toBe("rgba(255, 255, 255, 0.7)");
+    expect(labels.ratio).toBe("rgba(255, 255, 255, 0.8)");
+  });
+});

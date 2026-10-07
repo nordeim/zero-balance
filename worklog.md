@@ -3,7 +3,56 @@
 Rolling log of the engineering sessions on this repo, newest first. Each
 session's detailed narrative lives in `docs/session_<n>.md`; findings ledgers
 live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
-`docs/remediation-plan-v3.md`, and `docs/remediation-plan-v4.md`.
+`docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`, and
+`docs/remediation-plan-v5.md`.
+
+---
+
+## Session 9 — Fresh verification & parity iteration v5 (2026-10-07)
+
+**Goal:** workspace refresh + a deeper two-site parity audit (the reference's
+own token layer, dialog buttons, dropdown states, focus rings, hover
+semantics, responsive chrome map); fix what it found.
+
+- Pulled to `e23d854` (session-8 = session-7's narrative record);
+  re-validated all docs against the codebase; re-ran the full chain green
+  (96 unit / 52 e2e / 30 smoke). v4 fixes confirmed live in code and browser.
+- Token-level audit (reading the reference's `:root` vars + an
+  inherited-text sweep + `hover:none` emulation) → **10 finding groups**
+  (`docs/remediation-plan-v5.md`): zinc-vs-neutral foreground family,
+  input/popover borders, the net-worth tab grid + green active state,
+  dialog action buttons (ghost Cancel + solid-lime Save vs outline +
+  per-dialog gradients), the accent pair, nav hover text, v4's
+  media-gated hover variants, muted, lab/oklab drift on three colored
+  texts, and the focus-ring tokens.
+- Measured **two new reference bugs**: R5 (its dialogs ignore Escape —
+  plain fixed overlays, no keyboard dismissal) and R6 (its card-menu
+  Delete destroys items immediately, no confirmation). R1–R4 re-confirmed
+  live; all clone superset fixes re-verified end-to-end.
+- All fixes TDD-first (13 new/extended specs, all RED first): the
+  reference's neutral token block in `globals.css`, `@variant hover
+  (&:hover)` (v3 hover semantics on every device), the reference tab
+  structure (448px grid, `#dcfce7`/`#14532d` active, 24px gap),
+  outline Cancellations + gradient Saves (forest for budget/asset,
+  orange for line-item/liability — `.zb-btn-primary` removed),
+  popover borders → input neutral, arbitrary-hex pins for the
+  lab-drifted colors, inline rgba white-alpha labels, ring tokens
+  (`#0a0a0a` / `#3b82f6`).
+- Full chain: typecheck · lint · **96/96 unit** · build · **65/65 e2e** ·
+  30/30 smoke. Live parity re-verified surface-by-surface (every fixed
+  value now measures identical to the reference); 12 screenshots
+  regenerated.
+- Docs aligned (README/CLAUDE/AGENTS/SKILL/session_9 + plan v5). SKILL
+  gained D-6/D-7/D-8 (hover media gate, prerender empty-store race,
+  lab/oklab drift); AGENTS gained the prerender settle convention and
+  the six-superset pin list.
+
+---
+
+## Session 8 — Audit narrative record (2026-10-07)
+
+Session-7's fresh-verification + remediation-v4 narrative, committed as
+`docs/session_8.md` (the raw work log of `28ad5fc`).
 
 ---
 

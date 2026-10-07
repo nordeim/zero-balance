@@ -6,7 +6,7 @@ IMPORTANT: File is read fresh for every conversation. Be brief and practical.
 
 ## Core Identity & Purpose
 
-ZeroBalance is a self-hosted budget-planner web app built around the net-zero rule (Income = Savings + Expenses). It is a production-grade, **superset** clone of the ZeroBudget reference app (`zero-balance-4885a8f3.base44.app`): visual parity with the reference, plus its two mobile-navigation bugs and its mobile horizontal overflow fixed. Maintained as a single Next.js application (no monorepo) with cookie-session auth, a Prisma/SQLite store, and a three-tier test suite (Vitest unit, Playwright e2e, bash API smoke).
+ZeroBalance is a self-hosted budget-planner web app built around the net-zero rule (Income = Savings + Expenses). It is a production-grade, **superset** clone of the ZeroBudget reference app (`zero-balance-4885a8f3.base44.app`): visual parity with the reference, plus its two mobile-navigation bugs, its mobile horizontal overflow, its non-Escape-closable dialogs and its unconfirmed deletes fixed. Maintained as a single Next.js application (no monorepo) with cookie-session auth, a Prisma/SQLite store, and a three-tier test suite (Vitest unit, Playwright e2e, bash API smoke).
 
 ## Foundational Principles
 
@@ -40,7 +40,7 @@ Follow this six-phase workflow for all implementation tasks:
 - **Next.js 16 App Router**: pages are thin `"use client"` compositions; API handlers under `src/app/api/**/route.ts` return the typed envelope from `src/lib/api-helpers.ts`.
 - **React 19 / eslint react-hooks v6**: no `setState` in effects — use the adjust-state-during-render pattern for derived resets (see the dialogs' lazy form initializers). Components defined at module scope, never inside render.
 - **Zustand v5**: selectors returning derived arrays/objects MUST use `useShallow` (a bare derived selector loops to React error #185 on hydrated static pages).
-- **Tailwind v4**: CSS-first config in `src/app/globals.css`; v4-native `w-(--var)` syntax; `h-svh` (not `h-full`) for full-height fixed chrome; colors via inline styles + CSS vars for parity surfaces.
+- **Tailwind v4**: CSS-first config in `src/app/globals.css`; v4-native `w-(--var)` syntax; `h-svh` (not `h-full`) for full-height fixed chrome; colors via inline styles + CSS vars for parity surfaces; `@variant hover (&:hover)` pins v3 hover semantics (v4 media-gates hover utilities behind `@media (hover: hover)` — the reference applies `:hover` on every device).
 - **Prisma 6**: schema at `prisma/schema.prisma`; relative `file:` URLs anchor to the schema dir (both CLI — via the npm script wrappers — and runtime, via `src/lib/db-path.ts`).
 
 ## Development Workflow
@@ -72,7 +72,7 @@ npm run dev         # http://localhost:3000
 
 ### Test Pyramid
 - **Unit (Vitest, 96)**: money math, dashboard aggregations, zod schemas, rate limiter, serializers, SQLite URL resolution
-- **E2E (Playwright, 52)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry, nav geometry — against the production standalone build
+- **E2E (Playwright, 65)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry, nav geometry, neutral-token parity, dialog action buttons — against the production standalone build
 - **Smoke (bash, 30 steps)**: full API surface including rate limiting and session invalidation
 
 ### Test Commands
@@ -84,7 +84,7 @@ npm run build && npm run test:e2e         # e2e (needs the build)
 npx playwright test tests/e2e/items.spec.ts -g "round-trip"   # one spec
 ```
 
-**E2E contract**: `db/e2e.db` is wiped and re-seeded every run; specs assert the seed's exact arithmetic and **must restore their fixtures**; one worker, one shared database; a single storageState login (the auth endpoints are rate-limited — never add per-test logins).
+**E2E contract**: `db/e2e.db` is wiped and re-seeded every run; specs assert the seed's exact arithmetic and **must restore their fixtures**; one worker, one shared database; a single storageState login (the auth endpoints are rate-limited — never add per-test logins). The item-view pages are prerendered with an EMPTY store — until hydration + the boot fetch land, the header AND empty-state "Add …" buttons coexist in the DOM. Wait for a seeded card heading before clicking an "Add …" button by role, or the strict-mode locator resolves to two elements (the dialog-buttons spec shows the settle pattern).
 
 ## Code Quality Standards
 

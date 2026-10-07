@@ -83,10 +83,10 @@ function NavList({ onNavigate, highlightActive = true }: { onNavigate?: () => vo
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-8 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 mb-1 outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "flex h-8 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 mb-1 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                   active && highlightActive
                     ? "font-medium text-white"
-                    : "text-zinc-700 hover:bg-green-50 hover:text-sidebar-accent-foreground",
+                    : "text-zinc-700 hover:bg-[#f0fdf4] hover:text-sidebar-accent-foreground",
                 )}
                 style={
                   active && highlightActive
@@ -204,7 +204,7 @@ export function AppSidebar({
 }
 
 /** Mobile top bar — reference chrome (61px tall): py-4 + 28px panel-left
- * toggle (hover:bg-green-50) + text-xl brand, stacked INSIDE <main>. */
+ * toggle (hover:bg-green-50 as #f0fdf4) + text-xl brand, stacked INSIDE <main>. */
 export function MobileTopbar({ onOpenNav }: { onOpenNav: () => void }) {
   return (
     <header
@@ -214,7 +214,7 @@ export function MobileTopbar({ onOpenNav }: { onOpenNav: () => void }) {
       <div className="flex items-center gap-4">
         <button
           type="button"
-          className="inline-flex h-7 w-7 items-center justify-center rounded-lg p-2 transition-colors duration-200 hover:bg-green-50"
+          className="inline-flex h-7 w-7 items-center justify-center rounded-lg p-2 transition-colors duration-200 hover:bg-[#f0fdf4]"
           onClick={onOpenNav}
         >
           <PanelLeftIcon className="h-4 w-4" style={{ color: "var(--forest-dark)" }} />

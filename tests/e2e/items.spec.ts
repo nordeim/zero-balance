@@ -163,7 +163,10 @@ test.describe("income view", () => {
   });
 
   test("add → edit → delete round-trip through the dialog", async ({ page }) => {
-    // --- add
+    // --- add (wait for a seeded card first: the prerendered page carries the
+    // empty-store state where BOTH the header and empty-state "Add Income"
+    // buttons exist until hydration + the boot fetch land — a strict-mode race)
+    await expect(page.getByRole("heading", { name: "Freelance" })).toBeVisible();
     await page.getByRole("button", { name: "Add Income" }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();

@@ -44,11 +44,14 @@ ZeroBalance — a Next.js 16 + React 19 budget planner (self-hosted superset clo
 - E2E runs against the **production standalone build** on :3100 with `db/e2e.db`, **deleted and re-seeded every run** by `tests/e2e/global-setup.ts`. Specs assert the seed's exact numbers (income 5550 / savings 1250 / expenses 2235 → net `+$2,065.00`) and **must restore their fixtures** (delete created items, restore edited amounts) — the suite runs in one worker sharing one database.
 - The auth setup project signs in once; storageState replays the session. Total real login attempts per run must stay well under the rate-limit budget (10/IP/15 min) — don't add per-test logins.
 - Known interaction race: after a state-changing click inside a dialog (e.g. a radio check), wait one beat before clicking a Radix Select trigger — clicking mid-re-render can land on a stale node and the dropdown never opens (see `tests/e2e/items.spec.ts` for the settle-wait precedent).
+- The item-view pages are **prerendered with an empty store**: until hydration + the boot fetch land, the header AND empty-state "Add …" buttons coexist in the static HTML. Wait for a seeded card heading before clicking an "Add …" button by role — otherwise the strict-mode locator resolves two elements (see the dialog-buttons spec's settle pattern). Transitions (`transition-all 200ms` on nav links, ring fade-ins) also need a ~300ms settle before reading computed styles.
 
 ## Tailwind CSS v4 — known traps
 
 `docs/Tailwind-V4-Validation-Report.md` documents five measured v4 traps; mitigations live in `src/app/globals.css`. The ones that bite most often:
 
+- **Hover variants are media-gated in v4** — every `hover:` utility compiles inside `@media (hover: hover)`, so the tints vanish on `hover: none` devices. `globals.css` pins the reference's v3 semantics with `@variant hover (&:hover)` — never remove it (pinned by the mobile-navigation spec under `hover: none` emulation).
+- **Named palette colors emit `lab()`/`oklab()`** — v4 computes `text-red-600`, `text-orange-600`, `bg-green-50`, `text-white/70` etc. in Lab color space while the reference emits plain rgb/rgba. For computed-style parity use arbitrary hex (`text-[#dc2626]`, `hover:bg-[#f0fdf4]`) or inline rgba — never the named classes on parity surfaces.
 - CSS variable arbitrary values use the **v4-native** `w-(--var)` syntax, not the v3 `[--var]` bracket form.
 - `h-full` on a fixed element resolves against the **large** layout viewport under mobile emulation (844 visual → 1044 measured) — use `h-svh` for full-height fixed chrome (the sheet does; the reference's rail does too).
 - Colors: the app mixes Tailwind utilities for layout with **inline styles + CSS vars for colors** — engine-independent parity with the reference. Keep that pattern for new surfaces.
@@ -56,12 +59,16 @@ ZeroBalance — a Next.js 16 + React 19 budget planner (self-hosted superset clo
 
 ## Reference-parity rules
 
-The target is a **superset**: visual parity with the reference site plus fixed bugs. When in doubt about a visual detail, the extracted design tokens are in `src/lib/constants.ts` (measured `:root` vars + per-type accents) and the recon notes live in the repo history. Four superset fixes are pinned by tests and must not regress:
+The target is a **superset**: visual parity with the reference site plus fixed bugs. When in doubt about a visual detail, the extracted design tokens are in `src/lib/constants.ts` (measured `:root` vars + per-type accents) and the recon notes live in the repo history. Six superset fixes are pinned by tests and must not regress:
 
 1. Mobile hamburger always clickable (toast viewport `pointer-events: none`).
 2. Mobile nav sheet closes after tapping a nav link.
 3. Dashboard highlighted on the root `/` route (the reference marks nothing active there).
 4. No mobile horizontal overflow — `min-w-0` on `main` + the responsive net-worth summary card (the reference scrolls to 395px on `/dashboard` and 464px on `/networth` at 390px).
+5. Dialogs close on Escape (the reference's modal overlays have no keyboard dismissal at all — only X/Cancel close them).
+6. Deletes confirm first (the reference's card menu deletes immediately, no confirmation).
+
+The neutral tokens are the reference's shadcn NEUTRAL scale, measured live on its `:root` (see the token comment in `globals.css`): foreground `#0a0a0a`, accent/muted `#f5f5f5`, accent-foreground `#171717`, input `#e5e5e5`, sidebar-accent-foreground `#18181b`, ring `#0a0a0a`, sidebar-ring `#3b82f6`. Only `--color-border` (`#e5e7e3`, the reference's CARD border) intentionally differs from `--color-input`.
 
 ## Git
 

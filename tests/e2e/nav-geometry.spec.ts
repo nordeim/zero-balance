@@ -54,8 +54,10 @@ test.describe("sidebar nav geometry", () => {
       return link ? link.className : null;
     });
     expect(cls).not.toBeNull();
-    // Reference inactive hover: hover:bg-green-50 (#f0fdf4).
-    expect(cls!).toContain("hover:bg-green-50");
+    // Reference inactive hover: green-50 (#f0fdf4). Arbitrary-hex form —
+    // v4 computes the named green-50 as oklab; the hex pins the computed
+    // style to the reference's plain rgb(240, 253, 244) (plan v5 G6).
+    expect(cls!).toContain("hover:bg-[#f0fdf4]");
     expect(cls!).not.toContain("hover:bg-sidebar-accent");
   });
 
