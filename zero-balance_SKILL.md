@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-07
-project_state: 95 unit tests / 39 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 46 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -346,7 +346,8 @@ types — the single source for dropdowns, badges, and validation):
 | `ITEM_TYPES` | `income`, `savings`, `expense` |
 | `CLASSIFICATIONS` | `need`, `want`, `savings` |
 | `FREQUENCIES` | `one-time`, `weekly`, `bi-weekly`, `monthly`, `quarterly`, `annually` |
-| `ITEM_STATUSES` | `planned`, `active`, `completed` |
+| `ITEM_STATUSES` | `planned`, `active`, `completed` (budget items) |
+| `LINE_ITEM_STATUSES` | `active`, `pending`, `cancelled` (calculator line items — their OWN enum, per the reference's Add Line Item form) |
 | `ASSET_TYPES` / `ASSET_LABELS` | `bank_account`, `superannuation`, `property`, `investment`, `vehicle`, `other` → "Bank Account", "Superannuation", … |
 | `LIABILITY_TYPES` / `LIABILITY_LABELS` | `home_loan`, `personal_loan`, `credit_card`, `car_loan`, `student_loan`, `other` → "Home Loan", … |
 | `COLORS` | the measured reference palette (§19) |
@@ -421,8 +422,9 @@ Historical bugs — each fixed and pinned. Severity = recurrence blast radius.
 | E-5 | One `closeModals()` for nested dialogs | Saving a line item closes the calculator | Shared close clears all modal slots | Scoped `closeLineItemModal` (`store.ts`) | calculator e2e | Medium |
 | E-6 | Effect-based form reset in conditionally-mounted dialogs | Quick-action preselect (type=income) lost | Reset ran before mount / never on identity change | Lazy initializers + adjust-during-render reset (all 4 dialogs) | dashboard e2e | Medium |
 | D-1 | Toast viewport with `pointer-events: auto` (reference bug) | Hamburger hit-test fails on mobile | Empty fixed container overlays the button | Viewport `pointer-events: none`; toasts restore it (`globals.css` §toast, `toast.tsx`) | mobile-nav e2e #2 | High |
-| D-2 | Mobile sheet stays open after nav (reference bug) | User taps a link, page changes behind the stuck sheet | Sheet close never wired to link clicks | Nav links call `closeModals()` (`sidebar.tsx`) | mobile-nav e2e #4 | High |
+| D-2 | Mobile sheet stays open after nav (reference bug) | User taps a link, page changes behind the stuck sheet | Sheet close never wired to link clicks | Nav links call `onNavOpenChange(false)`; pathname change closes too (`sidebar.tsx`) | mobile-nav e2e #4 | High |
 | D-3 | Sheet `h-full` under mobile emulation | Sheet measures 1044px on a 844px viewport | `%` height resolves against the *layout* viewport (collapsed-URL bars) | `h-svh` (`dialog.tsx`, matches reference rail) | mobile-nav e2e #3 | Medium |
+| D-4 | Mobile top bar rendered as a row-flex SIBLING of `<main>` (session-1..4 bug, found session 5) | 390px viewport: 222px column squeezes main to 214px; `scrollWidth` 480 | React fragment child of `div.flex` becomes a flex item; `md:hidden` only hides it ≥768px | Top bar lives INSIDE `<main>` (reference structure), state hoisted to `AppShell` (`app-shell.tsx`/`sidebar.tsx`) | mobile-layout e2e | Critical |
 | G-1 | Shared e2e DB without reset | Seed-dependent assertions fail after any earlier failure | Failed runs leave mutated rows | `global-setup.ts` resets `db/e2e.db` every run; specs clean up | consecutive full-suite runs | High |
 | G-4 | Smoke test on a shared port | Requests served by a stale dev server | Orphan process holds :3000 | Dedicated port 3210 + orphan kill (`smoke-test.sh`) | smoke run | Medium |
 
@@ -808,6 +810,7 @@ type ItemType = "income" | "savings" | "expense";
 type Classification = "need" | "want" | "savings";
 type Frequency = "one-time" | "weekly" | "bi-weekly" | "monthly" | "quarterly" | "annually";
 type ItemStatus = "planned" | "active" | "completed";
+type LineItemStatus = "active" | "pending" | "cancelled";
 type AssetType = "bank_account" | "superannuation" | "property" | "investment" | "vehicle" | "other";
 type LiabilityType = "home_loan" | "personal_loan" | "credit_card" | "car_loan" | "student_loan" | "other";
 

@@ -10,6 +10,7 @@ import {
   ITEM_STATUSES,
   ITEM_TYPES,
   LIABILITY_TYPES,
+  LINE_ITEM_STATUSES,
 } from "./constants";
 
 const money = z
@@ -109,7 +110,8 @@ const lineItemBase = {
   paymentMethod: optionalText(120),
   startDate: optionalIsoDate,
   endDate: optionalIsoDate,
-  status: z.enum(ITEM_STATUSES).default("active"),
+  // Line items carry their own status trio (reference's calculator form).
+  status: z.enum(LINE_ITEM_STATUSES).default("active"),
   notes: optionalText(2000),
 };
 
@@ -127,7 +129,7 @@ export const updateLineItemSchema = z.object({
   paymentMethod: optionalText(120),
   startDate: optionalIsoDate,
   endDate: optionalIsoDate,
-  status: z.enum(ITEM_STATUSES).optional(),
+  status: z.enum(LINE_ITEM_STATUSES).optional(),
   notes: optionalText(2000),
 });
 

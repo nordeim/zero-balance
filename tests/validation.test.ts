@@ -111,6 +111,33 @@ describe("createLineItemSchema", () => {
     expect(parsed.status).toBe("active");
   });
 
+  it("line items carry their OWN status enum (active/pending/cancelled — the reference's calculator form)", () => {
+    // The reference's Add Line Item dialog offers Active / Pending /
+    // Cancelled — distinct from BudgetItem's planned/active/completed.
+    for (const status of ["active", "pending", "cancelled"]) {
+      const parsed = createLineItemSchema.parse({
+        budgetItemId: "item-1",
+        name: "Policy",
+        amount: 10,
+        status,
+      });
+      expect(parsed.status).toBe(status);
+    }
+    // BudgetItem-only statuses are INVALID for line items.
+    for (const status of ["planned", "completed"]) {
+      expect(
+        createLineItemSchema.safeParse({
+          budgetItemId: "item-1",
+          name: "Policy",
+          amount: 10,
+          status,
+        }).success,
+      ).toBe(false);
+    }
+    // …while they stay valid for budget items.
+    expect(createBudgetItemSchema.safeParse({ ...VALID_ITEM, status: "planned" }).success).toBe(true);
+  });
+
   it("accepts empty-string optional dates (the native date inputs send \"\" when cleared)", () => {
     const parsed = createLineItemSchema.parse({
       budgetItemId: "item-1",

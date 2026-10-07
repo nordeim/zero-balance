@@ -176,7 +176,7 @@ The Golden Rule: **data flows `UI → store action → API → zod → Prisma �
 │   └── seed.ts              # Idempotent demo seed: 2 income / 3 expense / 2 savings items, 3 assets, 2 liabilities
 ├── src/
 │   ├── app/
-│   │   ├── api/             # 15 route handlers (auth x4, budget-items x2, line-items x2,
+│   │   ├── api/             # 13 route files / 21 handlers (auth x4, budget-items x2, line-items x2,
 │   │   │                    #   assets x2, liabilities x2, health) — envelope + zod + session guard
 │   │   ├── login/page.tsx   # Three-state auth card (sign-in / sign-up / forgot)
 │   │   ├── page.tsx         # "/" — dashboard (dual route with /dashboard, like the reference)

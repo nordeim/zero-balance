@@ -7,6 +7,8 @@ export type ItemType = "income" | "savings" | "expense";
 export type Classification = "need" | "want" | "savings";
 export type Frequency = "one-time" | "weekly" | "bi-weekly" | "monthly" | "quarterly" | "annually";
 export type ItemStatus = "planned" | "active" | "completed";
+// Line items have their own status trio (reference's calculator form).
+export type LineItemStatus = "active" | "pending" | "cancelled";
 
 export interface BudgetItem {
   id: string;
@@ -36,7 +38,7 @@ export interface ExpenseLineItem {
   paymentMethod?: string | null;
   startDate?: string | null;
   endDate?: string | null;
-  status: ItemStatus;
+  status: LineItemStatus;
   notes?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -116,7 +118,7 @@ export interface LineItemFormData {
   paymentMethod: string;
   startDate: string;
   endDate: string;
-  status: ItemStatus;
+  status: LineItemStatus;
   notes: string;
 }
 

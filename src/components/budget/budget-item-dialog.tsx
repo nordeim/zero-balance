@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore, type ModalState } from "./store";
-import { rgb } from "@/lib/constants";
+import { CLASSIFICATION_LABELS, CLASSIFICATION_TILES, rgb } from "@/lib/constants";
 import type { BudgetItemFormData, Classification, Frequency, ItemStatus, ItemType } from "@/lib/types";
 
 /** Derive the form state from the modal (create preset / edit hydration). */
@@ -176,25 +176,33 @@ export function BudgetItemDialog() {
 
           <div className="space-y-2">
             <Label>Classification</Label>
+            {/* Reference tiles (live DOM): flex gap-4 row of flex-1 p-4
+                border-2 tiles; the SELECTED tile carries its own accent
+                border + tint bg (inline), unselected tiles keep the default
+                border so the per-tile hover:border-*-300 still applies. */}
             <RadioGroup
               value={form.classification}
               onValueChange={(v) => set("classification", v as Classification)}
-              className="grid grid-cols-3 gap-3"
+              className="flex gap-4"
             >
-              {(["need", "want", "savings"] as const).map((c) => (
-                <Label
-                  key={c}
-                  className="flex cursor-pointer items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-accent"
-                  style={{
-                    borderColor:
-                      form.classification === c ? rgb.forestMedium : rgb.border,
-                    backgroundColor: form.classification === c ? rgb.cardTint : undefined,
-                  }}
-                >
-                  <RadioGroupItem value={c} />
-                  <span className="capitalize">{c}</span>
-                </Label>
-              ))}
+              {(["need", "want", "savings"] as const).map((c) => {
+                const tile = CLASSIFICATION_TILES[c];
+                const selected = form.classification === c;
+                return (
+                  <Label
+                    key={c}
+                    className={`flex flex-1 cursor-pointer items-center space-x-2 rounded-lg border-2 bg-white p-4 transition-all ${tile.hoverBorder}`}
+                    style={
+                      selected
+                        ? { borderColor: tile.accent, backgroundColor: tile.tint }
+                        : undefined
+                    }
+                  >
+                    <RadioGroupItem value={c} />
+                    <span className="text-sm font-medium">{CLASSIFICATION_LABELS[c]}</span>
+                  </Label>
+                );
+              })}
             </RadioGroup>
           </div>
 

@@ -20,6 +20,11 @@ export type Frequency = (typeof FREQUENCIES)[number];
 export const ITEM_STATUSES = ["planned", "active", "completed"] as const;
 export type ItemStatus = (typeof ITEM_STATUSES)[number];
 
+// Line items carry their OWN status enum (the reference's Add Line Item
+// dialog offers Active / Pending / Cancelled — distinct from budget items).
+export const LINE_ITEM_STATUSES = ["active", "pending", "cancelled"] as const;
+export type LineItemStatus = (typeof LINE_ITEM_STATUSES)[number];
+
 export const ASSET_TYPES = [
   "bank_account",
   "superannuation",
@@ -97,9 +102,21 @@ export const TYPE_LABELS: Record<ItemType, string> = {
 };
 
 export const CLASSIFICATION_LABELS: Record<Classification, string> = {
-  need: "need",
-  want: "want",
-  savings: "savings",
+  need: "Need",
+  want: "Want",
+  savings: "Savings",
+};
+
+/** Classification selector tiles (Add/Edit Budget Item dialog) — live DOM:
+ * selected tile = the classification's own accent border + tint bg; the
+ * tints are the same trio the Budget Guidelines rows use. */
+export const CLASSIFICATION_TILES: Record<
+  Classification,
+  { accent: string; tint: string; hoverBorder: string }
+> = {
+  need: { accent: "#e07a3b", tint: "#fff7f5", hoverBorder: "hover:border-red-300" },
+  want: { accent: "#3b7ea1", tint: "#f0f7fb", hoverBorder: "hover:border-blue-300" },
+  savings: { accent: "#8fbc3f", tint: "#f5f9f0", hoverBorder: "hover:border-green-300" },
 };
 
 export const FREQUENCY_LABELS: Record<Frequency, string> = {

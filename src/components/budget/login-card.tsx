@@ -1,16 +1,16 @@
 "use client";
 
 // The /login auth card — sign in / sign up / forgot password states on the
-// slate gradient page. Visual chrome mirrors the reference: the 4px top
-// gradient bar, blurred halo behind the ringed logo, Google button, icon
-// inputs and the slate-900 submit. "Continue with Google" renders for
-// parity and degrades to an explanatory toast (no OAuth credentials in a
-// self-hosted clone). ?from_url= return handling included.
+// slate gradient page. Visual chrome mirrors the reference per state:
+// sign-in keeps the logo + Google + OR block; sign-up/forgot carry a
+// left-aligned "← Back to sign in" button at the TOP, an H2 heading, NO
+// logo, NO Google, NO OR divider (remediation-plan-v3 F5). "Continue with
+// Google" renders for parity and degrades to an explanatory toast (no OAuth
+// credentials in a self-hosted clone). ?from_url= return handling included.
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { Loader2Icon, LockIcon, MailIcon } from "lucide-react";
+import { ArrowLeftIcon, Loader2Icon, LockIcon, MailIcon } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore } from "./store";
 
@@ -52,6 +52,175 @@ function LogoMark() {
   );
 }
 
+/** Sign-in-only Google button + OR divider (reference keeps these OFF the
+ * sign-up/forgot states). Degrades to an explanatory toast — no OAuth
+ * credentials in a self-hosted clone. */
+function GoogleBlock({ onUnavailable }: { onUnavailable: () => void }) {
+  return (
+    <>
+      <div className="space-y-3">
+        <button
+          type="button"
+          className="group flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3.5 font-medium text-slate-700 text-[16px] transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow-sm"
+          onClick={onUnavailable}
+        >
+          <span className="-ml-4 transition-transform duration-200">
+            {GOOGLE_SVG}
+          </span>
+          Continue with Google
+        </button>
+      </div>
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <span className="h-px w-full bg-slate-200" aria-hidden="true" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-white px-3 font-medium tracking-wider text-slate-500">
+            or
+          </span>
+        </div>
+      </div>
+    </>
+  );
+}
+
+const INPUT_CLS =
+  "flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 pl-10 text-base transition-colors placeholder:text-slate-600 focus:border-slate-400 focus:ring-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-12 md:text-sm";
+const LABEL_CLS =
+  "text-sm font-medium text-slate-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
+
+interface AuthFormProps {
+  mode: Mode;
+  email: string;
+  password: string;
+  confirm: string;
+  busy: boolean;
+  error: string | null;
+  onEmail: (v: string) => void;
+  onPassword: (v: string) => void;
+  onConfirm: (v: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onForgot: () => void;
+  onSignUp: () => void;
+}
+
+/** The email/password/(confirm) form + submit. Sign-in keeps the footer
+ * switchers (Forgot / Sign up); sign-up/forgot carry their own top back
+ * button instead (reference structure). Spacing follows the reference:
+ * sign-up form space-y-3 sm:space-y-4, others space-y-4 sm:space-y-5. */
+function AuthForm(p: AuthFormProps) {
+  return (
+    <form
+      className={p.mode === "signup" ? "space-y-3 sm:space-y-4" : "space-y-4 sm:space-y-5"}
+      onSubmit={p.onSubmit}
+    >
+      <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-1.5">
+          <label htmlFor="email" className={LABEL_CLS}>
+            Email
+          </label>
+          <div className="relative">
+            <MailIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input
+              id="email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={p.email}
+              onChange={(e) => p.onEmail(e.target.value)}
+              className={INPUT_CLS}
+            />
+          </div>
+        </div>
+
+        {p.mode !== "forgot" && (
+          <div className="space-y-1.5">
+            <label htmlFor="password" className={LABEL_CLS}>
+              Password
+            </label>
+            <div className="relative">
+              <LockIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <input
+                id="password"
+                type="password"
+                required
+                minLength={p.mode === "signup" ? 8 : undefined}
+                autoComplete={p.mode === "signup" ? "new-password" : "current-password"}
+                placeholder="••••••••"
+                value={p.password}
+                onChange={(e) => p.onPassword(e.target.value)}
+                className={INPUT_CLS}
+              />
+            </div>
+          </div>
+        )}
+
+        {p.mode === "signup" && (
+          <div className="space-y-1.5">
+            <label htmlFor="confirm" className={LABEL_CLS}>
+              Confirm Password
+            </label>
+            <div className="relative">
+              <LockIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <input
+                id="confirm"
+                type="password"
+                required
+                minLength={8}
+                autoComplete="new-password"
+                placeholder="••••••••"
+                value={p.confirm}
+                onChange={(e) => p.onConfirm(e.target.value)}
+                className={INPUT_CLS}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {p.error && (
+        <p role="alert" className="text-sm font-medium text-red-600">
+          {p.error}
+        </p>
+      )}
+
+      <div className="space-y-3">
+        <button
+          type="submit"
+          disabled={p.busy}
+          className="inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-slate-900 px-3 py-2 font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:h-12"
+        >
+          {p.busy && <Loader2Icon className="h-4 w-4 animate-spin" />}
+          {p.mode === "signin" && "Sign in"}
+          {p.mode === "signup" && "Create account"}
+          {p.mode === "forgot" && "Send reset link"}
+        </button>
+        {p.mode === "signin" && (
+          <div className="flex flex-col items-center justify-between gap-2 sm:flex-row sm:gap-0">
+            <button
+              type="button"
+              className="font-medium text-slate-500 transition-colors hover:text-slate-700"
+              onClick={p.onForgot}
+            >
+              Forgot password?
+            </button>
+            <button
+              type="button"
+              className="text-slate-500 transition-colors hover:text-slate-700"
+              onClick={p.onSignUp}
+            >
+              Need an account?{" "}
+              <span className="font-medium text-slate-700">Sign up</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </form>
+  );
+}
+
 export function LoginCard() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -66,6 +235,16 @@ export function LoginCard() {
   const [error, setError] = React.useState<string | null>(null);
 
   const fromUrl = searchParams.get("from_url") || "/dashboard";
+
+  const backToSignin = () => {
+    setMode("signin");
+    setError(null);
+  };
+  const notifyGoogleUnavailable = () =>
+    toast({
+      title: "Google sign-in unavailable",
+      description: "This self-hosted clone has no OAuth credentials configured.",
+    });
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,202 +279,86 @@ export function LoginCard() {
     }
   };
 
+  const formProps = {
+    email,
+    password,
+    confirm,
+    busy,
+    error,
+    onEmail: setEmail,
+    onPassword: setPassword,
+    onConfirm: setConfirm,
+    onSubmit,
+    onForgot: () => {
+      setMode("forgot");
+      setError(null);
+    },
+    onSignUp: () => {
+      setMode("signup");
+      setError(null);
+    },
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <div className="w-full max-w-md">
         <div className="relative overflow-hidden rounded-2xl border-0 bg-white/95 text-card-foreground shadow-2xl backdrop-blur-sm">
           <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
           <div className="p-8 sm:p-10 md:px-10 md:pt-12 md:pb-10">
-            <div className="flex flex-col items-center space-y-6 text-center sm:space-y-8">
-              <LogoMark />
-              <div className="space-y-2 sm:space-y-3">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                  {mode === "signin" && "Welcome to ZeroBudget"}
-                  {mode === "signup" && "Create your account"}
-                  {mode === "forgot" && "Reset your password"}
-                </h1>
-                <p className="text-sm font-medium text-slate-500 sm:text-base">
-                  {mode === "signin" && "Sign in to continue"}
-                  {mode === "signup" && "Start planning your budget"}
-                  {mode === "forgot" && "Enter your email and we'll send a reset link"}
-                </p>
+            {mode === "signin" ? (
+              <div className="flex flex-col items-center space-y-6 text-center sm:space-y-8">
+                <LogoMark />
+                <div className="space-y-2 sm:space-y-3">
+                  <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                    Welcome to ZeroBudget
+                  </h1>
+                  <p className="text-sm font-medium text-slate-500 sm:text-base">
+                    Sign in to continue
+                  </p>
+                </div>
+                <div className="w-full">
+                  <GoogleBlock onUnavailable={notifyGoogleUnavailable} />
+                  <AuthForm
+                    mode="signin"
+                    {...formProps}
+                  />
+                </div>
               </div>
-
-              <div className="w-full">
-                <div className="space-y-3">
-                  <button
-                    type="button"
-                    className="group flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3.5 font-medium text-slate-700 text-[16px] transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow-sm"
-                    onClick={() =>
-                      toast({
-                        title: "Google sign-in unavailable",
-                        description: "This self-hosted clone has no OAuth credentials configured.",
-                      })
-                    }
-                  >
-                    <span className="-ml-4 transition-transform duration-200">
-                      {GOOGLE_SVG}
-                    </span>
-                    Continue with Google
-                  </button>
-                </div>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="h-px w-full bg-slate-200" aria-hidden="true" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-3 font-medium tracking-wider text-slate-500">
-                      or
-                    </span>
-                  </div>
-                </div>
-
-                <form className="space-y-4 sm:space-y-5" onSubmit={onSubmit}>
-                  <div className="space-y-3 sm:space-y-4">
-                    <div className="space-y-1.5">
-                      <label
-                        htmlFor="email"
-                        className="text-sm font-medium text-slate-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Email
-                      </label>
-                      <div className="relative">
-                        <MailIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                        <input
-                          id="email"
-                          type="email"
-                          required
-                          autoComplete="email"
-                          placeholder="you@example.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 pl-10 text-base transition-colors placeholder:text-slate-600 focus:border-slate-400 focus:ring-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-12 md:text-sm"
-                        />
-                      </div>
-                    </div>
-
-                    {mode !== "forgot" && (
-                      <div className="space-y-1.5">
-                        <label
-                          htmlFor="password"
-                          className="text-sm font-medium text-slate-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Password
-                        </label>
-                        <div className="relative">
-                          <LockIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                          <input
-                            id="password"
-                            type="password"
-                            required
-                            minLength={mode === "signup" ? 8 : undefined}
-                            autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 pl-10 text-base transition-colors placeholder:text-slate-600 focus:border-slate-400 focus:ring-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-12 md:text-sm"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {mode === "signup" && (
-                      <div className="space-y-1.5">
-                        <label
-                          htmlFor="confirm"
-                          className="text-sm font-medium text-slate-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Confirm Password
-                        </label>
-                        <div className="relative">
-                          <LockIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                          <input
-                            id="confirm"
-                            type="password"
-                            required
-                            minLength={8}
-                            autoComplete="new-password"
-                            placeholder="••••••••"
-                            value={confirm}
-                            onChange={(e) => setConfirm(e.target.value)}
-                            className="flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 pl-10 text-base transition-colors placeholder:text-slate-600 focus:border-slate-400 focus:ring-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-12 md:text-sm"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {error && (
-                    <p role="alert" className="text-sm font-medium text-red-600">
-                      {error}
-                    </p>
-                  )}
-
-                  <div className="space-y-3">
+            ) : (
+              <div className="flex flex-col items-center space-y-6 text-center sm:space-y-8">
+                <div className="w-full">
+                  {/* Reference structure (F5): left-aligned back button at the
+                      TOP, H2 heading, then the bare form — no logo, no Google,
+                      no OR divider in the sign-up/forgot states. */}
+                  <div className="space-y-4">
                     <button
-                      type="submit"
-                      disabled={busy}
-                      className="inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-slate-900 px-3 py-2 font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:h-12"
+                      type="button"
+                      className="-mb-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-700"
+                      onClick={backToSignin}
                     >
-                      {busy && <Loader2Icon className="h-4 w-4 animate-spin" />}
-                      {mode === "signin" && "Sign in"}
-                      {mode === "signup" && "Create account"}
-                      {mode === "forgot" && "Send reset link"}
+                      <ArrowLeftIcon className="h-4 w-4" />
+                      Back to sign in
                     </button>
-                    <div className="flex flex-col items-center justify-between gap-2 sm:flex-row sm:gap-0">
-                      {mode === "signin" ? (
-                        <>
-                          <button
-                            type="button"
-                            className="font-medium text-slate-500 transition-colors hover:text-slate-700"
-                            onClick={() => {
-                              setMode("forgot");
-                              setError(null);
-                            }}
-                          >
-                            Forgot password?
-                          </button>
-                          <button
-                            type="button"
-                            className="text-slate-500 transition-colors hover:text-slate-700"
-                            onClick={() => {
-                              setMode("signup");
-                              setError(null);
-                            }}
-                          >
-                            Need an account?{" "}
-                            <span className="font-medium text-slate-700">Sign up</span>
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          className="mx-auto text-slate-500 transition-colors hover:text-slate-700 sm:mx-0"
-                          onClick={() => {
-                            setMode("signin");
-                            setError(null);
-                          }}
-                        >
-                          <span className="font-medium text-slate-700">Back to sign in</span>
-                        </button>
-                      )}
-                    </div>
+                    {mode === "signup" ? (
+                      <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                        Create your account
+                      </h2>
+                    ) : (
+                      <div className="space-y-2 text-center">
+                        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                          Reset your password
+                        </h2>
+                        <p className="text-sm text-slate-600 sm:text-base">
+                          Enter your email and we&apos;ll send you a link to reset your password
+                        </p>
+                      </div>
+                    )}
+                    <AuthForm mode={mode} {...formProps} />
                   </div>
-                </form>
+                </div>
               </div>
-            </div>
+            )}
           </div>
-        </div>
-        <div className="mt-8 hidden text-center text-xs text-slate-400 sm:block">
-          <p>
-            <Link href="/dashboard" className="hover:text-slate-600">
-              Continue as guest
-            </Link>
-          </p>
-        </div>
-        <div className="mt-8 text-center text-xs text-slate-400 sm:hidden">
-          <p>&nbsp;</p>
         </div>
       </div>
     </div>

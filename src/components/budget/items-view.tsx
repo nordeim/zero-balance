@@ -149,23 +149,37 @@ export function ItemsView({ type }: { type: ItemType }) {
         </button>
       </div>
 
-      <div className="mb-6 flex flex-col gap-3 md:flex-row">
-        <div className="relative flex-1">
-          <SearchIcon
-            className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
-            style={{ color: rgb.gray }}
-          />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={meta.searchPlaceholder}
-            className="pl-9"
-            aria-label={meta.searchPlaceholder}
-          />
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:w-auto md:grid-cols-3 md:gap-3">
+      {/* Filter card (reference DOM): search + selects live inside a white
+          rounded-2xl bordered card. Income/savings: md:grid-cols-4 with the
+          search spanning 2 columns; expenses: md:grid-cols-2 lg:grid-cols-4
+          with the search + the third payment-method select. Search icon is
+          20px (w-5 h-5) with a pl-10 input. */}
+      <div
+        className="mb-6 rounded-2xl bg-white p-6"
+        style={{ border: `1px solid ${rgb.border}` }}
+      >
+        <div
+          className={
+            type === "expense"
+              ? "grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+              : "grid gap-4 md:grid-cols-4"
+          }
+        >
+          <div className={`relative ${type === "expense" ? "" : "md:col-span-2"}`}>
+            <SearchIcon
+              className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2"
+              style={{ color: rgb.gray }}
+            />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={meta.searchPlaceholder}
+              className="pl-10"
+              aria-label={meta.searchPlaceholder}
+            />
+          </div>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="md:w-[160px]" aria-label="Filter by category">
+            <SelectTrigger aria-label="Filter by category">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
@@ -178,7 +192,7 @@ export function ItemsView({ type }: { type: ItemType }) {
             </SelectContent>
           </Select>
           <Select value={frequency} onValueChange={setFrequency}>
-            <SelectTrigger className="md:w-[160px]" aria-label="Filter by frequency">
+            <SelectTrigger aria-label="Filter by frequency">
               <SelectValue placeholder="All Frequencies" />
             </SelectTrigger>
             <SelectContent>
@@ -193,7 +207,7 @@ export function ItemsView({ type }: { type: ItemType }) {
           </Select>
           {type === "expense" && (
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-              <SelectTrigger className="md:w-[170px]" aria-label="Filter by payment method">
+              <SelectTrigger aria-label="Filter by payment method">
                 <SelectValue placeholder="All Payment Methods" />
               </SelectTrigger>
               <SelectContent>

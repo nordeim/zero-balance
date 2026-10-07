@@ -11,3 +11,10 @@ self-contained (no imports) and targets one surface.
 - `probe-ref-bd.mjs` — full breakdown card dump
 - `probe-ref-live2.mjs` — legend/guidelines/quick-action/stat-card live DOM
 - `probe-clone-parity.mjs` — the same dashboard evidence on the clone (side-by-side)
+
+Session-5 additions (remediation-plan-v3 audit):
+
+- `probe-structural-v3.mjs` — h1/quick-action/stat-count/breakdown/avatar/nav/guidelines/legend computed styles
+- `probe-followup-v3.mjs` — avatar fills, donut label DOM, visible nav links, breakdown expansion
+- `probe-donut-nav.mjs` — standalone percentage-label location + Dashboard-link active states
+- `probe-items-v3.mjs` / `probe-view-dump.mjs` — items-view header/card/badge dumps (ref markup uses div badges; the clone's span badges render identically)

@@ -2,7 +2,43 @@
 
 Rolling log of the engineering sessions on this repo, newest first. Each
 session's detailed narrative lives in `docs/session_<n>.md`; findings ledgers
-live in `docs/remediation-plan.md` (v1) and `docs/remediation-plan-v2.md`.
+live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`, and
+`docs/remediation-plan-v3.md`.
+
+---
+
+## Session 5 — Fresh verification & parity iteration v3 (2026-10-07)
+
+**Goal:** workspace refresh + a fresh two-site parity audit of every
+surface; fix what it found.
+
+- Re-cloned (workspace had been reset); validated all docs against the
+  codebase; re-ran the full chain green (95 unit / 39 e2e / 30 smoke).
+- Fresh probe-based audit (clone vs live reference, desktop + mobile
+  390×844) → **6 finding groups** (`docs/remediation-plan-v3.md`),
+  headlined by a CRITICAL clone-side mobile layout bug present since
+  session 1: the mobile top bar rendered as a row-flex sibling of `<main>`
+  (222px column, main squeezed to 214px, 90px overflow) — invisible to
+  the interaction-only e2e suite. Also: the items-views filter card,
+  classification tile chrome, the line-item dialog's Payment Method
+  field / labels / OWN status enum (active/pending/cancelled), the login
+  card's sign-up/forgot structure (+ removal of the dead guest link),
+  and the reference's root-URL active-nav gap (documented superset #3).
+- All fixes TDD-first: new `mobile-layout.spec.ts` (3), +2 items specs,
+  +1 calculator spec, +1 auth spec, +1 validation test. Full chain:
+  typecheck · lint · **96/96 unit** · build · **46/46 e2e** · 30/30
+  smoke.
+- Live parity re-verified on the remediated build (mobile geometry,
+  filter card, tiles, line-item dialog, login states — all matching);
+  both reference mobile-nav bugs confirmed still live.
+- Screenshots regenerated (11); README/PAD/SKILL/session_5 aligned.
+
+---
+
+## Session 4 — Audit narrative record (2026-10-07)
+
+Session-3's deep-audit + remediation-v2 narrative, committed as
+`docs/session_4.md` (the raw work log of `8b82e4c`).
 
 ---
 

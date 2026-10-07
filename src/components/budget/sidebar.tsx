@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboardIcon,
-  MenuIcon,
+  PanelLeftIcon,
   PiggyBankIcon,
   ReceiptIcon,
   TrendingUpIcon,
@@ -157,9 +157,21 @@ function SidebarBody({ onNavigate, highlightActive = true }: { onNavigate?: () =
   );
 }
 
-/** Desktop sidebar (fixed 16rem rail) + mobile top bar + sheet navigation. */
-export function AppSidebar() {
-  const [open, setOpen] = React.useState(false);
+/** Desktop sidebar (fixed 16rem rail) + mobile sheet navigation.
+ *
+ * The mobile TOP BAR lives in app-shell (inside <main>, stacked above the
+ * page content — the reference's structure). Keeping it out of this
+ * component matters: this fragment renders as children of the row-flex
+ * shell wrapper, and a `md:hidden` block element beside <main> would become
+ * a full-height column at mobile widths, squeezing main off the viewport
+ * (the bug pinned by tests/e2e/mobile-layout.spec.ts). */
+export function AppSidebar({
+  navOpen,
+  onNavOpenChange,
+}: {
+  navOpen: boolean;
+  onNavOpenChange: (open: boolean) => void;
+}) {
   const pathname = usePathname();
 
   // Route changes close the sheet — the reference leaves it open after a nav
@@ -170,7 +182,7 @@ export function AppSidebar() {
   const [prevPathname, setPrevPathname] = React.useState(pathname);
   if (prevPathname !== pathname) {
     setPrevPathname(pathname);
-    setOpen(false);
+    onNavOpenChange(false);
   }
 
   return (
@@ -180,33 +192,38 @@ export function AppSidebar() {
         <SidebarBody />
       </aside>
 
-      {/* Mobile top bar */}
-      <header
-        className="border-b bg-white px-6 py-4 md:hidden"
-        style={{ borderColor: "rgb(229, 231, 227)" }}
-      >
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            aria-label="Toggle Sidebar"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent"
-            onClick={() => setOpen(true)}
-          >
-            <MenuIcon className="h-5 w-5" style={{ color: "var(--forest-dark)" }} />
-          </button>
-          <h1 className="text-lg font-bold" style={{ color: "var(--forest-dark)" }}>
-            ZeroBalance
-          </h1>
-        </div>
-      </header>
-
       {/* Mobile sheet */}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={navOpen} onOpenChange={onNavOpenChange}>
         <SheetContent>
           <DialogTitle className="sr-only">Navigation</DialogTitle>
-          <SidebarBody onNavigate={() => setOpen(false)} highlightActive={false} />
+          <SidebarBody onNavigate={() => onNavOpenChange(false)} highlightActive={false} />
         </SheetContent>
       </Dialog>
     </>
+  );
+}
+
+/** Mobile top bar — reference chrome (61px tall): py-4 + 28px panel-left
+ * toggle (hover:bg-green-50) + text-xl brand, stacked INSIDE <main>. */
+export function MobileTopbar({ onOpenNav }: { onOpenNav: () => void }) {
+  return (
+    <header
+      className="border-b bg-white px-6 py-4 md:hidden"
+      style={{ borderColor: "rgb(229, 231, 227)" }}
+    >
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          className="inline-flex h-7 w-7 items-center justify-center rounded-lg p-2 transition-colors duration-200 hover:bg-green-50"
+          onClick={onOpenNav}
+        >
+          <PanelLeftIcon className="h-4 w-4" style={{ color: "var(--forest-dark)" }} />
+          <span className="sr-only">Toggle Sidebar</span>
+        </button>
+        <h1 className="text-xl font-bold" style={{ color: "var(--forest-dark)" }}>
+          ZeroBalance
+        </h1>
+      </div>
+    </header>
   );
 }

@@ -58,6 +58,54 @@ test.describe("rent calculator", () => {
     await expect(dialog).toBeHidden();
   });
 
+  test("the nested line-item dialog matches the reference fields and status enum", async ({ page }) => {
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await expect(lineDialog).toBeVisible();
+
+    // Reference field order (F4): Item Name, Amount, Frequency, Provider /
+    // Company, Policy / Account Number, Start / Renewal Date, End / Expiry
+    // Date, Payment Method, Status, Notes.
+    const labels = await lineDialog.evaluate((root) =>
+      [...root.querySelectorAll("label")].map((l) => l.textContent?.trim() ?? ""),
+    );
+    expect(labels).toEqual([
+      "Item Name *",
+      "Amount *",
+      "Frequency",
+      "Provider / Company",
+      "Policy / Account Number",
+      "Start / Renewal Date",
+      "End / Expiry Date",
+      "Payment Method",
+      "Status",
+      "Notes",
+    ]);
+
+    // Line items carry their OWN status enum — Active/Pending/Cancelled —
+    // NOT the budget-item planned/completed trio.
+    await lineDialog.getByRole("combobox", { name: "Status" }).click();
+    for (const option of ["Active", "Pending", "Cancelled"]) {
+      await expect(page.getByRole("option", { name: option, exact: true })).toBeVisible();
+    }
+    await expect(page.getByRole("option", { name: "Planned" })).toHaveCount(0);
+    await expect(page.getByRole("option", { name: "Completed" })).toHaveCount(0);
+    await page.getByRole("option", { name: "Pending", exact: true }).click();
+    await expect(lineDialog.getByRole("combobox", { name: "Status" })).toContainText("Pending");
+
+    // Cancel — nothing is persisted.
+    await lineDialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Based on 0 items")).toBeVisible();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+  });
+
   test("add a line item → parent amount recalculates immediately", async ({ page }) => {
     const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
     await rent.hover();

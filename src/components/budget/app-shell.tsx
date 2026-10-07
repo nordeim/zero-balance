@@ -6,7 +6,7 @@
 
 import * as React from "react";
 import { useBudgetStore } from "./store";
-import { AppSidebar } from "./sidebar";
+import { AppSidebar, MobileTopbar } from "./sidebar";
 import { BudgetItemDialog } from "./budget-item-dialog";
 import { CalculatorDialog } from "./calculator-dialog";
 import { LineItemDialog } from "./line-item-dialog";
@@ -29,6 +29,11 @@ function ModalHost() {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const boot = useBudgetStore((s) => s.boot);
   const booted = useBudgetStore((s) => s.booted);
+  // The mobile nav-sheet state lives here so the mobile top bar can sit
+  // INSIDE <main> (reference structure) while the sheet itself renders from
+  // the sidebar fragment — see sidebar.tsx for why the top bar must not be
+  // a row-flex sibling of <main>.
+  const [navOpen, setNavOpen] = React.useState(false);
 
   React.useEffect(() => {
     void boot();
@@ -36,8 +41,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-svh w-full">
-      <AppSidebar />
+      <AppSidebar navOpen={navOpen} onNavOpenChange={setNavOpen} />
       <main className="flex flex-1 flex-col md:pl-(--sidebar-width)">
+        <MobileTopbar onOpenNav={() => setNavOpen(true)} />
         {booted ? (
           children
         ) : (

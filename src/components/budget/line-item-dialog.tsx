@@ -1,7 +1,9 @@
 "use client";
 
-// Add/Edit Line Item — the calculator's nested form: Item Name, Amount,
-// Frequency, Provider, Policy Number, Start/Renewal Date, End Date, Notes.
+// Add/Edit Line Item — the calculator's nested form. Reference field order:
+// Item Name, Amount, Frequency, Provider / Company, Policy / Account Number,
+// Start / Renewal Date, End / Expiry Date, Payment Method, Status (the
+// line-item-specific Active/Pending/Cancelled trio), Notes.
 
 import * as React from "react";
 import { Loader2Icon } from "lucide-react";
@@ -19,7 +21,7 @@ import {
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore, type ModalState } from "./store";
 import { rgb } from "@/lib/constants";
-import type { Frequency, ItemStatus, LineItemFormData } from "@/lib/types";
+import type { Frequency, LineItemStatus, LineItemFormData } from "@/lib/types";
 
 const EMPTY: LineItemFormData = {
   name: "",
@@ -33,7 +35,6 @@ const EMPTY: LineItemFormData = {
   status: "active",
   notes: "",
 };
-
 /** Derive the form state from the modal (create defaults / edit hydration). */
 function initialForm(modal: ModalState["lineItem"]): LineItemFormData {
   if (modal?.mode === "edit") {
@@ -174,19 +175,6 @@ export function LineItemDialog() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="line-status">Status</Label>
-              <Select value={form.status} onValueChange={(v) => set("status", v as ItemStatus)}>
-                <SelectTrigger id="line-status" aria-label="Status">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="planned">Planned</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="line-start">Start / Renewal Date</Label>
               <Input
                 id="line-start"
@@ -196,13 +184,37 @@ export function LineItemDialog() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="line-end">End Date</Label>
+              <Label htmlFor="line-end">End / Expiry Date</Label>
               <Input
                 id="line-end"
                 type="date"
                 value={form.endDate}
                 onChange={(e) => set("endDate", e.target.value)}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="line-payment">Payment Method</Label>
+              <Input
+                id="line-payment"
+                placeholder="e.g., Bank Account"
+                value={form.paymentMethod}
+                onChange={(e) => set("paymentMethod", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="line-status">Status</Label>
+              <Select value={form.status} onValueChange={(v) => set("status", v as LineItemStatus)}>
+                <SelectTrigger id="line-status" aria-label="Status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {/* Line items carry their OWN enum (reference's calculator
+                      form) — NOT the budget-item planned/completed trio. */}
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-2">

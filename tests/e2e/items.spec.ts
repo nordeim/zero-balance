@@ -50,6 +50,100 @@ test.describe("income view", () => {
     await expect(page.getByText("Salary")).toHaveCount(0);
   });
 
+  test("filters sit inside the white rounded-2xl card with the reference search chrome", async ({
+    page,
+  }) => {
+    // Reference (F2): search + selects live in a bg-white rounded-2xl p-6
+    // bordered card; grid md:grid-cols-4 with the search spanning 2 cols
+    // (income/savings), search icon w-5 h-5 + input pl-10.
+    const filterCard = await page.evaluate(() => {
+      const input = document.querySelector<HTMLInputElement>("input[placeholder^='Search income']");
+      if (!input) return null;
+      const wrapper = input.parentElement; // relative span (col-span-2)
+      const grid = wrapper?.parentElement;
+      const card = grid?.parentElement;
+      if (!card) return null;
+      const cs = getComputedStyle(card);
+      const icon = wrapper?.querySelector("svg");
+      return {
+        cardCls: card.className,
+        cardBg: cs.backgroundColor,
+        cardBorder: cs.borderColor,
+        cardRadius: cs.borderRadius,
+        cardPadding: cs.padding,
+        gridCls: grid?.className ?? null,
+        wrapperCls: wrapper?.className ?? null,
+        inputPlCls: input.className.match(/pl-\d+/)?.[0] ?? null,
+        iconCls: icon?.getAttribute("class") ?? null,
+        selectCount: grid ? grid.querySelectorAll("button[role='combobox']").length : 0,
+      };
+    });
+    expect(filterCard).not.toBeNull();
+    expect(filterCard!.cardCls).toContain("rounded-2xl");
+    expect(filterCard!.cardBg).toBe("rgb(255, 255, 255)");
+    expect(filterCard!.cardBorder).toBe("rgb(229, 231, 227)");
+    expect(filterCard!.cardRadius).toBe("16px");
+    expect(filterCard!.cardPadding).toBe("24px");
+    // Income: search spans 2 of 4 md columns; 2 selects.
+    expect(filterCard!.gridCls).toContain("md:grid-cols-4");
+    expect(filterCard!.wrapperCls).toContain("md:col-span-2");
+    expect(filterCard!.selectCount).toBe(2);
+    expect(filterCard!.inputPlCls).toBe("pl-10");
+    expect(filterCard!.iconCls).toContain("w-5");
+  });
+
+  test("classification tiles match the reference chrome (flex gap-4, border-2, per-class colors)", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+
+    const tiles = await dialog.evaluate(() => {
+      const group = document.querySelector("[role='radiogroup']");
+      if (!group) return null;
+      return {
+        groupCls: group.className,
+        tiles: [...group.children].map((tile) => {
+          const cs = getComputedStyle(tile);
+          return {
+            text: (tile.textContent || "").trim(),
+            cls: tile.className,
+            border: cs.borderColor,
+            bg: cs.backgroundColor,
+            borderWidth: cs.borderWidth,
+            padding: cs.padding,
+          };
+        }),
+      };
+    });
+    expect(tiles).not.toBeNull();
+    // Reference group: flex gap-4 (tiles flex-1), NOT a 3-col grid.
+    expect(tiles!.groupCls).toContain("flex");
+    expect(tiles!.groupCls).toContain("gap-4");
+    expect(tiles!.groupCls).not.toContain("grid-cols-3");
+    expect(tiles!.tiles).toHaveLength(3);
+    // Reference tiles: border-2, p-4, capitalized labels.
+    for (const tile of tiles!.tiles) {
+      expect(tile.borderWidth).toBe("2px");
+      expect(tile.padding).toBe("16px");
+      expect(tile.cls).toContain("cursor-pointer");
+    }
+    expect(tiles!.tiles.map((t) => t.text)).toEqual(["Need", "Want", "Savings"]);
+    // Income defaults to "need" — selected tile: orange border + #fff7f5 tint
+    // (per-classification colors, NOT the old uniform forestMedium).
+    const need = tiles!.tiles[0];
+    expect(need.border).toBe("rgb(224, 122, 59)");
+    expect(need.bg).toBe("rgb(255, 247, 245)");
+    // Unselected tiles: default border, white bg.
+    expect(tiles!.tiles[1].border).toBe("rgb(229, 231, 227)");
+    expect(tiles!.tiles[1].bg).toBe("rgb(255, 255, 255)");
+    expect(tiles!.tiles[2].border).toBe("rgb(229, 231, 227)");
+
+    await page.getByRole("button", { name: "Cancel" }).click();
+    await expect(dialog).toBeHidden();
+  });
+
   test("add → edit → delete round-trip through the dialog", async ({ page }) => {
     // --- add
     await page.getByRole("button", { name: "Add Income" }).click();
@@ -115,6 +209,24 @@ test.describe("expenses view", () => {
 
     // The expenses-only "All Payment Methods" filter (superset parity).
     await expect(page.getByText("All Payment Methods")).toBeVisible();
+    // Expenses filter grid (F2): md:grid-cols-2 lg:grid-cols-4 with the
+    // search + 3 selects inside the rounded-2xl card.
+    const gridInfo = await page.evaluate(() => {
+      const input = document.querySelector<HTMLInputElement>("input[placeholder^='Search expense']");
+      const grid = input?.parentElement?.parentElement ?? null;
+      return grid
+        ? {
+            cls: grid.className,
+            selectCount: grid.querySelectorAll("button[role='combobox']").length,
+            cardCls: grid.parentElement?.className ?? null,
+          }
+        : null;
+    });
+    expect(gridInfo).not.toBeNull();
+    expect(gridInfo!.cls).toContain("md:grid-cols-2");
+    expect(gridInfo!.cls).toContain("lg:grid-cols-4");
+    expect(gridInfo!.selectCount).toBe(3);
+    expect(gridInfo!.cardCls).toContain("rounded-2xl");
     // Add Expense carries the orange gradient.
     const add = page.getByRole("button", { name: "Add Expense" });
     const bg = await add.evaluate((el) => getComputedStyle(el).backgroundImage);

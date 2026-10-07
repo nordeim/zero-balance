@@ -33,16 +33,17 @@ import { messageOf, useBudgetStore } from "./store";
 import { formatMoney, sumAmounts } from "@/lib/money";
 import { ADD_BUTTON_GRADIENTS, COLORS, rgb } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import type { ExpenseLineItem, ItemStatus } from "@/lib/types";
+import type { ExpenseLineItem, LineItemStatus } from "@/lib/types";
 
 /**
- * Line-item status pills (reference conditional: active → green,
- * pending → yellow, else gray; mapped onto our planned/active/completed
- * enum: planned plays the "pending" role).
+ * Line-item status pills — the reference's own conditional map: active →
+ * green, pending → yellow, cancelled → gray. Line items carry their own
+ * Active/Pending/Cancelled enum (NOT the budget-item planned/completed
+ * trio) — see docs/remediation-plan-v3.md F4.
  */
-function statusPill(status: ItemStatus): string {
+function statusPill(status: LineItemStatus): string {
   if (status === "active") return "bg-green-50 text-green-700";
-  if (status === "planned") return "bg-yellow-50 text-yellow-700";
+  if (status === "pending") return "bg-yellow-50 text-yellow-700";
   return "bg-gray-50 text-gray-700";
 }
 

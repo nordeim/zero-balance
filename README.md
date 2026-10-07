@@ -28,12 +28,13 @@ ZeroBalance tracks income, savings, and expenses as budget items, computes your 
 
 ### Superset fixes over the reference
 
-The live reference app has two mobile navigation bugs, measured and verified on the clone:
+The live reference app has quirks and bugs, measured against the clone:
 
-1. **Hamburger click-block** — the reference's empty toast container (`pointer-events: auto`, full-width, top 32px, z-100) covers the top half of the mobile hamburger button. The clone's toast viewport is `pointer-events: none` (the sonner pattern); toasts re-enable pointer events individually.
-2. **Menu stays open after nav** — tapping a nav link in the reference's sheet changes the route but leaves the sheet + overlay trapping the user. The clone closes the sheet on every navigation.
+1. **Hamburger click-block** — the reference's empty toast container (`pointer-events: auto`, full-width, top 32px, z-100) covers the top half of the mobile hamburger button. The clone's toast viewport is `pointer-events: none` (the sonner pattern); toasts re-enable pointer events individually. Pinned by `tests/e2e/mobile-navigation.spec.ts`.
+2. **Menu stays open after nav** — tapping a nav link in the reference's sheet changes the route but leaves the sheet + overlay trapping the user. The clone closes the sheet on every navigation. Pinned by the same spec.
+3. **Root URL nav highlight** — the reference marks NO nav item active when you sit on `/` after login (its active check compares the pathname to `/dashboard`). The clone highlights Dashboard on the root route — the page you are actually viewing.
 
-Both fixes are pinned by Playwright tests (`tests/e2e/mobile-navigation.spec.ts`).
+The mobile layout itself (top bar stacked inside `main` at the reference's 61px geometry, no horizontal overflow) is pinned by `tests/e2e/mobile-layout.spec.ts`.
 
 ## Architecture
 
@@ -83,8 +84,8 @@ flowchart TB
 │   └── 📂 lib/                    # Domain seams: money, dashboard, validation,
 │                                  #   auth, rate-limit, serializers, db-path
 ├── 📂 tests/
-│   ├── 📄 *.test.ts               # Vitest unit suites (95 tests)
-│   └── 📂 e2e/                    # Playwright specs (39 tests) + global setup
+│   ├── 📄 *.test.ts               # Vitest unit suites (96 tests)
+│   └── 📂 e2e/                    # Playwright specs (46 tests) + global setup
 ├── 📂 scripts/
 │   ├── 📄 smoke-test.sh           # 30-step production API smoke test
 │   └── 📄 capture-screenshots.mjs # docs/screenshots generator
@@ -140,8 +141,8 @@ npm start            # boots .next/standalone/server.js
 ## Testing
 
 ```bash
-npm test            # Vitest unit suite (95 tests) — pure domain seams
-npm run test:e2e    # Playwright e2e (39 tests) — needs `npm run build` first
+npm test            # Vitest unit suite (96 tests) — pure domain seams
+npm run test:e2e    # Playwright e2e (46 tests) — needs `npm run build` first
 bash scripts/smoke-test.sh   # 30-step production API smoke (own server, port 3210)
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint (react-hooks v6 rules enforced)
@@ -177,7 +178,8 @@ Measured from the reference's `:root` (computed styles as ground truth):
 | [`zero-balance_SKILL.md`](zero-balance_SKILL.md) | Distilled engineering skill — design system, architecture, anti-patterns, debugging guide, pre-ship checklist |
 | [`docs/remediation-plan.md`](docs/remediation-plan.md) | Session-1/2 findings ledger (reference bugs, Tailwind v4 traps, app bugs) with fixes and regression pins |
 | [`docs/remediation-plan-v2.md`](docs/remediation-plan-v2.md) | Session-3 deep parity audit — money format split, drill-down, badge maps, gradients, networth grouping (14 finding groups) |
-| [`docs/session_1.md`](docs/session_1.md) · [`docs/session_2.md`](docs/session_2.md) | Narrative logs of the build + re-verification sessions |
+| [`docs/remediation-plan-v3.md`](docs/remediation-plan-v3.md) | Session-5 parity iteration — mobile top-bar layout bug, filter card, classification tiles, line-item status enum, login states (6 finding groups) |
+| [`docs/session_1.md`](docs/session_1.md) · [`docs/session_2.md`](docs/session_2.md) · [`docs/session_3.md`](docs/session_3.md) | Narrative logs of the build + re-verification sessions |
 | [`worklog.md`](worklog.md) | Rolling project worklog (all sessions, latest first) |
 | [`Project_Architecture_Document.md`](Project_Architecture_Document.md) | 7 ADRs, topology, ER diagram, security model |
 
