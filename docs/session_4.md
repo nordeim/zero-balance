@@ -1,3 +1,90 @@
+Continuing from the previous session. Let me first verify the current workspace state — whether the last commit was pushed and what `session_2.md` contains.
+上次会话的推送已成功（`6bf69a6` 已在远程）。远程有一个新的提交 `592361d` —— 正在拉取以查看新内容（很可能是 `docs/session_2.md`）。
+`session_2.md` 记录了上一次的会话，该会话已完成了所有工作（补救计划、`zero-balance_SKILL.md`、文档对齐，并推送了 `6bf69a6`）。本次会话是一个**新的重新验证环节**：对照代码库审查所有文档（现已包含 SKILL 文档 + `session_2.md`），重新运行完整的验证链，重新验证与线上参考环境的功能一致性，然后更新 `worklog` 并推送。
+AGENTS.md 和 CLAUDE.md 已对齐。现在正在阅读 README.md、PAD 和 zero-balance_SKILL.md。
+Docs read consistently. Now validating key claims against the codebase (API handler counts, test counts, env state, package scripts) and scanning the SKILL doc.
+All doc claims validated against the codebase: 13 route files / 21 handlers ✓, `.env` correct ✓, `.env.example` aligned ✓, `db/custom.db` at repo root ✓, scripts carry the DB-path discipline ✓, SKILL doc exists (891 lines) ✓. Now running the full verification chain.
+Typecheck ✓, lint ✓, 87/87 unit ✓. Now the production build (required before e2e).
+**Full verification chain green**: typecheck ✓ · lint ✓ · 87/87 unit ✓ · build ✓ · 34/34 e2e (incl. 7 mobile-nav specs) ✓ · 30/30 smoke ✓.
+
+Now the live parity re-check with agent-browser — booting the clone's standalone server on :3200, then comparing clone vs reference.
+桌面结构已验证（256px 侧边栏，+$2,065.00，全部 4 个部分，3 张数据卡片）。现在开始关键的移动端导航检查：
+The hit landed on the SVG `path` **inside** the button (event bubbling → still a button click). Verifying containment and the toast viewport is `none` ✓. Now confirming with the containment check and opening the sheet:
+Sheet opens at exact reference geometry (288px, x=0, fixed, 844h, 5 links). Now superset fix #2 — nav tap must close the sheet:
+Clone mobile nav fully verified: navigated to `/income`, sheet closed, no stuck overlay. Now the reference site — confirming its state today (bugs still live? any design changes?):
+Reference logged in (its live account data: $5,000/$1,000/$525 — the user's own numbers, distinct from our demo seed; parity is structural). Checking reference desktop + mobile nav state:
+Inline evals hit escaping issues. Writing the probes as small script files to run cleanly:
+The reference's button has no `aria-label` — its accessible name comes from text content (both expose "Toggle Sidebar"; functionally equivalent). Redoing the hit-test via text matching:
+**Reference bug #1 confirmed still live today**: hit-test lands on a blocking `DIV` (two z-100 containers, `pointer-events: auto`, full-width 390×32 strip over the hamburger) — while the clone's hit-test passes. Now bug #2 — open the reference sheet via JS dispatch and tap a nav link:
+**Reference bug #2 confirmed still live**: URL moved to `/income` but `sheetStillOpen: true` — the sheet stays stuck. The clone remains a verified superset with identical sheet geometry. Now a quick structural sweep of the remaining reference views to catch any new features we may have missed:
+Reference networth fully matches our clone's structure (summary card, ∞:1 debt-free ratio, "1 items · $25,000" tab counts, asset card with provider + "Updated" footer). Checking one micro-detail — the ratio string spacing in our clone:
+我们的克隆版本渲染为 `∞ : 1`（带空格）。参考站点显示为 `∞:1` —— 正在参考 DOM 中验证精确的文本节点以确定是否存在真正的空格差异：
+Reference renders exactly `∞:1` — **no spaces**. Our clone renders `∞ : 1` with spaces. Checking the session-1 record of how the finite case was validated before deciding the fix scope:
+规范（spec）断言了 `0.2 : 1`（带空格），但该参考站点的无债务（debt-free）状态显示为 `∞:1`（无空格）。我需要参考站点的**有限情况（finite-case）**模板来解决这个问题。获取参考站点的 JS bundle 以查找比例模板：
+**在参考包中发现了模板**：`children:[t>0?(e/t).toFixed(2):"∞",":1"]` —— 参考评 rendering 渲染 **`0.21:1`**（比率 `.toFixed(2)`，冒号前无空格），而我们的克隆版本渲染的是 `0.2 : 1`（保留 1 位小数，包含空格）。这是一个真正的功能对等差异（parity gap）。让我排查一下包中其余的格式模板，看看是否还有其他偏差：
+Critical bundle findings: the reference uses plain `toFixed(2)` money formatting — `"$"+t.toFixed(2)` with **no thousands separator** — while our clone uses `Intl.NumberFormat` (`$5,550.00` with comma). The live reference snapshot showed `Total Income $5000.00` (no comma). Let me verify against the reference dashboard image and the live reference text:
+The reference image shows an empty account ($0.00 — can't disambiguate commas). But the **live reference today** shows `$5000.00` without comma, and the bundle source is `"$"+t.toFixed(2)` (no Intl grouping). Extracting precise text from the live reference DOM to confirm:
+**Two different money formats on the reference**: dashboard uses plain `toFixed(2)` (`$5000.00`, no comma) while networth uses commas (`$25,000.00`)! The reference itself is inconsistent per view. Extracting every surface's exact format systematically:
+已确认参考站点中混合的按视图（per-view）格式。同时也正在检查仪表盘的环形图（donut）图例、预算指南和计算器界面：
+Reference legend DOM order is **Savings → Want → Need**, amounts without commas. Checking our clone's legend order and money functions:
+Now auditing the clone's formatters against the reference. First, finding the reference's networth formatter (commas) in the bundle, and checking the savings view + calculator surfaces:
+The reference bundle confirms **two distinct money formatters**: plain `toFixed(2)` (dashboard, item views, donut) vs `toLocaleString` grouping (networth only). Our clone uses the grouping format everywhere — a real parity deviation on all dashboard/items surfaces ≥ $1,000. Mapping every clone usage now:
+Now verifying the reference's calculator format and the clone's pluralization branches. First the reference calculator:
+The reference calculator renders "**Based on 0 items**" and "**• Will update category total**" as separate lines. Checking our clone's calculator chrome:
+Key discovery — the reference's calculator banner is structurally different: two spans in a `justify-between` row, with "• Will update category total" in an **orange** span shown **only when the calculated total differs from the item's amount**. Getting the full card structure:
+The reference's calculator card is structurally different from ours (vertical stack, no icon, orange amount, conditional orange "• Will update" span, bordered card). Dumping the full reference calculator for a complete comparison:
+The clone's calculator card needs restructuring (icon removal, label-left/amount-right, orange amount, conditional orange "• Will update" span, bordered card). Before deciding on fixes, checking whether the reference has any populated calculators to compare row rendering:
+Rather than mutating the user's live data, I'll compare the line-item row template from the reference bundle:
+The line-item row template isn't surfacing in minified bundle greps. Let me now compare the clone's donut/stat-card/count code against the confirmed reference details (legend labels **Savings/Want/Need** singular, order Savings→Want→Need, stat cards singular/plural):
+Our breakdown labels are already singular (Need/Want/Savings ✓) — but the ORDER is [Need, Want, Savings] while the reference legend is [Savings, Want, Need]. Verifying the reference's legend rows and pie sector order precisely:
+Reference pie sector order is **[Savings #8fbc3f, Want #3b7ea1, Need #e07a3b]** — our clone renders the reverse. Checking the reference's slice labels and legend row DOM:
+The reference legend rows carry **lucide icons** (piggy-bank for Savings) that our clone lacks, and use bg `rgb(245,248,245)` — different from the calculator card's `#fff7f5`. Dumping all three rows + checking our constants:
+Reference legend icons: Savings→piggy-bank, Want→heart, Need→circle-alert. Now checking the remaining count/pluralization spots in our clone:
+Consolidating the evidence. Checking how many singular/plural sites exist in the reference bundle (calculator banner does singular; item headers showed "1 items"):
+Confirmed the plural rules: stat cards + calculator banner do singular-at-1; item headers + networth tabs are **always "items"**. Verifying the calculator's total template in the bundle (grouping vs not):
+找到了一个行片段 —— 参考将 `policy_number` 渲染为带有 `#` 前缀。正在提取完整的 `line-item` 行模板：
+The reference's line-item row differs substantially from ours (gray pill frequency badge, conditional status colors, `#policy_number` line, no "From date", hover-revealed edit/delete). Now comparing the **budget item card** (income/expenses/savings views) template too:
+The reference's item card: category title + color dot, `$` + toFixed(2) amount in type color, classification badge (icon + colored border), purple frequency badge, **conditional green Recurring badge**, slate status badge, footer with calendar-date + payment method. Comparing our item card:
+Our item card is close but deviates on the Recurring badge (reference: capitalized, green, repeat icon, before status), status badge (reference: always slate on item cards), and the Calculate button style. Finding the reference's Edit button + classification color map:
+The reference's action buttons are hover-revealed white buttons (Edit outline, Calculate with orange-600 text). The calculator card map is per-classification (need→#fff7f5/#fcddd5 orange, want→#f0f7fb blue, savings→green tint) — yet the observed savings-classified calculator showed the orange scheme. Finding the calculator card container template to resolve:
+The calculator card is hardcoded orange (`#fff7f5`/`#fcddd5`) ✓, and the **Budget Guidelines rows** use per-classification tinted cards with borders — ours uses bare chips. Extracting the full guidelines template and checking our TYPE_COLORS:
+TYPE_COLORS ✓ match. Checking the reference's breakdown row colors (`-`→prefix, net-balance conditional colors `#f5a962`/`#3b7ea1`) against our clone's rows:
+Checking the exact context of the `#f5a962`/`#3b7ea1` signed-amount fragment — and our orangeLight token:
+The Net Balance row is conditional (zero→lime, positive→#f5a962, negative→#3b7ea1, with matching icon chips). Getting the full breakdown-row template for the remaining structure:
+Major finding — the reference's breakdown rows are **expandable** (`isExpanded`/`categories`/`onToggleCategory` props). Verifying live behavior on the reference:
+Clicking the reference's breakdown row **expands in place** (categories revealed: "Salary · $5000.00 · 1 category") rather than navigating — a significant functional deviation from our clone. Exploring the expanded state further:
+Two-level expansion. Dumping the DOM structure of the expanded region to understand the exact nesting:
+获取更多已展开的 DOM（在 `item` 级别被截断）：
+The reference's breakdown is a 3-level drill-down (section → category → subcategory → item + "N category" footer) — our clone navigates instead. This is the biggest functional gap. Now checking the reference's stat cards for the gradient + structure:
+Reference stat card: amount is `text-3xl font-bold` in **forestDark** (not type color), count row is `text-sm` with an `h-px` divider. Checking our StatCard's outer div and hero amount handling:
+Our stat-card shell matches; deviations are the amount style + count row. Checking the reference's hero status chip + allocation bar template:
+Hero status: Under Budget→#f5a962 ✓ but Over Budget→**#3b7ea1 blue** (ours wrongly uses orange). Getting the allocation-bar fill gradient:
+Allocation fill is status-conditional (net-zero→lime gradient, under→orange, over→`#2c5f7c→#3b7ea1`). Checking the hero header + NET ZERO pill:
+Consolidating. Quick final spot-checks — items view header (search + Add button) and the networth summary card:
+Search placeholders ✓ match. Checking the live reference's Add-button styles per view (dashboard quick actions vs items views):
+The shell has stopped responding. Waiting briefly and retrying:
+The shell tool has failed 4+ consecutive times (even a trivial `echo`). Per my timeout-handling discipline, I need to pause and inform you:
+
+**⚠️ The tool shell has become unresponsive.** Please click the **restart** button in the top right corner to restart the session, then re-send this task — I'll resume exactly where I left off.
+
+**State so far (this session):**
+- Workspace refreshed (pulled `592361d` — adds `docs/session_2.md`); previous session's push already on remote
+- Full verification chain re-run: typecheck ✓ · lint ✓ · **87/87 unit ✓ · 34/34 e2e ✓ (incl. 7 mobile-nav) · 30/30 smoke ✓**
+- Clone mobile nav re-verified live (hamburger clickable, 288px sheet, closes on nav); **both reference mobile bugs confirmed still live today**
+- **Deep parity audit found a batch of real gaps** (evidence: live DOM + reference JS bundle source):
+  1. Money format: reference uses plain `toFixed(2)` (no commas: `$5000.00`) on dashboard/items/calculator; commas only on networth — ours uses commas everywhere
+  2. Net-worth ratio: reference `0.21:1`/`∞:1` (2 decimals, no spaces) — ours `0.2 : 1`
+  3. Breakdown card: reference is a 3-level expandable drill-down (section→category→item + "N category" footer) — ours navigates instead
+  4. Donut order: reference `[Savings, Want, Need]` with piggy-bank/heart/circle-alert icons — ours reversed, no icons
+  5. Calculator card: reference = bordered orange-tint card, no icon, amount right in orange, conditional "• Will update category total" span — ours structurally different
+  6. Stat cards: amount `text-3xl` forestDark (ours: colored `text-2xl`), count row `text-sm` + h-px divider
+  7. Hero: over-budget = blue `#3b7ea1` status + blue gradient fill, balance is `Math.abs`, "✓ NET ZERO" literal checkmark
+  8. Add buttons: per-view gradients (forest→lime, lime→light, blue→light, orange→light) — ours solid lime
+  9. Item card: Recurring badge capitalized/green/icon; status always slate; Edit/Calculate = hover-revealed white buttons
+  10. Guidelines: tinted bordered cards (#fff7f5/#f0f7fb/#f5f9f0) with colored text — ours bare chips
+
+All findings are captured here; after restart I'll write the updated remediation plan, implement the fixes with TDD, re-run the chain, capture screenshots, and push via the SSH wrapper.
+
 Workspace state confirmed. No `worklog.md` has ever been committed to the repo — I'll add one this session per the task instruction. Now let me review the current implementation of the surfaces flagged in the parity audit before writing remediation plan v2.
 Now I have the full picture of the current implementation. Next, I need to re-verify the incomplete audit evidence against the live reference (the previous session's audit was cut short). Let me check the existing probe scripts and agent-browser availability.
 Sessions `clone` and `ref` still exist. Let me load the core skill guidance and verify the reference session is still alive.
