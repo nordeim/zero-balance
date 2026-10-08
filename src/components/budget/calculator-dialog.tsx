@@ -61,8 +61,25 @@ export function CalculatorDialog() {
   const item = modal?.item ?? null;
 
   React.useEffect(() => {
-    if (item) void loadLineItems(item.id);
-  }, [item, loadLineItems]);
+    // v17 G1: the load failure must be CAUGHT, not swallowed — the
+    // pre-fix `void loadLineItems(item.id)` left the rejection unhandled
+    // and silent. The reference renders the same scenario as its SILENT
+    // empty-state (a dead API indistinguishable from an empty category —
+    // measured live, plan v17); the clone keeps those surfaces (the
+    // `?? []` fallback below renders the reference's empty state) and
+    // adds the honest error toast, the same superset class as the v16
+    // boot toast and the dialogs' mutation-failure toasts. Per-open
+    // semantics (a fresh user action each time), NOT a one-shot flag.
+    if (item) {
+      loadLineItems(item.id).catch((error: unknown) => {
+        toast({
+          title: "Could not load the line items",
+          description: messageOf(error),
+          variant: "error",
+        });
+      });
+    }
+  }, [item, loadLineItems, toast]);
 
   if (!modal || !item) return null;
   const lineItems = lineItemsMap[item.id] ?? [];

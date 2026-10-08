@@ -376,3 +376,29 @@ failure surface class, same run-probe.sh pattern:
   surface); its mutation failure = a silent no-op (dialog stays open).
   LESSON: nested shell quoting mangles backtick template literals in
   `agent-browser eval` — always go through run-probe.sh (base64).
+
+Session-33 additions (remediation-plan-v17 audit) — the calculator
+line-item error tier (the parent-recalc response family), same
+run-probe.sh pattern:
+
+- `probe-v17-refdata.mjs` — the eleventh data-drift check on the
+  reference (allocation/balance/status figures).
+- `probe-v17-census.mjs` / `probe-v17-headdump.mjs` — the items-view
+  census (the "N items · $X" header; the middle-dot in the header text
+  defeats a naive `·` regex — dump the raw text instead).
+- `verify-v17.sh` — the clone-side live verification script (login +
+  route-aborted calculator open: empty-state parity + the error toast;
+  run INSIDE one with-server.sh invocation — the nested-quoting lesson
+  applies to ref extraction too, hence the script file).
+- **calculator error-tier technique:** abort `**/api/line-items**`
+  (clone) / `**/entities/**` (ref) AFTER the expenses view loads, then
+  open the calculator — the reference renders its SILENT empty-state
+  ($0.00 / 0 items / "No line items yet"); the clone (v17) renders the
+  same surfaces PLUS the "Could not load the line items" toast. The
+  reference's calculator total derives from the FETCHED line-items sum,
+  not the parent figure. Its mutation failures (create/delete) are
+  silent no-ops with no optimistic update.
+- LESSON: a NESTED Radix dialog aria-hides the parent — page-level
+  `getByRole`/computed-style reads scoped to the parent dialog return
+  nothing while the sub-dialog is open (assert the sub-dialog, close
+  it, then read the parent).

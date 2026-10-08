@@ -9,7 +9,78 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`,
 `docs/remediation-plan-v11.md`, `docs/remediation-plan-v12.md`,
 `docs/remediation-plan-v13.md`, `docs/remediation-plan-v14.md`,
-`docs/remediation-plan-v15.md`, and `docs/remediation-plan-v16.md`.
+`docs/remediation-plan-v15.md`, `docs/remediation-plan-v16.md`, and
+`docs/remediation-plan-v17.md`.
+
+---
+
+## Session 33 — Fresh verification & parity iteration v17 (2026-10-08)
+
+**Goal:** rebuild the workspace from scratch (the sandbox had been reset —
+the repo re-cloned at `7c45de1`, node_modules/`.env`/`db/custom.db`
+re-created, all standing brief requirements re-verified), re-verify the
+v16 baseline, code-audit the recent changes (repo skills:
+code-review-and-audit native-CLI fallback — lint/tsc/tests green; npm
+audit = the same 5 dev-only ESLint braces advisories, no patched
+release; secret scan clean), then a fresh two-site parity audit of the
+CALCULATOR LINE-ITEM ERROR TIER — the parent-recalc response family the
+session-32 log flagged as the next surface — plus the explicit
+mobile-navigation re-verification + data-drift check. Formal log:
+`docs/session_34.md` (the session_33.md slot holds the incoming
+session-31 conversation summary).
+
+- Baseline chain at `7c45de1` fully green (96/126/30 + lint/typecheck/
+  build — first full run, no flakes); v16 pins spot-checked in the code
+  first (the nested-try boot + bootError flag + the AppShell one-shot
+  toast effect).
+- Mobile stack re-verified end-to-end: R1 (the ref's TWO toast
+  containers still intercept the burger's center hit at (38,30); the
+  clone's is DIRECT on the svg), R2 (the ref's sheet still traps after
+  nav — `sheetStillOpen: true` + overlay; the clone's closes + 390px
+  fit), R3 (nothing active on `/` on the ref; the clone highlights
+  Dashboard), R4 (ref 395/464px overflow; clone 390 on all six routes).
+  Sheet geometry + link positions identical. Data drift clean —
+  eleventh consecutive check.
+- Fresh angles: the CALCULATOR LINE-ITEM ERROR TIER measured for the
+  first time — the reference (entity API aborted) is SILENT on every
+  path: its calculator LOAD renders the empty-state ("$0.00 / 0 items /
+  No line items yet"), its CREATE leaves the sub-dialog open with no
+  feedback and NO optimistic update, its DELETE leaves the row with no
+  feedback. The clone's mutation-failure superset verified live
+  (create: "Could not save the line item"; delete: "Could not remove
+  the line item" — dialog open + row stays + error toasts), but its
+  calculator LOAD failure was swallowed as an unhandled rejection
+  (`void loadLineItems(item.id)`) — silent, untested, an accident
+  rather than a decision.
+- 1 finding group (`docs/remediation-plan-v17.md`): the calculator
+  load-failure rebuild — `calculator-dialog.tsx`'s mount effect now
+  CATCHES the rejection and fires the honest error toast ("Could not
+  load the line items / Network error — check your connection and try
+  again" — per-open semantics, the same superset class as the v16 boot
+  toast and the dialogs' mutation toasts), rendering unchanged (the
+  reference's empty-state parity via the `?? []` fallback). Plus the
+  test tier: the previously-unpinned create/delete catch blocks now
+  guarded by regression-pin specs.
+- TDD: 3 new e2e specs (`tests/e2e/calculator-error.spec.ts`) using
+  route-aborted `**/api/line-items**` — RED at the exact unfixed values
+  (the load toast missing; the mutation pins passing, proving the
+  existing superset live) → 1-file fix → GREEN. SKILL lesson 35
+  documents the `void promise` swallow + the nested-Radix-dialog
+  aria-hidden trap (calculator assertions must wait until the
+  sub-dialog closes).
+- Full chain: lint · typecheck · 96/96 unit · build · **129/129 e2e**
+  (first full run, no flakes) · 30/30 smoke.
+- Live parity re-verified: the route-aborted calculator open renders
+  the reference's empty-state + the toast caught live; a live-API
+  reopen shows the normal state with NO toast. Dev DB restored to seed
+  state after the mutation probes.
+- All 15 screenshots regenerated — ZERO pixel changes (the fix is
+  behavior-only; `git status` on `docs/screenshots/` empty).
+- Docs aligned: README (counts 129, plan-v17 row), CLAUDE.md (counts +
+  the v17 e2e-contract note), AGENTS.md (v17 pin paragraph), SKILL
+  (state 96/129/30, lesson 35, Appendix B row), probe README (v17
+  catalog + the calculator-error technique), `docs/session_34.md`,
+  this worklog.
 
 ---
 
