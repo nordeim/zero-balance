@@ -147,7 +147,7 @@ export function ItemsView({ type }: { type: ItemType }) {
           style={{ background: ADD_BUTTON_GRADIENTS[type] }}
           onClick={() => openItemModal({ mode: "create", type })}
         >
-          <PlusIcon className="mr-2 h-5 w-5" />
+          <PlusIcon className="mr-2 h-4 w-4" />
           {meta.addLabel}
         </button>
       </div>
@@ -234,7 +234,7 @@ export function ItemsView({ type }: { type: ItemType }) {
         // near-black foreground; heading mb-2; description text-base (v6 G12).
         <div className="py-16 text-center">
           <Icon className="mx-auto mb-4 h-16 w-16 text-[#0a0a0a] opacity-20" />
-          <h3 className="mb-2 text-lg font-semibold" style={{ color: rgb.forestDark }}>
+          <h3 className="mb-2 text-xl font-semibold" style={{ color: rgb.forestDark }}>
             {meta.emptyTitle}
           </h3>
           <p className="mb-6 text-base" style={{ color: rgb.gray }}>
@@ -246,7 +246,7 @@ export function ItemsView({ type }: { type: ItemType }) {
             style={{ background: ADD_BUTTON_GRADIENTS[type] }}
             onClick={() => openItemModal({ mode: "create", type })}
           >
-            <PlusIcon className="mr-2 h-5 w-5" />
+            <PlusIcon className="mr-2 h-4 w-4" />
             {meta.addLabel}
           </button>
         </div>

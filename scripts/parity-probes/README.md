@@ -150,3 +150,51 @@ invocation):
 - `probe-v10-verify-fix.mjs` — the post-fix live verification driver
   (opens the sheet on the fixed build; the measure probe then asserts the
   active-link gradient/white/500 exactly matches the reference's)
+
+Session-21 additions (remediation-plan-v11 audit) — same with-server.sh
+per-command pattern; sessions `ref11`/`clone11` (desktop 1280×800) +
+`ref11m`/`clone11m` (390×844), then fresh `ref12`/`clone12` for the
+post-fix verification:
+
+- `probe-v11-viewport.mjs` / `probe-v11-viewport2.mjs` — the tablet /
+  intermediate breakpoints (767/768/1024): rail-vs-mobile-chrome switch,
+  burger hidden state, main offset, content column position — identical
+  (at 768 the ref offsets main to x=256 while the clone PADS it — the
+  visible column is identical; the DOM approach differs, the pixels
+  don't)
+- `probe-v11-rail-hover.mjs` — the desktop rail's inactive-link hover
+  (synthetic mouseover does NOT trigger CSS :hover — use agent-browser's
+  native `hover` with an `a[href]` selector; measured `rgb(24,24,27)` on
+  `rgb(240,253,244)` — identical)
+- `probe-v11-hero-status.mjs` — the NET ZERO GOAL status badge (label +
+  value colors for the live Under Budget state — identical; the regex
+  must exclude the "NET ZERO GOAL" heading to find the badge)
+- `probe-v11-filter.mjs` / `probe-v11-filter-fn.mjs` — the filter card
+  geometry + live search behavior (React-controlled input needs the
+  native value setter + input event; "zzz" reaches the FILTERED empty
+  state on both sites)
+- `probe-v11-filtered-empty.mjs` — the filtered empty state (found G1:
+  the ref's heading is 20px, the clone's was 18px)
+- `probe-v11-card-badges.mjs` — the income item-card badge census (any-tag
+  leaf scan; the ref's badges are DIVs with svg children, the clone's
+  SPANs — visually identical; the card finder must anchor on the item
+  name + amount, not on buttons)
+- `probe-v11-dialog-overlay.mjs` — the dialog overlay + panel (forest
+  0.5 scrim, 672×720 panel — identical)
+- `probe-v11-btn-focus.mjs` / `probe-v11-btn-shadows.mjs` — the button
+  focus-visible + ambient-shadow census (found G2: the ref's gradient
+  buttons carry v3's BARE shadow + the shadcn ring on focus; the clone
+  fell through to the browser default; programmatic
+  `focus({focusVisible:true})` works in Chromium — TS's DOM lib lags the
+  option)
+- `probe-v11-clone-calc.mjs` — the calculator's sm + outline button
+  variants (panel 768×515 identical; found the outline variant's missing
+  shadow-sm)
+- `probe-v11-verify-fix.mjs` … `probe-v11-verify-fix4.mjs` — the post-fix
+  live verification (Add button 147 = 147 / icon 16 / bare-shadow /
+  opacity 1; empty heading 20px both sides; the Save focus ring
+  byte-identical; the calculator variants matched)
+- **Full-string hygiene (lesson 25):** computed `box-shadow` strings are
+  multi-layer with the visible layer often LAST behind transparent lead
+  layers — never `.slice()` them when diffing (a truncated read nearly
+  produced a false "shadowless panel" finding this pass)

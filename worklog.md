@@ -6,7 +6,66 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`,
 `docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`,
 `docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`,
-`docs/remediation-plan-v9.md`, and `docs/remediation-plan-v10.md`.
+`docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`, and
+`docs/remediation-plan-v11.md`.
+
+---
+
+## Session 21 — Fresh verification & parity iteration v11 (2026-10-08)
+
+**Goal:** `git pull` to `061a16f` (the session-19 summary record), re-verify
+the v10 baseline, then a fresh two-site parity audit at computed-style depth
+of the dimensions no earlier pass had measured that way: the intermediate /
+tablet breakpoints (767/768/1024 — where the rail and the mobile chrome
+switch), the desktop rail hover, the hero status badge, the filter card's
+live behavior + the item-badge census, the dialog/sheet/stat-card
+box-shadows, the `.zb-btn-add` gradient-button family (ambient shadow,
+focus-visible ring, Plus-icon size, hover state), the calculator's
+sm/outline variants, and the logout affordance. Explicit
+mobile-navigation re-verification (the task focus) + reference data-drift
+check. Formal log: `docs/session_22.md` (the session_21.md slot holds the
+incoming session-19 conversation summary).
+
+- Baseline chain at `061a16f` fully green (96/104/30 + lint/typecheck/
+  build); v10 pins spot-checked in the code first.
+- Mobile stack re-verified end-to-end: R1 (the ref's toast container still
+  intercepts its burger's center hit), R2 (its sheet still traps after
+  nav — while ALSO re-confirming the v10 finding: its trapped sheet at
+  `/income` renders Income in the FULL active style), R4 (395px
+  overflow); all clone superset fixes intact (DIRECT hit, close-on-nav,
+  390px fit, sheet active highlighting + the root-route Dashboard
+  highlight). Reference data unchanged since session 19.
+- Near-false-finding defused: the ref's dialog panel box-shadow reads
+  "shadowless" through a truncated string — the visible layer trails two
+  transparent lead layers; the full strings are identical both sides.
+  Recorded as probe-hygiene lesson 25 (never `.slice()` computed
+  multi-layer strings).
+- 4 finding groups (`docs/remediation-plan-v11.md`): the empty-state
+  headings at 18px vs the reference's measured 20px (items + net-worth —
+  the ref's liabilities empty state was reachable live this pass because
+  that account has zero liabilities); the `.zb-btn-add` family (v3
+  bare-shadow ambient on the gradient buttons, v3 shadow-sm on the
+  outline variant, and the shadcn focus-visible ring — white inner +
+  1px #0a0a0a + transparent 2px outline — replacing the browser-default
+  outline); the Plus icons 20px → 16px on the 7 Add-button sites; and
+  the session-1 hover opacity-0.9 fade removed (the reference's gradient
+  buttons have no hover state).
+- Everything else measured MATCHED: tablet breakpoints (767/768/1024 —
+  identical chrome switching and content column), rail hover, hero
+  status badge, filter card (geometry + live behavior), item-badge
+  census, dialog overlay/panel, stat cards, calculator empty state,
+  QuickActionCard icons, Cancel primitive focus — and no logout UI on
+  either site (the clone's store/API logout is a headless superset).
+- TDD: 3 new/extended e2e specs (5 assertions failing for the right
+  reasons in RED) → 4-file fix → GREEN. Full chain: lint · typecheck ·
+  96/96 unit · build · **107/107 e2e** (one not-found navigation flake
+  on the first run, clean on re-run) · 30/30 smoke.
+- Live parity re-verified side by side on fresh sessions (Add button
+  147 = 147 / icon 16 / identical visible shadow layers; empty heading
+  20px both sides; the focused Save ring byte-identical; calculator
+  variants matched); 13 screenshots regenerated (10 changed — the
+  Add-button deltas); docs aligned (README/CLAUDE/AGENTS/SKILL/probe
+  README/session_22 + this worklog).
 
 ---
 

@@ -53,6 +53,7 @@ test.describe("empty states + content column (v6)", () => {
         icon: svg ? { w: Math.round(r!.width), h: Math.round(r!.height), color: scs!.color, opacity: scs!.opacity, mb: scs!.marginBottom } : null,
         iconClass: svg?.getAttribute("class") || null,
         headingMb: getComputedStyle(h).marginBottom,
+        headingFs: getComputedStyle(h).fontSize,
         desc: p ? { size: getComputedStyle(p).fontSize, color: getComputedStyle(p).color } : null,
       };
     });
@@ -72,8 +73,11 @@ test.describe("empty states + content column (v6)", () => {
     expect(state!.icon!.color).toBe("rgb(10, 10, 10)");
     expect(state!.icon!.opacity).toBe("0.2");
     expect(state!.icon!.mb).toBe("16px");
-    // Heading mb-2 (8px) + 16px gray-500 description.
+    // Heading mb-2 (8px) + text-xl (20px — the reference's empty-heading
+    // size, measured live on its filtered income empty state; v11 G1) +
+    // 16px gray-500 description.
     expect(state!.headingMb).toBe("8px");
+    expect(state!.headingFs).toBe("20px");
     expect(state!.desc!.size).toBe("16px");
     expect(state!.desc!.color).toBe("rgb(107, 114, 128)");
   });
@@ -125,6 +129,7 @@ test.describe("empty states + content column (v6)", () => {
         icon: svg ? { w: Math.round(r!.width), color: scs!.color, opacity: scs!.opacity, mb: scs!.marginBottom } : null,
         circle: block.querySelector('div[class*="rounded-[9999px]"]') ? "PRESENT" : "ABSENT",
         headingMb: getComputedStyle(h).marginBottom,
+        headingFs: getComputedStyle(h).fontSize,
         desc: p ? { size: getComputedStyle(p).fontSize, color: getComputedStyle(p).color } : null,
         btn: btn ? { text: (btn.textContent || "").trim(), bgImage: getComputedStyle(btn).backgroundImage.slice(0, 80) } : null,
       };
@@ -146,8 +151,10 @@ test.describe("empty states + content column (v6)", () => {
     expect(state!.icon!.opacity).toBe("0.2");
     expect(state!.icon!.mb).toBe("16px");
     expect(state!.circle).toBe("ABSENT");
-    // Heading mb-2 + 16px gray-500 desc + the orange-gradient Add button.
+    // Heading mb-2 + text-xl 20px (v11 G1 — measured live on the ref's
+    // liabilities empty state) + 16px gray-500 desc + the orange-gradient Add button.
     expect(state!.headingMb).toBe("8px");
+    expect(state!.headingFs).toBe("20px");
     expect(state!.desc!.size).toBe("16px");
     expect(state!.desc!.color).toBe("rgb(107, 114, 128)");
     expect(state!.btn!.text).toBe("Add Liability");

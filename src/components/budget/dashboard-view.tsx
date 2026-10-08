@@ -752,7 +752,7 @@ export function DashboardView() {
           style={{ background: ADD_BUTTON_GRADIENTS.dashboard }}
           onClick={() => openItemModal({ mode: "create", type: "expense" })}
         >
-          <PlusIcon className="mr-2 h-5 w-5" />
+          <PlusIcon className="mr-2 h-4 w-4" />
           Add Item
         </button>
       </div>

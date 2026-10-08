@@ -171,13 +171,18 @@
   font-size: 0.875rem;
   height: 2.25rem; /* h-9 */
   padding: 0.5rem 1rem; /* px-4 py-2 */
-  box-shadow: var(--shadow-sm);
+  /* v11 G2a: the reference's gradient buttons (Add/Save, every size)
+     carry v3's BARE shadow — two 0.1-alpha layers — NOT shadow-sm (the
+     navbar token). Measured live on its Add Income, Save Item, dashboard
+     Add Item and calculator Add Item. The `--shadow-sm` pin stays for
+     the navbar surface it was measured on. */
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   transition: opacity 150ms ease;
   white-space: nowrap;
 }
-.zb-btn-add:hover {
-  opacity: 0.9;
-}
+/* v11 G4: the reference's gradient buttons have NO hover state (opacity
+   stays 1, shadow unchanged — measured live with matches(":hover")).
+   The session-1 opacity-0.9 fade was an unmeasured assumption; removed. */
 /* shadcn `size="sm"` variant (calculator "Add Item"). */
 .zb-btn-add.zb-btn-add-sm {
   height: 2rem; /* h-8 */
@@ -191,11 +196,34 @@
   background-color: #ffffff;
   color: #0a0a0a;
   border: 1px solid #e5e5e5;
-  box-shadow: none;
+  /* v11 G2b: the outline variant carries v3's shadow-sm (0.05, single
+     layer) — the same slot as the reference's Cancel buttons. */
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 .zb-btn-add.zb-btn-add-outline:hover {
   background-color: #f5f5f5;
   opacity: 1;
+}
+/* v11 G2c: the reference's focus-visible composition (measured live on
+   its Save Item and Add First Item): a white zero-spread inner layer +
+   the 1px #0a0a0a ring + the variant's own ambient, plus v3's
+   outline-none (2px transparent, offset 2px) — NOT the browser-default
+   `outline: auto`. Source order keeps these winning over the rest rules. */
+.zb-btn-add:focus-visible,
+.zb-btn-add.zb-btn-add-outline:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow:
+    rgb(255 255 255) 0 0 0 0,
+    #0a0a0a 0 0 0 1px,
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+.zb-btn-add.zb-btn-add-outline:focus-visible {
+  box-shadow:
+    rgb(255 255 255) 0 0 0 0,
+    #0a0a0a 0 0 0 1px,
+    0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
 /* Modal overlay + panel (the reference's Base44 dialog chrome). */

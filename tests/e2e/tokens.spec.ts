@@ -341,3 +341,80 @@ test.describe("primitive chrome (v9)", () => {
     expect(radii.avatar).toBe("9999px");
   });
 });
+
+test.describe("gradient Add-button chrome (v11)", () => {
+  // The .zb-btn-add family (page-level / empty-state / net-worth /
+  // dashboard Add buttons): measured live on the reference, every Plus
+  // icon renders 16px (buttons 147/134/127 wide), the rest ambient is
+  // v3's BARE shadow (two 0.1 layers), and hover changes NOTHING
+  // (opacity stays 1 — the clone's 0.9 fade was a session-1 assumption).
+
+  test("page Add buttons: 16px Plus icon, v3 bare-shadow ambient, no hover fade (G2/G3/G4)", async ({ page }) => {
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+
+    const topbar = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("main button")].find(
+        (x) => (x.textContent || "").trim() === "Add Income" && x.getBoundingClientRect().top < 120,
+      );
+      if (!b) return null;
+      const svg = b.querySelector("svg");
+      return {
+        svgW: svg ? Math.round(svg.getBoundingClientRect().width) : null,
+        shadow: getComputedStyle(b).boxShadow,
+      };
+    });
+    expect(topbar!.svgW).toBe(16);
+    expect(topbar!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(topbar!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+
+    // Real hover: opacity must stay 1 (reference has no hover change).
+    await page.locator("main button", { hasText: "Add Income" }).first().hover();
+    const hovered = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("main button")].find(
+        (x) => (x.textContent || "").trim() === "Add Income" && x.getBoundingClientRect().top < 120,
+      );
+      return b ? { opacity: getComputedStyle(b).opacity, hover: b.matches(":hover") } : null;
+    });
+    expect(hovered!.hover).toBe(true);
+    expect(hovered!.opacity).toBe("1");
+
+    // The empty-state Add button carries the same 16px Plus (filter to zero).
+    await page.getByPlaceholder("Search income items...").fill("zzz-no-match");
+    await expect(page.getByText("No income items yet")).toBeVisible();
+    const emptyAdd = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("main button")].filter(
+        (x) => (x.textContent || "").trim() === "Add Income" && x.getBoundingClientRect().top > 200,
+      )[0];
+      if (!b) return null;
+      const svg = b.querySelector("svg");
+      return svg ? Math.round(svg.getBoundingClientRect().width) : null;
+    });
+    expect(emptyAdd).toBe(16);
+    await page.getByPlaceholder("Search income items...").fill("");
+  });
+
+  test("net-worth Add Asset + dashboard Add Item: 16px Plus icons (G3)", async ({ page }) => {
+    await page.goto("/networth");
+    await expect(page.getByText("3 items · $65,300")).toBeVisible();
+    const asset = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("main button")].find(
+        (x) => (x.textContent || "").trim() === "Add Asset",
+      );
+      const svg = b?.querySelector("svg");
+      return svg ? Math.round(svg.getBoundingClientRect().width) : null;
+    });
+    expect(asset).toBe(16);
+
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+    const dash = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("main button")].find(
+        (x) => (x.textContent || "").trim() === "Add Item",
+      );
+      const svg = b?.querySelector("svg");
+      return svg ? Math.round(svg.getBoundingClientRect().width) : null;
+    });
+    expect(dash).toBe(16);
+  });
+});

@@ -184,6 +184,94 @@ test.describe("dialog action buttons (v5)", () => {
     expect(lineFooter!.saveW).toBeGreaterThanOrEqual(300);
   });
 
+  test("button ambient shadows + focus-visible ring (v11 G2)", async ({ page }) => {
+    // Measured live on the reference: its gradient buttons (Save Item,
+    // Add Income, Add Item, the calculator's sm Add Item) carry v3's BARE
+    // shadow — rgba(0,0,0,0.1) 0 1px 3px, rgba(0,0,0,0.1) 0 1px 2px -1px —
+    // while its outline buttons (Cancel, Add First Item) carry v3's
+    // shadow-sm (0.05, single layer). On focus-visible EVERY variant
+    // renders the shadcn ring: a white zero-spread inner layer + the 1px
+    // #0a0a0a ring + the variant's own ambient, plus v3's outline-none
+    // (2px transparent, offset 2px). The clone's .zb-btn-add family fell
+    // through to the browser-default outline and the lighter shadow.
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const V3_SM = "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px";
+
+    const budget = await page.evaluate(() => {
+      const dlg = document.querySelector('[role="dialog"]');
+      const grab = (txt: string) => {
+        const b = [...(dlg?.querySelectorAll("button") || [])].find(
+          (x) => (x.textContent || "").trim() === txt,
+        );
+        if (!b) return null;
+        const cs = getComputedStyle(b);
+        return { rest: cs.boxShadow, outlineRest: `${cs.outlineStyle}/${cs.outlineWidth}` };
+      };
+      return { save: grab("Save Item"), cancel: grab("Cancel") };
+    });
+    // Rest shadows: Save = v3 bare shadow; Cancel (Button primitive) =
+    // v3 shadow-sm — both already pinned at the token level, asserted here
+    // as the v11 reference composition.
+    expect(budget.save!.rest).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(budget.save!.rest).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+    expect(budget.cancel!.rest).toContain(V3_SM);
+
+    // Focus-visible: programmatic focus with focusVisible:true (the same
+    // probe technique used live on the reference).
+    const focused = await page.evaluate(() => {
+      const dlg = document.querySelector('[role="dialog"]');
+      const b = [...(dlg?.querySelectorAll("button") || [])].find(
+        (x) => (x.textContent || "").trim() === "Save Item",
+      );
+      if (!b) return null;
+      // focusVisible is a real Chromium FocusOptions member (the live
+      // probes used it) — TS's DOM lib lags it, hence the cast.
+      (b as HTMLElement).focus({ focusVisible: true } as unknown as FocusOptions);
+      const cs = getComputedStyle(b);
+      return {
+        shadow: cs.boxShadow,
+        outline: `${cs.outlineStyle}/${cs.outlineWidth}/${cs.outlineColor}`,
+        offset: cs.outlineOffset,
+      };
+    });
+    expect(focused!.shadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+    expect(focused!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    // v3 outline-none: transparent 2px, offset 2 (NOT the browser default
+    // `auto` outline the clone rendered pre-fix).
+    expect(focused!.outline).toBe("solid/2px/rgba(0, 0, 0, 0)");
+    expect(focused!.offset).toBe("2px");
+    await page.keyboard.press("Escape");
+
+    // The calculator's sm + outline variants carry the same slots.
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+    const card = page.locator("main .group", { hasText: "Rent" }).first();
+    await card.hover();
+    await page.getByRole("button", { name: "Calculate" }).first().click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+    const calc = await page.evaluate(() => {
+      const dlg = document.querySelector('[role="dialog"]');
+      const grab = (txt: string) => {
+        const b = [...(dlg?.querySelectorAll("button") || [])].find(
+          (x) => (x.textContent || "").trim() === txt,
+        );
+        if (!b) return null;
+        const cs = getComputedStyle(b);
+        return { rest: cs.boxShadow };
+      };
+      return { addItem: grab("Add Item"), addFirst: grab("Add First Item") };
+    });
+    expect(calc.addItem!.rest).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(calc.addItem!.rest).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+    expect(calc.addFirst!.rest).toContain(V3_SM);
+  });
+
   test("asset dialog: outline Cancel + forest→lime gradient Save Asset", async ({ page }) => {
     await page.goto("/networth");
     await expect(page.getByText("3 items · $65,300")).toBeVisible();

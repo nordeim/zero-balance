@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-08
-project_state: 96 unit tests / 104 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 107 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -611,6 +611,28 @@ Numbered institutional lessons. Each traces to a concrete fix in
     its rail. The fix was one prop; the lesson is to sweep EVERY state
     dimension of a task-focus surface — active/inactive included — before
     assuming a component-level divergence (plan v10 G1).
+25. **Computed multi-layer strings hide their payload at the END.** The
+    reference's dialog panel reads `rgba(0,0,0,0) 0 0 0 0, rgba(0,0,0,0)
+    0 0 0 0, rgba(0,0,0,0.25) 0 25px 50px -12px` — two transparent lead
+    layers with the visible shadow LAST. A probe that `.slice()`d the
+    computed `box-shadow` at 70 chars reported "shadowless panel" and
+    nearly shipped a bogus fix; reading the string in full showed the
+    clone was byte-identical. The same trailing-transparent pattern
+    appears on focus rings (shadcn's white zero-spread inner layer) and
+    the sheet's shadow-lg. Never truncate computed `box-shadow`,
+    `transition`, or `outline` strings when diffing two sites — compare
+    them whole (plan v11 observations).
+26. **A "detail" nobody measured is still drift.** Three v11 findings were
+    session-1 defaults that no later pass questioned: the empty-state
+    heading's font size (`text-lg` vs the reference's 20px — v6 pinned
+    mb/desc/icon but not the size), the gradient buttons' hover fade
+    (`opacity: 0.9` vs the reference's no-change — hover state was never
+    measured on ANY button until v11), and the Plus icon 20px on Add
+    buttons (16px on the reference — every button GEOMETRY was pinned
+    but never the icon inside). The audit checklist now sweeps per-
+    component: rest state, hover state, focus-visible state, icon
+    sizes, ambient shadows, AND every state dimension of the surface's
+    children — not just the container (plan v11 G1–G4).
 
 ---
 
@@ -932,6 +954,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 15 — parity iteration v8 (`docs/remediation-plan-v8.md`) | Dialog footers rebuilt as the reference's flex-1 full-row split (Cancel ≈ 307px + Save ≈ 305px), all remaining badge/nav/Calculate named classes hex-pinned (plain rgb computed styles), stray `prisma/db/custom.db` untracked; every mobile-nav superset fix + v7 pin re-verified live — 96/92/30 green |
 | 2026-10-08 | Session 17 — parity iteration v9 (`docs/remediation-plan-v9.md`) | Donut re-sorted to the reference's value-DESC convention + `labelLine={false}`; dialog X-close rebuilt as the 36×36 in-header button (sticky header 69px); form labels restored to the inline shadcn-v1 line box (12px gap — v4's space-y margin-block-end is layout-ignored on inline first children, pinned in globals.css); 52px classification tiles; radio/switch #171717 primitive family (checked track, borders, dot, white ring-0 thumb); `rounded-full` → `rounded-[9999px]` ×24 sites (v4 emits calc(infinity)); login per-state control geometry (14px button text, 44px sign-up/forgot vs 48px sign-in) — 96/102/30 green |
 | 2026-10-08 | Session 19 — parity iteration v10 (`docs/remediation-plan-v10.md`) | Mobile sheet active-nav highlighting restored (the reference's sheet renders the current route in the full active style — white + the 135deg forest-medium→lime gradient + fw 500, same as its rail; the clone had suppressed it since session 1) — pinned by 2 new mobile-navigation specs; the pass also swept the Select popover OPEN state, card action-menu OPEN state, drill-down EXPANDED rows, guidelines leaves, live focus-visible rings, dialog scroll mechanics, date inputs, and empty-submit — all verified identical; reference's no-toast-on-save documented (clone toasts = superset UX) — 96/104/30 green |
+| 2026-10-08 | Session 21 — parity iteration v11 (`docs/remediation-plan-v11.md`) | Empty-state headings → 20px `text-xl` (items + net-worth); the `.zb-btn-add` family re-pinned — v3 bare-shadow ambient (gradient buttons, every size), v3 shadow-sm (outline variant), the shadcn focus-visible ring (white inner + 1px #0a0a0a + transparent 2px outline) replacing the browser-default outline; Plus icons 20→16px on the 7 Add-button sites; the session-1 hover opacity-0.9 fade removed (reference has no hover change) — pinned by 3 new/extended specs; the pass also swept the tablet breakpoints (767/768/1024), rail hover, hero status badge, filter card live behavior, item-badge census, dialog/sheet/stat-card shadows (full strings), and the no-logout parity — all verified identical — 96/107/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 
