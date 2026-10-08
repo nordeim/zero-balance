@@ -10,9 +10,77 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v11.md`, `docs/remediation-plan-v12.md`,
 `docs/remediation-plan-v13.md`, `docs/remediation-plan-v14.md`,
 `docs/remediation-plan-v15.md`, `docs/remediation-plan-v16.md`,
-`docs/remediation-plan-v17.md`, and `docs/remediation-plan-v18.md`.
+`docs/remediation-plan-v17.md`, `docs/remediation-plan-v18.md`,
+and `docs/remediation-plan-v19.md`.
 
 ---
+
+---
+
+## Session 37 — Fresh verification & parity iteration v19 (2026-10-09)
+
+**Goal:** refresh the workspace (`git pull` to `7576e56` — the
+environment survived the session boundary: `.env`/`db/`/node_modules
+intact, all standing brief requirements re-verified), re-verify the v18
+baseline, code-audit the recent changes (repo skills:
+code-review-and-audit native-CLI fallback — lint/tsc/tests green; npm
+audit = the same 5 dev-only ESLint braces advisories, no patched
+release; secret scan clean), then the fresh two-site parity surface —
+**the VLM VISUAL SWEEP** (the session-36 log's top suggestion, extended
+from the auth surfaces to the app views and dialogs: the first
+full-page visual-AI comparison layer the project has run) — plus the
+explicit mobile-navigation re-verification + data-drift check + the
+tablet-breakpoint re-measurement. Formal log: `docs/session_38.md`
+(the session_37.md slot holds the incoming session-35 conversation
+summary).
+
+- Baseline chain at `7576e56` fully green (96/134/30 + lint/typecheck/
+  build — first full run, no flakes); the pulled v18 changeset
+  re-verified in the code first (the caught confirm bars + the
+  route-announcer-hardened register spec).
+- Mobile stack re-verified end-to-end: R1 (the ref's TWO toast
+  containers still intercept the burger's center hit at (38,30) —
+  agent-browser's actionability check refused the click, the bug
+  live; the clone's is DIRECT on the svg), R2 (the ref's sheet still
+  traps after nav; the clone's closes + 390px fit), R3 (nothing active
+  on `/` on the ref; the clone highlights Dashboard), R4 (ref
+  395/464px overflow; clone 390 on all six routes). Data drift clean —
+  thirteenth consecutive check.
+- **The VLM sweep** (12 auth pairs + 5 app views + 3 dialogs, z-ai
+  vision + a mechanical pixel-diff layer + MD5 asset hashing): the auth
+  surfaces IDENTICAL ×6 (the v12/v13 text pins held; the logo PNGs
+  byte-identical by MD5), the app views LAYOUT_IDENTICAL ×5, the
+  dialogs clean except ONE real drift — the item dialog's
+  RECURRING-TOGGLE ROW (the reference: switch LEFT as the first child,
+  no calendar icon, no border, a green-tinted rgb(245,248,245) surface,
+  h 72; the clone: icon+label left, switch right, 1px border,
+  transparent, h 74). Two VLM hallucinations DOM-refuted (the "faded
+  logo" — MD5-identical; the "taller button" — 294×44 both) — lesson
+  37: the VLM is a screening layer, every flag needs measurement. The
+  calculator's "extra line" refuted as a matching data-conditional.
+  Tablet breakpoints 767/768/1024 re-measured: visual parity holds
+  (rail switch at 768 both; first heading x=288 both).
+- G1 fixed TDD-first: `budget-item-dialog.tsx`'s recurring row
+  rearranged to the reference's switch-left structure (the CalendarIcon
+  and its import removed, the border dropped, the rgb(245,248,245)
+  inline background added; the v9 switch-primitive pins untouched).
+  1 new e2e spec (the dialog-buttons spec's recurring-row test —
+  arrangement + chrome assertions), RED at the unfixed state, GREEN
+  after the fix.
+- Full chain: lint · typecheck · 96/96 unit · build · **135/135 e2e**
+  · 30/30 smoke.
+- Live parity re-verified: the fixed row measured on both sites — all
+  8 values match exactly (swIdx 0, swX 16, labelX 64, h 72, border
+  0px, bg rgb(245,248,245), svg 0, gap 12px); the post-fix dialog
+  screenshot pair passes the VLM comparison.
+- All 15 screenshots regenerated — exactly ONE changed
+  (`07-add-item-modal.png`, the dialog shot; the fix is
+  dialog-internal, every other shot pixel-stable).
+- Docs aligned: README (counts 135, plan-v19 row), CLAUDE.md (counts +
+  the recurring-row pin), AGENTS.md (the v19 pin paragraph + the
+  VLM-sweep methodology), SKILL (state 96/135/30, lesson 37,
+  Appendix B row), probe README (v19 catalog), `docs/session_38.md`,
+  this worklog.
 
 ---
 

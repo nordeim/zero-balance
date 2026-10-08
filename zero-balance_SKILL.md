@@ -7,9 +7,9 @@ description: >
   suite. This skill captures every design decision, anti-pattern, debugging
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
-last_updated: 2026-10-08
+last_updated: 2026-10-09
 
-project_state: 96 unit tests / 134 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 135 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -772,6 +772,29 @@ Numbered institutional lessons. Each traces to a concrete fix in
     "Could not save the liability" / "Could not delete the liability"
     (plan v18 G1/G2).
 
+37. **The VLM screenshot sweep is a SCREENING layer — every flagged
+    diff must be DOM/measurement-verified before it becomes a
+    finding.** The v19 sweep (full-page screenshot pairs through the
+    z-ai vision CLI — the first visual-AI comparison layer, extending
+    computed-style probes) compared 12 auth-state pairs + 5 app views +
+    3 dialogs. It found ONE real drift (the item dialog's
+    recurring-toggle row: the reference runs the switch LEFT as the
+    row's first child with the label right, NO calendar icon, NO
+    border, on a green-tinted `rgb(245,248,245)` surface; the clone ran
+    icon+label left, switch right, 1px border, transparent — h 74 vs
+    72). It ALSO hallucinated twice: a "faded smaller logo" (the two
+    PNG assets are MD5-identical and both render 80×80 from 480×480)
+    and a "taller wider sign-in button" (294×44 on both). The
+    discipline: VLM verdict → DOM measurement → pin spec asserting the
+    MEASURED values (never the VLM's words). The companion pixel-diff
+    layer's 4–20% deltas decompose into font anti-aliasing noise (two
+    Chrome instances rasterizing the same fonts) plus the reference's
+    "Edit with Base44" floating platform badge (platform chrome, not
+    app design) — decompose before concluding drift. The same sweep
+    also DOM-verified the calculator's "• Will update category total"
+    as a matching data-conditional (the reference shows it on a
+    non-zero item; hidden when total === amount) (plan v19 G1).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1100,6 +1123,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 31 — parity iteration v16 (`docs/remediation-plan-v16.md`) | The boot DATA-FAILURE state measured for the first time (route-aborted entity API): the reference STAYS in-app rendering its SILENT ZERO-STATE (full shell, 0.0% / $0.00 / ✓ NET ZERO, items views "0 items · $0.00" + standard empty states, NO error surface) while the clone's single `catch` bumped the authenticated user to `/login`; fixed with a nested try in `boot()` (user stays, `bootError` flag) + the one-shot honest error toast in AppShell; the reference's mutation failure measured too (SILENT no-op — dialog stays open, no feedback; the clone's dialog + error-toast superset verified live) and its client-nav under a dead API (no refetch — in-memory); mobile-nav R1–R4 re-verified + data drift clean (tenth check) — 96/126/30 green |
 | 2026-10-08 | Session 33 — parity iteration v17 (`docs/remediation-plan-v17.md`) | The CALCULATOR LINE-ITEM ERROR TIER measured for the first time (the parent-recalc family the session-32 log flagged next): the reference is SILENT on every path with its entity API dead (calculator load → the empty-state "$0.00 / 0 items / No line items yet"; create → sub-dialog open, no feedback, no optimistic update; delete → row stays, no feedback); the clone's mutation-failure superset verified live and PINNED (create: "Could not save the line item"; delete: "Could not remove the line item"), while its calculator LOAD failure was swallowed as an unhandled rejection (`void loadLineItems(item.id)`) — fixed with a caught mount effect + the "Could not load the line items" toast (per-open semantics, rendering unchanged — the reference's empty-state parity via `?? []`); 3 new e2e specs (load/create/delete under route-aborted `**/api/line-items**`); lesson 35 documents the void-swallow + the nested-dialog aria-hidden trap; mobile-nav R1–R4 re-verified + data drift clean (eleventh check) — 96/129/30 green |
 | 2026-10-09 | Session 35 — parity iteration v18 (`docs/remediation-plan-v18.md`) | The NET-WORTH ASSET/LIABILITY ERROR TIER measured for the first time (the last unpinned dialog family, per the session-34 suggestion): the reference is SILENT on both paths with its entity API dead (asset delete → no confirmation, card stays, zero feedback; asset save → dialog stays open, no feedback); the clone's save-failure superset verified live and PINNED ("Could not save the asset" / "Could not save the liability"), while BOTH delete paths swallowed the rejection (`void deleteAsset()` / `void deleteLiability()` — the v17 void accident in its last hiding place) — fixed with caught confirm-bar handlers + the "Could not delete the asset/liability" toasts (per-click semantics, surfaces unchanged) — and the post-fix grep sweep surfaced a THIRD site (`void deleteItem()` in item-card.tsx, the card-menu path the v16 dialog audit missed), fixed identically with "Could not delete the item"; 5 new e2e specs (asset/liability save/delete under route-aborted APIs + the item-card delete); G2: the register duplicate-email flake root-caused as Next.js's route announcer rendering a second empty `role=alert` — the spec's bare waitForSelector matched it and raced the banner; hardened with a text-filtered retrying locator (lesson 36); mobile-nav R1–R4 re-verified + data drift clean (twelfth check) — 96/134/30 green |
+| 2026-10-09 | Session 37 — parity iteration v19 (`docs/remediation-plan-v19.md`) | The **VLM VISUAL SWEEP** — the first full-page visual-AI comparison layer (the session-36 log's top suggestion): 12 auth-state pairs + 5 app views + 3 dialogs compared through the z-ai vision CLI with a mechanical pixel-diff layer + MD5 asset hashing. Results: the auth surfaces IDENTICAL ×6 (the v12/v13 text pins held under full-page diffing; the logo PNGs byte-identical by MD5, both 80×80), the app views LAYOUT_IDENTICAL ×5 (the dashboard's three flags are known supersets/data), the dialogs clean except ONE real drift: the item dialog's RECURRING-TOGGLE ROW (the reference runs the switch LEFT — the row's first child, 12px gap to the label block — with NO calendar icon, NO border, and a green-tinted rgb(245,248,245) inline background, h 72; the clone ran icon+label left, switch right (justify-between), 1px border, transparent bg, h 74) — DOM-verified on four axes, fixed to the reference's arrangement, pinned by the dialog-buttons spec's new recurring-row test; two VLM hallucinations DOM-refuted (the "faded logo", the "taller button" — lesson 37: the VLM is a screening layer, every flag needs measurement); the calculator's "extra line" refuted as a matching data-conditional; tablet breakpoints 767/768/1024 re-measured (rail switch at 768 both, heading x=288 both); mobile-nav R1–R4 re-verified + data drift clean (thirteenth check) — 96/135/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

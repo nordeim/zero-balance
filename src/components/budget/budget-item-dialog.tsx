@@ -6,7 +6,7 @@
 // preset type; editing loads the item's values.
 
 import * as React from "react";
-import { CalendarIcon, CreditCardIcon, Loader2Icon, SaveIcon, Trash2Icon } from "lucide-react";
+import { CreditCardIcon, Loader2Icon, SaveIcon, Trash2Icon } from "lucide-react";
 import { Dialog, DialogCloseButton, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -284,23 +284,27 @@ export function BudgetItemDialog() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border p-4" style={{ borderColor: rgb.border }}>
-            <div className="flex items-center gap-3">
-              <CalendarIcon className="h-5 w-5" style={{ color: rgb.gray }} />
-              <div>
-                <Label htmlFor="item-recurring" className="cursor-pointer">
-                  Recurring Item
-                </Label>
-                <p className="text-xs" style={{ color: rgb.gray }}>
-                  This item repeats based on the frequency
-                </p>
-              </div>
-            </div>
+          {/* v19 (plan-v19 G1, DOM-verified on the reference): the row runs
+              switch-LEFT + label right (12px gap), borderless, on the
+              reference's green-tinted rgb(245,248,245) surface — no calendar
+              icon (the reference's row carries no svg). */}
+          <div
+            className="flex items-center gap-3 rounded-lg p-4"
+            style={{ backgroundColor: "rgb(245, 248, 245)" }}
+          >
             <Switch
               id="item-recurring"
               checked={form.recurring}
               onCheckedChange={(v) => set("recurring", v)}
             />
+            <div>
+              <Label htmlFor="item-recurring" className="cursor-pointer">
+                Recurring Item
+              </Label>
+              <p className="text-xs" style={{ color: rgb.gray }}>
+                This item repeats based on the frequency
+              </p>
+            </div>
           </div>
 
           <div className="space-y-2">

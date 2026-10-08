@@ -437,3 +437,44 @@ run-probe.sh / one-invocation patterns:
   and 0 liabilities — its Liabilities tab renders "No liabilities
   yet"; the clone's seed (3 assets, 2 liabilities) is a superset by
   design.
+
+Session-37 additions (remediation-plan-v19 audit) — the VLM visual
+sweep (the first full-page visual-AI comparison layer) + the tablet
+breakpoint re-measurement, plus the standing drift/nav probes:
+
+- `probe-drift-v19.mjs` / `probe-census-v19.mjs` — the standing
+  data-drift pair (hero allocation/balance + the per-view "N items ·
+  $X" census; the census's regex needs the literal "·" separator).
+- `probe-r1-v19.mjs` — the R1 burger hit test (elementFromPoint at the
+  center + the fixed top-0 container census with pointer-events).
+- `probe-r3-v19.mjs` — the R3 root-route nav-highlight probe (rail link
+  colors/weights + the nav landmark).
+- `probe-tablet-v19.mjs` — the 767/768/1024 breakpoint probe (rail
+  display/geometry, mobile header, main offset, scrollWidth). NOTE: the
+  clone's `<main>` spans full width with the content wrapper carrying
+  `md:ml-64` — compare the first HEADING's x (288 on both), not
+  main.x, or the structural difference reads as drift.
+- **VLM sweep technique:** capture full-page screenshot PAIRS (same
+  viewport, same state) on both sites, then `z-ai vision -p "<layout
+  prompt that IGNORES data differences>" -i ref.png -i clone.png`.
+  The VLM is a SCREENING layer: this pass it found one real drift (the
+  recurring-row) and hallucinated two (the "faded logo" — MD5-identical
+  assets; the "taller button" — 294×44 both). ALWAYS DOM-verify every
+  flag before filing it; pin specs assert MEASURED values.
+- **pixel-diff decomposition:** the mechanical layer (PIL
+  ImageChops.difference) reads 4–20% differing pixels even on
+  identical pages — font anti-aliasing noise (two Chrome instances)
+  + the reference's "Edit with Base44" platform badge. Decompose
+  (row/col profiles + region crops + VLM on the CROPS) before
+  concluding drift.
+- **MD5 asset hashing:** `md5sum` the reference's served logo against
+  the local `public/` copy settles asset-fidelity flags in one command
+  (the v19 sweep's logo was byte-identical).
+- The reference's dialogs need their X button to close (no Escape —
+  superset fix #5); find it via `[...dlg.querySelectorAll('button')]`
+  + `svg.lucide-x`.
+- The reference's calculator shows "• Will update category total" ONLY
+  when total ≠ item.amount (hidden on its $0.00 Miscellaneous item,
+  shown on its $300 Investments item) — the clone's conditional
+  matches; don't read an "extra line" on one side as drift without
+  checking the other side's data state.

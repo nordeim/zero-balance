@@ -545,4 +545,70 @@ test.describe("dialog chrome (v9)", () => {
     expect(x!.h).toBe(36);
     expect(x!.svgW).toBe(16);
   });
+
+  test("the recurring row renders the reference's switch-left tinted layout (v19)", async ({
+    page,
+  }) => {
+    // Found by the v19 VLM visual sweep and DOM-verified on both sites
+    // (docs/remediation-plan-v19.md G1): the reference renders the
+    // recurring-toggle row with the SWITCH on the LEFT (the row's first
+    // child, 12px gap to the text block), NO calendar icon, NO border,
+    // and a green-tinted rgb(245,248,245) background — h 72, radius 8,
+    // p-4. The pre-fix clone ran icon + label left, switch right
+    // (justify-between), 1px border, transparent bg, h 74.
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const row = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]')!;
+      const sw = d.querySelector('[role="switch"]');
+      if (!sw) return null;
+      const row = sw.parentElement!;
+      const rr = row.getBoundingClientRect();
+      const cs = getComputedStyle(row);
+      // the switch's position among the row's ELEMENT children (the
+      // hidden input sits inside the Radix structure; compare against
+      // element children the way the DOM probe did).
+      const kids = [...row.children].filter((c) => c.tagName !== "INPUT");
+      const swIdx = kids.indexOf(sw);
+      const labelBlock = kids.find(
+        (c) => (c.textContent || "").includes("Recurring Item"),
+      );
+      const sr = sw.getBoundingClientRect();
+      const lr = labelBlock ? labelBlock.getBoundingClientRect() : null;
+      return {
+        swIdx,
+        swX: Math.round(sr.x - rr.x),
+        labelX: lr ? Math.round(lr.x - rr.x) : null,
+        labelRightOfSwitch: lr ? lr.x > sr.x + sr.width : null,
+        h: Math.round(rr.height),
+        borderWidth: cs.borderWidth,
+        bg: cs.backgroundColor,
+        radius: cs.borderRadius,
+        svgCount: row.querySelectorAll("svg").length,
+        gap: cs.gap || cs.columnGap,
+      };
+    });
+    expect(row).not.toBeNull();
+    // The switch is the row's FIRST element child (index 0 among
+    // non-input children), LEFT of the label block, 16px from the row's
+    // edge (p-4), with the label block AFTER it (reference: sw x=16,
+    // label x=64, 12px gap).
+    expect(row!.swIdx).toBe(0);
+    expect(row!.swX).toBe(16);
+    expect(row!.labelRightOfSwitch).toBe(true);
+    // Borderless, green-tinted background, 72 tall, 8px radius.
+    expect(row!.borderWidth).toBe("0px");
+    expect(row!.bg).toBe("rgb(245, 248, 245)");
+    expect(row!.h).toBe(72);
+    expect(row!.radius).toBe("8px");
+    // No icons in the row (the reference carries no calendar icon).
+    expect(row!.svgCount).toBe(0);
+    // 12px flex gap between the switch and the text block.
+    expect(row!.gap).toBe("12px");
+    await page.keyboard.press("Escape");
+  });
 });
