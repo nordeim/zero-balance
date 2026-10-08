@@ -8,7 +8,75 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`,
 `docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`,
 `docs/remediation-plan-v11.md`, `docs/remediation-plan-v12.md`,
-`docs/remediation-plan-v13.md`, and `docs/remediation-plan-v14.md`.
+`docs/remediation-plan-v13.md`, `docs/remediation-plan-v14.md`, and
+`docs/remediation-plan-v15.md`.
+
+---
+
+## Session 29 — Fresh verification & parity iteration v15 (2026-10-08)
+
+**Goal:** rebuild the workspace from scratch (the sandbox had been reset —
+both repos re-cloned, `.env`/db re-created, all standing brief requirements
+re-verified), re-verify the v14 baseline at `04e6b4e`, code-audit the
+recent changes (repo skills: code-review-and-audit native-CLI fallback —
+lint/tsc/tests green; npm audit = the same 5 dev-only ESLint braces
+advisories, no patched release; secret scan clean), then a fresh two-site
+parity audit of the LAST unmeasured surface class — the loading/spinner
+states during data fetches — plus the Select keyboard flows, a VLM
+three-page sweep (income/savings/mobile), and the explicit
+mobile-navigation re-verification + data-drift check. Formal log:
+`docs/session_30.md` (the session_29.md slot holds the incoming
+session-27 conversation summary).
+
+- Baseline chain at `04e6b4e` fully green (96/119/30 + lint/typecheck/
+  build; one known login-parity 409 flake, clean in isolation + re-run);
+  v14 pins spot-checked in the code first.
+- Mobile stack re-verified end-to-end: R1 (the ref's TWO toast containers
+  still intercept the burger's center hit; the clone's is DIRECT on the
+  svg), R2 (the ref's sheet still traps after nav — `sheetStillOpen:
+  true` + overlay; the clone's closes + 390px fit), R3 (nothing active
+  on `/` on the ref; the clone highlights Dashboard), R4 (ref 395/464px
+  overflow; clone 390 on all six routes). Sheet geometry + link
+  positions identical. Data drift clean — ninth consecutive check.
+- Fresh angles: the LOADING STATE measured for the first time — the
+  reference renders a DOM-replacing full-screen spinner on every
+  full-page load (fixed inset-0 flex centered overlay, white behind,
+  `w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full
+  animate-spin`, NO shell in the DOM, until the DATA renders); the
+  clone's spinner drifted on chrome (2px lime/transparent-top), DOM
+  (inline in main, shell mounted), and timing (booted flipped after the
+  session probe, not the data). The Select keyboard flows: the ref is
+  internally inconsistent (filter selects advance the highlight, dialog
+  selects highlight current — the clone's uniform Radix matches the
+  dialog/a11y pattern; documented). VLM sweep: every flag DOM-refuted
+  as data-driven; mobile dashboard MATCH.
+- 1 finding group (`docs/remediation-plan-v15.md`): the loading-state
+  rebuild — `app-shell.tsx` renders ONLY the reference's overlay +
+  slate spinner while `!booted` (hex pins per the v8 named-palette
+  lesson, 9999px per the v9 radius lesson, `role="status"` kept as the
+  a11y superset), and `store.boot()` flips `booted` AFTER `refresh()`
+  resolves for authed users.
+- TDD: 4 new e2e specs (`tests/e2e/loading-state.spec.ts`) using
+  route-delayed API interception (`page.route` + `waitForTimeout` +
+  `unrouteAll({behavior:'ignoreErrors'})`) — RED at the exact unfixed
+  values → 2-file fix → GREEN. SKILL lesson 33 documents the
+  route-delay technique, the rotated-bounding-box measurement trap, and
+  the 1280×720 Desktop-Chrome viewport gotcha.
+- Full chain: lint · typecheck · 96/96 unit · build · **123/123 e2e**
+  (first full run, no flakes) · 30/30 smoke.
+- Live parity re-verified: the prerendered HTML ships exactly the
+  reference's loading DOM (overlay + spinner + toast region, ZERO
+  shell elements); the spinner caught live on a real reload; the
+  post-boot shell + seed arithmetic verified on a fresh session.
+- All 15 screenshots regenerated — 5 changed, every diff verified as
+  seed date-text drift (the re-seeded DB's relative-day offsets; no
+  visual-surface change — the spinner is transient, invisible in the
+  content-waiting shots).
+- Docs aligned: README (counts 123, plan-v15 row), CLAUDE.md (counts +
+  the v15 e2e-contract note), AGENTS.md (v15 pin paragraph + the
+  updated prerender note), SKILL (state 96/123/30, lesson 33,
+  Appendix B row), probe README (v15 catalog), `docs/session_30.md`,
+  this worklog.
 
 ---
 

@@ -315,3 +315,41 @@ invocation, `agent-browser set viewport <w> <h>` for geometry):
 - **session-cookie note:** `agent-browser close` wipes session cookies
   on restart (the e2e-run discipline) — re-login after closing
   sessions mid-audit.
+
+Session-29 additions (remediation-plan-v15 audit) — sessions
+`ref16`/`clone16` desktop + `ref16m`/`clone16m` mobile, the :3200 parity
+server per `scripts/with-server.sh`:
+
+- `probe-v15-refdata.mjs` / `probe-v15-refdata2.mjs` — the reference
+  data-drift check (allocation %, Net Balance, stat-card totals, donut
+  legend — unchanged since session 19: 30.5%, +$3475.00).
+- `probe-v15-burger.mjs` — the R1 hit-test formalized as a reusable
+  probe: burger geometry + the full `elementsFromPoint` hit stack + the
+  toast-container census (`toastContainers: 2` on the ref, 0 on the
+  clone; `svgDirectHit` is the assertion).
+- `probe-v15-loading.mjs` — the LOADING-state census (never measured
+  before v15): busy indicators (aria-busy/progressbar/skeleton
+  classes/spin animations), "Loading" text, main content count, and
+  `dataLoaded` — run immediately after `open` to land inside the fetch
+  window (found G1: the ref renders a spinner; the clone had none
+  visible at that moment).
+- `probe-v15-loading2.mjs` / `probe-v15-loading3.mjs` /
+  `probe-v15-loading4.mjs` — the spinner's full chrome + container
+  chain (`fixed inset-0 flex items-center justify-center`, transparent,
+  the toast viewport as the only sibling), and the under-overlay DOM
+  census (the ref's #root holds ONLY the overlay + toast viewport — no
+  rail/header/main; body bg WHITE). LESSON: a rotating element's
+  `getBoundingClientRect()` measures the ROTATED box (the 32×32
+  spinner measured 38–40px) — use `offsetWidth/offsetHeight`.
+- `probe-v15-select-kb.mjs` + real `press ArrowDown/Enter` — the
+  filter-select KEYBOARD flow (found the ref's internal inconsistency:
+  its filter selects highlight the option AFTER the current value on
+  open, its dialog selects highlight the current value — the clone's
+  uniform Radix matches the dialog/a11y pattern; documented, no action).
+- `probe-v15-sheet-close.mjs` — the R2 clone-side sheet close-on-nav
+  check ( Income link geometry + post-nav sheet/overlay/scrollWidth).
+- **route-delay technique (e2e only):** the loading window is ~5ms on
+  localhost — reproduce it deterministically with Playwright
+  `page.route()` + `waitForTimeout` before `route.continue()`, and
+  `page.unrouteAll({ behavior: "ignoreErrors" })` before the spec ends
+  (in-flight route callbacks outliving the test fail it).

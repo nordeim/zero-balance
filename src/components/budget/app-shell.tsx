@@ -39,6 +39,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     void boot();
   }, [boot]);
 
+  // v15 G1 (measured live on the reference): a full-page load renders a
+  // DOM-replacing loading state — #root holds ONLY a fixed inset-0 flex
+  // centered overlay (the body behind is white; the app's warm background
+  // mounts with the shell) wrapping the reference's slate spinner
+  // (32×32 border-box, 4px borders: slate-200 #e2e8f0 on three sides +
+  // slate-800 #1e293b on top, radius 9999px, spin 1s linear infinite).
+  // NO rail, NO header, NO main while `!booted` — the shell doesn't
+  // half-render around the spinner. Client-side navigations never hit
+  // this branch (the store persists; booted stays true). The hex pins
+  // follow the v8 named-palette lesson (the reference's slates compute
+  // as plain rgb in its v3 build; v4 would emit lab()), 9999px the v9
+  // radius lesson. role="status" + aria-label stay (a11y superset, the
+  // documented class — the reference has no aria).
+  if (!booted) {
+    return (
+      <div
+        className="fixed inset-0 flex items-center justify-center"
+        style={{ background: "#ffffff" }}
+      >
+        <div
+          className="h-8 w-8 animate-spin rounded-[9999px] border-4 border-[#e2e8f0] border-t-[#1e293b]"
+          role="status"
+          aria-label="Loading"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-svh w-full">
       <AppSidebar navOpen={navOpen} onNavOpenChange={setNavOpen} />
@@ -50,18 +78,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           inner overflow-hidden cards clip gracefully instead. */}
       <main className="flex min-w-0 flex-1 flex-col md:pl-(--sidebar-width)">
         <MobileTopbar onOpenNav={() => setNavOpen(true)} />
-        {booted ? (
-          children
-        ) : (
-          <div className="flex flex-1 items-center justify-center p-8">
-            <div
-              className="h-8 w-8 animate-spin rounded-[9999px] border-2 border-t-transparent"
-              style={{ borderColor: "var(--lime-green)", borderTopColor: "transparent" }}
-              role="status"
-              aria-label="Loading"
-            />
-          </div>
-        )}
+        {children}
       </main>
       <ModalHost />
     </div>

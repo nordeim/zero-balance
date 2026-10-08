@@ -104,8 +104,17 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
   boot: async () => {
     try {
       const { user } = await api.get<{ user: SessionUser | null }>("/api/auth/me");
-      set({ user, booted: true });
-      if (user) await get().refresh();
+      if (user) {
+        // v15 G1 (measured live): the reference's full-screen loading state
+        // covers the DATA fetch, not just the session probe — `booted` (and
+        // the spinner it gates) only resolves after the data lands. A
+        // logged-out visitor keeps the immediate flip: RequireSession
+        // redirects to /login either way, and there is no data to wait for.
+        await get().refresh();
+        set({ user, booted: true });
+      } else {
+        set({ user: null, booted: true });
+      }
     } catch {
       set({ user: null, booted: true });
     }

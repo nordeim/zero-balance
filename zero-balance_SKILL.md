@@ -8,7 +8,8 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-08
-project_state: 96 unit tests / 119 e2e tests / 30 smoke steps — all green
+
+project_state: 96 unit tests / 123 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -701,6 +702,22 @@ Numbered institutional lessons. Each traces to a concrete fix in
     (the documented transition-settle rule applies to icon currentColor
     too, not just nav links) (plan v14 G1/G2).
 
+33. **A "fast" surface still has a loading state — measure it by slowing
+    the network.** The v15 audit found the boot spinner drifting on three
+    axes nobody had seen because localhost resolves the data fetch in
+    ~5ms: the window only opens under real network latency. Reproduce it
+    deterministically in e2e with `page.route()` + `route.continue()`-after-
+    `waitForTimeout` delays (the loading-state spec's `delayRoutes`), and
+    unhook with `page.unrouteAll({ behavior: "ignoreErrors" })` before the
+    spec ends — in-flight route callbacks outliving the test FAIL it with
+    `"page.waitForTimeout: Test ended."`. Two more measurement rules from
+    the same pass: a rotating element's `getBoundingClientRect()` measures
+    the ROTATED bounding box (the 32×32 spinner measured 38–40px at
+    various angles — use `offsetWidth/offsetHeight` for the true box),
+    and Playwright's `devices["Desktop Chrome"]` is 1280×**720**, not
+    800 — read `window.innerWidth/innerHeight` live instead of
+    hard-coding viewport math (plan v15 G1).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1025,6 +1042,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 23 — parity iteration v12 (`docs/remediation-plan-v12.md`) | Login ERROR state rebuilt as the reference's red-tinted bordered banner (red-50/70%, red-200 border, radius 12, pad 16, centered red-700 14px/400 — the same slot serves 401s and sign-up mismatches); per-route tab titles restored ("Income \| ZeroBudget" etc., one-word "Networth") via route-segment `layout.tsx` metadata + the root pipe template — the first client-effect attempt was reverted after discovering React Float's post-hydration `<title>` re-emission (lesson 27); login root promoted to a `<main>` landmark; forgot-password rebuilt as the reference's confirmation-state layout with honest copy (no mail transport) — pinned by 5 new/extended specs; the pass also swept the payment-method filter + listbox, the a11y landmark/h1 structure, and the reference's sheet-closes-on-Escape behavior (matching) — 96/112/30 green |
 | 2026-10-08 | Session 25 — parity iteration v13 (`docs/remediation-plan-v13.md`) | Register duplicate-email 409 text matched to the reference ("A user with this email already exists"); sign-up password placeholders restored ("Min. 8 characters" / "Re-enter password"); login inputs' FOCUS ring pinned as the reference's two-layer shadcn ring (white 2px + slate-400 4px — v4's color-only ring utility emits no shadow) — pinned by 3 new specs; the pass also swept the register banner chrome, login 401 text, item-card date formats, hero progress-bar chrome, the OR divider, Google button chrome + OAuth divergence, cursor styles, authed /login, and the code audit (npm audit = dev-only unpatchable braces advisory; secret scan clean) — 96/115/30 green |
 | 2026-10-08 | Session 27 — parity iteration v14 (`docs/remediation-plan-v14.md`) | Donut hover TOOLTIP pinned to the reference (value "$X.XX" + full recharts-2 chrome — border #e5e7e3, radius 8, 0 4px 12px shadow, black item row; recharts 3 drifts on all four axes); net-worth tab icons restored (16px lucide circle-arrow-up/down, mr-2, currentColor — active green-900/inactive gray); net-worth page header's 48×48 gradient icon chip added (forest→lime, radius 12, 24px white trending-up, BOTH viewports — the items-view chip family extended to the page the v4 pin missed) — found via a VLM screenshot sweep with DOM verification of every flag; the pass also swept the net-worth tablist keyboard flow, dialog initial focus (ref: no move — clone's Radix trap is the superset), invalid-input validation (silent both), guideline/accordion hovers, user-select, and the full mobile-nav stack — 96/119/30 green |
+| 2026-10-08 | Session 29 — parity iteration v15 (`docs/remediation-plan-v15.md`) | The full-page LOADING STATE rebuilt to the reference (the last unmeasured surface class): DOM-replacing `fixed inset-0` white-backed overlay + the slate spinner (32×32, 4px, #e2e8f0 track + #1e293b top spoke, 9999px, spin 1s), no shell mounted while loading, and `boot()` flipping `booted` only after the data lands (route-delayed e2e pins: chrome, DOM replacement, data-flight timing, client-nav inverse, 390×844) — the old 2px lime/transparent-top inline spinner hid at the session probe while data popped into empty views; also swept the Select keyboard flows (ref internally inconsistent — filter selects advance, dialog selects don't; the clone's Radix matches the dialog/a11y pattern), a VLM income/savings/mobile sweep (all flags data-driven), and mobile-nav R1–R4 + data drift (clean, ninth check) — 96/123/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 
