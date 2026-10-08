@@ -5,8 +5,62 @@ session's detailed narrative lives in `docs/session_<n>.md`; findings ledgers
 live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`,
 `docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`,
-`docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`, and
-`docs/remediation-plan-v9.md`.
+`docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`,
+`docs/remediation-plan-v9.md`, and `docs/remediation-plan-v10.md`.
+
+---
+
+## Session 19 — Fresh verification & parity iteration v10 (2026-10-08)
+
+**Goal:** `git pull` to `ab9f80c` (session-18 record), re-verify the v9
+baseline, then a fresh two-site parity audit at computed-style depth of the
+surfaces no earlier pass had measured that way: the mobile sheet's
+ACTIVE-link styling (the task-focus surface's one unmeasured state
+dimension), the Select popover / card action-menu OPEN states, the breakdown
+drill-down EXPANDED rows, the guidelines leaf typography, the live
+focus-visible ring, the tall-dialog scroll mechanics, the date inputs, and
+the empty-submit behavior. Explicit mobile-navigation re-verification.
+
+- Environment note: the sandbox returned to reaping background processes
+  (D-9) — the parity server booted per command through `with-server.sh`
+  while the agent-browser daemon persisted; mid-session daemon resource
+  pressure (EAGAIN/CDP timeouts) required a full close/re-login cycle, and
+  the first full e2e run crashed under the same pressure (22 failures)
+  until the live sessions were closed (session-17 lesson re-confirmed).
+- Baseline chain at `ab9f80c` fully green (96/102/30 + lint/typecheck/build);
+  v9 pins spot-checked in the code first.
+- Mobile stack re-verified end-to-end: R1 (agent-browser's own actionability
+  check REFUSES the ref's burger click — the toast container covers it —
+  live confirmation), R2 (its sheet still traps after nav), R4 (395px
+  overflow), R5 (its dialogs ignore Escape — a `[role=dialog]` selector
+  artifact false-positived "closed" on the ref's non-Radix dialogs; the
+  click-refusal + heading evidence is the reliable pattern); all clone
+  superset fixes intact (DIRECT hit, close-on-nav, 390px fit on all five
+  routes).
+- 1 finding group (`docs/remediation-plan-v10.md`): **the mobile sheet's
+  active-nav highlighting** — measured live on the ref's sheet at
+  `/income`, the current route renders the FULL active style (135deg
+  forest-medium→lime gradient, white, fw 500 — identical to its rail);
+  the clone's sheet had `highlightActive={false}` since session 1 (an
+  unmeasured assumption that survived eight audit passes). Fixed by
+  removing the prop (the sheet shares the rail's active logic; superset
+  #3's root-route Dashboard highlight now applies to the sheet too).
+- Observations documented: the reference does NOT toast on save (the
+  clone's success toasts are superset UX); empty-submit is silent on both;
+  audit mutation neutralized in place (the undeletable probe expense →
+  "Miscellaneous" $0.00; ref totals restored +$3475.00, expenses count
+  3→4 residual).
+- Everything else measured MATCHED: Select popover OPEN state, card
+  action-menu OPEN state, drill-down EXPANDED rows, guidelines leaves,
+  focus-visible ring, dialog scroll mechanics, date inputs, sheet
+  internals (brand/avatar/footer), burger/topbar geometry, and the
+  reference data state (no drift since session 11).
+- TDD: 2 new e2e specs RED → GREEN (sheet active on `/income`; Dashboard
+  on `/`). Full chain: lint · typecheck · 96/96 unit · build ·
+  **104/104 e2e** · 30/30 smoke. Live parity re-verified side by side on
+  the fixed build; 13 screenshots regenerated (only `10-mobile-menu.png`
+  changed — the visible delta of the fix); docs aligned
+  (README/CLAUDE/AGENTS/SKILL/probe README/session_19 + this worklog).
 
 ---
 

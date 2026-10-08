@@ -148,6 +148,86 @@ test.describe("mobile navigation", () => {
     await expect(page.locator("[data-state='open'].fixed.inset-0")).toHaveCount(0);
   });
 
+  test("the sheet highlights the CURRENT route like the reference (v10 — plan G1)", async ({
+    page,
+  }) => {
+    // Session-19 audit (plan v10 G1): measured live on the reference's sheet
+    // at /income — the Income link carries the FULL active style (the same
+    // 135deg forest-medium→lime gradient as the desktop rail, white text,
+    // fw 500) while the other four links stay inactive #3f3f46/400. The
+    // clone's sheet suppressed highlighting since session 1
+    // (highlightActive={false}); the fix lets the sheet share the rail's
+    // active logic.
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Income", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Toggle Sidebar" }).click();
+    const sheet = page.locator("[data-state='open'].fixed.inset-y-0");
+    await expect(sheet).toBeVisible();
+
+    const links = await sheet.evaluate(() => {
+      const sheetEl = document.querySelector("[data-state='open'].fixed.inset-y-0");
+      if (!sheetEl) return null;
+      return ["Dashboard", "Income", "Expenses", "Savings", "Net Worth"].map((label) => {
+        const a = [...sheetEl.querySelectorAll("a")].find(
+          (el) => (el.textContent || "").trim() === label,
+        );
+        if (!a) return { label, missing: true };
+        const cs = getComputedStyle(a);
+        return {
+          label,
+          color: cs.color,
+          fontWeight: cs.fontWeight,
+          bgImage: cs.backgroundImage,
+        };
+      });
+    });
+    expect(links).not.toBeNull();
+    const byLabel = Object.fromEntries((links!).map((l: any) => [l.label, l]));
+    // The current route's link is ACTIVE: white + the reference's exact
+    // gradient + medium weight.
+    expect(byLabel["Income"].color).toBe("rgb(255, 255, 255)");
+    expect(byLabel["Income"].fontWeight).toBe("500");
+    expect(byLabel["Income"].bgImage).toBe(
+      "linear-gradient(135deg, rgb(45, 90, 74), rgb(143, 188, 63))",
+    );
+    // The other four stay inactive: zinc-700 at regular weight, no gradient.
+    for (const label of ["Dashboard", "Expenses", "Savings", "Net Worth"]) {
+      expect(byLabel[label].color).toBe("rgb(63, 63, 70)");
+      expect(byLabel[label].fontWeight).toBe("400");
+      expect(byLabel[label].bgImage).toBe("none");
+    }
+  });
+
+  test("the sheet highlights Dashboard on the root route (superset #3, v10)", async ({ page }) => {
+    // The reference's own sheet marks nothing active on `/` (its active
+    // check compares the pathname to `/dashboard` — the documented
+    // root-route gap). The clone highlights Dashboard everywhere the
+    // dashboard is on screen — rail AND sheet.
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Budget Dashboard" })).toBeVisible();
+    await page.getByRole("button", { name: "Toggle Sidebar" }).click();
+    const sheet = page.locator("[data-state='open'].fixed.inset-y-0");
+    await expect(sheet).toBeVisible();
+
+    const dash = await sheet.evaluate(() => {
+      const sheetEl = document.querySelector("[data-state='open'].fixed.inset-y-0");
+      const a = sheetEl
+        ? [...sheetEl.querySelectorAll("a")].find(
+            (el) => (el.textContent || "").trim() === "Dashboard",
+          )
+        : null;
+      if (!a) return null;
+      const cs = getComputedStyle(a);
+      return { color: cs.color, fontWeight: cs.fontWeight, bgImage: cs.backgroundImage };
+    });
+    expect(dash).not.toBeNull();
+    expect(dash!.color).toBe("rgb(255, 255, 255)");
+    expect(dash!.fontWeight).toBe("500");
+    expect(dash!.bgImage).toBe(
+      "linear-gradient(135deg, rgb(45, 90, 74), rgb(143, 188, 63))",
+    );
+  });
+
   test("Escape and overlay taps also close the sheet", async ({ page }) => {
     await page.getByRole("button", { name: "Toggle Sidebar" }).click();
     const sheet = page.locator("[data-state='open'].fixed.inset-y-0");

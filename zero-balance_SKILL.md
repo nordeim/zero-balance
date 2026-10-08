@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-08
-project_state: 96 unit tests / 102 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 104 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -601,6 +601,16 @@ Numbered institutional lessons. Each traces to a concrete fix in
     Primitives that ride `border-primary`/`bg-primary` (radio circles,
     switch tracks) therefore drift forest-vs-black — hex-pin the primitive
     chrome instead of routing it through the brand token (plan v9 G5).
+24. **Never suppress a parity surface on an unmeasured assumption.** The
+    mobile sheet shipped `highlightActive={false}` from session 1 — a
+    guess that the reference's sheet didn't highlight — and survived eight
+    audit passes because none of them measured the sheet's ACTIVE state
+    (only its geometry, links, chrome, and close behavior). Measured live
+    at `/income`: the reference's sheet renders the current route in the
+    FULL active style (135deg forest gradient + white + 500), identical to
+    its rail. The fix was one prop; the lesson is to sweep EVERY state
+    dimension of a task-focus surface — active/inactive included — before
+    assuming a component-level divergence (plan v10 G1).
 
 ---
 
@@ -921,6 +931,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-07 | Session 13 — parity iteration v7 (`docs/remediation-plan-v7.md`) | Login-surface slate pins + text-sm, logo halo layer, 24px brand target + text-lg, 16px toggle icon, sheet border/overlay pins, custom 404, head metadata, post-login root redirect — 96/83/30 green |
 | 2026-10-08 | Session 15 — parity iteration v8 (`docs/remediation-plan-v8.md`) | Dialog footers rebuilt as the reference's flex-1 full-row split (Cancel ≈ 307px + Save ≈ 305px), all remaining badge/nav/Calculate named classes hex-pinned (plain rgb computed styles), stray `prisma/db/custom.db` untracked; every mobile-nav superset fix + v7 pin re-verified live — 96/92/30 green |
 | 2026-10-08 | Session 17 — parity iteration v9 (`docs/remediation-plan-v9.md`) | Donut re-sorted to the reference's value-DESC convention + `labelLine={false}`; dialog X-close rebuilt as the 36×36 in-header button (sticky header 69px); form labels restored to the inline shadcn-v1 line box (12px gap — v4's space-y margin-block-end is layout-ignored on inline first children, pinned in globals.css); 52px classification tiles; radio/switch #171717 primitive family (checked track, borders, dot, white ring-0 thumb); `rounded-full` → `rounded-[9999px]` ×24 sites (v4 emits calc(infinity)); login per-state control geometry (14px button text, 44px sign-up/forgot vs 48px sign-in) — 96/102/30 green |
+| 2026-10-08 | Session 19 — parity iteration v10 (`docs/remediation-plan-v10.md`) | Mobile sheet active-nav highlighting restored (the reference's sheet renders the current route in the full active style — white + the 135deg forest-medium→lime gradient + fw 500, same as its rail; the clone had suppressed it since session 1) — pinned by 2 new mobile-navigation specs; the pass also swept the Select popover OPEN state, card action-menu OPEN state, drill-down EXPANDED rows, guidelines leaves, live focus-visible rings, dialog scroll mechanics, date inputs, and empty-submit — all verified identical; reference's no-toast-on-save documented (clone toasts = superset UX) — 96/104/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

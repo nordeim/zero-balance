@@ -72,7 +72,7 @@ npm run dev         # http://localhost:3000
 
 ### Test Pyramid
 - **Unit (Vitest, 96)**: money math, dashboard aggregations, zod schemas, rate limiter, serializers, SQLite URL resolution
-- **E2E (Playwright, 102)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry, nav geometry, neutral-token + primitive chrome (radio/switch/9999px radii), dialog action buttons + chrome (X-close/header/labels/tiles), badge computed colors, empty states + content column, login-surface computed chrome + per-state geometry, custom 404 + head metadata — against the production standalone build
+- **E2E (Playwright, 104)**: auth, dashboard, items CRUD, net worth, calculator, mobile navigation + layout geometry (incl. the sheet's active-route highlighting), nav geometry, neutral-token + primitive chrome (radio/switch/9999px radii), dialog action buttons + chrome (X-close/header/labels/tiles), badge computed colors, empty states + content column, login-surface computed chrome + per-state geometry, custom 404 + head metadata — against the production standalone build
 - **Smoke (bash, 30 steps)**: full API surface including rate limiting and session invalidation
 
 ### Test Commands

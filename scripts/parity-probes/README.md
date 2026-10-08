@@ -112,3 +112,41 @@ fresh unauthenticated login sessions:
   depth from fresh sessions (found the 14px button text + the per-state
   44/48px control geometry; withdrawn: the card border-color difference —
   both cards render border-width 0)
+
+Session-19 additions (remediation-plan-v10 audit) — this session's sandbox
+returned to reaping background processes (session-11 behavior D-9), so the
+parity server booted PER COMMAND through `with-server.sh` (the agent-browser
+daemon still persists across tool calls — sessions survive, the server
+doesn't; do the navigate + settle + probe inside one with-server
+invocation):
+
+- `probe-v10-data.mjs` / `probe-v10-hero.mjs` / `probe-v10-hero2.mjs` —
+  reference data-state drift check (hero2 is the precise body-text-regex
+  form; the hero variant's smallest-div heuristic truncates the card) —
+  unchanged since session 11 (+$3475.00, 30.5%)
+- `probe-v10-mobile-nav.mjs` / `probe-v10-mobile-nav2.mjs` /
+  `probe-v10-mobile-nav3.mjs` — the mobile stack re-verification (R1
+  toast-block hit-test — agent-browser's own actionability check REFUSES
+  the ref's burger click, which is itself live confirmation of R1 — plus
+  burger/topbar/brand geometry; nav3 finds the burger by TEXT content
+  ("Toggle Sidebar"), not aria-label — the ref's accessible name comes
+  from its text node)
+- `probe-v10-select-open.mjs` — the Select popover OPEN state (trigger
+  click + follow-up eval for the listbox/options; identical both sides)
+- `probe-v10-dialog-scroll.mjs` — tall-dialog scroll mechanics (panel
+  max-height/overflow, sticky header, static footer, scrollable form;
+  identical — note the clone's panel needs `[role=dialog]`, the ref's
+  needs the overlay-climb)
+- `probe-v10-drilldown.mjs` + inline row evals — the breakdown drill-down
+  EXPANDED state (collapsed row 254×64; subcategory rows 28px with the
+  #f9fafb tint — identical)
+- `probe-v10-guidelines.mjs` + leaf evals — the Budget Guidelines leaf
+  typography (per-type colored percentages; text-only card, no bars —
+  identical; the card finder must strip whitespace, "Savings ~20%" spans
+  two text nodes)
+- `probe-v10-sheet-internals.mjs` — the mobile sheet's brand block/nav
+  rows/avatar/user-footer at mobile depth (identical; run on the REF with
+  its R2-trapped sheet, on the CLONE after a JS burger click)
+- `probe-v10-verify-fix.mjs` — the post-fix live verification driver
+  (opens the sheet on the fixed build; the measure probe then asserts the
+  active-link gradient/white/500 exactly matches the reference's)

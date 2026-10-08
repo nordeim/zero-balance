@@ -192,7 +192,16 @@ export function AppSidebar({
       <Dialog open={navOpen} onOpenChange={onNavOpenChange}>
         <SheetContent>
           <DialogTitle className="sr-only">Navigation</DialogTitle>
-          <SidebarBody onNavigate={() => onNavOpenChange(false)} highlightActive={false} />
+          {/* Sheet active highlighting (plan v10 G1): measured live on the
+              reference's sheet at /income — the current route's link carries
+              the full active style (135deg forest-medium→lime gradient,
+              white text, fw 500), identical to the desktop rail. Session 1
+              suppressed this (highlightActive={false}) on an unmeasured
+              assumption; the sheet now shares the rail's active logic,
+              including the superset #3 root-route Dashboard highlight.
+              The highlightActive prop stays available as an explicit
+              off-switch for any future surface that needs it. */}
+          <SidebarBody onNavigate={() => onNavOpenChange(false)} />
         </SheetContent>
       </Dialog>
     </>
