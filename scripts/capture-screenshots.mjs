@@ -11,7 +11,9 @@
 //   09-mobile-dashboard (390×844) · 10-mobile-menu (the open sheet) ·
 //   11-breakdown-drilldown (the expandable Net Zero Breakdown) ·
 //   12-mobile-networth (the responsive summary card, superset fix #6) ·
-//   13-not-found (the reference's custom 404 — plan v7 G7)
+//   13-not-found (the reference's custom 404 — plan v7 G7) ·
+//   14-login-error (the reference's error-banner — plan v12 G1) ·
+//   15-forgot-reset (the forgot confirmation state — plan v12 G4)
 //
 // Usage:   node scripts/capture-screenshots.mjs
 // Requires `bun run build` (the standalone server) + a seeded db/custom.db.
@@ -80,6 +82,29 @@ async function main() {
     // 2. login page (logged-out state)
     await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
     await shoot(page, "01-login.png");
+
+    // 2b. the login ERROR banner (plan v12 G1 — the reference's red-tinted
+    //     bordered FormMessage banner; one failed attempt, within the
+    //     rate-limit budget)
+    await page.getByLabel("Email").fill("demo@zerobalance.app");
+    await page.getByLabel("Password").fill("definitely-wrong");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.getByText("Invalid email or password").waitFor();
+    await wait(300);
+    await shoot(page, "14-login-error.png");
+
+    // 2c. the forgot-password confirmation state (plan v12 G4 — the
+    //     reference's "Check your email" layout with honest copy), then
+    //     back to the clean sign-in card for the real login below.
+    await page.getByRole("button", { name: "Forgot password?" }).click();
+    await page.getByRole("heading", { name: "Reset your password" }).waitFor();
+    await page.getByLabel("Email").fill("demo@zerobalance.app");
+    await page.getByRole("button", { name: "Send reset link" }).click();
+    await page.getByRole("heading", { name: "Password reset unavailable" }).waitFor();
+    await wait(300);
+    await shoot(page, "15-forgot-reset.png");
+    await page.getByRole("button", { name: "Back to sign in" }).click();
+    await page.getByRole("heading", { name: "Welcome to ZeroBudget" }).waitFor();
 
     // 3. real login → dashboard (the ROOT route — the reference lands on /
     //    after sign-in, plan v7 G1)

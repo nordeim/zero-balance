@@ -212,9 +212,33 @@ function AuthForm(p: AuthFormProps) {
       </div>
 
       {p.error && (
-        <p role="alert" className="text-sm font-medium text-[#dc2626]">
-          {p.error}
-        </p>
+        <div
+          role="alert"
+          style={{
+            // v12 G1 (measured live on the reference): the auth error is a
+            // red-tinted bordered banner — red-50 at 70%, red-200 border,
+            // 12px radius, 16px padding — a direct child of the form's
+            // space-y flow (the gaps come from the form, not the banner).
+            backgroundColor: "rgba(254, 242, 242, 0.7)",
+            border: "1px solid rgb(254, 202, 202)",
+            borderRadius: "12px",
+            padding: "16px",
+          }}
+        >
+          <div
+            style={{
+              // The shadcn FormMessage pattern: centered red-700 14px/400
+              // (inline styles — v4 computes the named reds in Lab).
+              color: "rgb(185, 28, 28)",
+              fontSize: "14px",
+              fontWeight: 400,
+              lineHeight: "20px",
+              textAlign: "center",
+            }}
+          >
+            {p.error}
+          </div>
+        </div>
       )}
 
       <div className="space-y-3">
@@ -264,6 +288,9 @@ export function LoginCard() {
   const [confirm, setConfirm] = React.useState("");
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  // v12 G4: the forgot submit transitions to a confirmation-style state
+  // (the reference renders "Check your email" here — measured live).
+  const [resetNotice, setResetNotice] = React.useState(false);
 
   // The reference lands on the ROOT route after login (it renders the
   // dashboard there) — plan v7 G1. ?from_url= still wins when present.
@@ -272,6 +299,7 @@ export function LoginCard() {
   const backToSignin = () => {
     setMode("signin");
     setError(null);
+    setResetNotice(false);
   };
   const notifyGoogleUnavailable = () =>
     toast({
@@ -284,12 +312,11 @@ export function LoginCard() {
     if (busy) return;
     setError(null);
     if (mode === "forgot") {
-      // Self-hosted: no mail transport is configured; surface that honestly
-      // instead of pretending a reset link was sent.
-      toast({
-        title: "Password reset unavailable",
-        description: "This self-hosted clone has no email service configured.",
-      });
+      // v12 G4: the reference transitions the card to a "Check your
+      // email" confirmation state (measured live). This self-hosted
+      // instance has no mail transport — render the reference's state
+      // LAYOUT with honest copy instead of pretending a link was sent.
+      setResetNotice(true);
       return;
     }
     if (mode === "signup" && password !== confirm) {
@@ -325,15 +352,20 @@ export function LoginCard() {
     onForgot: () => {
       setMode("forgot");
       setError(null);
+      setResetNotice(false);
     },
     onSignUp: () => {
       setMode("signup");
       setError(null);
+      setResetNotice(false);
     },
   };
 
   return (
-    <div
+    // v12 G3: the reference's login root is a <main> landmark (min-h-screen
+    // flex items-center justify-center … p-4) — tag swap only; the classes
+    // and the inline gradient stay exactly as pinned in v7.
+    <main
       className="flex min-h-screen items-center justify-center p-4"
       style={{
         background: "linear-gradient(to bottom right, rgb(248, 250, 252), rgb(241, 245, 249))",
@@ -374,9 +406,35 @@ export function LoginCard() {
             ) : (
               <div className="flex flex-col items-center space-y-6 text-center sm:space-y-8">
                 <div className="w-full">
-                  {/* Reference structure (F5): left-aligned back button at the
-                      TOP, H2 heading, then the bare form — no logo, no Google,
-                      no OR divider in the sign-up/forgot states. */}
+                  {resetNotice ? (
+                    // v12 G4: the reference's forgot-confirmation state
+                    // (measured live on its "Check your email" view): a
+                    // centered H2 24px/700 #0f172a lh 32, a 16px/400
+                    // #475569 lh 24 description at mt 8, a 16px #09090b
+                    // secondary line at mt 24, and a 14px/500 #64748b
+                    // "Back to sign in" at mt 24 — the form is replaced.
+                    // The copy is the honest variant (no mail transport).
+                    <div className="flex flex-col items-center text-center">
+                      <h2 className="text-xl font-bold text-[#0f172a] sm:text-2xl">
+                        Password reset unavailable
+                      </h2>
+                      <p className="mt-2 text-sm text-[#475569] sm:text-base">
+                        This self-hosted instance has no email service
+                        configured, so reset instructions cannot be sent.
+                      </p>
+                      <div className="mt-6 text-sm text-[#09090b] sm:text-base">
+                        Password reset links would normally be emailed for this
+                        address. Configure a mail transport to enable them.
+                      </div>
+                      <button
+                        type="button"
+                        className="mt-6 text-sm font-medium text-[#64748b] transition-colors hover:text-[#334155]"
+                        onClick={backToSignin}
+                      >
+                        Back to sign in
+                      </button>
+                    </div>
+                  ) : (
                   <div className="space-y-4">
                     <button
                       type="button"
@@ -402,12 +460,13 @@ export function LoginCard() {
                     )}
                     <AuthForm mode={mode} {...formProps} />
                   </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

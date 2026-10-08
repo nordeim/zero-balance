@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-08
-project_state: 96 unit tests / 107 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 112 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -633,6 +633,32 @@ Numbered institutional lessons. Each traces to a concrete fix in
     component: rest state, hover state, focus-visible state, icon
     sizes, ambient shadows, AND every state dimension of the surface's
     children — not just the container (plan v11 G1–G4).
+27. **A client-side `document.title` effect LOSES to React Float.** The
+    v12 route-title fix was first attempted as a `usePathname()`-driven
+    `document.title` effect in the AppShell — it ran (260ms, title set)
+    and was silently reset 24ms later when React's Float layer
+    re-emitted the static `<title>` from the RSC flight payload during
+    hydration recovery. The failing artifact: an e2e title assertion
+    that passed on one route and failed on the next (the reset landed
+    between the two samples). The correct Next.js mechanism for ANY
+    per-route head value is route-segment metadata — a server
+    `layout.tsx` exporting `title` + the root layout's template — the
+    value ships in the prerendered HTML and the Float re-emission is
+    idempotent. Diagnosed with an in-page 20ms `setInterval` title
+    poller installed via `addInitScript` (MutationObserver wiring
+    never attached — init scripts run before the parser builds
+    `<head>`) (plan v12 G2).
+28. **Error states are parity surfaces too.** The v12 login audit found
+    the clone rendering auth errors as bare red text while the
+    reference renders a bordered red-tinted banner (the shadcn
+    FormMessage pattern) — the THIRD surface family (after rest and
+    open states) that audits must sweep: the ERROR/edge state of every
+    form (wrong password, validation mismatch, network failure) and
+    the POST-SUBMIT state (the forgot flow's confirmation view —
+    layout reproduced, honest copy kept). The clone's honest-copy
+    decision pattern: match the reference's LAYOUT geometry exactly,
+    diverge only on TEXT where lying to the user would be required
+    (plan v12 G1/G4).
 
 ---
 
@@ -955,6 +981,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 17 — parity iteration v9 (`docs/remediation-plan-v9.md`) | Donut re-sorted to the reference's value-DESC convention + `labelLine={false}`; dialog X-close rebuilt as the 36×36 in-header button (sticky header 69px); form labels restored to the inline shadcn-v1 line box (12px gap — v4's space-y margin-block-end is layout-ignored on inline first children, pinned in globals.css); 52px classification tiles; radio/switch #171717 primitive family (checked track, borders, dot, white ring-0 thumb); `rounded-full` → `rounded-[9999px]` ×24 sites (v4 emits calc(infinity)); login per-state control geometry (14px button text, 44px sign-up/forgot vs 48px sign-in) — 96/102/30 green |
 | 2026-10-08 | Session 19 — parity iteration v10 (`docs/remediation-plan-v10.md`) | Mobile sheet active-nav highlighting restored (the reference's sheet renders the current route in the full active style — white + the 135deg forest-medium→lime gradient + fw 500, same as its rail; the clone had suppressed it since session 1) — pinned by 2 new mobile-navigation specs; the pass also swept the Select popover OPEN state, card action-menu OPEN state, drill-down EXPANDED rows, guidelines leaves, live focus-visible rings, dialog scroll mechanics, date inputs, and empty-submit — all verified identical; reference's no-toast-on-save documented (clone toasts = superset UX) — 96/104/30 green |
 | 2026-10-08 | Session 21 — parity iteration v11 (`docs/remediation-plan-v11.md`) | Empty-state headings → 20px `text-xl` (items + net-worth); the `.zb-btn-add` family re-pinned — v3 bare-shadow ambient (gradient buttons, every size), v3 shadow-sm (outline variant), the shadcn focus-visible ring (white inner + 1px #0a0a0a + transparent 2px outline) replacing the browser-default outline; Plus icons 20→16px on the 7 Add-button sites; the session-1 hover opacity-0.9 fade removed (reference has no hover change) — pinned by 3 new/extended specs; the pass also swept the tablet breakpoints (767/768/1024), rail hover, hero status badge, filter card live behavior, item-badge census, dialog/sheet/stat-card shadows (full strings), and the no-logout parity — all verified identical — 96/107/30 green |
+| 2026-10-08 | Session 23 — parity iteration v12 (`docs/remediation-plan-v12.md`) | Login ERROR state rebuilt as the reference's red-tinted bordered banner (red-50/70%, red-200 border, radius 12, pad 16, centered red-700 14px/400 — the same slot serves 401s and sign-up mismatches); per-route tab titles restored ("Income \| ZeroBudget" etc., one-word "Networth") via route-segment `layout.tsx` metadata + the root pipe template — the first client-effect attempt was reverted after discovering React Float's post-hydration `<title>` re-emission (lesson 27); login root promoted to a `<main>` landmark; forgot-password rebuilt as the reference's confirmation-state layout with honest copy (no mail transport) — pinned by 5 new/extended specs; the pass also swept the payment-method filter + listbox, the a11y landmark/h1 structure, and the reference's sheet-closes-on-Escape behavior (matching) — 96/112/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

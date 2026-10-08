@@ -6,8 +6,64 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`,
 `docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`,
 `docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`,
-`docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`, and
-`docs/remediation-plan-v11.md`.
+`docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`,
+`docs/remediation-plan-v11.md`, and `docs/remediation-plan-v12.md`.
+
+---
+
+## Session 23 — Fresh verification & parity iteration v12 (2026-10-08)
+
+**Goal:** `git pull` to `740d6e1` (the session-21 summary record), re-verify
+the v11 baseline, then a fresh two-site parity audit of the dimensions no
+earlier pass had measured: the login ERROR state (wrong password / mismatched
+confirm — never measured on either site), the per-route document.title set,
+the login page's root landmark, the forgot-password confirmation state, the
+expenses payment-method filter + its listbox OPEN state, and an a11y
+structure sweep. Explicit mobile-navigation re-verification (the task
+focus) + reference data-drift check. Formal log: `docs/session_24.md` (the
+session_23.md slot holds the incoming session-21 conversation summary).
+
+- Baseline chain at `740d6e1` fully green (96/107/30 + lint/typecheck/
+  build); v11 pins spot-checked in the code first; scandihaven patterns
+  reviewed (already reflected in the ADRs).
+- Mobile stack re-verified end-to-end: R1 (the ref's toast container still
+  intercepts its burger's center hit), R2 (its sheet still traps after
+  nav — Income rendering the full active style in the trapped sheet), R4
+  (395px overflow); all clone superset fixes intact (DIRECT hit,
+  close-on-nav, 390px fit, sheet active highlighting + the root-route
+  Dashboard highlight). NEW observation: the ref's mobile SHEET closes on
+  Escape (unlike its dialogs) — the clone's Radix sheet matches.
+- 4 finding groups (`docs/remediation-plan-v12.md`): the login error
+  state rebuilt as the reference's red-tinted bordered banner
+  (red-50/70% wash, red-200 border, radius 12, pad 16, centered red-700
+  14px/400 — the shadcn FormMessage pattern; the same slot serves 401s
+  and sign-up mismatches); the per-route tab titles restored
+  ("Income | ZeroBudget" etc., the one-word "Networth") via route-segment
+  layout metadata + the root pipe template; the login root promoted to a
+  `<main>` landmark (tag swap); and the forgot-password flow rebuilt as
+  the reference's confirmation-state layout with honest copy (no mail
+  transport — the reference pretends a link was sent).
+- Root-cause detour worth remembering (lesson 27): the title fix was
+  first a client-side `document.title` effect — it ran and was silently
+  reset ~24ms later by React Float re-emitting the static `<title>` from
+  the RSC flight payload after hydration. Diagnosed with an in-page 20ms
+  title poller; solved with route-segment metadata (the value ships in
+  the prerendered HTML).
+- Everything else measured MATCHED: the payment-method filter card +
+  listbox OPEN state (option count differs only by data), the a11y h1/
+  lang/landmark structure (the clone's aside rail is a superset), login
+  h1 + accessible names, and the reference data state (no drift since
+  session 19).
+- TDD: 5 new/extended e2e specs (RED at the exact unfixed values — one
+  locator fix: `getByLabel("Password", { exact: true })` in the sign-up
+  state) → 4-file fix → GREEN. Full chain: lint · typecheck · 96/96
+  unit · build · **112/112 e2e** · 30/30 smoke.
+- Live parity re-verified side by side on fresh sessions: the error
+  banner byte-identical (desktop + mobile), the route titles identical
+  on all 7 routes, the `<main>` landmark identical, the forgot-state
+  typography identical with honest copy. The screenshot catalog grew
+  13 → 15 shots (`14-login-error`, `15-forgot-reset`); docs aligned
+  (README/CLAUDE/AGENTS/SKILL/probe README/session_24 + this worklog).
 
 ---
 

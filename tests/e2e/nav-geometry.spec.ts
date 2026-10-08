@@ -151,3 +151,41 @@ test.describe("sidebar nav geometry", () => {
     expect(color).toBe("rgb(63, 63, 70)");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v12 — per-route document titles (docs/remediation-plan-v12.md G2).
+//
+// Measured live on the reference: its SPA sets the tab title client-side
+// after navigation — "/income" → "Income | ZeroBudget", "/expenses" →
+// "Expenses | ZeroBudget", "/savings" → "Savings | ZeroBudget",
+// "/networth" → "Networth | ZeroBudget" (the reference's own ONE-WORD
+// spelling), while "/", "/dashboard" and "/login" stay "ZeroBudget". The
+// clone's static prerender ships "ZeroBudget" everywhere; the AppShell
+// now mirrors the reference's client-side behavior with a route→title
+// map. (The v7 404 pin — "Page Name | ZeroBudget" — is separate.)
+// ---------------------------------------------------------------------------
+
+test.describe("per-route document titles (v12 — plan G2)", () => {
+  test("workspace routes set the reference titles; root and dashboard stay plain", async ({ page }) => {
+    const cases: Array<[string, string]> = [
+      ["/income", "Income | ZeroBudget"],
+      ["/expenses", "Expenses | ZeroBudget"],
+      ["/savings", "Savings | ZeroBudget"],
+      ["/networth", "Networth | ZeroBudget"],
+      ["/dashboard", "ZeroBudget"],
+      ["/", "ZeroBudget"],
+    ];
+    for (const [route, title] of cases) {
+      await page.goto(route);
+      // The title lands client-side after hydration (exactly like the
+      // reference's SPA) — toHaveTitle retries until the effect runs.
+      await expect(page).toHaveTitle(title);
+    }
+  });
+
+  test("the login route keeps the static ZeroBudget title", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    await expect(page).toHaveTitle("ZeroBudget");
+  });
+});

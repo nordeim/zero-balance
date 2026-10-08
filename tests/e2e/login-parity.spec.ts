@@ -200,3 +200,155 @@ test.describe("login per-state control geometry (v9)", () => {
     for (const h of geo.inputHs) expect(h).toBe(44);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v12 — login error banner + root landmark + forgot confirmation state
+// (docs/remediation-plan-v12.md G1/G3/G4).
+//
+// Measured live on the reference: the auth error renders as a red-tinted
+// bordered banner — a direct child of the form's space-y flow — with bg
+// rgba(254,242,242,0.7) (red-50 at 70%), border 1px solid #fecaca
+// (red-200), radius 12px, padding 16px, and a CENTERED #b91c1c (red-700)
+// 14px/400 lh-20 inner div (the shadcn FormMessage pattern; box 368×54 at
+// desktop). The same slot renders "Invalid email or password" (sign-in)
+// and "Passwords do not match" (sign-up). The forgot submit transitions
+// the card to a centered confirmation state — H2 24px/700 #0f172a, 16px
+// descriptions (#475569 / #09090b), a 14px/500 #64748b "Back to sign in"
+// — the clone renders the reference LAYOUT with honest copy (no mail
+// transport exists on a self-hosted instance; the reference pretends a
+// reset link was sent). The login page's root is a <main> landmark on the
+// reference (flex min-h-screen centered p-4) — the clone rendered a div.
+// ---------------------------------------------------------------------------
+
+test.describe("login error banner + confirmation state (v12)", () => {
+  test("the signup mismatch error renders the reference banner chrome (G1)", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    // Pure client-side validation — no auth API call, no rate-limit budget.
+    await page.getByLabel("Email").fill("probe@example.com");
+    // exact: the sign-up state carries both "Password" and "Confirm
+    // Password" labels (substring matching would resolve two elements).
+    await page.getByLabel("Password", { exact: true }).fill("Password123");
+    await page.getByLabel("Confirm Password").fill("Password456");
+    await page.getByRole("button", { name: "Create account" }).click();
+    await expect(page.getByText("Passwords do not match")).toBeVisible();
+    const banner = await page.evaluate(() => {
+      const alert = document.querySelector("[role='alert']");
+      if (!alert) return null;
+      const cs = getComputedStyle(alert);
+      const r = alert.getBoundingClientRect();
+      const inner = alert.firstElementChild;
+      const ics = inner ? getComputedStyle(inner) : null;
+      return {
+        bg: cs.backgroundColor,
+        border: `${cs.borderTopWidth} ${cs.borderTopStyle} ${cs.borderTopColor}`,
+        radius: cs.borderRadius,
+        padding: cs.padding,
+        height: Math.round(r.height),
+        display: cs.display,
+        inner: ics
+          ? { color: ics.color, fs: ics.fontSize, fw: ics.fontWeight, lh: ics.lineHeight, align: ics.textAlign }
+          : null,
+      };
+    });
+    expect(banner).not.toBeNull();
+    // Reference: red-50/70% wash, red-200 border, 12px radius, 16px padding.
+    expect(banner!.bg).toBe("rgba(254, 242, 242, 0.7)");
+    expect(banner!.border).toBe("1px solid rgb(254, 202, 202)");
+    expect(banner!.radius).toBe("12px");
+    expect(banner!.padding).toBe("16px");
+    // 20px text + 2×16px padding + 2×1px border.
+    expect(banner!.height).toBe(54);
+    expect(banner!.display).toBe("block");
+    // Inner text: red-700 14px/400, centered (v4 computes the named reds
+    // in Lab — the values are inline-style pins).
+    expect(banner!.inner!.color).toBe("rgb(185, 28, 28)");
+    expect(banner!.inner!.fs).toBe("14px");
+    expect(banner!.inner!.fw).toBe("400");
+    expect(banner!.inner!.lh).toBe("20px");
+    expect(banner!.inner!.align).toBe("center");
+  });
+
+  test("the login page root is a <main> landmark holding the card (G3)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    const root = await page.evaluate(() => {
+      const main = document.querySelector("main");
+      if (!main) return null;
+      const cs = getComputedStyle(main);
+      return {
+        tag: main.tagName,
+        display: cs.display,
+        // min-h-screen resolves against THIS viewport — compare to
+        // innerHeight, not a hardcoded 800px (the reference was measured
+        // on a 1280×800 session; Playwright's default is 720).
+        minHMatchesViewport: cs.minHeight === `${window.innerHeight}px`,
+        pad: cs.padding,
+        justify: cs.justifyContent,
+        hasCard: !!main.querySelector("h1"),
+      };
+    });
+    // Reference root: <main class="min-h-screen flex items-center
+    // justify-center ... p-4"> with the card inside.
+    expect(root).not.toBeNull();
+    expect(root!.tag).toBe("MAIN");
+    expect(root!.display).toBe("flex");
+    expect(root!.minHMatchesViewport).toBe(true);
+    expect(root!.pad).toBe("16px");
+    expect(root!.justify).toBe("center");
+    expect(root!.hasCard).toBe(true);
+  });
+
+  test("forgot submit transitions to the reference confirmation-state layout with honest copy (G4)", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Forgot password?" }).click();
+    await expect(page.getByRole("heading", { name: "Reset your password" })).toBeVisible();
+    await page.getByLabel("Email").fill("demo@zerobalance.app");
+    await page.getByRole("button", { name: "Send reset link" }).click();
+    // The reference's state layout, honest copy: this self-hosted instance
+    // has no email service — the heading replaces "Check your email".
+    await expect(page.getByRole("heading", { name: "Password reset unavailable" })).toBeVisible({
+      timeout: 10_000,
+    });
+    const styles = await page.evaluate(() => {
+      const h2 = [...document.querySelectorAll("h2")].find((h) =>
+        /Password reset unavailable/.test(h.textContent || ""),
+      );
+      const desc = [...document.querySelectorAll("p")].find((p) =>
+        /no email service/i.test(p.textContent || ""),
+      );
+      const back = [...document.querySelectorAll("button")].find((b) =>
+        /Back to sign in/i.test(b.textContent || ""),
+      );
+      const m = (el: Element | null | undefined) => {
+        if (!el) return null;
+        const cs = getComputedStyle(el);
+        return { fs: cs.fontSize, fw: cs.fontWeight, color: cs.color, lh: cs.lineHeight, align: cs.textAlign };
+      };
+      return { h2: m(h2), desc: m(desc), back: m(back) };
+    });
+    // Reference state typography (measured live on its "Check your email"
+    // state): H2 24px/700 #0f172a lh 32; descriptions 16px #475569 lh 24;
+    // back link 14px/500 #64748b lh 20 — all centered.
+    expect(styles.h2!.fs).toBe("24px");
+    expect(styles.h2!.fw).toBe("700");
+    expect(styles.h2!.lh).toBe("32px");
+    expect(styles.h2!.color).toBe("rgb(15, 23, 42)");
+    expect(styles.h2!.align).toBe("center");
+    expect(styles.desc!.fs).toBe("16px");
+    expect(styles.desc!.lh).toBe("24px");
+    expect(styles.desc!.color).toBe("rgb(71, 85, 105)");
+    expect(styles.desc!.align).toBe("center");
+    expect(styles.back!.fs).toBe("14px");
+    expect(styles.back!.fw).toBe("500");
+    expect(styles.back!.lh).toBe("20px");
+    expect(styles.back!.color).toBe("rgb(100, 116, 139)");
+    expect(styles.back!.align).toBe("center");
+    // The form is replaced by the state (reference behavior).
+    await expect(page.getByLabel("Email")).toHaveCount(0);
+    // And "Back to sign in" returns to the sign-in state.
+    await page.getByRole("button", { name: "Back to sign in" }).click();
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+  });
+});

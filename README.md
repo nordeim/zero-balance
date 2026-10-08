@@ -145,7 +145,7 @@ npm start            # boots .next/standalone/server.js
 
 ```bash
 npm test            # Vitest unit suite (96 tests) — pure domain seams
-npm run test:e2e    # Playwright e2e (107 tests) — needs `npm run build` first
+npm run test:e2e    # Playwright e2e (112 tests) — needs `npm run build` first
 bash scripts/smoke-test.sh   # 30-step production API smoke (own server, port 3210)
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint (react-hooks v6 rules enforced)
@@ -190,6 +190,7 @@ Measured from the reference's `:root` (computed styles as ground truth):
 | [`docs/remediation-plan-v9.md`](docs/remediation-plan-v9.md) | Session-17 parity iteration — the donut re-sorted to the reference's value-DESC convention (+ `labelLine={false}`), the dialog X-close rebuilt as the reference's 36×36 in-header button (sticky header 69px), the form labels restored to the inline shadcn-v1 line box (12px label→input gap — v4's space-y margin-block-end is layout-ignored on inline first children, pinned in globals.css), 52px classification tiles, the radio/switch #171717 primitive family, `rounded-full` → `rounded-[9999px]` (24 sites — v4 emits calc(infinity)), and the login card's per-state control geometry (14px button text; 44px sign-up/forgot controls vs 48px sign-in) (7 finding groups) |
 | [`docs/remediation-plan-v10.md`](docs/remediation-plan-v10.md) | Session-19 parity iteration — the mobile sheet's active-nav highlighting restored (the reference's sheet renders the current route in the full active style — white + the 135deg forest-medium→lime gradient + fw 500; the clone had suppressed it since session 1 on an unmeasured assumption) — plus the pass's clean sweep: Select popover open state, card action-menu open state, breakdown drill-down expanded rows, guidelines leaves, live focus-visible rings, dialog scroll mechanics, date inputs, and empty-submit behavior all verified identical; the reference's no-toast-on-save behavior documented (the clone's success toasts are superset UX) (1 finding group) |
 | [`docs/remediation-plan-v11.md`](docs/remediation-plan-v11.md) | Session-21 parity iteration — the empty-state headings restored to the reference's 20px (`text-xl`), the `.zb-btn-add` gradient-button family re-pinned (v3 bare-shadow ambient on every size, v3 shadow-sm on the outline variant, the shadcn focus-visible ring — white inner + 1px #0a0a0a + transparent outline — replacing the browser default), the Add-button Plus icons 20px→16px (7 sites), and the session-1 hover opacity-0.9 fade removed (the reference has no hover change) — plus the pass's clean sweep: tablet breakpoints 767/768/1024 (rail switch + content offset), rail hover, hero status badge, filter card live behavior + badge census, dialog/sheet/stat-card shadows (read in full), and the no-logout-UI parity all verified identical (4 finding groups) |
+| [`docs/remediation-plan-v12.md`](docs/remediation-plan-v12.md) | Session-23 parity iteration — the login ERROR state rebuilt as the reference's red-tinted bordered banner (red-50/70% wash, red-200 border, 12px radius, 16px padding, centered red-700 14px/400 — the shadcn FormMessage pattern; the same slot serves sign-in 401s and sign-up mismatches), the per-route tab titles restored ("Income | ZeroBudget" etc. via route-segment metadata + the root layout's pipe template — a client-side title effect was tried first and REVERTED: React Float re-emits the static <title> after hydration and resets it ~24ms later), the login root promoted to a <main> landmark (tag swap), and the forgot-password flow rebuilt as the reference's confirmation-state layout with honest copy (no mail transport — the toast it replaces pretended nothing either, but the state matches the reference's card structure) (4 finding groups) |
 | [`docs/session_1.md`](docs/session_1.md) · [`docs/session_2.md`](docs/session_2.md) · [`docs/session_3.md`](docs/session_3.md) | Narrative logs of the build + re-verification sessions |
 | [`worklog.md`](worklog.md) | Rolling project worklog (all sessions, latest first) |
 | [`Project_Architecture_Document.md`](Project_Architecture_Document.md) | 7 ADRs, topology, ER diagram, security model |
@@ -215,7 +216,7 @@ Use an **absolute** `file:` URL in production — a relative URL resolves agains
 | ![Net Worth](docs/screenshots/06-networth.png) | ![Mobile net worth](docs/screenshots/12-mobile-networth.png) |
 | *Net Worth — gradient summary, type-grouped tabs* | *Mobile net worth (fits 390px — superset fix #4)* |
 
-Full 13-shot set in [`docs/screenshots/`](docs/screenshots/) — regenerate with `node scripts/capture-screenshots.mjs`.
+Full 15-shot set in [`docs/screenshots/`](docs/screenshots/) — regenerate with `node scripts/capture-screenshots.mjs`.
 
 ## Troubleshooting
 

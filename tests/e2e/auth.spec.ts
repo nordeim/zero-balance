@@ -138,6 +138,15 @@ test.describe("login route", () => {
       timeout: 15_000,
     });
     await expect(page).toHaveURL(/\/login/);
+    // v12 G1: the 401 rejection renders inside the reference's error
+    // banner (red-50/70% wash) — the chrome is pinned in
+    // login-parity.spec; here pin that the API error path feeds the
+    // same slot.
+    const bannerBg = await page.evaluate(() => {
+      const alert = document.querySelector("[role='alert']");
+      return alert ? getComputedStyle(alert).backgroundColor : null;
+    });
+    expect(bannerBg).toBe("rgba(254, 242, 242, 0.7)");
   });
 
   test("valid credentials sign in and land on the dashboard", async ({ page }) => {

@@ -198,3 +198,51 @@ post-fix verification:
   multi-layer with the visible layer often LAST behind transparent lead
   layers — never `.slice()` them when diffing (a truncated read nearly
   produced a false "shadowless panel" finding this pass)
+
+Session-23 additions (remediation-plan-v12 audit) — same with-server.sh
+per-command pattern; sessions `ref12`/`clone12` (desktop 1280×800) +
+`ref12m`/`clone12m` (390×844), then fresh `ref13`/`clone13` (+ `ref13m`)
+for the post-fix verification. This pass's probes were one-shot
+`agent-browser eval` scripts (kept as /tmp snippets; the reusable
+lessons are the patterns):
+
+- **login error state** (found G1): submit a wrong password on both
+  sites and measure the `[role=alert]` slot — the ref renders a DIV
+  banner (bg `rgba(254,242,242,0.7)`, border `rgb(254,202,202)`, radius
+  12, pad 16, box 368×54) with a centered `#b91c1c` 14px/400 inner div
+  (the shadcn FormMessage pattern; find it via the computed bg color,
+  not class names). The same banner renders the sign-up mismatch error
+  — reach that state with mismatched confirm passwords (pure
+  client-side, no auth API budget).
+- **per-route document.title** (found G2): `agent-browser eval
+  "document.title"` after each `open` — one shot per route; the ref's
+  titles land client-side after SPA navigation (give it ~2.5s), the
+  clone's now ship statically in the prerendered HTML.
+- **forgot-password confirmation state** (found G4): click "Forgot
+  password?" → fill → submit, then measure the replaced card state (H2
+  24px/700, descriptions 16px `#475569`/`#09090b`, back 14px/500
+  `#64748b` — all centered). The ref PRETENDS the mail was sent
+  ("Check your email"); the probe records the layout, the honest-copy
+  decision lives in the clone.
+- **a11y sweep** (no drift): `document.querySelector('main'/'aside'/
+  'h1')` + `document.documentElement.lang` + accessible button names
+  on both sites — found the login root landmark gap (G3) and confirmed
+  the clone's desktop `aside` rail is an a11y superset over the ref's
+  div rail.
+- **payment-method filter + listbox OPEN state** (no drift): the three
+  216×36 triggers + the 218px listbox with 32px options — identical;
+  the option COUNT differs only by data (the ref's items carry no
+  payment methods).
+- **sheet Escape behavior** (observation): the ref's mobile SHEET
+  closes on Escape (unlike its dialogs, R5) — `agent-browser press
+  Escape` after opening; the clone's Radix sheet matches.
+- **title-race diagnosis (lesson 27):** to watch `document.title`
+  fight React Float, install an in-page 20ms `setInterval` poller via
+  Playwright `addInitScript` (a MutationObserver never attaches — init
+  scripts run before the parser builds `<head>`). Observed: title set
+  at 260ms, reset at 284ms by the Float re-emission — the fix is
+  route-segment metadata, never a client effect.
+- **agent-browser daemon pressure:** `close --all` can hang under
+  memory pressure (CDP `Connection refused` on new sessions) — close
+  sessions one at a time with `timeout 25` wrappers and retry; the
+  daemon recovers without a restart.

@@ -16,7 +16,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: "ZeroBudget",
-    template: "%s · ZeroBudget",
+    // v12 G2: the reference's per-route titles use the pipe separator
+    // ("Income | ZeroBudget" — measured live); the route-segment layouts
+    // (src/app/*/layout.tsx) supply the page-name half. Routes without a
+    // segment title keep the plain default, exactly like the reference.
+    template: "%s | ZeroBudget",
   },
   description: REFERENCE_DESCRIPTION,
   manifest: "/manifest.webmanifest",
