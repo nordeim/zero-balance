@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-08
-project_state: 96 unit tests / 112 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 115 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -659,6 +659,28 @@ Numbered institutional lessons. Each traces to a concrete fix in
     decision pattern: match the reference's LAYOUT geometry exactly,
     diverge only on TEXT where lying to the user would be required
     (plan v12 G1/G4).
+29. **A color-only `ring-[…]` utility emits NO box-shadow in v4.** The
+    v13 login audit found the clone's inputs carrying
+    `focus:ring-[#94a3b8]` with no ring-width class — v4 renders
+    nothing (the color var is set, but no shadow layer references it),
+    so the inputs swapped border color on focus and had NO ring while
+    the reference rendered the two-layer shadcn v1 ring (white 2px
+    offset + slate-400 4px) on plain `:focus`. Pin focus rings as
+    arbitrary box-shadows (`focus:shadow-[0_0_0_2px_#fff,0_0_0_4px_#94a3b8]`)
+    — engine-independent, byte-comparable. And read transitioned
+    computed styles only after a settle (the border color animates
+    through `transition-colors`; the shadow does not) (plan v13 G3).
+30. **Error TEXT and the reachable STATE are parity surfaces.** The
+    v13 audit read the reference's register 409 banner and found a
+    one-word drift ("A user with this email already exists" vs the
+    clone's "An account with…") — API error STRINGS must match the
+    reference exactly unless honesty forces a divergence. Same pass:
+    the reference's trapped mobile sheet re-renders its active link
+    with dark `#18181b` text while its fresh-opened sheet renders the
+    pinned white — always determine WHICH of the reference's internal
+    states the clone can actually reach before pinning the style (the
+    clone's sheet closes on nav, so the trapped state is unreachable
+    by design) (plan v13 G1 + the trapped-sheet observation).
 
 ---
 
@@ -982,6 +1004,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 19 — parity iteration v10 (`docs/remediation-plan-v10.md`) | Mobile sheet active-nav highlighting restored (the reference's sheet renders the current route in the full active style — white + the 135deg forest-medium→lime gradient + fw 500, same as its rail; the clone had suppressed it since session 1) — pinned by 2 new mobile-navigation specs; the pass also swept the Select popover OPEN state, card action-menu OPEN state, drill-down EXPANDED rows, guidelines leaves, live focus-visible rings, dialog scroll mechanics, date inputs, and empty-submit — all verified identical; reference's no-toast-on-save documented (clone toasts = superset UX) — 96/104/30 green |
 | 2026-10-08 | Session 21 — parity iteration v11 (`docs/remediation-plan-v11.md`) | Empty-state headings → 20px `text-xl` (items + net-worth); the `.zb-btn-add` family re-pinned — v3 bare-shadow ambient (gradient buttons, every size), v3 shadow-sm (outline variant), the shadcn focus-visible ring (white inner + 1px #0a0a0a + transparent 2px outline) replacing the browser-default outline; Plus icons 20→16px on the 7 Add-button sites; the session-1 hover opacity-0.9 fade removed (reference has no hover change) — pinned by 3 new/extended specs; the pass also swept the tablet breakpoints (767/768/1024), rail hover, hero status badge, filter card live behavior, item-badge census, dialog/sheet/stat-card shadows (full strings), and the no-logout parity — all verified identical — 96/107/30 green |
 | 2026-10-08 | Session 23 — parity iteration v12 (`docs/remediation-plan-v12.md`) | Login ERROR state rebuilt as the reference's red-tinted bordered banner (red-50/70%, red-200 border, radius 12, pad 16, centered red-700 14px/400 — the same slot serves 401s and sign-up mismatches); per-route tab titles restored ("Income \| ZeroBudget" etc., one-word "Networth") via route-segment `layout.tsx` metadata + the root pipe template — the first client-effect attempt was reverted after discovering React Float's post-hydration `<title>` re-emission (lesson 27); login root promoted to a `<main>` landmark; forgot-password rebuilt as the reference's confirmation-state layout with honest copy (no mail transport) — pinned by 5 new/extended specs; the pass also swept the payment-method filter + listbox, the a11y landmark/h1 structure, and the reference's sheet-closes-on-Escape behavior (matching) — 96/112/30 green |
+| 2026-10-08 | Session 25 — parity iteration v13 (`docs/remediation-plan-v13.md`) | Register duplicate-email 409 text matched to the reference ("A user with this email already exists"); sign-up password placeholders restored ("Min. 8 characters" / "Re-enter password"); login inputs' FOCUS ring pinned as the reference's two-layer shadcn ring (white 2px + slate-400 4px — v4's color-only ring utility emits no shadow) — pinned by 3 new specs; the pass also swept the register banner chrome, login 401 text, item-card date formats, hero progress-bar chrome, the OR divider, Google button chrome + OAuth divergence, cursor styles, authed /login, and the code audit (npm audit = dev-only unpatchable braces advisory; secret scan clean) — 96/115/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

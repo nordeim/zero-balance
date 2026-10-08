@@ -114,8 +114,13 @@ function GoogleBlock({ onUnavailable }: { onUnavailable: () => void }) {
 // Base input chrome (plan v9 G7): h-11 = 44px — the reference's SIGN-UP and
 // FORGOT states render 44px controls; only SIGN-IN grows to 48px (sm:h-12),
 // appended per-mode inside AuthForm.
+// v13 G3 (measured live on the reference): on :focus the inputs render the
+// shadcn two-layer ring — white 0 0 0 2px + slate-400 0 0 0 4px — on top of
+// the slate-400 border. v4's color-only ring utility emits NO shadow without
+// a width class, so the ring is an arbitrary box-shadow (hex = the exact
+// measured rgb values; v3's trailing transparent layer paints nothing).
 const INPUT_CLS =
-  "flex h-11 w-full rounded-xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.5)] px-3 py-2 pl-10 text-base text-[#09090b] transition-colors placeholder:text-[#475569] focus:border-[#94a3b8] focus:ring-[#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm";
+  "flex h-11 w-full rounded-xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.5)] px-3 py-2 pl-10 text-base text-[#09090b] transition-colors placeholder:text-[#475569] focus:border-[#94a3b8] focus:shadow-[0_0_0_2px_#fff,0_0_0_4px_#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm";
 const LABEL_CLS = "text-sm font-medium text-[#334155] peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
 
 interface AuthFormProps {
@@ -179,7 +184,7 @@ function AuthForm(p: AuthFormProps) {
                 required
                 minLength={p.mode === "signup" ? 8 : undefined}
                 autoComplete={p.mode === "signup" ? "new-password" : "current-password"}
-                placeholder="••••••••"
+                placeholder={p.mode === "signup" ? "Min. 8 characters" : "••••••••"}
                 value={p.password}
                 onChange={(e) => p.onPassword(e.target.value)}
                 className={inputCls}
@@ -201,7 +206,9 @@ function AuthForm(p: AuthFormProps) {
                 required
                 minLength={8}
                 autoComplete="new-password"
-                placeholder="••••••••"
+                // v13 G2 (measured live on the reference's sign-up state):
+                // the confirm field hints its purpose, not dots.
+                placeholder="Re-enter password"
                 value={p.confirm}
                 onChange={(e) => p.onConfirm(e.target.value)}
                 className={inputCls}

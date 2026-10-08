@@ -246,3 +246,34 @@ lessons are the patterns):
   memory pressure (CDP `Connection refused` on new sessions) — close
   sessions one at a time with `timeout 25` wrappers and retry; the
   daemon recovers without a restart.
+
+Session-25 additions (remediation-plan-v13 audit):
+
+- `probe-v13-ref-mobile.mjs` — the task-focus re-verification on the
+  reference (R4 overflow + toast-container census + burger geometry;
+  the R1 hit-test needs the label-free finder — see below).
+- `probe-v13-register-err.mjs` — the register duplicate-email 409
+  banner (text + chrome) on either site; sign-up state, existing
+  account email + matching valid passwords → 409 before any write.
+- `probe-v13-input-focus.mjs` — the login inputs' :focus ring (email +
+  password): border #94a3b8 + the two-layer shadow; settle 350ms
+  (transition-colors animates the border, not the shadow).
+- **burger finder gotcha:** `button[aria-label*='enu']` is
+  case-SENSITIVE and the ref's burger has NO aria-label — find it by
+  text content (`textContent.includes('Toggle Sidebar')`, an sr-only
+  span) and open the ref's sheet by mouse-clicking the burger's
+  EXPOSED BOTTOM half (y≈40 at 390px — the toast container covers
+  y<32); agent-browser's actionability check refuses the covered
+  center click.
+- **trapped-sheet observation (lesson 30):** the ref's sheet-active
+  text color is STATE-dependent — fresh-open renders the pinned white,
+  the post-nav trapped re-render renders dark #18181b
+  (`sidebar-accent-foreground`). Measure BOTH states before pinning
+  sheet styles; the clone only ever has the fresh-open state.
+- **register/Google probes:** the ref's "Continue with Google"
+  redirects the whole tab to accounts.google.com (Base44 OAuth) —
+  navigate BACK afterwards (`open <app>/login`); the authed `/login`
+  visit renders the card on both sites (no redirect).
+- **zombie sessions:** a dead CDP session can refuse `close` forever —
+  work around it (new sessions still work); `close --all` may also
+  leave one behind.

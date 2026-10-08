@@ -16,7 +16,9 @@ export async function POST(request: Request) {
 
   const existing = await db.user.findUnique({ where: { email: body.data.email } });
   if (existing) {
-    return fail("An account with this email already exists", 409);
+    // v13 G1 (measured live on the reference): its 409 banner reads
+    // "A user with this email already exists" — match the text exactly.
+    return fail("A user with this email already exists", 409);
   }
   const user = await db.user.create({
     data: {

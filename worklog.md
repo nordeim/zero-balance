@@ -7,7 +7,69 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`,
 `docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`,
 `docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`,
-`docs/remediation-plan-v11.md`, and `docs/remediation-plan-v12.md`.
+`docs/remediation-plan-v11.md`, `docs/remediation-plan-v12.md`, and
+`docs/remediation-plan-v13.md`.
+
+---
+
+## Session 25 — Fresh verification & parity iteration v13 (2026-10-08)
+
+**Goal:** `git pull` to `5957b2a` (the session-23 summary record; pulled via
+the SSH remote — HTTPS has no credentials in the sandbox), re-verify the v12
+baseline, code-audit the recent changes (repo skills: code-review-and-audit
+native-CLI fallback — lint/tsc/tests green; npm audit = 5 high all in the
+dev-only ESLint braces chain with NO patched release; secret scan clean),
+then a fresh two-site parity audit of the dimensions no earlier pass had
+measured: the register-flow API error (duplicate email — a read-only probe),
+the sign-up password placeholders, the login inputs' :focus ring, the
+authed `/login` visit, the Google button's click behavior, item-card date
+formats, the hero progress-bar chrome, the OR divider, and a cursor sweep.
+Explicit mobile-navigation re-verification (the task focus) + reference
+data-drift check. Formal log: `docs/session_26.md` (the session_25.md slot
+holds the incoming session-23 conversation summary).
+
+- Baseline chain at `5957b2a` fully green (96/112/30 + lint/typecheck/
+  build); v12 pins spot-checked in the code first.
+- Mobile stack re-verified end-to-end: R1 (the ref's TWO toast containers
+  still intercept the burger's center hit; the clone's is DIRECT), R2 (the
+  ref's sheet still traps after nav — the clone's closes), R3 (nothing
+  active on `/` on the ref; the clone highlights Dashboard), R4 (ref 395px
+  overflow; clone 390). NEW observation (lesson 30): the ref's TRAPPED
+  sheet re-renders its active link with dark `#18181b` text while its
+  FRESH-opened sheet renders the v10-pinned white — a ref-internal
+  inconsistency in a state the clone never has (its sheet closes on nav);
+  the clone's fresh-open state re-verified byte-identical.
+- 3 finding groups (`docs/remediation-plan-v13.md`): the register
+  duplicate-email 409 text matched to the reference ("A user with this
+  email already exists" — TEXT-only, the v12 banner chrome already
+  matched); the sign-up state's password placeholders restored ("Min. 8
+  characters" / "Re-enter password" — sign-in keeps dots); the login
+  inputs' focus ring pinned as the reference's two-layer shadcn v1 ring
+  (white 0 0 0 2px + slate-400 0 0 0 4px — v4's color-only ring utility
+  emits NO shadow without a width class; fixed as an arbitrary
+  box-shadow class in `INPUT_CLS`).
+- Everything else measured MATCHED: the register banner chrome, the login
+  401 text, sign-in placeholders, item-card date formats ("MMM D, YYYY"),
+  the hero progress-bar chrome, the OR divider, the Google button chrome,
+  cursor styles, the authed `/login` card (no redirect either side), and
+  the reference data state (no drift since session 19). The ref's Google
+  button opens a REAL OAuth flow through Base44 — the clone's honest-
+  unavailable toast is the documented self-hosted divergence.
+- TDD: 3 new e2e specs (RED at the exact unfixed values — "An account
+  with…", dots, shadow "none"; one waitForSelector fix for the async 409)
+  → 3-file fix → GREEN. Full chain: lint · typecheck · 96/96 unit ·
+  build · **115/115 e2e** · 30/30 smoke.
+- Live parity re-verified on a fresh clone session: the register banner
+  byte-identical (368×54 full chrome + the reference's exact text), the
+  placeholders exact, the focused email + password inputs rendering the
+  exact visible ring layers.
+- All 15 screenshots regenerated — **byte-identical** to the committed
+  set (git shows no delta; the v13 changes touch no captured surface's
+  visible state — the regeneration doubles as a live login smoke).
+- Docs aligned: README (counts 115, plan-v13 row), CLAUDE.md (the
+  color-only-ring trap), AGENTS.md (v13 pin paragraph), SKILL (state
+  96/115/30, lessons 29-30, Appendix B row), probe README (v13 catalog),
+  `docs/session_26.md`, this worklog.
 
 ---
 

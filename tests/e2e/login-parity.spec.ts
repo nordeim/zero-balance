@@ -352,3 +352,104 @@ test.describe("login error banner + confirmation state (v12)", () => {
     await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
   });
 });
+
+// ---------------------------------------------------------------------------
+// v13 — register error text + sign-up placeholders + input focus ring
+// (docs/remediation-plan-v13.md G1/G2/G3).
+//
+// Measured live on the reference (session 25): the register duplicate-email
+// 409 renders the v12 banner chrome with the text "A user with this email
+// already exists" (the clone said "An account with this email already
+// exists"); the sign-up state's password placeholder is "Min. 8 characters"
+// and the confirm field's is "Re-enter password" (sign-in keeps ••••••••);
+// and on :focus the login inputs render the shadcn two-layer ring —
+// box-shadow "rgb(255,255,255) 0 0 0 2px, rgb(148,163,184) 0 0 0 4px"
+// (white 2px offset + slate-400 4px) on top of the slate-400 border —
+// while the clone's color-only v4 ring utility emitted NO shadow at all.
+// ---------------------------------------------------------------------------
+
+test.describe("register flow + input chrome (v13)", () => {
+  test("register duplicate-email error renders the reference text in the v12 banner (G1)", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    // The seeded demo email — the register API 409s BEFORE any write (the
+    // findUnique check precedes user.create), so no fixture restore needed.
+    // ONE register call; its rate-limit bucket (register:<ip>) is separate
+    // from login's, and the e2e server boots fresh each run.
+    await page.getByLabel("Email").fill("demo@zerobalance.app");
+    await page.getByLabel("Password", { exact: true }).fill("Password123");
+    await page.getByLabel("Confirm Password").fill("Password123");
+    await page.getByRole("button", { name: "Create account" }).click();
+    // Wait for the async 409 to land before reading the banner text (the
+    // fetch resolves after the click returns — the v12 mismatch test waited
+    // on its client-side text for the same reason).
+    await page.waitForSelector("[role='alert']", { timeout: 10_000 });
+    // Reference text (measured live, session 25): "A user with this email
+    // already exists" — the banner chrome is already pinned by the v12
+    // mismatch test; here the assertion is the exact 401/409-slot TEXT.
+    const banner = await page.evaluate(() => {
+      const alert = document.querySelector("[role='alert']");
+      return alert ? alert.textContent!.trim() : null;
+    });
+    expect(banner).toBe("A user with this email already exists");
+  });
+
+  test("sign-up password placeholders match the reference (G2)", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    const ph = await page.evaluate(() => {
+      const pw = document.querySelector<HTMLInputElement>("input#password");
+      const confirm = document.querySelector<HTMLInputElement>("input#confirm");
+      return { pw: pw?.placeholder ?? null, confirm: confirm?.placeholder ?? null };
+    });
+    // Reference sign-up state (measured live): the password field hints the
+    // minimum length, the confirm field its purpose.
+    expect(ph.pw).toBe("Min. 8 characters");
+    expect(ph.confirm).toBe("Re-enter password");
+    // Sign-in keeps the dot placeholder (reference re-verified live).
+    await page.getByRole("button", { name: "Back to sign in" }).click();
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    const signinPh = await page.evaluate(() => {
+      const pw = document.querySelector<HTMLInputElement>("input#password");
+      return pw?.placeholder ?? null;
+    });
+    expect(signinPh).toBe("••••••••");
+  });
+
+  test("login inputs render the reference two-layer focus ring (G3)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    // The reference applies the ring on plain :focus (programmatic focus
+    // triggers it — not :focus-visible-gated). transition-colors animates
+    // the border color — settle before reading computed styles.
+    const email = await page.evaluate(async () => {
+      const e = document.querySelector<HTMLInputElement>("input#email")!;
+      e.focus();
+      await new Promise((r) => setTimeout(r, 350));
+      const cs = getComputedStyle(e);
+      return { border: cs.borderColor, shadow: cs.boxShadow };
+    });
+    expect(email.border).toBe("rgb(148, 163, 184)");
+    // Visible layers of the reference's ring (white 2px offset + slate-400
+    // 4px); v3's trailing transparent 0-layer paints nothing (v10 lesson).
+    expect(email.shadow).toContain("rgb(255, 255, 255) 0px 0px 0px 2px");
+    expect(email.shadow).toContain("rgb(148, 163, 184) 0px 0px 0px 4px");
+
+    // The sign-up state's password input carries the same INPUT_CLS — spot
+    // check it (exact: both Password labels exist in this state).
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    const pw = await page.evaluate(async () => {
+      const e = document.querySelector<HTMLInputElement>("input#password")!;
+      e.focus();
+      await new Promise((r) => setTimeout(r, 350));
+      const cs = getComputedStyle(e);
+      return { border: cs.borderColor, shadow: cs.boxShadow };
+    });
+    expect(pw.border).toBe("rgb(148, 163, 184)");
+    expect(pw.shadow).toContain("rgb(255, 255, 255) 0px 0px 0px 2px");
+    expect(pw.shadow).toContain("rgb(148, 163, 184) 0px 0px 0px 4px");
+  });
+});
