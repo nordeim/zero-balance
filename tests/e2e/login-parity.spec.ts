@@ -133,3 +133,70 @@ test.describe("login surface computed chrome (v7 — plan G2/G3)", () => {
     expect(styles!.bg).toBe("rgb(255, 255, 255)");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v9 — per-state control geometry (docs/remediation-plan-v9.md G7).
+//
+// Measured live on the reference (fresh unauthenticated session, all three
+// card states): the primary button text is 14px/500 in EVERY state (the
+// Google button is the 16px one); the SIGN-IN state's controls are 48px at
+// ≥640px, but the SIGN-UP and FORGOT states' inputs + primary button are
+// 44px (h-11) — a per-state geometry the clone flattened to 48 everywhere.
+// ---------------------------------------------------------------------------
+
+test.describe("login per-state control geometry (v9)", () => {
+  test("sign-in: 14px button text + 48px controls (regression)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    const geo = await page.evaluate(() => {
+      const submit = [...document.querySelectorAll('button[type="submit"]')][0];
+      const email = document.querySelector('input[type="email"]')!;
+      return {
+        fs: getComputedStyle(submit).fontSize,
+        h: Math.round(submit.getBoundingClientRect().height),
+        inputH: Math.round(email.getBoundingClientRect().height),
+      };
+    });
+    expect(geo.fs).toBe("14px");
+    expect(geo.h).toBe(48);
+    expect(geo.inputH).toBe(48);
+  });
+
+  test("sign-up: 14px button text + 44px controls", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    const geo = await page.evaluate(() => {
+      const submit = [...document.querySelectorAll('button[type="submit"]')][0];
+      const inputs = [...document.querySelectorAll("form input")];
+      const email = document.querySelector<HTMLInputElement>('input[type="email"]');
+      return {
+        fs: getComputedStyle(submit).fontSize,
+        h: Math.round(submit.getBoundingClientRect().height),
+        inputHs: inputs.map((i) => Math.round(i.getBoundingClientRect().height)),
+        emailH: email ? Math.round(email.getBoundingClientRect().height) : null,
+      };
+    });
+    expect(geo.fs).toBe("14px");
+    expect(geo.h).toBe(44);
+    for (const h of geo.inputHs) expect(h).toBe(44);
+  });
+
+  test("forgot: 14px button text + 44px controls", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Forgot password?" }).click();
+    await expect(page.getByRole("heading", { name: "Reset your password" })).toBeVisible();
+    const geo = await page.evaluate(() => {
+      const submit = [...document.querySelectorAll('button[type="submit"]')][0];
+      const inputs = [...document.querySelectorAll("form input")];
+      return {
+        fs: getComputedStyle(submit).fontSize,
+        h: Math.round(submit.getBoundingClientRect().height),
+        inputHs: inputs.map((i) => Math.round(i.getBoundingClientRect().height)),
+      };
+    });
+    expect(geo.fs).toBe("14px");
+    expect(geo.h).toBe(44);
+    for (const h of geo.inputHs) expect(h).toBe(44);
+  });
+});

@@ -85,3 +85,30 @@ directly:
 - Footer/badge findings came from inline `agent-browser eval` probes (the
   ref's dialogs have no `[role=dialog]` — climb from the Save button; its
   badges are DIVs, the clone's are SPANs — match by text)
+
+Session-17 additions (remediation-plan-v9 audit) — same detached :3200
+parity server + `ref9`/`clone9` desktop sessions and `reflog9`/`clonelog9`
+fresh unauthenticated login sessions:
+
+- `probe-v9-data.mjs` — reference data-state drift check (hero figure +
+  allocation) — unchanged since session 11
+- `probe-v9-dash.mjs` / `probe-v9-stat-cards.mjs` — hero/stat-card/guideline
+  sweep at computed depth (found the hero bar's 9999px vs 33554432px radius)
+- `probe-v9-donut-labels.mjs` / `probe-v9-donut-angles.mjs` /
+  `probe-v9-donut-bbox.mjs` / `probe-v9-donut-hit.mjs` — the donut deep
+  dive: sector path d-attribute angular math + label fills/positions +
+  bounding boxes (found the value-DESC data-order convention and the
+  clone-only label connector lines)
+- `probe-v9-mobile.mjs` — the mobile stack re-verification (R1/R2/R4 +
+  toggle hit-test; scroll to top before hit-testing — the topbar scrolls
+  off during audits)
+- `probe-v9-dialog-form.mjs` / `probe-v9-dialog-detail.mjs` — form-dialog
+  internals at computed depth (labels/inputs/selects/radios/switch/
+  textarea/footer; the ref's dialogs have no `[role=dialog]` — find the
+  panel via its `fixed inset-0 z-50` overlay, then the first white card
+  child; found the X-close/header-height/label-line-box/tile-line-height
+  and switch/radio token drifts)
+- `probe-v9-login-states.mjs` — the login card's three states at computed
+  depth from fresh sessions (found the 14px button text + the per-state
+  44/48px control geometry; withdrawn: the card border-color difference —
+  both cards render border-width 0)

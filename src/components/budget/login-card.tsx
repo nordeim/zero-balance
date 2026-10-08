@@ -50,7 +50,7 @@ function LogoMark() {
   return (
     <div className="group relative">
       <div
-        className="absolute inset-0 rounded-full opacity-30 blur-xl transition-opacity duration-300 group-hover:opacity-40"
+        className="absolute inset-0 rounded-[9999px] opacity-30 blur-xl transition-opacity duration-300 group-hover:opacity-40"
         style={{
           background: "linear-gradient(to bottom right, #e2e8f0, #cbd5e1)",
         }}
@@ -59,10 +59,10 @@ function LogoMark() {
           ring-white/50 computes it in oklab, and inlining boxShadow on the
           span itself would override its shadow-lg / group-hover:shadow-xl. */}
       <div
-        className="zb-logo-ring absolute inset-0 rounded-full"
+        className="zb-logo-ring absolute inset-0 rounded-[9999px]"
         style={{ boxShadow: "0 0 0 4px rgba(255, 255, 255, 0.5)" }}
       />
-      <span className="relative flex h-20 w-20 shrink-0 overflow-hidden rounded-full shadow-lg transition-all duration-300 group-hover:shadow-xl sm:h-24 sm:w-24">
+      <span className="relative flex h-20 w-20 shrink-0 overflow-hidden rounded-[9999px] shadow-lg transition-all duration-300 group-hover:shadow-xl sm:h-24 sm:w-24">
         <img
           src="/zerobalance-logo.png"
           alt="ZeroBudget logo"
@@ -111,8 +111,11 @@ function GoogleBlock({ onUnavailable }: { onUnavailable: () => void }) {
 
 // NOTE: literal hexes, not template interpolation — Tailwind's scanner
 // reads source text; a `border-[${VAR}]` class would never be generated.
+// Base input chrome (plan v9 G7): h-11 = 44px — the reference's SIGN-UP and
+// FORGOT states render 44px controls; only SIGN-IN grows to 48px (sm:h-12),
+// appended per-mode inside AuthForm.
 const INPUT_CLS =
-  "flex h-11 w-full rounded-xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.5)] px-3 py-2 pl-10 text-base text-[#09090b] transition-colors placeholder:text-[#475569] focus:border-[#94a3b8] focus:ring-[#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-12 md:text-sm";
+  "flex h-11 w-full rounded-xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.5)] px-3 py-2 pl-10 text-base text-[#09090b] transition-colors placeholder:text-[#475569] focus:border-[#94a3b8] focus:ring-[#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm";
 const LABEL_CLS = "text-sm font-medium text-[#334155] peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
 
 interface AuthFormProps {
@@ -135,6 +138,9 @@ interface AuthFormProps {
  * button instead (reference structure). Spacing follows the reference:
  * sign-up form space-y-3 sm:space-y-4, others space-y-4 sm:space-y-5. */
 function AuthForm(p: AuthFormProps) {
+  // Reference per-state geometry (plan v9 G7, measured live): sign-in
+  // controls are 48px at >=640px; sign-up/forgot stay 44px (h-11).
+  const inputCls = p.mode === "signin" ? `${INPUT_CLS} sm:h-12` : INPUT_CLS;
   return (
     <form
       className={p.mode === "signup" ? "space-y-3 sm:space-y-4" : "space-y-4 sm:space-y-5"}
@@ -155,7 +161,7 @@ function AuthForm(p: AuthFormProps) {
               placeholder="you@example.com"
               value={p.email}
               onChange={(e) => p.onEmail(e.target.value)}
-              className={INPUT_CLS}
+              className={inputCls}
             />
           </div>
         </div>
@@ -176,7 +182,7 @@ function AuthForm(p: AuthFormProps) {
                 placeholder="••••••••"
                 value={p.password}
                 onChange={(e) => p.onPassword(e.target.value)}
-                className={INPUT_CLS}
+                className={inputCls}
               />
             </div>
           </div>
@@ -198,7 +204,7 @@ function AuthForm(p: AuthFormProps) {
                 placeholder="••••••••"
                 value={p.confirm}
                 onChange={(e) => p.onConfirm(e.target.value)}
-                className={INPUT_CLS}
+                className={inputCls}
               />
             </div>
           </div>
@@ -215,7 +221,7 @@ function AuthForm(p: AuthFormProps) {
         <button
           type="submit"
           disabled={p.busy}
-          className="inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:h-12"
+          className={`inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50${p.mode === "signin" ? " sm:h-12" : ""}`}
         >
           {p.busy && <Loader2Icon className="h-4 w-4 animate-spin" />}
           {p.mode === "signin" && "Sign in"}

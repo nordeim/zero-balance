@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-08
-project_state: 96 unit tests / 92 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 102 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -572,6 +572,35 @@ Numbered institutional lessons. Each traces to a concrete fix in
     data changed since the v2 recon measured badge maps). Flip the
     reference's own switch, observe its conditional render, restore the
     mutation, THEN classify the difference as data vs structure.
+19. **Reference data changes under you — re-derive the RENDER CONVENTION
+    too.** The v2-era "[Savings, Want, Need] sector order" pin was really
+    the reference's value-DESC sort wearing that era's data (its $6025
+    slice was Savings-classified then, Need now). When a pinned ORDER
+    depends on data magnitudes, re-measure with fresh data and derive the
+    underlying convention (sort? anchor?) before re-pinning (plan v9 G1).
+20. **v4 rewrote `space-y-*` semantics — the margin MOVED.** v3 put
+    margin-top on following siblings; v4 puts margin-block-end on
+    `:not(:last-child)`. Equivalent for block children (sibling collapse),
+    but with an INLINE first child (the reference's shadcn-v1 labels) the
+    v4 margin is layout-IGNORED (vertical margins on inline boxes don't
+    affect flow) and the gap collapses. Pin the v3 selector in
+    `globals.css` when parity depends on it (plan v9 G3).
+21. **Transitions race computed-style reads.** A `transition-colors` switch
+    flips `aria-checked` instantly but ANIMATES its background — an
+    immediate `getComputedStyle` returns the pre-flip value. Poll
+    (`expect.poll`) or settle-wait before asserting transitioned values
+    (plan v9's switch spec).
+22. **`rounded-full` computes as `calc(infinity * 1px)` in v4.** The
+    reference's v3 build emits a plain `9999px` — visually identical,
+    computed-style different, exactly the lab() color story in one
+    dimension over. The same doctrine applies: pin `rounded-[9999px]` on
+    parity surfaces (plan v9 G6).
+23. **The shadcn `--primary` token is app-brand in this codebase but
+    shadcn-neutral in the reference.** The clone's `--color-primary` is
+    deliberately forest `#1a3a2e`; the reference's is shadcn's `#171717`.
+    Primitives that ride `border-primary`/`bg-primary` (radio circles,
+    switch tracks) therefore drift forest-vs-black — hex-pin the primitive
+    chrome instead of routing it through the brand token (plan v9 G5).
 
 ---
 
@@ -891,6 +920,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | Sessions 3–11 | Parity iterations v2–v6 (`docs/remediation-plan-v2..v6.md`) | Money formats, drill-down, badges, mobile chrome, tokens, dialog buttons, plain-text menus, empty states, wide column — 96/73/30 green at `42f50da` |
 | 2026-10-07 | Session 13 — parity iteration v7 (`docs/remediation-plan-v7.md`) | Login-surface slate pins + text-sm, logo halo layer, 24px brand target + text-lg, 16px toggle icon, sheet border/overlay pins, custom 404, head metadata, post-login root redirect — 96/83/30 green |
 | 2026-10-08 | Session 15 — parity iteration v8 (`docs/remediation-plan-v8.md`) | Dialog footers rebuilt as the reference's flex-1 full-row split (Cancel ≈ 307px + Save ≈ 305px), all remaining badge/nav/Calculate named classes hex-pinned (plain rgb computed styles), stray `prisma/db/custom.db` untracked; every mobile-nav superset fix + v7 pin re-verified live — 96/92/30 green |
+| 2026-10-08 | Session 17 — parity iteration v9 (`docs/remediation-plan-v9.md`) | Donut re-sorted to the reference's value-DESC convention + `labelLine={false}`; dialog X-close rebuilt as the 36×36 in-header button (sticky header 69px); form labels restored to the inline shadcn-v1 line box (12px gap — v4's space-y margin-block-end is layout-ignored on inline first children, pinned in globals.css); 52px classification tiles; radio/switch #171717 primitive family (checked track, borders, dot, white ring-0 thumb); `rounded-full` → `rounded-[9999px]` ×24 sites (v4 emits calc(infinity)); login per-state control geometry (14px button text, 44px sign-up/forgot vs 48px sign-in) — 96/102/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

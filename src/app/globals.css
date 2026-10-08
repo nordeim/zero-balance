@@ -7,6 +7,25 @@
    parity holds on hover:none contexts too (remediation-plan-v5.md G7). */
 @variant hover (&:hover);
 
+/* SPACE-Y V3 SEMANTICS (trap 4b, plan v9 G3): v4 rewrote `space-y-*` to
+   margin-block-end on `:not(:last-child)`. With a BLOCK first child that is
+   layout-equivalent to v3's margin-top-on-following-sibling (sibling
+   collapse), but with an INLINE first child — the reference's shadcn-v1
+   form labels (`text-sm font-medium leading-none`, display: inline) —
+   vertical margins on inline boxes are IGNORED by layout, so the
+   label→input gap collapsed (measured 4px vs the reference's 12px rect
+   gap = 8px margin + the inline glyph box). Restore the v3 selector for
+   space-y-2 (the dialogs' field wrapper) so both inline and block first
+   children space identically to the reference build. */
+@layer utilities {
+  .space-y-2 > :not(:last-child) {
+    margin-block-end: 0;
+  }
+  .space-y-2 > * + * {
+    margin-block-start: 0.5rem; /* 8px — v3's space-y-2 */
+  }
+}
+
 /* ============================================================================
    ZeroBalance design tokens — Tailwind CSS v4 (CSS-first).
    ----------------------------------------------------------------------------

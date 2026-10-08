@@ -5,7 +5,59 @@ session's detailed narrative lives in `docs/session_<n>.md`; findings ledgers
 live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v3.md`, `docs/remediation-plan-v4.md`,
 `docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`,
-`docs/remediation-plan-v7.md`, and `docs/remediation-plan-v8.md`.
+`docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`, and
+`docs/remediation-plan-v9.md`.
+
+---
+
+## Session 17 — Fresh verification & parity iteration v9 (2026-10-08)
+
+**Goal:** `git pull` to `92e837e` (session-16 record), re-verify the v8
+baseline, then a fresh two-site parity audit at computed-style depth of the
+surfaces no earlier pass had measured that way: the donut's data-order
+convention, every form dialog's X-close geometry + sticky-header height,
+the form-label line box, the classification-tile text line-height, the
+shadcn radio/switch primitive tokens, the v4 `rounded-full` computed
+radius, and the login card's per-state control geometry. Explicit
+mobile-navigation re-verification (the task focus) + reference data-drift
+check.
+
+- Baseline chain at `92e837e` fully green (96/92/30 + lint/typecheck/build);
+  detached :3200 parity server + `ref9`/`clone9` (desktop) and
+  `reflog9`/`clonelog9` (fresh login) browser sessions.
+- Mobile stack re-verified end-to-end: R1/R2/R4 all still live on the
+  reference (toast-block hit-test, sheet-trap after nav, 395px overflow);
+  all clone superset fixes intact (DIRECT hit, sheet closes, 390px fit).
+- 7 finding groups (`docs/remediation-plan-v9.md`): the donut re-sorted to
+  the reference's value-DESC convention (biggest slice anchored at
+  recharts' 3-o'clock start — the v2-era [S,W,N] pin was the same sort
+  wearing that era's data) + `labelLine={false}`; the dialog X-close
+  rebuilt as the 36×36 in-header `DialogCloseButton` (sticky header
+  69px, default absolute X removed); the form Label restored to the
+  inline shadcn-v1 line box (12px label→input gap); 52px classification
+  tiles; the radio/switch `#171717` primitive family (checked switch
+  track, radio borders/dot, white ring-0 thumb — hex-pinned off the brand
+  forest `--primary`); `rounded-full` → `rounded-[9999px]` across 24 sites
+  (v4 computes calc(infinity) → 33554432px); login per-state geometry
+  (14px primary-button text; 44px sign-up/forgot controls vs 48px
+  sign-in). Withdrawn: the login-card border-color difference (both cards
+  render border-width 0).
+- Mid-flight root-cause: v4 rewrote `space-y-*` to margin-block-end on
+  `:not(:last-child)` — layout-IGNORED for inline first children (the
+  reference's labels), collapsing the gap to 4px. v3 semantics restored
+  for `.space-y-2` in `globals.css` (trap 4b; all 43 usages audited safe).
+- TDD: 10 new e2e + 4 updated pins RED → GREEN (donut order/lines, dialog
+  chrome ×4, primitive tokens ×3 incl. an `expect.poll` for the
+  `transition-colors` race, login geometry ×3; two old `rounded-full`
+  class-string pins updated). Full chain: lint · typecheck · 96/96 unit ·
+  build · **102/102 e2e** · 30/30 smoke.
+- Live parity re-verified surface-by-surface on the fixed build (header
+  69, X 36/16, gap 12, tiles 52, switch #171717 + white thumb, radio
+  #171717, donut [orange, lime, blue] with 0 label lines, legend
+  value-desc, 9999px radii with 0 infinity elements left, login 14px +
+  48/44 per state); mobile re-checked; 13 screenshots regenerated;
+  docs aligned (README/CLAUDE/AGENTS/SKILL/probe README/session_17 +
+  this worklog).
 
 ---
 

@@ -64,7 +64,7 @@ function AssetCard({ asset }: { asset: Asset }) {
       <div className="mb-3 flex items-start justify-between">
         <div className="flex-1">
           <div className="mb-1 flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: ASSET_COLOR }} />
+            <div className="h-2 w-2 rounded-[9999px]" style={{ backgroundColor: ASSET_COLOR }} />
             <h4 className="font-semibold" style={{ color: rgb.forestDark }}>
               {asset.name}
             </h4>
@@ -149,7 +149,7 @@ function LiabilityCard({ liability }: { liability: Liability }) {
       <div className="mb-3 flex items-start justify-between">
         <div className="flex-1">
           <div className="mb-1 flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: LIABILITY_COLOR }} />
+            <div className="h-2 w-2 rounded-[9999px]" style={{ backgroundColor: LIABILITY_COLOR }} />
             <h4 className="font-semibold" style={{ color: rgb.forestDark }}>
               {liability.name}
             </h4>
@@ -268,7 +268,7 @@ export function NetWorthView() {
       >
         <div
           aria-hidden="true"
-          className="absolute top-0 right-0 h-64 w-64 rounded-full opacity-10"
+          className="absolute top-0 right-0 h-64 w-64 rounded-[9999px] opacity-10"
           style={{
             background: "radial-gradient(circle, white 0%, transparent 70%)",
             transform: "translate(30%, -30%)",
@@ -288,7 +288,7 @@ export function NetWorthView() {
               </h2>
             </div>
             <div
-              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[9999px]"
               style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
             >
               <TrendingUpIcon className="h-8 w-8 text-white" />

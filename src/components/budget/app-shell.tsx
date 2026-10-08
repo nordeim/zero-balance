@@ -55,7 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ) : (
           <div className="flex flex-1 items-center justify-center p-8">
             <div
-              className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
+              className="h-8 w-8 animate-spin rounded-[9999px] border-2 border-t-transparent"
               style={{ borderColor: "var(--lime-green)", borderTopColor: "transparent" }}
               role="status"
               aria-label="Loading"

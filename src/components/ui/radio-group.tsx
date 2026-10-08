@@ -24,13 +24,19 @@ const RadioGroupItem = React.forwardRef<
   <RadioGroupPrimitive.Item
     ref={ref}
     className={cn(
-      "aspect-square h-4 w-4 rounded-full border border-primary text-primary shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+      // Reference radio circle (measured live, plan v9 G5): 16px, border
+      // rgb(23,23,23) — its --primary is shadcn's near-black #171717, NOT
+      // brand forest (the clone's --color-primary) — so the primitive is
+      // hex-pinned instead of riding the brand token. Focus: ring-1.
+      "aspect-square h-4 w-4 rounded-[9999px] border border-[#171717] text-[#171717] shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
       className,
     )}
     {...props}
   >
     <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-      <CircleIcon className="h-2 w-2 fill-primary" />
+      {/* Checked dot: the reference's fills rgb(23,23,23) (its --primary),
+          measured live on its Need tile — pin it off the brand token. */}
+      <CircleIcon className="h-2 w-2 fill-[#171717]" />
     </RadioGroupPrimitive.Indicator>
   </RadioGroupPrimitive.Item>
 ));

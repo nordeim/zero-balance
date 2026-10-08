@@ -304,3 +304,157 @@ test.describe("dialog action buttons (v5)", () => {
     expect(await saveIconCount()).toBe(1);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v9 — dialog chrome: X-close geometry, sticky-header height, label line box,
+// classification-tile height (docs/remediation-plan-v9.md G2/G3/G4).
+//
+// Measured live on the reference's Add Budget Item dialog:
+//   X-close: a 36×36 flex child of the STICKY header (flex justify-between
+//     px-6 py-4 border-b), svg 16px, radius 6px, #0a0a0a — so the header
+//     computes 69px (16 + 36 + 16 + 1).
+//   Field labels: plain inline `text-sm font-medium leading-none` → glyph-box
+//     rect h16 → label-bottom → input-top gap 12px (with space-y-2).
+//   Classification tiles: text lh 14 → tile h 52 (p-4 + 16px content +
+//     2×2px borders).
+// ---------------------------------------------------------------------------
+
+test.describe("dialog chrome (v9)", () => {
+  test("X-close is a 36×36 in-header button and the header is 69px tall", async ({ page }) => {
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const chrome = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]')!;
+      // The sticky header: the first child carrying border-b (the DialogHeader).
+      const header = [...d.children].find(
+        (c) => /border-b/.test((c as HTMLElement).className || ""),
+      ) as HTMLElement | undefined;
+      const x = [...d.querySelectorAll("button")].find(
+        (b) => b.querySelector("svg.lucide-x, svg[class*=x]") && !b.textContent?.trim(),
+      ) || header?.querySelector("button") || null;
+      const svg = x?.querySelector("svg") || null;
+      const headerRect = header?.getBoundingClientRect();
+      const xr = x?.getBoundingClientRect();
+      const xcs = x ? getComputedStyle(x) : null;
+      return {
+        headerH: headerRect ? Math.round(headerRect.height) : null,
+        x: x && xr
+          ? {
+              w: Math.round(xr.width),
+              h: Math.round(xr.height),
+              svgW: svg ? Math.round(svg.getBoundingClientRect().width) : null,
+              radius: xcs?.borderRadius,
+              color: xcs?.color,
+            }
+          : null,
+      };
+    });
+
+    // Header: 16 + 36 + 16 + 1 = 69 (the 36px X rides in the flex row).
+    expect(chrome.headerH).toBe(69);
+    expect(chrome.x).not.toBeNull();
+    expect(chrome.x!.w).toBe(36);
+    expect(chrome.x!.h).toBe(36);
+    expect(chrome.x!.svgW).toBe(16);
+    expect(chrome.x!.radius).toBe("6px");
+    expect(chrome.x!.color).toBe("rgb(10, 10, 10)");
+  });
+
+  test("field labels sit 12px above their inputs (inline label line box)", async ({ page }) => {
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    // The reference's labels are INLINE (plain shadcn-v1 form) — the glyph
+    // box extends past the 14px line-height, so with the same space-y-2
+    // wrapper the label-bottom → input-top gap measures 12px.
+    const gap = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]')!;
+      const lbl = [...d.querySelectorAll("label")].find(
+        (l) => (l.textContent || "").trim() === "Amount",
+      );
+      const input = lbl?.parentElement?.querySelector("input");
+      if (!lbl || !input) return null;
+      const lr = lbl.getBoundingClientRect();
+      const ir = input.getBoundingClientRect();
+      return {
+        gap: Math.round(ir.y - (lr.y + lr.height)),
+        labelH: Math.round(lr.height),
+        display: getComputedStyle(lbl).display,
+      };
+    });
+    expect(gap).not.toBeNull();
+    expect(gap!.gap).toBe(12);
+    expect(gap!.display).toBe("inline");
+  });
+
+  test("classification tiles are 52px tall (leading-none tile text)", async ({ page }) => {
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    // Reference tiles: p-4 + content 16 (radio 16 / text lh 14) + 2×2px
+    // borders = 52. The clone's text-sm default lh 20 made them 56.
+    const tiles = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]')!;
+      return [...d.querySelectorAll("[role='radio']")]
+        .map((r) => r.closest("label"))
+        .filter((l): l is HTMLLabelElement => !!l)
+        .slice(0, 3)
+        .map((l) => {
+          const r = l.getBoundingClientRect();
+          const txt = [...l.querySelectorAll("span")].find(
+            (s) => (s.textContent || "").trim().length > 0,
+          );
+          return {
+            h: Math.round(r.height),
+            w: Math.round(r.width),
+            textLh: txt ? getComputedStyle(txt).lineHeight : null,
+          };
+        });
+    });
+    expect(tiles).toHaveLength(3);
+    for (const t of tiles) {
+      expect(t.h).toBe(52);
+      expect(t.w).toBe(197);
+      expect(t.textLh).toBe("14px");
+    }
+  });
+
+  test("calculator dialog X is 36×36 with a 16px icon", async ({ page }) => {
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+    const rent = page.locator("main .group", { hasText: "Rent" }).first();
+    await rent.hover();
+    await page.getByRole("button", { name: "Calculate" }).first().click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const x = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]')!;
+      const btn = [...d.querySelectorAll('button[aria-label="Close"]')].find(
+        (b) => b.closest('[role="dialog"]') === d,
+      );
+      if (!btn) return null;
+      const r = btn.getBoundingClientRect();
+      const svg = btn.querySelector("svg");
+      return {
+        w: Math.round(r.width),
+        h: Math.round(r.height),
+        svgW: svg ? Math.round(svg.getBoundingClientRect().width) : null,
+      };
+    });
+    expect(x).not.toBeNull();
+    expect(x!.w).toBe(36);
+    expect(x!.h).toBe(36);
+    expect(x!.svgW).toBe(16);
+  });
+});

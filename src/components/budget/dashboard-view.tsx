@@ -84,7 +84,7 @@ function NetZeroGoalCard() {
     >
       <div
         aria-hidden="true"
-        className="absolute top-0 right-0 h-64 w-64 rounded-full opacity-10"
+        className="absolute top-0 right-0 h-64 w-64 rounded-[9999px] opacity-10"
         style={{
           background: `radial-gradient(circle, ${COLORS.limeGreen} 0%, transparent 70%)`,
           transform: "translate(30%, -30%)",
@@ -93,7 +93,7 @@ function NetZeroGoalCard() {
       <div className="relative z-10">
         <div className="mb-6 flex items-center gap-3">
           <div
-            className="flex h-12 w-12 items-center justify-center rounded-full"
+            className="flex h-12 w-12 items-center justify-center rounded-[9999px]"
             style={{ backgroundColor: hexToRgba(COLORS.limeGreen, 0.2) }}
           >
             <TargetIcon className="h-6 w-6" style={{ color: COLORS.limeGreen }} />
@@ -110,9 +110,9 @@ function NetZeroGoalCard() {
               {totals.allocationPercent.toFixed(1)}%
             </span>
           </div>
-          <div className="h-3 overflow-hidden rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+          <div className="h-3 overflow-hidden rounded-[9999px]" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
             <div
-              className="h-full rounded-full transition-all duration-500"
+              className="h-full rounded-[9999px] transition-all duration-500"
               style={{ background: fill, width: `${pct}%` }}
             />
           </div>
@@ -283,7 +283,7 @@ function BreakdownSection({
                     style={{ backgroundColor: "rgb(249, 250, 251)" }}
                   >
                     <span className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: color }} />
+                      <span className="h-1.5 w-1.5 rounded-[9999px]" style={{ backgroundColor: color }} />
                       <span className="text-xs font-medium" style={{ color: rgb.forestDark }}>
                         {cat.name}
                       </span>
@@ -310,7 +310,7 @@ function BreakdownSection({
                             >
                               <span className="flex items-center gap-2">
                                 <span
-                                  className="h-1 w-1 rounded-full"
+                                  className="h-1 w-1 rounded-[9999px]"
                                   style={{ backgroundColor: color, opacity: 0.6 }}
                                 />
                                 <span className="text-xs" style={{ color: rgb.gray }}>
@@ -330,7 +330,7 @@ function BreakdownSection({
                                 >
                                   <span className="flex items-center gap-1.5">
                                     <span
-                                      className="h-0.5 w-0.5 rounded-full"
+                                      className="h-0.5 w-0.5 rounded-[9999px]"
                                       style={{ backgroundColor: color, opacity: 0.4 }}
                                     />
                                     <span className="max-w-[120px] truncate">{itemLabel(item)}</span>
@@ -483,7 +483,7 @@ function StatCard({
     >
       <div
         aria-hidden="true"
-        className="absolute top-0 right-0 h-32 w-32 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-10"
+        className="absolute top-0 right-0 h-32 w-32 rounded-[9999px] opacity-0 transition-opacity duration-300 group-hover:opacity-10"
         style={{
           background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
           transform: "translate(30%, -30%)",
@@ -523,12 +523,17 @@ function StatCard({
 }
 
 // ---------------------------------------------------------------------------
-// Spending Breakdown donut (shadcn card shell, [Savings, Want, Need] order)
+// Spending Breakdown donut (shadcn card shell, value-DESC slice order)
 // ---------------------------------------------------------------------------
 
 function SpendingBreakdownCard() {
   const items = useBudgetStore((s) => s.items);
-  const slices = spendingBreakdown(items);
+  // The reference renders its donut data sorted by value DESCENDING — its
+  // pie sectors AND legend rows share the sorted array (measured live:
+  // [Need $6025, Savings $300, Want $200], biggest slice anchored at
+  // recharts' 3-o'clock start). The aggregation's [S, W, N] order stays the
+  // domain model; the presentation sorts (docs/remediation-plan-v9.md G1).
+  const slices = [...spendingBreakdown(items)].sort((a, b) => b.amount - a.amount);
   const hasData = items.length > 0;
   const data = slices.map((s) => ({ name: s.label, value: s.amount, color: CLASSIFICATION_COLORS[s.key] }));
 
@@ -560,6 +565,11 @@ function SpendingBreakdownCard() {
                     outerRadius={100}
                     stroke="#fff"
                     isAnimationActive={false}
+                    // The reference renders its percentage labels with NO
+                    // connector lines (measured: labelLineCount 0) — recharts
+                    // draws one .recharts-pie-label-line per labeled sector
+                    // unless labelLine is explicitly false (plan v9 G1b).
+                    labelLine={false}
                     label={({ percent }: { percent?: number }) =>
                       `${((percent ?? 0) * 100).toFixed(1)}%`
                     }

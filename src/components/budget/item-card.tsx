@@ -103,7 +103,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
       <div className="mb-3 flex items-start justify-between">
         <div className={cn("flex-1", item.type === "expense" && "pr-24")}>
           <div className="mb-1 flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: accent }} />
+            <div className="h-2 w-2 rounded-[9999px]" style={{ backgroundColor: accent }} />
             <h4 className="font-semibold" style={{ color: rgb.forestDark }}>
               {item.category}
             </h4>

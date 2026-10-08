@@ -7,7 +7,7 @@
 
 import * as React from "react";
 import { CalendarIcon, CreditCardIcon, Loader2Icon, SaveIcon, Trash2Icon } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogCloseButton, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -140,6 +140,7 @@ export function BudgetItemDialog() {
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{editing ? "Edit Budget Item" : "Add Budget Item"}</DialogTitle>
+          <DialogCloseButton />
         </DialogHeader>
         <form className="space-y-6 p-6" onSubmit={onSubmit}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -200,7 +201,10 @@ export function BudgetItemDialog() {
                     }
                   >
                     <RadioGroupItem value={c} />
-                    <span className="text-sm font-medium">{CLASSIFICATION_LABELS[c]}</span>
+                    {/* leading-none: the reference's tile text computes lh 14
+                        (tile h 52); v4's text-sm pairs with lh 20 → 56px
+                        tiles (plan v9 G4). */}
+                    <span className="text-sm font-medium leading-none">{CLASSIFICATION_LABELS[c]}</span>
                   </Label>
                 );
               })}

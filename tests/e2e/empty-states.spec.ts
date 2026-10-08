@@ -123,7 +123,7 @@ test.describe("empty states + content column (v6)", () => {
         cardChrome: { border: `${bs.borderTopWidth} ${bs.borderTopStyle}`, bg: bs.backgroundColor, radius: bs.borderRadius, py: bs.paddingTop },
         iconClass: svg?.getAttribute("class") || null,
         icon: svg ? { w: Math.round(r!.width), color: scs!.color, opacity: scs!.opacity, mb: scs!.marginBottom } : null,
-        circle: block.querySelector('div[class*="rounded-full"]') ? "PRESENT" : "ABSENT",
+        circle: block.querySelector('div[class*="rounded-[9999px]"]') ? "PRESENT" : "ABSENT",
         headingMb: getComputedStyle(h).marginBottom,
         desc: p ? { size: getComputedStyle(p).fontSize, color: getComputedStyle(p).color } : null,
         btn: btn ? { text: (btn.textContent || "").trim(), bgImage: getComputedStyle(btn).backgroundImage.slice(0, 80) } : null,

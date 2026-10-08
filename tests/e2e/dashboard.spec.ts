@@ -3,8 +3,8 @@ import { expect, test } from "@playwright/test";
 // Dashboard: the NET ZERO GOAL hero (allocation %, |balance|, status-conditional
 // chip/fill), the Net Zero Breakdown (3-level expandable drill-down — see
 // breakdown.spec.ts), the three stat cards (text-3xl forestDark amounts), the
-// Spending Breakdown donut ([Savings, Want, Need] sector order + iconed legend),
-// the tinted Budget Guidelines cards, and the quick-action card buttons.
+// Spending Breakdown donut (value-DESC sector order + iconed legend), the
+// tinted Budget Guidelines cards, and the quick-action card buttons.
 // Expected values are the seed's exact arithmetic:
 //   income 5550 · savings 1250 · expenses 2235 → balance +2065 (Under
 //   Budget), allocation 62.8%; spending over 9035 total: savings 1250
@@ -77,35 +77,44 @@ test.describe("dashboard", () => {
     await expect(page).toHaveURL(/\/income$/);
   });
 
-  test("Spending Breakdown renders [Savings, Want, Need] sectors and iconed legend", async ({ page }) => {
+  test("Spending Breakdown renders value-DESC sectors and iconed legend", async ({ page }) => {
     await expect(page.getByText("Spending Breakdown")).toBeVisible();
     await expect(page.getByText("Needs vs Wants vs Savings")).toBeVisible();
 
-    // Sector order mirrors the reference: [Savings lime, Want blue, Need orange]
-    // (live DOM fills: ['#8fbc3f', '#3b7ea1', '#e07a3b']).
+    // Sector order mirrors the reference (session-17 audit, plan v9 G1): its
+    // donut data is sorted by value DESC — measured live as [Need $6025,
+    // Savings $300, Want $200] with the biggest slice anchored at recharts'
+    // 3-o'clock start. With the seed's data (need 7370 > savings 1250 > want
+    // 415) the fills are [orange, lime, blue]. The v2-era [S, W, N] order was
+    // the same convention with then-different reference data.
     const fills: string[] = await page.locator(".recharts-sector").evaluateAll((nodes) =>
       nodes.map((n) => getComputedStyle(n).fill),
     );
-    expect(fills).toEqual(["rgb(143, 188, 63)", "rgb(59, 126, 161)", "rgb(224, 122, 59)"]);
+    expect(fills).toEqual(["rgb(224, 122, 59)", "rgb(143, 188, 63)", "rgb(59, 126, 161)"]);
 
-    // Legend rows (order Savings → Want → Need) on the tinted bg with
-    // piggy-bank / heart / circle-alert icons and plain amounts.
+    // The reference renders NO percentage-label connector lines (measured:
+    // labelLineCount 0); recharts only omits them with labelLine={false}.
+    const labelLines = await page.locator(".recharts-pie-label-line").count();
+    expect(labelLines).toBe(0);
+
+    // Legend rows (order Need → Savings → Want, value-desc) on the tinted bg
+    // with circle-alert / piggy-bank / heart icons and plain amounts.
     const legend = page.locator("div.flex.flex-col.gap-3.mt-6");
     await expect(legend).toBeVisible();
     const rows = legend.locator("> div");
     await expect(rows).toHaveCount(3);
-    await expect(rows.nth(0)).toContainText("Savings");
-    await expect(rows.nth(0)).toContainText("$1250.00");
-    await expect(rows.nth(0)).toContainText("13.8%");
-    await expect(rows.nth(0).locator("svg.lucide-piggy-bank")).toBeVisible();
-    await expect(rows.nth(1)).toContainText("Want");
-    await expect(rows.nth(1)).toContainText("$415.00");
-    await expect(rows.nth(1)).toContainText("4.6%");
-    await expect(rows.nth(1).locator("svg.lucide-heart")).toBeVisible();
-    await expect(rows.nth(2)).toContainText("Need");
-    await expect(rows.nth(2)).toContainText("$7370.00");
-    await expect(rows.nth(2)).toContainText("81.6%");
-    await expect(rows.nth(2).locator("svg.lucide-circle-alert")).toBeVisible();
+    await expect(rows.nth(0)).toContainText("Need");
+    await expect(rows.nth(0)).toContainText("$7370.00");
+    await expect(rows.nth(0)).toContainText("81.6%");
+    await expect(rows.nth(0).locator("svg.lucide-circle-alert")).toBeVisible();
+    await expect(rows.nth(1)).toContainText("Savings");
+    await expect(rows.nth(1)).toContainText("$1250.00");
+    await expect(rows.nth(1)).toContainText("13.8%");
+    await expect(rows.nth(1).locator("svg.lucide-piggy-bank")).toBeVisible();
+    await expect(rows.nth(2)).toContainText("Want");
+    await expect(rows.nth(2)).toContainText("$415.00");
+    await expect(rows.nth(2)).toContainText("4.6%");
+    await expect(rows.nth(2).locator("svg.lucide-heart")).toBeVisible();
     // Tinted row background rgb(245,248,245).
     await expect(rows.nth(0)).toHaveCSS("background-color", "rgb(245, 248, 245)");
   });

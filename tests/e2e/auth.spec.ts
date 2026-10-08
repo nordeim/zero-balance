@@ -15,17 +15,16 @@ test.describe("login route", () => {
     await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
     await expect(page.getByText("Sign in to continue")).toBeVisible();
 
-    // The logo is a white CIRCULAR chip (rounded-full span) wrapped by a
-    // 4px white/50 halo layer (.zb-logo-ring — plan v7 G3: v4's
-    // ring-white/50 computes the halo in oklab, so it is an explicit
-    // sibling layer with a plain-rgba box-shadow; the span keeps its
-    // shadow-lg / group-hover:shadow-xl). rounded-full computes as
-    // calc(infinity * 1px) → Chrome reports 33554432px, so the assertions
-    // check geometry + the ring layer, not exact strings.
-    const chip = page.locator("span.rounded-full").first();
+    // The logo is a white CIRCULAR chip wrapped by a 4px white/50 halo layer
+    // (.zb-logo-ring — plan v7 G3: v4's ring-white/50 computes the halo in
+    // oklab, so it is an explicit sibling layer with a plain-rgba box-shadow;
+    // the span keeps its shadow-lg / group-hover:shadow-xl). Since plan v9
+    // (G6) the chip's class is the hex-pinned rounded-[9999px] — the
+    // reference's computed radius — so the exact value is assertable.
+    const chip = page.locator("span.rounded-\\[9999px\\]").first();
     await expect(chip).toBeVisible();
     const radius = await chip.evaluate((el) => parseFloat(getComputedStyle(el).borderRadius));
-    expect(radius).toBeGreaterThan(1000);
+    expect(radius).toBe(9999);
     const halo = await page
       .locator(".zb-logo-ring")
       .evaluate((el) => getComputedStyle(el).boxShadow);

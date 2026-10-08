@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { Loader2Icon, SaveIcon } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogCloseButton, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -114,6 +114,7 @@ export function AssetDialog() {
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{editing ? "Edit Asset" : "Add Asset"}</DialogTitle>
+          <DialogCloseButton />
         </DialogHeader>
         <form className="space-y-6 p-6" onSubmit={onSubmit}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

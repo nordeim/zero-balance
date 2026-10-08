@@ -236,3 +236,108 @@ test.describe("neutral token parity (v5)", () => {
     await page.keyboard.press("Escape");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v9 — primitive chrome: the radio/switch #171717 family + the 9999px radius
+// convention (docs/remediation-plan-v9.md G5/G6).
+//
+// Measured live on the reference's Add Budget Item dialog:
+//   Radio circle: 16px, border rgb(23,23,23) (its --primary is shadcn's
+//     #171717, NOT brand forest), radius 9999px, focus-visible ring-1.
+//   Switch (its own Recurring switch, flipped + measured + restored):
+//     track 36×20, checked bg rgb(23,23,23), unchecked bg #e5e5e5 (input),
+//     thumb 16px #ffffff with ring-0, translate-x-4.
+//   rounded-full: the reference's build emits 9999px — v4's emits
+//     calc(infinity * 1px) → 33554432px. Same surfaces, same classes; pin
+//     the computed value (the v8 lab() doctrine applied to radii).
+// ---------------------------------------------------------------------------
+
+test.describe("primitive chrome (v9)", () => {
+  test("radio circles render the #171717 primary, not brand forest", async ({ page }) => {
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+    const radio = await page.evaluate(() => {
+      const r = document.querySelector('[role="dialog"] [role="radio"]');
+      if (!r) return null;
+      const cs = getComputedStyle(r);
+      return { border: cs.borderColor, w: cs.width, radius: cs.borderRadius };
+    });
+    expect(radio).not.toBeNull();
+    // Reference: border-primary computes rgb(23,23,23) — the clone's brand
+    // --primary (#1a3a2e forest) must not leak into the primitive.
+    expect(radio!.border).toBe("rgb(23, 23, 23)");
+    expect(radio!.w).toBe("16px");
+    expect(radio!.radius).toBe("9999px");
+  });
+
+  test("the recurring switch renders the #171717 checked track + white thumb", async ({ page }) => {
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const sw = dialog.locator('[role="switch"]');
+    await expect(sw).toBeVisible();
+    // Flip ON, then POLL the computed bg — the switch carries
+    // `transition-colors` (150ms), so an immediate read races the animation
+    // and returns the pre-flip value.
+    await sw.click();
+    await expect(sw).toHaveAttribute("aria-checked", "true");
+    const readSwitch = () =>
+      page.evaluate(() => {
+        const s = document.querySelector('[role="dialog"] [role="switch"]')!;
+        const thumb = s.querySelector("span")!;
+        return { bg: getComputedStyle(s).backgroundColor, thumbBg: getComputedStyle(thumb).backgroundColor };
+      });
+    await expect.poll(async () => (await readSwitch()).bg).toBe("rgb(23, 23, 23)");
+    const checked = await readSwitch();
+    expect(checked.thumbBg).toBe("rgb(255, 255, 255)");
+    await sw.click();
+    await expect(sw).toHaveAttribute("aria-checked", "false");
+    await expect.poll(async () => (await readSwitch()).bg).toBe("rgb(229, 229, 229)");
+    const unchecked = await page.evaluate(() => {
+      const s = document.querySelector('[role="dialog"] [role="switch"]')!;
+      return { bg: getComputedStyle(s).backgroundColor, radius: getComputedStyle(s).borderRadius };
+    });
+    // Unchecked track: the input token #e5e5e5; track radius 9999px (the
+    // reference's rounded-full, not v4's calc(infinity)).
+    expect(unchecked.bg).toBe("rgb(229, 229, 229)");
+    expect(unchecked.radius).toBe("9999px");
+    await page.keyboard.press("Escape");
+  });
+
+  test("fully-rounded chrome computes 9999px, not v4 infinity (hero bar, avatar)", async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+    const radii = await page.evaluate(() => {
+      // Hero allocation bar: the 12px-tall h-3 rounded track/fill (class now
+      // pinned to rounded-[9999px] — the reference's computed value).
+      const bar = [...document.querySelectorAll("main div")].find(
+        (d) => {
+          const r = d.getBoundingClientRect();
+          return Math.round(r.height) === 12 && /rounded-\[9999px\]/.test((d as HTMLElement).className || "");
+        },
+      );
+      // Rail avatar: the 36×36 rounded circle in the fixed aside.
+      const avatar = [...document.querySelectorAll("aside div")].find(
+        (d) => {
+          const r = d.getBoundingClientRect();
+          return Math.round(r.width) === 36 && /rounded-\[9999px\]/.test((d as HTMLElement).className || "");
+        },
+      );
+      return {
+        bar: bar ? getComputedStyle(bar).borderRadius : null,
+        avatar: avatar ? getComputedStyle(avatar).borderRadius : null,
+      };
+    });
+    // The reference's Tailwind emits 9999px; v4's rounded-full computes
+    // calc(infinity * 1px) → 33554432px. Visually identical, computed-
+    // style parity says pin the reference value.
+    expect(radii.bar).toBe("9999px");
+    expect(radii.avatar).toBe("9999px");
+  });
+});

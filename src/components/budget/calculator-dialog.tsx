@@ -10,7 +10,7 @@
 //   - an orange-tinted total card: "Total Calculated" left, amount right in
 //     #e07a3b, "Based on N item(s)" + a conditional orange "• Will update
 //     category total" (shown while total !== the category's amount)
-//   - line-item rows: gray rounded-full pills (frequency + conditional
+//   - line-item rows: gray rounded-[9999px] pills (frequency + conditional
 //     status), "#policy" line, hover-revealed ghost edit/delete, orange
 //     text-xl amount — no "From date"
 
@@ -82,7 +82,6 @@ export function CalculatorDialog() {
     <Dialog open onOpenChange={(open) => !open && closeModals()}>
       <DialogContent
         aria-describedby={undefined}
-        hideClose
         style={{
           maxWidth: "48rem" /* max-w-3xl — wider than the form dialogs */,
           maxHeight: "85vh",
@@ -119,10 +118,12 @@ export function CalculatorDialog() {
           <button
             type="button"
             aria-label="Close"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent"
             onClick={closeModals}
           >
-            <XIcon className="h-5 w-5" />
+            {/* Reference calculator X (measured live): 36×36 button, 16px
+                lucide-x in #0a0a0a — plan v9 G2. */}
+            <XIcon className="h-4 w-4" />
           </button>
         </div>
 
@@ -224,12 +225,12 @@ export function CalculatorDialog() {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-xs" style={{ color: rgb.gray }}>
                         <span
-                          className="rounded-full px-2 py-0.5"
+                          className="rounded-[9999px] px-2 py-0.5"
                           style={{ backgroundColor: "#f3f4f6" }}
                         >
                           {li.frequency}
                         </span>
-                        <span className={cn("rounded-full px-2 py-0.5", statusPill(li.status))}>
+                        <span className={cn("rounded-[9999px] px-2 py-0.5", statusPill(li.status))}>
                           {li.status}
                         </span>
                       </div>

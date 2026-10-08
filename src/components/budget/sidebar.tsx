@@ -116,7 +116,7 @@ function UserFooter() {
         style={{ backgroundColor: "rgb(245, 248, 245)" }}
       >
         <div
-          className="flex h-9 w-9 items-center justify-center rounded-full font-semibold text-sm text-white"
+          className="flex h-9 w-9 items-center justify-center rounded-[9999px] font-semibold text-sm text-white"
           style={{ backgroundColor: "var(--lime-green)" }}
         >
           {initial}
