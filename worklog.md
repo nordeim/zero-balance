@@ -9,10 +9,79 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`,
 `docs/remediation-plan-v11.md`, `docs/remediation-plan-v12.md`,
 `docs/remediation-plan-v13.md`, `docs/remediation-plan-v14.md`,
-`docs/remediation-plan-v15.md`, `docs/remediation-plan-v16.md`, and
-`docs/remediation-plan-v17.md`.
+`docs/remediation-plan-v15.md`, `docs/remediation-plan-v16.md`,
+`docs/remediation-plan-v17.md`, and `docs/remediation-plan-v18.md`.
 
 ---
+
+---
+
+## Session 35 — Fresh verification & parity iteration v18 (2026-10-09)
+
+**Goal:** rebuild the workspace from scratch (the sandbox had been reset —
+the repo re-cloned at `eec5427`, node_modules/`.env`/`db/custom.db`
+re-created, all standing brief requirements re-verified), re-verify the
+v17 baseline, code-audit the recent changes (repo skills:
+code-review-and-audit native-CLI fallback — lint/tsc/tests green; npm
+audit = the same 5 dev-only ESLint braces advisories, no patched
+release; secret scan clean), then a fresh two-site parity audit of the
+NET-WORTH ASSET/LIABILITY ERROR TIER — the last unpinned dialog family
+(the session-34 log's own suggestion) — plus the explicit
+mobile-navigation re-verification + data-drift check. Formal log:
+`docs/session_36.md` (the session_35.md slot holds the incoming
+session-33 conversation summary).
+
+- Baseline chain at `eec5427` fully green (96/129/30 + lint/typecheck/
+  build); v17 pins spot-checked in the code first (the caught
+  calculator mount effect + the calculator-error spec file).
+- Mobile stack re-verified end-to-end: R1 (the ref's TWO toast
+  containers still intercept the burger's center hit at (38,30); the
+  clone's is DIRECT on the svg), R2 (the ref's sheet still traps after
+  nav — `sheetStillOpen: true` + overlay; the clone's closes + 390px
+  fit), R3 (nothing active on `/` on the ref; the clone highlights
+  Dashboard), R4 (ref 395/464px overflow; clone 390 on all six routes).
+  Sheet geometry + link positions identical. Data drift clean —
+  twelfth consecutive check (the ref's net worth holds 1 asset, 0
+  liabilities — new observation).
+- Fresh angles: the NET-WORTH ERROR TIER measured for the first time —
+  the reference (entity API aborted) is SILENT on both paths (asset
+  delete: NO confirmation, card stays, zero feedback, the DELETE XHR
+  verified fired-and-failed; asset save: the plain-div dialog stays
+  open, no feedback). The clone's save superset verified live
+  ("Could not save the asset"; first probe missed it — the toasts are
+  Radix `.zb-toast`, NOT sonner) but BOTH delete paths were swallowed
+  (`void deleteAsset()` / `void deleteLiability()` in net-worth-view) —
+  and the whole tier had ZERO e2e coverage.
+- G1 fixed TDD-first across THREE files: the net-worth confirm bars +
+  (the post-fix grep sweep's find) `item-card.tsx`'s `void
+  deleteItem()` — the card-menu path the v16 dialog audit missed (the
+  dialog's own delete was always caught). All three now catch + toast
+  the honest errors ("Could not delete the asset/liability/item"),
+  rendering unchanged (card + confirm bar stay — the store only mutates
+  after the API resolves). 5 new e2e specs: 4 in
+  `tests/e2e/networth-error.spec.ts` (asset/liability save/delete
+  under route-aborted APIs) + 1 in `tests/e2e/items.spec.ts` (the
+  item-card delete failure). RED → GREEN at the exact unfixed states.
+- G2: the register duplicate-email spec's full-suite flake (2 of 4
+  runs, never in isolation) root-caused by hardening it — Next.js App
+  Router's ROUTE ANNOUNCER renders a second EMPTY `role="alert"`
+  (`__next-route-announcer__`, dynamically mounted): the old bare
+  `waitForSelector("[role='alert']")` matched the announcer and the
+  one-shot evaluate raced the 409's arrival. Fixed with a
+  text-filtered retrying locator (SKILL lesson 36).
+- Full chain: lint · typecheck · 96/96 unit · build · **134/134 e2e**
+  · 30/30 smoke.
+- Live parity re-verified: the route-aborted net-worth delete renders
+  the reference's surfaces (card + confirm bar) WITH the toast caught
+  live; a clean reload shows the normal state with NO toast. Dev DB
+  verified at seed after all probes (3 assets, 2 liabilities, 7 items).
+- All 15 screenshots regenerated — ZERO pixel changes (the fix is
+  behavior-only; `git status` on `docs/screenshots/` empty).
+- Docs aligned: README (counts 134, plan-v18 row), CLAUDE.md (counts +
+  the error tiers + the v18 e2e-contract note), AGENTS.md (the v18 pin
+  paragraph + the third site), SKILL (state 96/134/30, lesson 36,
+  Appendix B row), probe README (v18 catalog + the toast-selector +
+  tab + announcer lessons), `docs/session_36.md`, this worklog.
 
 ## Session 33 — Fresh verification & parity iteration v17 (2026-10-08)
 

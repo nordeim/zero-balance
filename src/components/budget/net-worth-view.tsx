@@ -25,7 +25,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useBudgetStore } from "./store";
+import { useToast } from "@/components/ui/toast";
+import { messageOf, useBudgetStore } from "./store";
 import { computeNetWorth } from "@/lib/dashboard";
 import { formatMoneyGrouped, formatMoneyShort, formatRatio } from "@/lib/money";
 import {
@@ -55,6 +56,7 @@ function groupLabel(type: string): string {
 function AssetCard({ asset }: { asset: Asset }) {
   const openAssetModal = useBudgetStore((s) => s.openAssetModal);
   const deleteAsset = useBudgetStore((s) => s.deleteAsset);
+  const { toast } = useToast();
   const [confirming, setConfirming] = React.useState(false);
   return (
     <div
@@ -126,7 +128,25 @@ function AssetCard({ asset }: { asset: Asset }) {
             <button
               type="button"
               className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white"
-              onClick={() => void deleteAsset(asset.id)}
+              onClick={() =>
+                // v18 G1: the delete failure must be CAUGHT, not swallowed
+                // — the pre-fix `void deleteAsset(asset.id)` left the
+                // rejection unhandled and silent. The reference's failed
+                // delete is a silent no-op (card stays, no feedback —
+                // measured live, plan v18); the clone keeps the surfaces
+                // (the card stays, the confirm bar stays — the store only
+                // filters state AFTER the API resolves) and adds the
+                // honest error toast, the same superset class as the
+                // dialogs' catch toasts and the v16/v17 tiers. Per-click
+                // semantics (a fresh user action each time).
+                deleteAsset(asset.id).catch((error: unknown) => {
+                  toast({
+                    title: "Could not delete the asset",
+                    description: messageOf(error),
+                    variant: "error",
+                  });
+                })
+              }
             >
               Delete
             </button>
@@ -140,6 +160,7 @@ function AssetCard({ asset }: { asset: Asset }) {
 function LiabilityCard({ liability }: { liability: Liability }) {
   const openLiabilityModal = useBudgetStore((s) => s.openLiabilityModal);
   const deleteLiability = useBudgetStore((s) => s.deleteLiability);
+  const { toast } = useToast();
   const [confirming, setConfirming] = React.useState(false);
   return (
     <div
@@ -216,7 +237,17 @@ function LiabilityCard({ liability }: { liability: Liability }) {
             <button
               type="button"
               className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white"
-              onClick={() => void deleteLiability(liability.id)}
+              onClick={() =>
+                // v18 G1 (liability twin): same caught-rejection + honest
+                // toast as the asset path above.
+                deleteLiability(liability.id).catch((error: unknown) => {
+                  toast({
+                    title: "Could not delete the liability",
+                    description: messageOf(error),
+                    variant: "error",
+                  });
+                })
+              }
             >
               Delete
             </button>

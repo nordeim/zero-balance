@@ -9,7 +9,7 @@ description: >
 version: 1.0.0
 last_updated: 2026-10-08
 
-project_state: 96 unit tests / 129 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 134 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -746,6 +746,32 @@ Numbered institutional lessons. Each traces to a concrete fix in
     sub-dialog, close it, THEN assert the parent's content (the v17
     calculator-error spec pattern) (plan v17 G1).
 
+36. **Next.js's route announcer is a second `role="alert"` on every
+    page — never wait on a bare `[role=alert]` in specs.** The register
+    duplicate-email spec flaked in 2 of 4 full-suite runs (never in file
+    isolation): its `waitForSelector("[role='alert']")` matched
+    Next.js App Router's ROUTE ANNOUNCER (`__next-route-announcer__`,
+    aria-live, dynamically mounted with EMPTY text), passing before the
+    409 banner rendered — then the one-shot evaluate read `null` in the
+    latency gap under full-suite load. Fix: filter the locator by the
+    expected banner TEXT and assert with a retrying
+    `toBeVisible`/`toHaveText`. Same pass: the v18 audit found the v17
+    `void promise` doctrine still un-applied in the net-worth view —
+    the asset/liability confirm bars called `void deleteAsset()` /
+    `void deleteLiability()` (silent unhandled rejections, no honest
+    toast). The tier-by-tier sweep is now COMPLETE: boot (v16),
+    budget-item mutations (v16), line-item load/create/delete (v17),
+    and asset/liability save/delete (v18) all catch and toast. The
+    v18 post-fix grep sweep (`grep -rn 'void (delete|create|update|load|refresh)' src/`)
+    is the closing discipline — it caught item-card's `void
+    deleteItem()` AFTER the net-worth fix looked "complete". The
+    clone's toast texts per tier: "Could not save the item" /
+    "Could not delete the item" / "Could not save the line item" /
+    "Could not remove the line item" / "Could not load the line items" /
+    "Could not save the asset" / "Could not delete the asset" /
+    "Could not save the liability" / "Could not delete the liability"
+    (plan v18 G1/G2).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1073,6 +1099,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 29 — parity iteration v15 (`docs/remediation-plan-v15.md`) | The full-page LOADING STATE rebuilt to the reference (the last unmeasured surface class): DOM-replacing `fixed inset-0` white-backed overlay + the slate spinner (32×32, 4px, #e2e8f0 track + #1e293b top spoke, 9999px, spin 1s), no shell mounted while loading, and `boot()` flipping `booted` only after the data lands (route-delayed e2e pins: chrome, DOM replacement, data-flight timing, client-nav inverse, 390×844) — the old 2px lime/transparent-top inline spinner hid at the session probe while data popped into empty views; also swept the Select keyboard flows (ref internally inconsistent — filter selects advance, dialog selects don't; the clone's Radix matches the dialog/a11y pattern), a VLM income/savings/mobile sweep (all flags data-driven), and mobile-nav R1–R4 + data drift (clean, ninth check) — 96/123/30 green |
 | 2026-10-08 | Session 31 — parity iteration v16 (`docs/remediation-plan-v16.md`) | The boot DATA-FAILURE state measured for the first time (route-aborted entity API): the reference STAYS in-app rendering its SILENT ZERO-STATE (full shell, 0.0% / $0.00 / ✓ NET ZERO, items views "0 items · $0.00" + standard empty states, NO error surface) while the clone's single `catch` bumped the authenticated user to `/login`; fixed with a nested try in `boot()` (user stays, `bootError` flag) + the one-shot honest error toast in AppShell; the reference's mutation failure measured too (SILENT no-op — dialog stays open, no feedback; the clone's dialog + error-toast superset verified live) and its client-nav under a dead API (no refetch — in-memory); mobile-nav R1–R4 re-verified + data drift clean (tenth check) — 96/126/30 green |
 | 2026-10-08 | Session 33 — parity iteration v17 (`docs/remediation-plan-v17.md`) | The CALCULATOR LINE-ITEM ERROR TIER measured for the first time (the parent-recalc family the session-32 log flagged next): the reference is SILENT on every path with its entity API dead (calculator load → the empty-state "$0.00 / 0 items / No line items yet"; create → sub-dialog open, no feedback, no optimistic update; delete → row stays, no feedback); the clone's mutation-failure superset verified live and PINNED (create: "Could not save the line item"; delete: "Could not remove the line item"), while its calculator LOAD failure was swallowed as an unhandled rejection (`void loadLineItems(item.id)`) — fixed with a caught mount effect + the "Could not load the line items" toast (per-open semantics, rendering unchanged — the reference's empty-state parity via `?? []`); 3 new e2e specs (load/create/delete under route-aborted `**/api/line-items**`); lesson 35 documents the void-swallow + the nested-dialog aria-hidden trap; mobile-nav R1–R4 re-verified + data drift clean (eleventh check) — 96/129/30 green |
+| 2026-10-09 | Session 35 — parity iteration v18 (`docs/remediation-plan-v18.md`) | The NET-WORTH ASSET/LIABILITY ERROR TIER measured for the first time (the last unpinned dialog family, per the session-34 suggestion): the reference is SILENT on both paths with its entity API dead (asset delete → no confirmation, card stays, zero feedback; asset save → dialog stays open, no feedback); the clone's save-failure superset verified live and PINNED ("Could not save the asset" / "Could not save the liability"), while BOTH delete paths swallowed the rejection (`void deleteAsset()` / `void deleteLiability()` — the v17 void accident in its last hiding place) — fixed with caught confirm-bar handlers + the "Could not delete the asset/liability" toasts (per-click semantics, surfaces unchanged) — and the post-fix grep sweep surfaced a THIRD site (`void deleteItem()` in item-card.tsx, the card-menu path the v16 dialog audit missed), fixed identically with "Could not delete the item"; 5 new e2e specs (asset/liability save/delete under route-aborted APIs + the item-card delete); G2: the register duplicate-email flake root-caused as Next.js's route announcer rendering a second empty `role=alert` — the spec's bare waitForSelector matched it and raced the banner; hardened with a text-filtered retrying locator (lesson 36); mobile-nav R1–R4 re-verified + data drift clean (twelfth check) — 96/134/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

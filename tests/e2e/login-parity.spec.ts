@@ -381,18 +381,21 @@ test.describe("register flow + input chrome (v13)", () => {
     await page.getByLabel("Password", { exact: true }).fill("Password123");
     await page.getByLabel("Confirm Password").fill("Password123");
     await page.getByRole("button", { name: "Create account" }).click();
-    // Wait for the async 409 to land before reading the banner text (the
-    // fetch resolves after the click returns — the v12 mismatch test waited
-    // on its client-side text for the same reason).
-    await page.waitForSelector("[role='alert']", { timeout: 10_000 });
     // Reference text (measured live, session 25): "A user with this email
     // already exists" — the banner chrome is already pinned by the v12
     // mismatch test; here the assertion is the exact 401/409-slot TEXT.
-    const banner = await page.evaluate(() => {
-      const alert = document.querySelector("[role='alert']");
-      return alert ? alert.textContent!.trim() : null;
-    });
-    expect(banner).toBe("A user with this email already exists");
+    // v18 G2: assert via a RETRYING, TEXT-FILTERED locator — Next.js's
+    // route announcer ALSO renders role="alert" (`__next-route-
+    // announcer__`, aria-live, mounts dynamically with EMPTY text), so
+    // both the old `waitForSelector("[role='alert']")` and a bare
+    // getByRole("alert") can match it (a strict-mode violation) or
+    // nothing (a transient unmount — the old one-shot evaluate read
+    // null in ~half of the full runs, flake never reproduced in file
+    // isolation). Filtering on the expected text scopes the locator to
+    // the BANNER; toBeVisible polls through any churn.
+    await expect(
+      page.getByRole("alert").filter({ hasText: "A user with this email already exists" })
+    ).toBeVisible();
   });
 
   test("sign-up password placeholders match the reference (G2)", async ({ page }) => {

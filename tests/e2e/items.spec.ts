@@ -331,3 +331,64 @@ test.describe("savings view", () => {
     await expect(savingsBadge.locator("svg.lucide-piggy-bank")).toBeVisible();
   });
 });
+
+test.describe("budget-item card delete failure (v18 G1)", () => {
+  // The third `void` site of the v18 G1 family: the item-card inline
+  // confirm bar called `void deleteItem(item.id)` — an unhandled
+  // rejection with NO toast (the same accident as the net-worth
+  // confirm bars, fixed the same pass; the DIALOG's delete was always
+  // caught — "Could not delete the item" — but the card menu's own
+  // inline confirm was not). Measured on the reference with its entity
+  // API dead: the failed delete leaves the card silently (the same
+  // silent no-op family as every tier). The clone keeps the surfaces
+  // (card + confirm bar stay — the store filters only after the API
+  // resolves) and toasts the honest error. The aborted DELETE never
+  // reaches the server, so no fixture restore is needed.
+  test("item-card delete failure keeps the card + confirm bar + error toast (v18 G1)", async ({ page }) => {
+    await page.goto("/income");
+    // The e2e seed's income census (Salary + Freelance = $5550.00).
+    await expect(page.getByText("2 items · $5550.00")).toBeVisible();
+
+    await page.route("**/api/budget-items**", async (route) => {
+      await route.abort("failed");
+    });
+
+    const card = page.locator("div.rounded-xl").filter({ hasText: "Salary" }).first();
+    await expect(card).toBeVisible();
+    await card.hover();
+    await page.getByRole("button", { name: "Actions for Salary" }).click();
+    await page.getByRole("menuitem", { name: "Delete" }).click();
+    await expect(page.getByText("Delete this item?")).toBeVisible();
+    await page.getByRole("button", { name: "Delete", exact: true }).click();
+
+    // PARITY: the card stays (the reference's silent no-op); the inline
+    // confirm bar stays up — the user is left mid-action, not misled.
+    await expect(card.getByText("Salary")).toBeVisible();
+    await expect(page.getByText("Delete this item?")).toBeVisible();
+
+    // SUPERSET: the honest error toast (the dialog-delete's established
+    // text, now shared by the card path). exact:true per the live-region
+    // lesson.
+    await expect(
+      page.getByText("Could not delete the item", { exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByText("Network error — check your connection and try again", {
+        exact: true,
+      })
+    ).toBeVisible();
+
+    // Per-click semantics: exactly ONE toast for this click.
+    await page.waitForTimeout(600);
+    const toastCount = await page
+      .getByText("Could not delete the item", { exact: true })
+      .count();
+    expect(toastCount).toBe(1);
+
+    // Leave the UI clean (the API stays dead — nothing was written).
+    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+    await expect(page.getByText("Delete this item?")).toHaveCount(0);
+
+    await page.unrouteAll({ behavior: "ignoreErrors" });
+  });
+});

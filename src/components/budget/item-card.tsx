@@ -29,7 +29,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useBudgetStore } from "./store";
+import { useToast } from "@/components/ui/toast";
+import { messageOf, useBudgetStore } from "./store";
 import { formatMoney } from "@/lib/money";
 import {
   CLASSIFICATION_BADGES,
@@ -60,6 +61,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
   const openItemModal = useBudgetStore((s) => s.openItemModal);
   const openCalculator = useBudgetStore((s) => s.openCalculator);
   const deleteItem = useBudgetStore((s) => s.deleteItem);
+  const { toast } = useToast();
   const [confirming, setConfirming] = React.useState(false);
   const accent = TYPE_COLORS[item.type];
   const clsBadge = CLASSIFICATION_BADGES[item.classification];
@@ -201,7 +203,24 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
             <button
               type="button"
               className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white"
-              onClick={() => void deleteItem(item.id)}
+              onClick={() =>
+                // v18 G1 (third site): the delete failure must be CAUGHT,
+                // not swallowed — the pre-fix `void deleteItem(item.id)`
+                // left the rejection unhandled and silent (the same
+                // accident as the net-worth confirm bars, same pass;
+                // the EDIT dialog's own delete was always caught — this
+                // is the card menu's inline confirm path). The reference's
+                // failed delete is a silent no-op (card stays — measured
+                // family); the clone keeps the surfaces and adds the
+                // honest toast, matching the dialog's established text.
+                deleteItem(item.id).catch((error: unknown) => {
+                  toast({
+                    title: "Could not delete the item",
+                    description: messageOf(error),
+                    variant: "error",
+                  });
+                })
+              }
             >
               Delete
             </button>

@@ -402,3 +402,38 @@ run-probe.sh pattern:
   `getByRole`/computed-style reads scoped to the parent dialog return
   nothing while the sub-dialog is open (assert the sub-dialog, close
   it, then read the parent).
+
+Session-35 additions (remediation-plan-v18 audit) — the net-worth
+asset/liability error tier (the last unpinned dialog family), same
+run-probe.sh / one-invocation patterns:
+
+- **net-worth error-tier technique:** abort `**/api/assets/**` or
+  `**/api/liabilities/**` (clone) / `**/entities/**` (ref) with the
+  net-worth view live, then drive the card menu → Delete (the
+  reference's Delete fires IMMEDIATELY — no confirmation; the clone's
+  inline confirm bar is the superset #6 chrome) and the Edit dialog →
+  Save. The reference is SILENT on both paths (card stays with zero
+  feedback; dialog stays open with zero feedback — its dialogs are
+  plain `fixed` divs, no `[role=dialog]`, so probe with the h2
+  heading's visibility instead of a dialog role query). The clone (v18)
+  keeps the surfaces and toasts: "Could not delete the asset" /
+  "Could not delete the liability" (the caught confirm bars) and
+  "Could not save the asset" / "Could not save the liability" (the
+  dialog catches).
+- **toast selector:** the clone's toasts are Radix, NOT sonner — select
+  `.zb-toast` (a `[data-sonner-toast]` probe returns empty and misses
+  live toasts; the v18 audit's first save-failure probe hit exactly
+  that trap).
+- **reference tab quirk:** its Assets/Liabilities Radix tabs need REAL
+  pointer clicks (snapshot refs) — a programmatic `.click()` on the tab
+  element leaves the selection unchanged (the same React-state class
+  as the mobile-login fill quirk).
+- LESSON (e2e): Next.js App Router's ROUTE ANNOUNCER renders a second
+  EMPTY `role="alert"` (`__next-route-announcer__`) that mounts
+  dynamically — never `waitForSelector("[role='alert']")` in specs;
+  filter by the expected banner text (the register-spec flake, plan
+  v18 G2).
+- The reference's net worth holds 1 asset ("Savings Account" $25,000)
+  and 0 liabilities — its Liabilities tab renders "No liabilities
+  yet"; the clone's seed (3 assets, 2 liabilities) is a superset by
+  design.
