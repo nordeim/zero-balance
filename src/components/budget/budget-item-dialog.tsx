@@ -6,7 +6,7 @@
 // preset type; editing loads the item's values.
 
 import * as React from "react";
-import { CreditCardIcon, Loader2Icon, SaveIcon, Trash2Icon } from "lucide-react";
+import { CircleAlertIcon, CreditCardIcon, HeartIcon, Loader2Icon, PiggyBankIcon, SaveIcon, Trash2Icon } from "lucide-react";
 import { Dialog, DialogCloseButton, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,17 @@ function todayIso(): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
+
+/** v20 G2 (plan-v20, DOM-verified on the reference in both the Add and the
+ * Edit dialog states): each classification tile label carries a 16px lucide
+ * icon between the radio and the text, colored by the per-classification
+ * accent — the same family the donut legend renders (piggy-bank / heart /
+ * circle-alert). Inline accent colors per the v4 lab-drift doctrine. */
+const CLASSIFICATION_ICONS = {
+  need: CircleAlertIcon,
+  want: HeartIcon,
+  savings: PiggyBankIcon,
+} as const satisfies Record<Classification, typeof CircleAlertIcon>;
 
 const EMPTY_FORM = (type: ItemType): BudgetItemFormData => ({
   type,
@@ -189,6 +200,7 @@ export function BudgetItemDialog() {
             >
               {(["need", "want", "savings"] as const).map((c) => {
                 const tile = CLASSIFICATION_TILES[c];
+                const Icon = CLASSIFICATION_ICONS[c];
                 const selected = form.classification === c;
                 return (
                   <Label
@@ -201,6 +213,11 @@ export function BudgetItemDialog() {
                     }
                   >
                     <RadioGroupItem value={c} />
+                    {/* v20 G2: the reference's tile label carries a 16px
+                        lucide icon between the radio and the text (measured:
+                        circle-alert rgb(224,122,59) / heart rgb(59,126,161) /
+                        piggy-bank rgb(143,188,63) — the tile accents). */}
+                    <Icon className="h-4 w-4" style={{ color: tile.accent }} />
                     {/* leading-none: the reference's tile text computes lh 14
                         (tile h 52); v4's text-sm pairs with lh 20 → 56px
                         tiles (plan v9 G4). */}

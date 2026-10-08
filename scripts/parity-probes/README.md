@@ -478,3 +478,52 @@ breakpoint re-measurement, plus the standing drift/nav probes:
   shown on its $300 Investments item) — the clone's conditional
   matches; don't read an "extra line" on one side as drift without
   checking the other side's data state.
+
+Session-39 additions (remediation-plan-v20 audit) — sessions
+`ref22`/`clone22` (resized 1280×800 ↔ 390×844 per check), the :3200
+parity server per `scripts/with-server.sh`, the v20 surfaces: the
+MOBILE app views + the populated EDIT dialogs + the drill-down:
+
+- `probe-census-v20.mjs` — the items-view census, ASCII-only (the
+  separator built from `String.fromCharCode(0xb7)`). ROOT CAUSE of the
+  v19 file's empty counts: the base64→`atob`→`eval` transport decodes
+  C2 B7 as TWO Latin-1 chars, so the v19 regex's literal "·" never
+  matched the DOM's U+00B7. Any probe traveling through base64 must
+  avoid non-ASCII literals — build them from char codes.
+- `probe-r2-v20.mjs` — the R2 sheet-trap test as ONE async eval: the
+  synthetic pointer/mouse event sequence on the burger (the reference's
+  toast containers block the programmatic hit — its own R1 bug), wait
+  700ms for the slide-in, tap Income the same way, wait 1.2s, then read
+  the sheet/overlay state (ref: `sheetStillOpen: true`; clone: closed +
+  390 fit). The sheet + link geometry come free (288px sheet, Income at
+  (20,185) 247×32 both).
+- `probe-r4-route-v20.mjs` — the per-route scrollWidth probe (R4 at
+  390×844): ref 395/395/390/390/390/464, clone 390 ×6.
+- `probe-v20-mobile-header.mjs` — the items-view header probe that
+  found G1: the Add button's width/position + the parent row's class
+  (the missing base `items-start` = the 358px mobile stretch; the
+  reference's 147/155/150 auto-widths).
+- `probe-v20-header-gap.mjs` — the header→filter-card gap (ref 32 =
+  `mb-8`, clone 24 = `mb-6` — at BOTH viewports; the G1 second axis).
+- `probe-v20-nw-summary.mjs` — the networth mobile summary card (the
+  VLM flags decomposer): ref 48px `text-5xl` figure + 2-col grid + the
+  off-screen Add button (x=314 + 134 > 390) = the documented superset
+  fix #4 (its own 464px overflow); clone 24px + 1-col = the fix; the
+  tab tint IDENTICAL rgb(220,252,231) both (the VLM "pronounced green"
+  hallucination refuted).
+- `probe-v20-badge-rows.mjs` — the card badge-cluster mechanism probe
+  (both sides `flex flex-wrap gap-2 mb-3` — the wrap flags are
+  data-driven: the clone's seed carries 4 badges, the ref's data 2).
+  NOTE: the ref's badges are DIVs, the clone's SPANs — match on the
+  PARENT's computed styles, not the tag.
+- `probe-v20-drilldown.mjs` — the breakdown drill-down expander (the
+  section button by its "Total Income" prefix, then the category by its
+  "Salary" prefix).
+- `vlm-compare-v20.sh` — the reusable VLM pair-comparison wrapper
+  (layout-focused prompt, data differences excluded by instruction,
+  verdict extracted from the JSON output). The v20 sweep's flags:
+  5 mobile views (dashboard IDENTICAL; 3 items views = G1; networth =
+  superset #4 + 1 refuted hallucination), the populated edit dialog
+  (the icons = G2; the radio/switch "differences" = data states —
+  different items being edited; the X-close "bordered" = the same
+  hallucination twice, DOM-identical), the drill-down (clean).

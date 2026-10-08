@@ -11,9 +11,77 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v13.md`, `docs/remediation-plan-v14.md`,
 `docs/remediation-plan-v15.md`, `docs/remediation-plan-v16.md`,
 `docs/remediation-plan-v17.md`, `docs/remediation-plan-v18.md`,
-and `docs/remediation-plan-v19.md`.
+`docs/remediation-plan-v19.md`, and `docs/remediation-plan-v20.md`.
 
 ---
+
+---
+
+## Session 39 — Fresh verification & parity iteration v20 (2026-10-09)
+
+**Goal:** rebuild the workspace from scratch (the sandbox had been
+reset — the repo re-cloned at `365f2a4`, node_modules/`.env`/
+`db/custom.db` re-created, all standing brief requirements re-verified),
+re-verify the v19 baseline, code-audit the recent changes (repo skills:
+code-review-and-audit native-CLI fallback — lint/tsc/tests green; npm
+audit = the same 5 dev-only ESLint braces advisories, no patched
+release; secret scan clean), then the fresh two-site parity surfaces —
+the **MOBILE-APP-VIEW + POPULATED-EDIT-DIALOG VLM sweep** (the
+session-38 log's two top suggestions) + the breakdown drill-down —
+plus the explicit mobile-navigation re-verification + data-drift check.
+Formal log: `docs/session_40.md` (the session_39.md slot holds the
+incoming session-37 conversation summary).
+
+- Baseline chain at `365f2a4` fully green (96/135/30 + lint/typecheck/
+  build — first full run, no flakes); the pulled v19 changeset
+  re-verified in the code first (the fixed recurring row + the v19 pin
+  spec).
+- Mobile stack re-verified end-to-end: R1 (the ref's TWO toast
+  containers still intercept the burger's center hit at (38,30); the
+  clone's is DIRECT on the svg), R2 (the ref's sheet still traps after
+  nav — `sheetStillOpen: true` + overlay, via the new one-eval
+  synthetic-event probe; the clone's closes + 390px fit), R3 (nothing
+  active on `/` on the ref; the clone highlights Dashboard), R4 (ref
+  395/464px overflow; clone 390 on all six routes). Sheet + link
+  geometry identical. Data drift clean — fourteenth consecutive check
+  (the census probe's base64→atob UTF-8 mangling root-caused and fixed
+  transport-safe — lesson 38).
+- **The VLM sweep** (5 mobile views at 390×844 + the populated Edit
+  dialog + the breakdown drill-down, z-ai vision + DOM verification of
+  every flag): the mobile dashboard IDENTICAL; the networth flags all
+  the documented superset fix #4 (the reference's own 464px overflow)
+  plus one tab-tint hallucination refuted (identical rgb(220,252,231));
+  the drill-down clean; TWO real drifts found and DOM-verified:
+  **(G1) the items-view header row** — base `items-start` missing (the
+  Add button stretched full-width 358px on mobile vs the reference's
+  auto-width 147/155/150) + `mb-6` vs `mb-8` (a 24 vs 32px
+  header→filter gap at BOTH viewports; the dashboard's row already
+  carried the correct pattern); **(G2) the classification tiles** —
+  the reference's tile labels carry 16px lucide icons (circle-alert
+  #e07a3b / heart #3b7ea1 / piggy-bank #8fbc3f — the donut-legend
+  family) in both Add and Edit states; the v19 empty-dialog sweep had
+  missed them.
+- Both fixed TDD-first: `items-view.tsx`'s row class aligned to the
+  reference's (`items-start` + `mb-8`), `budget-item-dialog.tsx`'s
+  tiles given the `CLASSIFICATION_ICONS` map (inline accent colors).
+  2 new e2e specs (the mobile-layout header-geometry test + the
+  dialog-buttons tile-icons test), RED at the unfixed states, GREEN
+  after the fixes; the v9 tile-geometry pins untouched.
+- Full chain: lint · typecheck · 96/96 unit · build · **137/137 e2e**
+  · 30/30 smoke.
+- Live parity re-verified: fresh paired measurements — G1 all values
+  identical (147×36 at (16,153), rowBottom 189 → nextTop 221, gap 32);
+  G2 all values identical (the three icons at 16px in the exact
+  measured colors, tiles 197×52); the post-fix mobile income pair
+  passes the VLM comparison IDENTICAL.
+- All 15 screenshots regenerated — FIVE changed (the three items-view
+  shots + the two dialog shots — exactly the fix scope; the dashboard
+  shot pixel-stable, its row already matched).
+- Docs aligned: README (counts 137, plan-v20 row), CLAUDE.md (counts +
+  the two v20 pins), AGENTS.md (the v20 pin paragraph + the
+  probe-transport lesson), SKILL (state 96/137/30, lesson 38, Appendix
+  B row), probe README (v20 catalog), `docs/session_40.md`, this
+  worklog.
 
 ---
 

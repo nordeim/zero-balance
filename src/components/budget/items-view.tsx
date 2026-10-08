@@ -120,7 +120,13 @@ export function ItemsView({ type }: { type: ItemType }) {
   return (
     <div className="min-h-screen p-4 md:p-8">
     <div className="mx-auto w-full max-w-7xl">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* v20 G1 (plan-v20, DOM-verified on the reference): the row runs the
+          reference's class list — base items-start blocks the flex-col
+          cross-axis stretch so the Add button stays auto-width on mobile
+          (147/155/150px measured), mb-8 sets the header→filter gap at 32px
+          (both viewports; the clone's mb-6 rendered 24px). The dashboard's
+          header row has carried this pattern since the v3/v4 pins. */}
+      <div className="mb-8 flex flex-col justify-between items-start gap-4 md:flex-row md:items-center">
         <div className="flex items-center gap-3">
           {/* Gradient chip with a white icon (live reference DOM). */}
           <div

@@ -9,7 +9,7 @@ description: >
 version: 1.0.0
 last_updated: 2026-10-09
 
-project_state: 96 unit tests / 135 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 137 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -795,6 +795,22 @@ Numbered institutional lessons. Each traces to a concrete fix in
     as a matching data-conditional (the reference shows it on a
     non-zero item; hidden when total === amount) (plan v19 G1).
 
+38. **The base64→`atob`→`eval` probe transport mangles multi-byte
+    UTF-8 — keep probe sources ASCII-only.** The v19 census probe's
+    literal "·" (U+00B7, UTF-8 C2 B7) decoded through `atob` as TWO
+    Latin-1 characters, so its regex never matched the DOM text (empty
+    counts on every run — also the root cause behind the v19 session's
+    "mid-pass fix"). The v20 fix builds the separator from
+    `String.fromCharCode(0xb7)` (pure-ASCII source, transport-proof).
+    Generalize: any probe that travels through base64 must avoid
+    non-ASCII literals — escape them, or build them from char codes.
+    Same pass, second lesson: the mobile VLM sweep re-proved that
+    superset-fix manifestations read as "differences" (the reference's
+    own 464px networth overflow: its fixed 48px `text-5xl` figure, its
+    2-col summary grid, its off-screen Add button) — decompose every
+    mobile-view flag into superset-fix vs data vs real drift before
+    filing (plan v20, Observations).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1124,6 +1140,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 33 — parity iteration v17 (`docs/remediation-plan-v17.md`) | The CALCULATOR LINE-ITEM ERROR TIER measured for the first time (the parent-recalc family the session-32 log flagged next): the reference is SILENT on every path with its entity API dead (calculator load → the empty-state "$0.00 / 0 items / No line items yet"; create → sub-dialog open, no feedback, no optimistic update; delete → row stays, no feedback); the clone's mutation-failure superset verified live and PINNED (create: "Could not save the line item"; delete: "Could not remove the line item"), while its calculator LOAD failure was swallowed as an unhandled rejection (`void loadLineItems(item.id)`) — fixed with a caught mount effect + the "Could not load the line items" toast (per-open semantics, rendering unchanged — the reference's empty-state parity via `?? []`); 3 new e2e specs (load/create/delete under route-aborted `**/api/line-items**`); lesson 35 documents the void-swallow + the nested-dialog aria-hidden trap; mobile-nav R1–R4 re-verified + data drift clean (eleventh check) — 96/129/30 green |
 | 2026-10-09 | Session 35 — parity iteration v18 (`docs/remediation-plan-v18.md`) | The NET-WORTH ASSET/LIABILITY ERROR TIER measured for the first time (the last unpinned dialog family, per the session-34 suggestion): the reference is SILENT on both paths with its entity API dead (asset delete → no confirmation, card stays, zero feedback; asset save → dialog stays open, no feedback); the clone's save-failure superset verified live and PINNED ("Could not save the asset" / "Could not save the liability"), while BOTH delete paths swallowed the rejection (`void deleteAsset()` / `void deleteLiability()` — the v17 void accident in its last hiding place) — fixed with caught confirm-bar handlers + the "Could not delete the asset/liability" toasts (per-click semantics, surfaces unchanged) — and the post-fix grep sweep surfaced a THIRD site (`void deleteItem()` in item-card.tsx, the card-menu path the v16 dialog audit missed), fixed identically with "Could not delete the item"; 5 new e2e specs (asset/liability save/delete under route-aborted APIs + the item-card delete); G2: the register duplicate-email flake root-caused as Next.js's route announcer rendering a second empty `role=alert` — the spec's bare waitForSelector matched it and raced the banner; hardened with a text-filtered retrying locator (lesson 36); mobile-nav R1–R4 re-verified + data drift clean (twelfth check) — 96/134/30 green |
 | 2026-10-09 | Session 37 — parity iteration v19 (`docs/remediation-plan-v19.md`) | The **VLM VISUAL SWEEP** — the first full-page visual-AI comparison layer (the session-36 log's top suggestion): 12 auth-state pairs + 5 app views + 3 dialogs compared through the z-ai vision CLI with a mechanical pixel-diff layer + MD5 asset hashing. Results: the auth surfaces IDENTICAL ×6 (the v12/v13 text pins held under full-page diffing; the logo PNGs byte-identical by MD5, both 80×80), the app views LAYOUT_IDENTICAL ×5 (the dashboard's three flags are known supersets/data), the dialogs clean except ONE real drift: the item dialog's RECURRING-TOGGLE ROW (the reference runs the switch LEFT — the row's first child, 12px gap to the label block — with NO calendar icon, NO border, and a green-tinted rgb(245,248,245) inline background, h 72; the clone ran icon+label left, switch right (justify-between), 1px border, transparent bg, h 74) — DOM-verified on four axes, fixed to the reference's arrangement, pinned by the dialog-buttons spec's new recurring-row test; two VLM hallucinations DOM-refuted (the "faded logo", the "taller button" — lesson 37: the VLM is a screening layer, every flag needs measurement); the calculator's "extra line" refuted as a matching data-conditional; tablet breakpoints 767/768/1024 re-measured (rail switch at 768 both, heading x=288 both); mobile-nav R1–R4 re-verified + data drift clean (thirteenth check) — 96/135/30 green |
+| 2026-10-09 | Session 39 — parity iteration v20 (`docs/remediation-plan-v20.md`) | The **mobile-app-view + populated-edit-dialog VLM sweep** (the session-38 log's two top suggestions): 5 mobile views at 390×844 + the populated Edit dialog + the breakdown drill-down, compared pairwise through z-ai vision. Results: the mobile dashboard IDENTICAL; the networth flags all decomposed into the documented superset fix #4 (the reference's own 464px overflow: 48px `text-5xl` figure, 2-col grid, off-screen Add button) plus one refuted tab-tint hallucination (identical rgb(220,252,231)); the badge-wrap mechanism verified identical (data-driven wrap); the drill-down clean. TWO real drifts found, DOM-verified, fixed TDD-first, live-re-measured exact, and pinned: (G1) the ITEMS-VIEW HEADER ROW — base `items-start` missing so the Add button stretched full-width 358px on mobile (the reference's auto-width 147/155/150) and `mb-6` vs `mb-8` (a 24 vs 32px header→filter gap at BOTH viewports; the dashboard's row already carried the correct pattern); (G2) the CLASSIFICATION TILES — the reference's tile labels carry 16px lucide icons (circle-alert #e07a3b / heart #3b7ea1 / piggy-bank #8fbc3f) between the radio and the text in both Add and Edit states, missed by the v19 empty-dialog sweep. Also: the census probe's base64→atob UTF-8 mangling root-caused and fixed transport-safe (lesson 38); mobile-nav R1–R4 re-verified + data drift clean (fourteenth check) — 96/137/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

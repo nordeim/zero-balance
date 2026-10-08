@@ -517,6 +517,62 @@ test.describe("dialog chrome (v9)", () => {
     }
   });
 
+  test("classification tiles carry the reference's 16px lucide icons (v20 G2)", async ({ page }) => {
+    // Found by the v20 populated-edit-dialog VLM sweep ("icons inside the
+    // radio buttons — circle, heart, leaf") and DOM-verified on both the
+    // reference's Add and Edit dialog states (docs/remediation-plan-v20.md
+    // G2): each tile label carries a 16px lucide icon between the radio and
+    // the text, colored by the per-classification accent — need →
+    // lucide-circle-alert #e07a3b, want → lucide-heart #3b7ea1, savings →
+    // lucide-piggy-bank #8fbc3f (the same family the donut legend renders).
+    // The clone's tiles rendered [radio + span] with no icon; the v19
+    // empty-dialog sweep missed them (full-page pairs at dialog scale).
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const tiles = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]')!;
+      return [...d.querySelectorAll("[role='radio']")]
+        .map((r) => r.closest("label"))
+        .filter((l): l is HTMLLabelElement => !!l)
+        .slice(0, 3)
+        .map((l) => {
+          const value = l.querySelector("[role='radio']")?.getAttribute("value") || "";
+          const icon = [...l.querySelectorAll("svg")].find(
+            (s) => !s.closest("[role='radio']"),
+          );
+          const r = icon ? icon.getBoundingClientRect() : null;
+          return {
+            value,
+            iconCls: icon ? icon.getAttribute("class") || "" : null,
+            iconW: r ? Math.round(r.width) : 0,
+            iconColor: icon ? getComputedStyle(icon).color : null,
+            tileH: Math.round(l.getBoundingClientRect().height),
+          };
+        });
+    });
+    expect(tiles).toHaveLength(3);
+    const byValue = Object.fromEntries(tiles.map((t) => [t.value, t]));
+    expect(byValue.need).toBeDefined();
+    expect(byValue.want).toBeDefined();
+    expect(byValue.savings).toBeDefined();
+    // 16px icons with the measured lucide names…
+    expect(byValue.need.iconCls).toContain("lucide-circle-alert");
+    expect(byValue.want.iconCls).toContain("lucide-heart");
+    expect(byValue.savings.iconCls).toContain("lucide-piggy-bank");
+    for (const t of tiles) expect(t.iconW).toBe(16);
+    // …in the per-classification accent colors (the measured rgb values).
+    expect(byValue.need.iconColor).toBe("rgb(224, 122, 59)");
+    expect(byValue.want.iconColor).toBe("rgb(59, 126, 161)");
+    expect(byValue.savings.iconColor).toBe("rgb(143, 188, 63)");
+    // The tile geometry pin holds with the icon present (16px icon =
+    // the radio's height — height-neutral).
+    for (const t of tiles) expect(t.tileH).toBe(52);
+  });
+
   test("calculator dialog X is 36×36 with a 16px icon", async ({ page }) => {
     await page.goto("/expenses");
     await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
