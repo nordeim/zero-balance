@@ -252,11 +252,25 @@ export function NetWorthView() {
   return (
     <div className="min-h-screen p-4 md:p-8">
     <div className="mx-auto w-full max-w-7xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold" style={{ color: rgb.forestDark }}>
-          Net Worth
-        </h1>
-        <p style={{ color: rgb.gray }}>Track your assets and liabilities</p>
+      {/* v14 G3 (measured live, both viewports): the reference's /networth
+          header is a flex items-center gap-3 row — a 48×48 gradient chip
+          (radius 12, forest-medium→lime 135deg) wrapping a 24×24 white
+          lucide-trending-up, then the h1+p block. Same pattern as the
+          items-view chips (HEADER_CHIP_GRADIENTS); the reference renders NO
+          chip on the dashboard. */}
+      <div className="mb-6 flex items-center gap-3">
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-xl"
+          style={{ background: "linear-gradient(135deg, #2d5a4a, #8fbc3f)" }}
+        >
+          <TrendingUpIcon className="h-6 w-6 text-white" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold" style={{ color: rgb.forestDark }}>
+            Net Worth
+          </h1>
+          <p style={{ color: rgb.gray }}>Track your assets and liabilities</p>
+        </div>
       </div>
 
       <div
@@ -337,8 +351,17 @@ export function NetWorthView() {
 
       <Tabs defaultValue="assets">
         <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="assets">Assets</TabsTrigger>
-          <TabsTrigger value="liabilities">Liabilities</TabsTrigger>
+          {/* v14 G2 (measured live): the reference's triggers carry 16px
+              lucide icons (circle-arrow-up / circle-arrow-down, mr-2,
+              stroke=currentColor) that inherit the tab's text color. */}
+          <TabsTrigger value="assets">
+            <CircleArrowUpIcon className="mr-2 h-4 w-4" />
+            Assets
+          </TabsTrigger>
+          <TabsTrigger value="liabilities">
+            <CircleArrowDownIcon className="mr-2 h-4 w-4" />
+            Liabilities
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="assets" className="mt-6 space-y-6">

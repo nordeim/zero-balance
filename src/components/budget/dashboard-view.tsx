@@ -578,7 +578,29 @@ function SpendingBreakdownCard() {
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  {/* v14 G1 (measured live on the reference): hovering a
+                      sector renders the recharts DEFAULT tooltip with the
+                      item row "Need : $6025.00" — the value carries the
+                      dollar sign and two decimals (the dashboard's plain
+                      money format, no thousands separators). The reference
+                      also overrides the default tooltip chrome: border
+                      #e5e7e3 (its CARD border token), radius 8, and the
+                      soft rgba(0,0,0,0.1) 0 4px 12px shadow — recharts 3's
+                      bare default (#cccccc border, square corners, no
+                      shadow) drifts, so pin all three via contentStyle. */}
+                  <Tooltip
+                    formatter={(value) => `$${Number(value).toFixed(2)}`}
+                    contentStyle={{
+                      borderRadius: 8,
+                      borderColor: "#e5e7e3",
+                      boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
+                    }}
+                    // recharts 2 (the reference) renders the item row in
+                    // black; recharts 3 defaults it to the sector's fill
+                    // color (the "Need : $…" row renders ORANGE) — pin the
+                    // reference's black item text.
+                    itemStyle={{ color: "#000000" }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>

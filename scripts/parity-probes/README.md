@@ -277,3 +277,41 @@ Session-25 additions (remediation-plan-v13 audit):
 - **zombie sessions:** a dead CDP session can refuse `close` forever —
   work around it (new sessions still work); `close --all` may also
   leave one behind.
+
+Session-27 additions (remediation-plan-v14 audit) — same with-server.sh
+discipline (the wrapper is now committed at `scripts/with-server.sh`;
+boot the standalone build on :3200 per command, login inside ONE
+invocation, `agent-browser set viewport <w> <h>` for geometry):
+
+- `probe-v14-data-drift.mjs` — the dashboard data-state drift check on
+  either site (allocation %, totals, item counts, sign conventions).
+- `probe-v14-ref-burger.mjs` — the R1 hit-test via the sr-only
+  "Toggle Sidebar" text finder (the v13 gotcha, formalized): center hit
+  intercepted by the toast container, bottom-half hit direct.
+- `probe-v14-nw-tabs.mjs` — net-worth tablist semantics (roles,
+  aria-selected, geometry, active tint) + keyboard flow via
+  `press ArrowRight/ArrowLeft` (focus + activation both sites).
+- `probe-v14-dialog-focus2.mjs` — dialog initial focus: finds the panel
+  via the "Add Budget Item" heading's fixed ancestor (the ref has no
+  role=dialog — plain fixed divs) and reports `document.activeElement`
+  (ref: the TRIGGER button stays focused — no focus move; clone: Radix
+  focuses the 36×36 Close button).
+- `probe-v14-donut-hover.mjs` — dispatches pointer/mouse events on the
+  first `.recharts-pie-sector path` and captures the
+  `recharts-default-tooltip` value/chrome (found G1: raw value, wrong
+  border/radius/shadow, sector-colored item text).
+- `probe-v14-guideline-hover.mjs` / `probe-v14-accordion-hover.mjs` —
+  guideline rows + breakdown section buttons: rest vs hover computed
+  styles (no hover state on either side) + a user-select sweep.
+- `probe-v14-nw-visual.mjs` — verifies the VLM-flagged net-worth diffs
+  in the DOM (found G2 tab icons + G3 header chip; refuted the
+  divider/ratio-icon/active-tint flags — computed styles are ground
+  truth over VLM impressions).
+- **VLM sweep discipline:** a three-page screenshot comparison
+  (ref vs clone, `z-ai vision -i ref.png -i clone.png`) surfaced the
+  G2/G3 candidates in minutes — but EVERY flagged diff must be
+  DOM-verified before it becomes a finding (this pass: 3 real, 4
+  refuted as VLM misreads or data-driven).
+- **session-cookie note:** `agent-browser close` wipes session cookies
+  on restart (the e2e-run discipline) — re-login after closing
+  sessions mid-audit.

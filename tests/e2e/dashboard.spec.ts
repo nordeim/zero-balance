@@ -119,6 +119,51 @@ test.describe("dashboard", () => {
     await expect(rows.nth(0)).toHaveCSS("background-color", "rgb(245, 248, 245)");
   });
 
+  test("donut hover tooltip formats the value like the reference (v14 — plan G1)", async ({ page }) => {
+    // Measured live on the reference: hovering a sector renders the recharts
+    // DEFAULT tooltip with the item row "Need : $6025.00" — the value carries
+    // the dollar sign and two decimals (the dashboard's plain money format).
+    // The clone rendered the raw number ("7370") because <Tooltip /> had no
+    // formatter. The tooltip chrome (both recharts defaults) is identical.
+    // NB: the hover is dispatched synthetically (like the live probe) — a
+    // Playwright .hover() loops forever because the mouse-following tooltip
+    // re-triggers pointer events under the cursor.
+    const hovered = await page.evaluate(() => {
+      const sector = document.querySelector(".recharts-pie-sector path");
+      if (!sector) return false;
+      const r = sector.getBoundingClientRect();
+      const cx = r.x + r.width / 2;
+      const cy = r.y + r.height / 2;
+      const ev = (type: string) => new MouseEvent(type, { bubbles: true, cancelable: true, clientX: cx, clientY: cy });
+      sector.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, cancelable: true, clientX: cx, clientY: cy }));
+      sector.dispatchEvent(ev("mouseover"));
+      sector.dispatchEvent(ev("mousemove"));
+      return true;
+    });
+    expect(hovered).toBe(true);
+
+    const value = page.locator(".recharts-tooltip-item-value");
+    await expect(value).toHaveText("$7370.00"); // the seed's Need slice
+
+    // The whole item row reads "name : value" like the reference's.
+    const item = page.locator(".recharts-tooltip-item");
+    await expect(item).toHaveText("Need : $7370.00");
+
+    // The reference OVERRIDES the recharts default chrome: padding 10,
+    // white bg, 1px #e5e7e3 border (its CARD token), radius 8, and the
+    // soft 0 4px 12px shadow. Recharts 3's bare default (#cccccc border,
+    // square corners, no shadow) drifts — pinned via contentStyle.
+    const tip = page.locator(".recharts-default-tooltip");
+    await expect(tip).toHaveCSS("padding", "10px");
+    await expect(tip).toHaveCSS("border-radius", "8px");
+    await expect(tip).toHaveCSS("border-width", "1px");
+    await expect(tip).toHaveCSS("border-color", "rgb(229, 231, 227)");
+    await expect(tip).toHaveCSS("box-shadow", "rgba(0, 0, 0, 0.1) 0px 4px 12px 0px");
+    // recharts 2 (the reference) renders the item row in BLACK; recharts 3
+    // defaults it to the sector's fill color (orange) — pinned black.
+    await expect(item).toHaveCSS("color", "rgb(0, 0, 0)");
+  });
+
   test("Budget Guidelines renders the tinted 50/30/20 cards", async ({ page }) => {
     await expect(page.getByText("Budget Guidelines")).toBeVisible();
     await expect(page.getByText("Essential expenses like rent, utilities, groceries")).toBeVisible();

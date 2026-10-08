@@ -37,6 +37,132 @@ test.describe("net worth view", () => {
     expect(bg).toContain("linear-gradient(135deg, rgb(45, 90, 74)");
   });
 
+  test("header renders the reference's gradient icon chip (v14 — plan G3)", async ({ page }) => {
+    // Measured live on the reference at BOTH viewports: the /networth header
+    // is a flex items-center gap-3 row — a 48×48 chip (radius 12,
+    // linear-gradient(135deg, #2d5a4a, #8fbc3f)) wrapping a 24×24 white
+    // lucide-trending-up, then the h1+p block. The reference renders NO chip
+    // on the dashboard (pinned there — see dashboard.spec.ts); the clone's
+    // net-worth header was bare.
+    const h1 = page.getByRole("heading", { name: "Net Worth", level: 1 });
+    await expect(h1).toBeVisible();
+
+    // Find the 48×48 chip precisely via geometry (the h1's preceding sibling
+    // in the flex row).
+    const geo = await page.evaluate(() => {
+      const h1El = [...document.querySelectorAll("main h1")].find((h) =>
+        (h.textContent || "").trim() === "Net Worth",
+      );
+      if (!h1El) return null;
+      const row = h1El.parentElement!.parentElement!;
+      const rowCs = getComputedStyle(row);
+      const chipEl = [...row.children].find((c) => c.tagName === "DIV" && c !== h1El.parentElement);
+      if (!chipEl) return null;
+      const cr = chipEl.getBoundingClientRect();
+      const chipCs = getComputedStyle(chipEl);
+      const svg = chipEl.querySelector("svg");
+      const sr = svg ? svg.getBoundingClientRect() : null;
+      const hr = h1El.getBoundingClientRect();
+      return {
+        rowClass: row.className,
+        rowDisplay: rowCs.display,
+        rowAlign: rowCs.alignItems,
+        rowGap: rowCs.gap,
+        chipW: cr.width,
+        chipH: cr.height,
+        chipRadius: chipCs.borderRadius,
+        chipBg: chipCs.backgroundImage,
+        chipFlex: chipCs.display + "/" + chipCs.alignItems + "/" + chipCs.justifyContent,
+        svgClass: svg ? svg.getAttribute("class") : null,
+        svgW: sr ? sr.width : null,
+        svgH: sr ? sr.height : null,
+        svgStroke: svg ? getComputedStyle(svg).stroke : null,
+        h1X: hr.x,
+        chipRight: cr.right,
+        h1BelowChipTop: hr.y >= cr.top - 2,
+      };
+    });
+    expect(geo).not.toBeNull();
+    if (!geo) {
+      throw new Error("networth header chip not found");
+    }
+    expect(geo.rowClass).toContain("flex");
+    expect(geo.rowClass).toContain("items-center");
+    expect(geo.rowClass).toContain("gap-3");
+    expect(geo.chipW).toBe(48);
+    expect(geo.chipH).toBe(48);
+    expect(geo.chipRadius).toBe("12px");
+    expect(geo.chipBg).toContain("linear-gradient(135deg, rgb(45, 90, 74)");
+    expect(geo.chipBg).toContain("rgb(143, 188, 63)");
+    expect(geo.svgClass).toContain("lucide-trending-up");
+    expect(geo.svgW).toBe(24);
+    expect(geo.svgH).toBe(24);
+    expect(geo.svgStroke).toBe("rgb(255, 255, 255)");
+    // The h1 sits 12px (gap-3) right of the chip.
+    expect(geo.h1X - geo.chipRight).toBe(12);
+  });
+
+  test("tabs render the reference's 16px icons with currentColor (v14 — plan G2)", async ({ page }) => {
+    // Measured live on the reference: each trigger carries a 16×16 lucide
+    // icon (circle-arrow-up / circle-arrow-down) with mr-2 (8px) and
+    // stroke=currentColor — the icons inherit the tab's text color: active
+    // green-900, inactive rgb(115,115,115). The clone was text-only.
+    const assetsTab = page.getByRole("tab", { name: "Assets" });
+    const liabilitiesTab = page.getByRole("tab", { name: "Liabilities" });
+
+    const upIcon = assetsTab.locator("svg.lucide-circle-arrow-up");
+    const downIcon = liabilitiesTab.locator("svg.lucide-circle-arrow-down");
+    await expect(upIcon).toBeVisible();
+    await expect(downIcon).toBeVisible();
+
+    const iconGeo = await page.evaluate(() => {
+      const tabs = [...document.querySelectorAll('[role="tab"]')].filter((t) =>
+        /^(Assets|Liabilities)$/.test((t.textContent || "").trim()),
+      );
+      return tabs.map((t) => {
+        const svg = t.querySelector("svg");
+        if (!svg) return { text: t.textContent?.trim(), icon: false };
+        const r = svg.getBoundingClientRect();
+        const cs = getComputedStyle(svg);
+        return {
+          text: t.textContent?.trim(),
+          icon: true,
+          w: r.width,
+          h: r.height,
+          marginRight: cs.marginRight,
+          stroke: cs.stroke,
+          strokeWidth: cs.strokeWidth,
+          color: cs.color,
+        };
+      });
+    });
+    expect(iconGeo).toHaveLength(2);
+    for (const icon of iconGeo) {
+      expect(icon.icon).toBe(true);
+      expect(icon.w).toBe(16);
+      expect(icon.h).toBe(16);
+      expect(icon.marginRight).toBe("8px");
+      expect(icon.strokeWidth).toBe("2px");
+    }
+    // The icons inherit the tab's text color (currentColor): the ACTIVE
+    // Assets tab renders green-900, the INACTIVE Liabilities gray — the
+    // reference's measured pair.
+    expect(iconGeo.find((i) => i.text === "Assets")!.stroke).toBe("rgb(20, 83, 45)");
+    expect(iconGeo.find((i) => i.text === "Liabilities")!.stroke).toBe("rgb(115, 115, 115)");
+
+    // After activation the icon color follows the active tab text (green-900)
+    // and the deactivated one returns to gray. transition-all animates the
+    // swap — settle before reading computed styles (the documented 300ms
+    // transition-settle pattern).
+    await liabilitiesTab.click();
+    await expect(liabilitiesTab).toHaveAttribute("data-state", "active");
+    await page.waitForTimeout(400);
+    const activeColor = await liabilitiesTab.locator("svg").evaluate((el) => getComputedStyle(el).color);
+    expect(activeColor).toBe("rgb(20, 83, 45)");
+    const inactiveColor = await assetsTab.locator("svg").evaluate((el) => getComputedStyle(el).color);
+    expect(inactiveColor).toBe("rgb(115, 115, 115)");
+  });
+
   test("Assets tab groups by type with capitalize headers and badge cards", async ({ page }) => {
     await expect(page.getByRole("tab", { name: "Assets" })).toBeVisible();
     // Section header: text-2xl + always-plural count, short grouped money.
@@ -371,5 +497,41 @@ test.describe("net-worth dialogs (v6 — remediation-plan-v6.md G4/G5)", () => {
     const addDlg = page.getByRole("dialog", { name: "Add Asset" });
     await expect(addDlg).toBeVisible();
     await expect(addDlg.locator("#asset-type")).toBeEnabled();
+  });
+});
+
+test.describe("net worth mobile header chip (v14 — plan G3)", () => {
+  // The reference renders the 48×48 gradient chip at mobile too (measured
+  // 390×844: chip at x=16, h1 at x=76 — the gap-3 row survives the
+  // breakpoint) and its page still fits the viewport.
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  test("chip renders beside the h1 with no horizontal overflow", async ({ page }) => {
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const geo = await page.evaluate(() => {
+      const h1El = [...document.querySelectorAll("main h1")].find((h) =>
+        (h.textContent || "").trim() === "Net Worth",
+      );
+      if (!h1El) return null;
+      const row = h1El.parentElement!.parentElement!;
+      const chipEl = [...row.children].find((c) => c.tagName === "DIV" && c !== h1El.parentElement);
+      const cr = chipEl ? chipEl.getBoundingClientRect() : null;
+      const hr = h1El.getBoundingClientRect();
+      return {
+        chipW: cr ? cr.width : null,
+        chipX: cr ? cr.x : null,
+        h1X: hr.x,
+        h1Y: hr.y,
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+      };
+    });
+    expect(geo).not.toBeNull();
+    expect(geo!.chipW).toBe(48);
+    expect(geo!.chipX).toBe(16); // p-4 content edge at 390px
+    expect(geo!.h1X - (geo!.chipX! + 48)).toBe(12); // gap-3
+    expect(geo!.scrollWidth).toBeLessThanOrEqual(geo!.clientWidth + 1);
   });
 });

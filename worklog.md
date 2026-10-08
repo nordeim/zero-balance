@@ -7,8 +7,64 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v5.md`, `docs/remediation-plan-v6.md`,
 `docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`,
 `docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`,
-`docs/remediation-plan-v11.md`, `docs/remediation-plan-v12.md`, and
-`docs/remediation-plan-v13.md`.
+`docs/remediation-plan-v11.md`, `docs/remediation-plan-v12.md`,
+`docs/remediation-plan-v13.md`, and `docs/remediation-plan-v14.md`.
+
+---
+
+## Session 27 — Fresh verification & parity iteration v14 (2026-10-08)
+
+**Goal:** `git pull` to `931bfcd` (the session-25 summary record), re-verify
+the v13 baseline, code-audit the recent changes (repo skills:
+code-review-and-audit native-CLI fallback — lint/tsc/tests green; npm audit =
+the same 5 dev-only ESLint braces advisories, no patched release; secret scan
+clean), then a fresh two-site parity audit led by a three-page VLM screenshot
+sweep with DOM verification of every flagged diff. Explicit mobile-navigation
+re-verification (the task focus) + reference data-drift check. Formal log:
+`docs/session_28.md` (the session_27.md slot holds the incoming session-25
+conversation summary).
+
+- Baseline chain at `931bfcd` fully green (96/115/30 + lint/typecheck/
+  build); v13 pins spot-checked in the code first.
+- Mobile stack re-verified end-to-end: R1 (the ref's toast containers still
+  intercept the burger's center hit; the clone's is DIRECT), R2 (the ref's
+  sheet still traps after nav; the clone's closes), R3 (nothing active on
+  `/` on the ref; the clone highlights Dashboard), R4 (ref 395px overflow;
+  clone 390). Sheet geometry + link positions identical.
+- Fresh angles: net-worth tablist keyboard flow (identical — roles,
+  aria-selected, ArrowRight activation), dialog initial focus (the ref
+  leaves focus on the TRIGGER — no trap; the clone's Radix trap is the
+  documented a11y superset), invalid-input validation (silent both sides,
+  no fixture residue), guideline/accordion hover states (none both),
+  user-select sweep (auto both), and the VLM three-page comparison — 3
+  real findings, 4 VLM flags refuted by computed styles.
+- 4 finding groups (`docs/remediation-plan-v14.md`): the donut hover
+  TOOLTIP rebuilt to the reference's recharts-2 chrome (value "$X.XX" +
+  #e5e7e3 border + radius 8 + 0 4px 12px shadow + black item row —
+  recharts 3's bare defaults drift on all four axes); the net-worth tab
+  icons restored (16px lucide circle-arrow-up/down, mr-2, currentColor);
+  and the net-worth page header's 48×48 gradient icon chip (forest→lime,
+  radius 12, 24px white trending-up — measured at BOTH viewports).
+- TDD: 4 new e2e specs — RED at the exact unfixed values → 3-file fix →
+  GREEN. The G1 scope GREW during the live re-verification (the tooltip
+  chrome axes) and was pinned + locked by four CSS assertions. Test-bug
+  fixes documented as SKILL lesson 32 (the mouse-following tooltip breaks
+  Playwright .hover() — dispatch synthetically; transition settle for
+  post-click icon colors).
+- Full chain: lint · typecheck · 96/96 unit · build · **119/119 e2e** ·
+  30/30 smoke.
+- Live parity re-verified on a fresh clone session: the tooltip reads
+  "Need : $7370.00" in the byte-identical chrome; the chip 48×48 at
+  (288,38) with the exact gradient; the tab icons 16×16 mr-2 with the
+  exact color pair.
+- All 15 screenshots regenerated — `06-networth.png` +
+  `12-mobile-networth.png` changed (the visible fixes; VLM-verified),
+  the other 13 byte-identical.
+- Docs aligned: README (counts 119, plan-v14 row), CLAUDE.md (the
+  recharts-3 tooltip trap), AGENTS.md (v14 pin paragraph), SKILL (state
+  96/119/30, lessons 31-32, Appendix B row), probe README (v14 catalog +
+  the VLM-sweep discipline), `scripts/with-server.sh` committed,
+  `docs/session_28.md`, this worklog.
 
 ---
 

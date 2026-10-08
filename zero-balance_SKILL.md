@@ -8,7 +8,7 @@ description: >
   procedure, and lesson needed to extend, debug, or replicate the codebase.
 version: 1.0.0
 last_updated: 2026-10-08
-project_state: 96 unit tests / 115 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 119 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -681,6 +681,25 @@ Numbered institutional lessons. Each traces to a concrete fix in
     states the clone can actually reach before pinning the style (the
     clone's sheet closes on nav, so the trapped state is unreachable
     by design) (plan v13 G1 + the trapped-sheet observation).
+31. **Library MAJOR-VERSION defaults are parity surfaces.** The v14
+    audit hovered the donut and found recharts 3's default tooltip
+    drifting from the reference's recharts-2 chrome on FOUR axes at
+    once (raw value, `#cccccc` border, no radius/shadow, sector-colored
+    item text) — a surface both sides render "by default" but with
+    different defaults. When the reference ships a library default,
+    pin it explicitly (`formatter` + `contentStyle` + `itemStyle`)
+    — never assume "default == default" across a major version. And
+    test the HOVER/interaction states of chart primitives, not just
+    their painted geometry (plan v14 G1).
+32. **A mouse-following tooltip breaks Playwright's `.hover()`** — the
+    tooltip appears under the cursor, re-triggers pointer events, and
+    the actionability loop never settles (45s timeout). Dispatch the
+    sector's `mouseover`/`mousemove` synthetically via `evaluate`
+    instead (the dashboard G1 spec pattern). Same pass:
+    `transition-all` on the net-worth tabs animates the icon-color
+    swap — read post-click computed colors only after a ~400ms settle
+    (the documented transition-settle rule applies to icon currentColor
+    too, not just nav links) (plan v14 G1/G2).
 
 ---
 
@@ -1005,6 +1024,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 21 — parity iteration v11 (`docs/remediation-plan-v11.md`) | Empty-state headings → 20px `text-xl` (items + net-worth); the `.zb-btn-add` family re-pinned — v3 bare-shadow ambient (gradient buttons, every size), v3 shadow-sm (outline variant), the shadcn focus-visible ring (white inner + 1px #0a0a0a + transparent 2px outline) replacing the browser-default outline; Plus icons 20→16px on the 7 Add-button sites; the session-1 hover opacity-0.9 fade removed (reference has no hover change) — pinned by 3 new/extended specs; the pass also swept the tablet breakpoints (767/768/1024), rail hover, hero status badge, filter card live behavior, item-badge census, dialog/sheet/stat-card shadows (full strings), and the no-logout parity — all verified identical — 96/107/30 green |
 | 2026-10-08 | Session 23 — parity iteration v12 (`docs/remediation-plan-v12.md`) | Login ERROR state rebuilt as the reference's red-tinted bordered banner (red-50/70%, red-200 border, radius 12, pad 16, centered red-700 14px/400 — the same slot serves 401s and sign-up mismatches); per-route tab titles restored ("Income \| ZeroBudget" etc., one-word "Networth") via route-segment `layout.tsx` metadata + the root pipe template — the first client-effect attempt was reverted after discovering React Float's post-hydration `<title>` re-emission (lesson 27); login root promoted to a `<main>` landmark; forgot-password rebuilt as the reference's confirmation-state layout with honest copy (no mail transport) — pinned by 5 new/extended specs; the pass also swept the payment-method filter + listbox, the a11y landmark/h1 structure, and the reference's sheet-closes-on-Escape behavior (matching) — 96/112/30 green |
 | 2026-10-08 | Session 25 — parity iteration v13 (`docs/remediation-plan-v13.md`) | Register duplicate-email 409 text matched to the reference ("A user with this email already exists"); sign-up password placeholders restored ("Min. 8 characters" / "Re-enter password"); login inputs' FOCUS ring pinned as the reference's two-layer shadcn ring (white 2px + slate-400 4px — v4's color-only ring utility emits no shadow) — pinned by 3 new specs; the pass also swept the register banner chrome, login 401 text, item-card date formats, hero progress-bar chrome, the OR divider, Google button chrome + OAuth divergence, cursor styles, authed /login, and the code audit (npm audit = dev-only unpatchable braces advisory; secret scan clean) — 96/115/30 green |
+| 2026-10-08 | Session 27 — parity iteration v14 (`docs/remediation-plan-v14.md`) | Donut hover TOOLTIP pinned to the reference (value "$X.XX" + full recharts-2 chrome — border #e5e7e3, radius 8, 0 4px 12px shadow, black item row; recharts 3 drifts on all four axes); net-worth tab icons restored (16px lucide circle-arrow-up/down, mr-2, currentColor — active green-900/inactive gray); net-worth page header's 48×48 gradient icon chip added (forest→lime, radius 12, 24px white trending-up, BOTH viewports — the items-view chip family extended to the page the v4 pin missed) — found via a VLM screenshot sweep with DOM verification of every flag; the pass also swept the net-worth tablist keyboard flow, dialog initial focus (ref: no move — clone's Radix trap is the superset), invalid-input validation (silent both), guideline/accordion hovers, user-select, and the full mobile-nav stack — 96/119/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

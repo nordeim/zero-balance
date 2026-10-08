@@ -88,7 +88,7 @@ flowchart TB
 │                                  #   auth, rate-limit, serializers, db-path
 ├── 📂 tests/
 │   ├── 📄 *.test.ts               # Vitest unit suites (96 tests)
-│   └── 📂 e2e/                    # Playwright specs (115 tests) + global setup
+│   └── 📂 e2e/                    # Playwright specs (119 tests) + global setup
 ├── 📂 scripts/
 │   ├── 📄 smoke-test.sh           # 30-step production API smoke test
 │   └── 📄 capture-screenshots.mjs # docs/screenshots generator
@@ -145,7 +145,7 @@ npm start            # boots .next/standalone/server.js
 
 ```bash
 npm test            # Vitest unit suite (96 tests) — pure domain seams
-npm run test:e2e    # Playwright e2e (115 tests) — needs `npm run build` first
+npm run test:e2e    # Playwright e2e (119 tests) — needs `npm run build` first
 bash scripts/smoke-test.sh   # 30-step production API smoke (own server, port 3210)
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint (react-hooks v6 rules enforced)
@@ -192,6 +192,7 @@ Measured from the reference's `:root` (computed styles as ground truth):
 | [`docs/remediation-plan-v11.md`](docs/remediation-plan-v11.md) | Session-21 parity iteration — the empty-state headings restored to the reference's 20px (`text-xl`), the `.zb-btn-add` gradient-button family re-pinned (v3 bare-shadow ambient on every size, v3 shadow-sm on the outline variant, the shadcn focus-visible ring — white inner + 1px #0a0a0a + transparent outline — replacing the browser default), the Add-button Plus icons 20px→16px (7 sites), and the session-1 hover opacity-0.9 fade removed (the reference has no hover change) — plus the pass's clean sweep: tablet breakpoints 767/768/1024 (rail switch + content offset), rail hover, hero status badge, filter card live behavior + badge census, dialog/sheet/stat-card shadows (read in full), and the no-logout-UI parity all verified identical (4 finding groups) |
 | [`docs/remediation-plan-v12.md`](docs/remediation-plan-v12.md) | Session-23 parity iteration — the login ERROR state rebuilt as the reference's red-tinted bordered banner (red-50/70% wash, red-200 border, 12px radius, 16px padding, centered red-700 14px/400 — the shadcn FormMessage pattern; the same slot serves sign-in 401s and sign-up mismatches), the per-route tab titles restored ("Income | ZeroBudget" etc. via route-segment metadata + the root layout's pipe template — a client-side title effect was tried first and REVERTED: React Float re-emits the static <title> after hydration and resets it ~24ms later), the login root promoted to a <main> landmark (tag swap), and the forgot-password flow rebuilt as the reference's confirmation-state layout with honest copy (no mail transport — the toast it replaces pretended nothing either, but the state matches the reference's card structure) (4 finding groups) |
 | [`docs/remediation-plan-v13.md`](docs/remediation-plan-v13.md) | Session-25 parity iteration — the register duplicate-email 409 text matched to the reference ("A user with this email already exists"), the sign-up state's password placeholders restored ("Min. 8 characters" / "Re-enter password" — sign-in keeps dots), and the login inputs' FOCUS ring pinned as the reference's two-layer shadcn ring (white 0 0 0 2px + slate-400 0 0 0 4px — v4's color-only ring utility emits no shadow at all) — plus the pass's clean sweep: register banner chrome, login 401 text, item-card date formats, hero progress-bar chrome, the OR divider, the Google button, cursor styles, authed `/login` behavior, the reference's Google-OAuth divergence, and the code audit (npm audit = dev-only unpatchable braces advisory; secret scan clean) all verified/documented (3 finding groups) |
+| [`docs/remediation-plan-v14.md`](docs/remediation-plan-v14.md) | Session-27 parity iteration — the donut hover TOOLTIP pinned to the reference (value "$X.XX" via a formatter + the full default-tooltip chrome: #e5e7e3 border, radius 8, 0 4px 12px shadow, black item row — recharts 3 drifts on all four axes), the net-worth tab icons restored (16px lucide circle-arrow-up/down, mr-2, currentColor — active green-900 / inactive gray), and the net-worth page header's 48×48 gradient icon chip (forest→lime, radius 12, white 24px trending-up — measured at BOTH viewports; the items-view chips were pinned in v4, the net-worth page's never was) — found via a VLM three-page screenshot sweep with every flagged diff DOM-verified — plus the pass's clean sweep: net-worth tablist keyboard flow, dialog initial focus (ref: no focus move — the clone's Radix trap is the a11y superset), invalid-input validation (silent both), guideline/accordion hovers, user-select, and the mobile-nav stack re-verified end-to-end (4 finding groups incl. the tooltip chrome) |
 | [`docs/session_1.md`](docs/session_1.md) · [`docs/session_2.md`](docs/session_2.md) · [`docs/session_3.md`](docs/session_3.md) | Narrative logs of the build + re-verification sessions |
 | [`worklog.md`](worklog.md) | Rolling project worklog (all sessions, latest first) |
 | [`Project_Architecture_Document.md`](Project_Architecture_Document.md) | 7 ADRs, topology, ER diagram, security model |
