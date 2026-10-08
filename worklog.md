@@ -8,8 +8,71 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v7.md`, `docs/remediation-plan-v8.md`,
 `docs/remediation-plan-v9.md`, `docs/remediation-plan-v10.md`,
 `docs/remediation-plan-v11.md`, `docs/remediation-plan-v12.md`,
-`docs/remediation-plan-v13.md`, `docs/remediation-plan-v14.md`, and
-`docs/remediation-plan-v15.md`.
+`docs/remediation-plan-v13.md`, `docs/remediation-plan-v14.md`,
+`docs/remediation-plan-v15.md`, and `docs/remediation-plan-v16.md`.
+
+---
+
+## Session 31 — Fresh verification & parity iteration v16 (2026-10-08)
+
+**Goal:** sync to `a141322` (the session-29 summary record — the workspace
+survived, no reset), re-verify the v15 baseline, code-audit the recent
+changes (repo skills: code-review-and-audit native-CLI fallback —
+lint/tsc/tests green; npm audit = the same 5 dev-only ESLint braces
+advisories, no patched release; secret scan clean), then a fresh two-site
+parity audit of the error/network-failure surface class — the natural
+sibling of the v15 loading-state work — plus the explicit
+mobile-navigation re-verification + data-drift check. Formal log:
+`docs/session_32.md` (the session_31.md slot holds the incoming
+session-29 conversation summary).
+
+- Baseline chain at `a141322` fully green (96/123/30 + lint/typecheck/
+  build; one known login-parity 409 flake, clean in isolation); v15 pins
+  spot-checked in the code first.
+- Mobile stack re-verified end-to-end: R1 (the ref's TWO toast containers
+  still intercept the burger's center hit at (38,30); the clone's is
+  DIRECT on the svg), R2 (the ref's sheet still traps after nav —
+  `sheetStillOpen: true` + overlay; the clone's closes + 390px fit), R3
+  (nothing active on `/` on the ref; the clone highlights Dashboard), R4
+  (ref 395/464px overflow; clone 390 on all six routes). Sheet geometry +
+  link positions identical. Data drift clean — tenth consecutive check.
+- Fresh angles: the ERROR/NETWORK-FAILURE states measured for the first
+  time — the reference's entity API aborted during a full-page load
+  renders a SILENT ZERO-STATE (full shell, 0.0% / $0.00 / ✓ NET ZERO,
+  items views "0 items · $0.00" + their standard empty states, NO error
+  surface); the clone BUMPED to /login (boot()'s single catch conflated
+  a data failure with a logged-out session). Also measured: the ref's
+  mutation failure (silent no-op — dialog stays open, no feedback; the
+  clone's dialog + error-toast superset verified live), its client-nav
+  under a dead API (no refetch — in-memory, matching), and its
+  session-probe failure (unobservable — the platform cookie carries it).
+- 1 finding group (`docs/remediation-plan-v16.md`): the boot data-failure
+  rebuild — `store.boot()`'s nested try keeps the user + sets a
+  `bootError` flag when `refresh()` fails after a successful session
+  probe (the reference's stay-in-app zero-state renders), and AppShell
+  fires a one-shot honest error toast ("Could not load your data /
+  Network error — check your connection and try again" — the same
+  superset class as the mutation-failure toasts; the flag clears on
+  fire). A failed session probe (401) keeps the login redirect.
+- TDD: 3 new e2e specs (`tests/e2e/boot-failure.spec.ts`) using
+  route-aborted data APIs (`route.abort("failed")`, `/api/auth/me` left
+  live) + a 401-probe regression pin — RED at the exact unfixed values
+  (the async login redirect leaves no hero heading; no toast exists) →
+  2-file fix → GREEN. SKILL lesson 34 documents the Radix live-region
+  double-match (toast `getByText` needs `{ exact: true }`) and the
+  catch-conflation anti-pattern.
+- Full chain: lint · typecheck · 96/96 unit · build · **126/126 e2e**
+  (first full run, no flakes) · 30/30 smoke.
+- Live parity re-verified: the route-aborted reload stays on `/` with
+  the reference's zero-state + the toast caught live; a clean reload
+  recovers `+$2065.00`.
+- All 15 screenshots regenerated — ZERO pixel changes (the fix is
+  behavior-only; `git status` on `docs/screenshots/` empty).
+- Docs aligned: README (counts 126, plan-v16 row), CLAUDE.md (counts +
+  the v16 e2e-contract note), AGENTS.md (v16 pin paragraph), SKILL
+  (state 96/126/30, lesson 34, Appendix B row), probe README (v16
+  catalog + the route-abort technique), `docs/session_32.md`, this
+  worklog.
 
 ---
 

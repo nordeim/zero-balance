@@ -38,6 +38,12 @@ export interface ModalState {
 interface BudgetStore {
   user: SessionUser | null;
   booted: boolean;
+  // v16 G1: set when the session probe SUCCEEDED but the data fetch
+  // failed at boot — AppShell reads it once to fire the honest error
+  // toast (the reference's silent zero-state is a data-integrity
+  // illusion; the toast is the same superset class as the dialogs'
+  // mutation-failure toasts).
+  bootError: boolean;
   items: BudgetItem[];
   assets: Asset[];
   liabilities: Liability[];
@@ -45,6 +51,7 @@ interface BudgetStore {
   modal: ModalState;
 
   boot: () => Promise<void>;
+  clearBootError: () => void;
   refresh: () => Promise<void>;
 
   login: (email: string, password: string) => Promise<void>;
@@ -89,6 +96,7 @@ function messageOf(error: unknown): string {
 export const useBudgetStore = create<BudgetStore>((set, get) => ({
   user: null,
   booted: false,
+  bootError: false,
   items: [],
   assets: [],
   liabilities: [],
@@ -110,14 +118,38 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
         // the spinner it gates) only resolves after the data lands. A
         // logged-out visitor keeps the immediate flip: RequireSession
         // redirects to /login either way, and there is no data to wait for.
-        await get().refresh();
-        set({ user, booted: true });
+        try {
+          await get().refresh();
+          set({ user, bootError: false, booted: true });
+        } catch {
+          // v16 G1 (measured live on the reference): a DATA failure while
+          // the session probe SUCCEEDED keeps the user in the app — the
+          // reference stays on its route rendering its silent zero-state
+          // (hero 0.0% / $0.00 / "NET ZERO", items views "0 items · $0.00"
+          // + their standard empty states). The pre-v16 catch set
+          // user:null here, bumping an authenticated user to /login (an
+          // auth failure it wasn't). bootError flags the one-shot toast;
+          // the session stays, the shell mounts, and a full reload
+          // retries (the reference has no auto-retry either).
+          set({ user, bootError: true, booted: true });
+        }
       } else {
         set({ user: null, booted: true });
       }
     } catch {
+      // The session probe itself failed (401 or network) — the session
+      // is unknown from the app's perspective; the login redirect stays
+      // (pinned by the boot-failure spec's 401 pin + the auth specs).
       set({ user: null, booted: true });
     }
+  },
+
+  clearBootError: () => {
+    // One-shot semantics for the v16 G1 boot-error toast: AppShell fires
+    // the toast when bootError flips true and clears the flag here — a
+    // later refresh() succeeding must not re-toast, while a full page
+    // reload re-runs boot() naturally (the flag starts false again).
+    set({ bootError: false });
   },
 
   refresh: async () => {

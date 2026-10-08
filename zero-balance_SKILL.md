@@ -9,7 +9,7 @@ description: >
 version: 1.0.0
 last_updated: 2026-10-08
 
-project_state: 96 unit tests / 123 e2e tests / 30 smoke steps — all green
+project_state: 96 unit tests / 126 e2e tests / 30 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -718,6 +718,20 @@ Numbered institutional lessons. Each traces to a concrete fix in
     800 — read `window.innerWidth/innerHeight` live instead of
     hard-coding viewport math (plan v15 G1).
 
+34. **Radix mirrors toast text into a `role=status` live region — loose
+    `getByText` double-matches it.** The v16 boot-failure spec's toast
+    assertion tripped strict mode: "Network error — check your connection
+    and try again" resolved to 2 elements — the description div AND the
+    live-region span Radix renders for screen readers, whose text is the
+    title+description CONCATENATION ("Notification Could not load your
+    dataNetwork error…"). Fix: `getByText(text, { exact: true })` — the
+    exact match hits only the element whose own text equals the string,
+    never the mirrored live region. Same pass: a boot-time
+    `catch { user: null }` conflates "data failed" with "logged out" —
+    nest the try so a failed `refresh()` after a successful session probe
+    keeps the user (the reference's silent zero-state stays in-app; the
+    login bump was an auth failure the error wasn't) (plan v16 G1).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1043,6 +1057,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-08 | Session 25 — parity iteration v13 (`docs/remediation-plan-v13.md`) | Register duplicate-email 409 text matched to the reference ("A user with this email already exists"); sign-up password placeholders restored ("Min. 8 characters" / "Re-enter password"); login inputs' FOCUS ring pinned as the reference's two-layer shadcn ring (white 2px + slate-400 4px — v4's color-only ring utility emits no shadow) — pinned by 3 new specs; the pass also swept the register banner chrome, login 401 text, item-card date formats, hero progress-bar chrome, the OR divider, Google button chrome + OAuth divergence, cursor styles, authed /login, and the code audit (npm audit = dev-only unpatchable braces advisory; secret scan clean) — 96/115/30 green |
 | 2026-10-08 | Session 27 — parity iteration v14 (`docs/remediation-plan-v14.md`) | Donut hover TOOLTIP pinned to the reference (value "$X.XX" + full recharts-2 chrome — border #e5e7e3, radius 8, 0 4px 12px shadow, black item row; recharts 3 drifts on all four axes); net-worth tab icons restored (16px lucide circle-arrow-up/down, mr-2, currentColor — active green-900/inactive gray); net-worth page header's 48×48 gradient icon chip added (forest→lime, radius 12, 24px white trending-up, BOTH viewports — the items-view chip family extended to the page the v4 pin missed) — found via a VLM screenshot sweep with DOM verification of every flag; the pass also swept the net-worth tablist keyboard flow, dialog initial focus (ref: no move — clone's Radix trap is the superset), invalid-input validation (silent both), guideline/accordion hovers, user-select, and the full mobile-nav stack — 96/119/30 green |
 | 2026-10-08 | Session 29 — parity iteration v15 (`docs/remediation-plan-v15.md`) | The full-page LOADING STATE rebuilt to the reference (the last unmeasured surface class): DOM-replacing `fixed inset-0` white-backed overlay + the slate spinner (32×32, 4px, #e2e8f0 track + #1e293b top spoke, 9999px, spin 1s), no shell mounted while loading, and `boot()` flipping `booted` only after the data lands (route-delayed e2e pins: chrome, DOM replacement, data-flight timing, client-nav inverse, 390×844) — the old 2px lime/transparent-top inline spinner hid at the session probe while data popped into empty views; also swept the Select keyboard flows (ref internally inconsistent — filter selects advance, dialog selects don't; the clone's Radix matches the dialog/a11y pattern), a VLM income/savings/mobile sweep (all flags data-driven), and mobile-nav R1–R4 + data drift (clean, ninth check) — 96/123/30 green |
+| 2026-10-08 | Session 31 — parity iteration v16 (`docs/remediation-plan-v16.md`) | The boot DATA-FAILURE state measured for the first time (route-aborted entity API): the reference STAYS in-app rendering its SILENT ZERO-STATE (full shell, 0.0% / $0.00 / ✓ NET ZERO, items views "0 items · $0.00" + standard empty states, NO error surface) while the clone's single `catch` bumped the authenticated user to `/login`; fixed with a nested try in `boot()` (user stays, `bootError` flag) + the one-shot honest error toast in AppShell; the reference's mutation failure measured too (SILENT no-op — dialog stays open, no feedback; the clone's dialog + error-toast superset verified live) and its client-nav under a dead API (no refetch — in-memory); mobile-nav R1–R4 re-verified + data drift clean (tenth check) — 96/126/30 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

@@ -6,6 +6,7 @@
 
 import * as React from "react";
 import { useBudgetStore } from "./store";
+import { useToast } from "@/components/ui/toast";
 import { AppSidebar, MobileTopbar } from "./sidebar";
 import { BudgetItemDialog } from "./budget-item-dialog";
 import { CalculatorDialog } from "./calculator-dialog";
@@ -29,6 +30,9 @@ function ModalHost() {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const boot = useBudgetStore((s) => s.boot);
   const booted = useBudgetStore((s) => s.booted);
+  const bootError = useBudgetStore((s) => s.bootError);
+  const clearBootError = useBudgetStore((s) => s.clearBootError);
+  const { toast } = useToast();
   // The mobile nav-sheet state lives here so the mobile top bar can sit
   // INSIDE <main> (reference structure) while the sheet itself renders from
   // the sidebar fragment — see sidebar.tsx for why the top bar must not be
@@ -38,6 +42,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     void boot();
   }, [boot]);
+
+  // v16 G1: the honest superset for a DATA failure at boot (the session
+  // probe succeeded, refresh() threw). The reference renders its silent
+  // zero-state here — no error surface at all (a transient network
+  // failure looks like an empty budget); the clone keeps the zero-state
+  // surfaces (parity) but tells the truth once. One-shot: the flag clears
+  // when fired, so a later successful refresh never re-toasts. The toast
+  // chrome is the established error variant (XCircle icon, 4s duration).
+  React.useEffect(() => {
+    if (booted && bootError) {
+      toast({
+        title: "Could not load your data",
+        description: "Network error — check your connection and try again",
+        variant: "error",
+      });
+      clearBootError();
+    }
+  }, [booted, bootError, toast, clearBootError]);
 
   // v15 G1 (measured live on the reference): a full-page load renders a
   // DOM-replacing loading state — #root holds ONLY a fixed inset-0 flex

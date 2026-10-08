@@ -353,3 +353,26 @@ server per `scripts/with-server.sh`:
   `page.route()` + `waitForTimeout` before `route.continue()`, and
   `page.unrouteAll({ behavior: "ignoreErrors" })` before the spec ends
   (in-flight route callbacks outliving the test fail it).
+
+Session-31 additions (remediation-plan-v16 audit) — the error/network-
+failure surface class, same run-probe.sh pattern:
+
+- `probe-v16-refdata.mjs` — the tenth data-drift check on the reference
+  (hero figure + stat totals; unchanged since session 19).
+- `probe-v16-burger.mjs` — the R1 burger hit-test (v16 re-verification;
+  the find-by-regex fix for the querySelector quoting trap).
+- `probe-v16-sheet-close.mjs` — the R2 clone-side sheet close-on-nav
+  check (clicks the Income link via `el.click()` — the sheet link
+  geometry + the post-nav trap/scrollWidth read).
+- `probe-v16-rail.mjs` — the R3 root-route rail-link computed styles
+  (the ref marks nothing active on `/`; the clone highlights Dashboard).
+- `probe-v16-overflow.mjs` — the R4 six-route scrollWidth sweep (SPA-nav
+  variant; the ref's `/networth` 464px case needs a full-page load).
+- **route-abort technique:** the failure window is reproduced by
+  `agent-browser network route <pattern> --abort` (the ref's entity API
+  is `app.base44.com/api/apps/<id>/entities/*`); the reference's
+  observable state = the SILENT ZERO-STATE (0.0% / $0.00 / ✓ NET ZERO,
+  items views "0 items · $0.00" + their standard empty states, NO error
+  surface); its mutation failure = a silent no-op (dialog stays open).
+  LESSON: nested shell quoting mangles backtick template literals in
+  `agent-browser eval` — always go through run-probe.sh (base64).
