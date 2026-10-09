@@ -228,6 +228,62 @@ test.describe("mobile navigation", () => {
     );
   });
 
+  test("the sheet's keyboard focus: Tab cycles the five links in a loop, the blue sidebar-ring renders (v23 G1)", async ({
+    page,
+  }) => {
+    // v23 G1 (docs/remediation-plan-v23.md): measured live on BOTH sites —
+    // after the sheet opens, focus sits inside the sheet on a container;
+    // real Tab presses cycle the five links at IDENTICAL positions and
+    // then WRAP back to Dashboard (a focus loop — the reference's own
+    // sheet traps; the clone's Radix trap matches); the focused link's
+    // VISIBLE focus indicator is the blue #3b82f6 2px sidebar-ring layer
+    // inside its box-shadow (the reference's outline is a transparent
+    // 2px, the clone's is none — both invisible; the ring is the chrome).
+    // Nothing pinned the keyboard semantics before (R1–R4, active-route,
+    // hover-none, and Escape/overlay dismissal were pinned; this wasn't).
+    await page.getByRole("button", { name: "Toggle Sidebar" }).click();
+    const sheet = page.locator("[data-state='open'].fixed.inset-y-0");
+    await expect(sheet).toBeVisible();
+    await page.waitForTimeout(700); // slide-in settle
+
+    const order: string[] = [];
+    for (let i = 0; i < 7; i++) {
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(60);
+      order.push(
+        await page.evaluate(() => {
+          const el = document.activeElement;
+          if (!el || el === document.body) return "(body)";
+          return (el.textContent || "").trim().slice(0, 24);
+        }),
+      );
+    }
+    // The five links in the reference's order, then the loop wraps.
+    expect(order).toEqual([
+      "Dashboard",
+      "Income",
+      "Expenses",
+      "Savings",
+      "Net Worth",
+      "Dashboard",
+      "Income",
+    ]);
+
+    // The focused link renders the reference's visible focus ring: the
+    // blue sidebar-ring layer. Read the FULL computed string — v4 emits
+    // transparent lead layers ahead of the visible one (the v11/v22
+    // truncation lesson); toContain on the complete string. The ring
+    // FADES IN over ~200ms (the documented transition discipline — a
+    // 60ms read catches it at ~65% opacity/width), so settle first.
+    await page.waitForTimeout(350);
+    const ring = await page.evaluate(() => {
+      const el = document.activeElement;
+      return el ? getComputedStyle(el).boxShadow : null;
+    });
+    expect(ring).not.toBeNull();
+    expect(ring).toContain("rgb(59, 130, 246) 0px 0px 0px 2px");
+  });
+
   test("Escape and overlay taps also close the sheet", async ({ page }) => {
     await page.getByRole("button", { name: "Toggle Sidebar" }).click();
     const sheet = page.locator("[data-state='open'].fixed.inset-y-0");

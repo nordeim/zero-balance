@@ -9,7 +9,7 @@ description: >
 version: 1.0.0
 last_updated: 2026-10-09
 
-project_state: 108 unit tests / 143 e2e tests / 35 smoke steps — all green
+project_state: 108 unit tests / 145 e2e tests / 35 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -845,6 +845,26 @@ Numbered institutional lessons. Each traces to a concrete fix in
     pointer away on BOTH sides before every comparison capture (plan
     v22 G1 + the mobile-calculator triage).
 
+
+41. **The probe tooling itself carries state — park, settle, re-measure, and
+    know which browser you are actually driving.** v23's three probe lessons,
+    all from ONE pass: (a) the agent-browser "sessions" (`session new
+    ref25` / `clone25`) resolve to ONE shared browser tab — `session use`
+    prints `default` and the active site is whatever the last `open`
+    pointed at; a drift probe that skipped the open read the CLONE's
+    dashboard on the "reference" session and produced a false
+    data-drift alarm (the clone's seed numbers on the "reference"). The
+    discipline: ALWAYS `open <target-url>` + settle before every eval.
+    (b) The v22 parked-pointer lesson extends to LIVE PROBES: a probe
+    eval on a just-swapped state reads the swapped-in button's hover
+    color until the pointer is parked (the clone's Verify button read
+    `#1e293b` until `mouse.move(5,5)`). (c) A transient FIRST geometry
+    read after a state swap (the reference's Verify button read h=40
+    once; two re-measures + the `h-11` class attribute refute it) —
+    after a state swap, re-measure and use the class attribute as the
+    tie-breaker before declaring a finding (plan v23, the
+    verify-mobile probe trio).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1177,6 +1197,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-09 | Session 39 — parity iteration v20 (`docs/remediation-plan-v20.md`) | The **mobile-app-view + populated-edit-dialog VLM sweep** (the session-38 log's two top suggestions): 5 mobile views at 390×844 + the populated Edit dialog + the breakdown drill-down, compared pairwise through z-ai vision. Results: the mobile dashboard IDENTICAL; the networth flags all decomposed into the documented superset fix #4 (the reference's own 464px overflow: 48px `text-5xl` figure, 2-col grid, off-screen Add button) plus one refuted tab-tint hallucination (identical rgb(220,252,231)); the badge-wrap mechanism verified identical (data-driven wrap); the drill-down clean. TWO real drifts found, DOM-verified, fixed TDD-first, live-re-measured exact, and pinned: (G1) the ITEMS-VIEW HEADER ROW — base `items-start` missing so the Add button stretched full-width 358px on mobile (the reference's auto-width 147/155/150) and `mb-6` vs `mb-8` (a 24 vs 32px header→filter gap at BOTH viewports; the dashboard's row already carried the correct pattern); (G2) the CLASSIFICATION TILES — the reference's tile labels carry 16px lucide icons (circle-alert #e07a3b / heart #3b7ea1 / piggy-bank #8fbc3f) between the radio and the text in both Add and Edit states, missed by the v19 empty-dialog sweep. Also: the census probe's base64→atob UTF-8 mangling root-caused and fixed transport-safe (lesson 38); mobile-nav R1–R4 re-verified + data drift clean (fourteenth check) — 96/137/30 green |
 | 2026-10-09 | Session 41 — parity iteration v21 (`docs/remediation-plan-v21.md`) | **SEO + the register verification gate.** Three finding groups: (G1) the sitemap.xml/robots.txt the reference serves, added via Next.js MetadataRoute routes (`src/app/robots.ts` + `src/app/sitemap.ts`) — the reference's five-URL/priority/weekly structure mirrored with the clone's routes, `/login` excluded like the reference, Next's canonicalizations documented as protocol-equivalent; (G2) the calculator's line-item row actions re-measured HOVER-REVEALED on the live reference (`opacity-0 group-hover:opacity-100` — the v6-era always-visible pin had aged with the reference's chrome change) — matched with the `@variant group-hover (.group:hover &)` pin in globals.css keeping the reveal alive on hover:none devices; (G3) the REGISTER POST-SUCCESS LANDING measured live for the first time: the reference gates registration behind a "Verify your email" state (6-digit code inputs 40×44, a 5-attempt countdown, resend semantics, unverified-login rejection) — rebuilt as the honest superset: the full state chrome + `/api/auth/verify-email` + `/api/auth/resend` + the register re-issue path + a 403 unverified-login rejection with the reference's exact banner + the honest dev-code delivery (no mail transport; the v12 forgot-password precedent) + the seeded demo user pre-verified. Swept clean: the mobile sheet-open VLM pair, the net-worth populated edit-asset pair (X-close thrice-refuted), the login keyboard-focus spot check (the v13 ring holds once settled + read in full); mobile-nav R1–R4 + data drift (fifteenth check) clean — 108/142/35 green |
 | 2026-10-09 | Session 43 — parity iteration v22 (`docs/remediation-plan-v22.md`) | **The line-item sub-dialog's third dialog family.** Two finding groups: (G1) the verify-email spec's parked-pointer race root-caused — the Create-account click leaves Playwright's mouse where the swapped-in Verify button renders, and the 200ms hover transition reads mid-flight (a deterministic flake on a correct app; fixed with the park + settle discipline in `registerFreshAccount`); (G2) the line-item sub-dialog measured live for the first time at both viewports — the reference caps its panel at 85vh (desktop 672×680, mobile 358×717) with `space-y-5` form gaps (20px), while the clone rode the generic budget-item family (90vh + 24px gaps) — fixed with the inline `maxHeight: "85vh"` + `p-6 space-y-5` form, pinned by the dialog-buttons spec's third-family test (which also pins the budget dialog's 90vh so the family split can't regress). Swept clean: the mobile calculator VLM pair (the row-action "missing" flag = a screenshot pointer artifact — DOM-identical at rest AND under hover; the X-close claim refuted a FOURTH time), keyboard Tab sweeps on the dashboard + income views (order + focus chrome identical; the clone's computed rings carry invisible transparent lead layers), the SEO pair live on both sites, mobile-nav R1–R4 + data drift (sixteenth check) clean — 108/143/35 green |
+| 2026-10-09 | Session 45 — parity iteration v23 (`docs/remediation-plan-v23.md`) | **A clean verification pass — the pins ARE the deliverable.** Two finding groups, both TEST-PINS of newly measured surfaces (the app matched the reference on every axis): (G1) the mobile sheet's KEYBOARD semantics measured live for the first time — initial focus lands on a sheet container, real Tab presses cycle the five links at identical positions and WRAP in a focus loop, the visible indicator is the blue #3b82f6 2px sidebar-ring layer (read in FULL — v4's transparent lead layers), Escape closes; pinned by the mobile-navigation spec's new test (the ring fades in ~200ms — settle 350ms before reading); (G2) the register verify-email state's MOBILE chrome measured for the first time at 390×844 — the responsive scale (circle 56/icon 28/h2 20px vs desktop 64/32/24; inputs 6×40×44 gap 6; button 294×44 #0f172a); pinned by the verify-email spec's new mobile describe (register budget 5→6 calls). Swept clean: the budget-item dialog's mobile pair (the VLM radio claim DOM-refuted — the 5th dialog-scale misread), the 404 at mobile, the v22 sub-dialog fix re-verified at both viewports, mobile-nav R1–R4 + SEO + data drift (17th check — the false alarm was the shared-browser lesson, lesson 41a) — 108/145/35 green (2 new e2e) |
 
 ## Appendix C: Live-Site Validation Methodology
 

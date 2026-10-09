@@ -581,3 +581,46 @@ per `scripts/with-server.sh`, the v22 surfaces:
 - `probe-v22-xclose.mjs` — the X-close chrome dump (the 4th refutation
   probe: identical 29×36 mobile / 36×36 desktop, 0px border,
   transparent bg, 16px svg `#0a0a0a`, radius 6 both sites).
+
+Session-45 additions (remediation-plan-v23 audit) — the shared parity
+browser (NOTE: `agent-browser session new ref25/clone25` prints `default`
+and BOTH "sessions" resolve to ONE browser tab — the active site is
+whatever the last `open` pointed at; the discipline is ALWAYS
+`open <target-url>` + settle before every eval. A drift probe that
+skipped the open read the CLONE's dashboard left over from the previous
+navigation and produced a false "data drift" alarm this pass), the :3200
+parity server per `scripts/with-server.sh`, the v23 surfaces:
+
+- `vlm-compare-v23.sh` — the v23 VLM pair wrapper (`/tmp/vlm23/`): the
+  budget-item dialog's MOBILE pair (the session-44 suggestion — only the
+  classification-radio "thicker border" claim + the platform badge;
+  DOM-refuted: 16×16 / 1px #171717 / 9999px radius both) and the
+  verify-email state's MOBILE pair (only the dev-code box — the
+  documented superset).
+- `kb-sheet-sweep-v23.sh` — the mobile sheet's KEYBOARD sweep (the
+  session-44 suggestion 2): opens the sheet (synthetic burger click),
+  then REAL Tab presses with per-press focus reads, then Escape. Found:
+  initial focus → a sheet container, the five links cycle at identical
+  positions and WRAP (a focus loop on both sites), the visible ring is
+  the blue #3b82f6 2px layer on both, Escape closes both. Pinned by the
+  mobile-navigation spec's new v23 G1 test.
+- `probe-v23-sheet-focus.mjs` + `probe-v23-focus-read.mjs` — the
+  sheet-open + focused-element full-shadow reads (the ring pair: the
+  reference's white 0-spread lead + blue layer vs the clone's three
+  transparent leads + the same blue layer — visible chrome identical).
+- `probe-v23-verify-mobile.mjs` — the verify-email state's chrome at
+  390×844 (first mobile measurement: circle 56 / icon 28 / six 40×44
+  inputs gap 6 / button 294×44 #0f172a / h2 20px 700). Pinned by the
+  verify-email spec's new v23 G2 mobile describe. Its lessons: park the
+  pointer BEFORE the eval (the probe itself read the swapped-in button's
+  hover #1e293b until parked — the v22 G1 lesson now applies to PROBES
+  too), and re-measure after a state swap (one transient first read of
+  the reference's button height [40] that two re-measures + the h-11
+  class refute).
+- `probe-v23-drift-census.mjs` — the per-view data census (income/
+  expenses/savings innerText dumps) backing the 17th consecutive clean
+  drift check.
+- `probe-v23-subdialog-family.mjs` — one-shot re-verification of the
+  line-item sub-dialog's third-family geometry at the CURRENT viewport
+  (the v22 G2 fix re-verified at both: 672×680/85vh/20px desktop,
+  358×717/85vh/20px mobile — identical to the reference).

@@ -17,7 +17,10 @@ import { expect, test } from "@playwright/test";
 //
 // These flows are logged-OUT (no storageState) and each test registers a
 // throwaway account — the register-class rate-limit budget (10/IP/15min
-// shared with login-parity's single 409 call) stays under the cap.
+// shared with login-parity's single 409 call) stays under the cap. Since
+// v23 the file holds FIVE register-class calls (4 desktop + 1 mobile) +
+// the login-parity 409 = 6 total, still under the 10/IP/15min bucket (and
+// the in-memory limiter resets on every server boot).
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
@@ -195,5 +198,90 @@ test.describe("register verify-email gate (v21 — plan G3)", () => {
     await expect(page.getByRole("heading", { name: "Budget Dashboard" })).toBeVisible();
     // Silence the unused-var lint when codes coincide by chance.
     expect(firstCode).toMatch(/^\d{6}$/);
+  });
+});
+
+test.describe("register verify-email gate at MOBILE (v23 — plan G2)", () => {
+  // v23 G2 (docs/remediation-plan-v23.md): the verify state measured live
+  // at 390×844 for the first time — the reference renders its MOBILE
+  // scale: the circle 56px (desktop 64), the shield icon 28px (desktop
+  // 32), the h2 20px (desktop 24) — the responsive classes
+  // h-14 w-14 sm:h-16 / h-7 w-7 sm:h-8 / text-xl sm:text-2xl. The inputs
+  // (6 × 40×44, gap 6, radius 8, centered) and the Verify button
+  // (294×44 #0f172a radius 12 — h-11 at every viewport) are
+  // viewport-invariant. The desktop describe above pins the ≥640 scale;
+  // this pins the mobile one so a responsive-class regression can't pass
+  // desktop and drift mobile.
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("the verify state renders the reference's mobile chrome", async ({ page }) => {
+    const email = `v23-mobile-${Date.now()}@example.com`;
+    await registerFreshAccount(page, email);
+
+    const chrome = await page.evaluate(() => {
+      const circle = [...document.querySelectorAll("main div")].find((d) =>
+        (d.className || "").toString().includes("bg-[#f1f5f9]"),
+      );
+      const icon = circle?.querySelector("svg") ?? null;
+      const inputs = [...document.querySelectorAll<HTMLInputElement>('input[inputmode="numeric"]')];
+      const verifyBtn = [...document.querySelectorAll("button")].find(
+        (b) => (b.textContent || "").trim() === "Verify email",
+      );
+      const h2 = [...document.querySelectorAll("h2")].find((h) =>
+        /Verify your email/.test(h.textContent || ""),
+      );
+      return {
+        circle: circle
+          ? { w: Math.round(circle.getBoundingClientRect().width), bg: getComputedStyle(circle).backgroundColor }
+          : null,
+        icon: icon ? { w: Math.round(icon.getBoundingClientRect().width), color: getComputedStyle(icon).color } : null,
+        inputs: inputs.map((i) => {
+          const r = i.getBoundingClientRect();
+          const cs = getComputedStyle(i);
+          return { w: Math.round(r.width), h: Math.round(r.height), x: Math.round(r.x), radius: cs.borderRadius, ta: cs.textAlign };
+        }),
+        btn: verifyBtn
+          ? {
+              w: Math.round(verifyBtn.getBoundingClientRect().width),
+              h: Math.round(verifyBtn.getBoundingClientRect().height),
+              bg: getComputedStyle(verifyBtn).backgroundColor,
+              radius: getComputedStyle(verifyBtn).borderRadius,
+            }
+          : null,
+        h2: h2
+          ? { size: getComputedStyle(h2).fontSize, weight: getComputedStyle(h2).fontWeight, color: getComputedStyle(h2).color }
+          : null,
+      };
+    });
+    // The 56px slate-100 circle + the 28px shield-check (the mobile scale
+    // of the responsive family — 64/32 at >=640px).
+    expect(chrome.circle!.w).toBe(56);
+    expect(chrome.circle!.bg).toBe("rgb(241, 245, 249)");
+    expect(chrome.icon!.w).toBe(28);
+    expect(chrome.icon!.color).toBe("rgb(51, 65, 85)");
+    // Six 40×44 inputs at the mobile row geometry: x 60→290 (gap 6),
+    // radius 8, centered — identical to the desktop row.
+    expect(chrome.inputs).toHaveLength(6);
+    for (const i of chrome.inputs) {
+      expect(i.w).toBe(40);
+      expect(i.h).toBe(44);
+      expect(i.radius).toBe("8px");
+      expect(i.ta).toBe("center");
+    }
+    if (chrome.inputs.length > 1) {
+      expect(chrome.inputs[0].x).toBe(60);
+      expect(chrome.inputs[1].x - (chrome.inputs[0].x + 40)).toBe(6);
+    }
+    // The 294×44 #0f172a button — h-11 at every viewport, the mobile
+    // card's full content width.
+    expect(chrome.btn!.w).toBe(294);
+    expect(chrome.btn!.h).toBe(44);
+    expect(chrome.btn!.bg).toBe("rgb(15, 23, 42)");
+    expect(chrome.btn!.radius).toBe("12px");
+    // The h2 at its mobile scale: 20px/700 #0f172a (text-xl; 24px at
+    // >=640px).
+    expect(chrome.h2!.size).toBe("20px");
+    expect(chrome.h2!.weight).toBe("700");
+    expect(chrome.h2!.color).toBe("rgb(15, 23, 42)");
   });
 });
