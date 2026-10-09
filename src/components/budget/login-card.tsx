@@ -102,7 +102,12 @@ function CodeInputs({
           }}
           type="text"
           inputMode="numeric"
-          autoComplete="one-time-code"
+          // v26 — plan G2 (measured live): the reference runs
+          // autocomplete="one-time-code" on the FIRST box only and "off"
+          // on the rest (the standard OTP convention — the browser's
+          // code offer targets the first box). The clone had it on all
+          // six, making every box an autofill target.
+          autoComplete={i === 0 ? "one-time-code" : "off"}
           aria-label={`Digit ${i + 1}`}
           value={d}
           disabled={disabled}

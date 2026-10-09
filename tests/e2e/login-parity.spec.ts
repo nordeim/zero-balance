@@ -594,8 +594,10 @@ test.describe("auth-form label→input gap (v24 — plan G2)", () => {
 // browser-default auto outline (no custom ring), the inputs the v13
 // #94a3b8 family — all already matching.
 //
-// The reference's <body> styles NO background (class `antialiased` only —
-// the browser's white canvas; its warm #fafaf8 paper lives on the
+// The reference's <body> styles NO background (its body carried only
+// `antialiased` at v25; the reference has since dropped that class too —
+// the v26 G1 pin below — leaving a fully classless white-canvas body; its
+// warm #fafaf8 paper lives on the
 // app-shell wrapper, and its 404 page paints its own #f8fafc root). The
 // clone painted #fafaf8 on the body (the v7-era manifest read — a PWA
 // splash color, not a rendered surface). VISUALLY invisible (the login
@@ -645,5 +647,27 @@ test.describe("auth submit ring + login backdrop (v25 — plan G1/G3)", () => {
     // wrapper — pinned in tokens.spec; the login gradient covers the body,
     // so this is a computed-style pin, byte-identical screenshots).
     expect(bodyBg).toBe("rgb(255, 255, 255)");
+  });
+
+  // v26 — plan G1 (measured live on both sites, three page families, fresh
+  // opens): the reference's <body> now carries NO class — the `antialiased`
+  // class v25 measured is GONE (a reference-side change; its body class is
+  // "" on /login, /, and the 404, -webkit-font-smoothing auto). The clone
+  // still rendered className="antialiased". On this Linux Chromium the class
+  // renders byte-identically either way (the A/B pixel test in the plan);
+  // on macOS it flips text to grayscale AA — the reference's subpixel
+  // rendering is the target, so the clone drops the class.
+  test("the body carries no class — the reference's classless body (v26 — plan G1)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    const body = await page.evaluate(() => ({
+      cls: document.body.className,
+      // webkitFontSmoothing is a WebKit-only CSSStyleDeclaration member TS
+      // doesn't know — the same cast family as the v25 focusVisible one.
+      fs: (getComputedStyle(document.body) as unknown as { webkitFontSmoothing: string })
+        .webkitFontSmoothing,
+    }));
+    expect(body.cls).toBe("");
+    expect(body.fs).toBe("auto");
   });
 });

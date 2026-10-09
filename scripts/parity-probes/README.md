@@ -690,3 +690,38 @@ suggestion 1), the :3200 parity server per `scripts/with-server.sh`:
   corrupted. Verify suspected source corruption with charCodeAt
   before "fixing" it (this session's false alarm: tsc + build were
   green the whole time).
+
+Session-51 additions (remediation-plan-v26 audit) — the dialog-button
+mouse-focus pair + the verify-email state's inputs audit (the
+session-51 log's two suggestions), the :3200 parity server per
+`scripts/with-server.sh`:
+
+- `probe-v26-verify-inputs.mjs` — the verify-email state's six code
+  inputs as an aria/landmark/focus surface (first sweep): attributes
+  (autocomplete distribution, inputmode, aria-label, pattern,
+  maxlength), geometry, and the state's landmark counts. This
+  produced the G2 finding (the reference runs `one-time-code` on the
+  FIRST box only and `off` on the rest — the standard OTP convention —
+  while the clone had it on all six) and documented the two KEPT
+  supersets (the clone's `aria-label="Digit N"` boxes; the reference's
+  inputs are unnamed — and the clone's arrow-key navigation; the
+  reference's arrows are inert, measured live with REAL Arrow key
+  presses on both sites).
+- The dialog-button mouse-focus pair needed NO new probe: the class
+  ATTRIBUTE read settled it (lesson 42's tie-breaker discipline) —
+  both sites' dialog Cancel/Save carry the byte-identical
+  `focus-visible:ring-1 ring-ring` family, so a mouse click shows no
+  ring on either site; the REAL-Tab re-verification (the v23 sheet
+  pattern) confirmed the identical visible ring layers. Behavioral
+  probe lesson: clicking Save on an EMPTY form moves focus to the
+  first invalid input via native validation on both sites — the
+  empty-submit path cannot hold focus on the button.
+- The antialiased A/B pixel test (G1): the clone's login shot with
+  `document.body.classList.remove("antialiased")` applied via eval —
+  byte-identical diff counts against the reference pair at every
+  threshold (Linux Chromium ignores font-smoothing) — proving the
+  class removal is a computed-style-only fix on this platform.
+- Register-gate observation (limits future reference probes, not a
+  gap): the reference's `/api/auth/register` started answering
+  `400 "Security verification is required"` after ~2 synthetic
+  registrations this session — a platform anti-automation gate.

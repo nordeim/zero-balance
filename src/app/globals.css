@@ -82,13 +82,15 @@
      borders are that custom warm gray (only its form controls and
      popover borders are the neutral #e5e5e5). */
   /* v25 G3: the reference styles NO body background — its body renders
-     the browser's default white canvas (body class `antialiased` only,
-     measured live), and its warm #fafaf8 paper is painted by the APP
-     SHELL wrapper (app-shell.tsx, via --neutral-warm below). The old
-     #fafaf8 here came from the v7-era MANIFEST read (the PWA
-     background_color splash color — a different surface): visually
-     invisible (the login gradient covers the body) but a computed-style
-     + layer-structure drift, now pinned by the v25 specs. */
+     the browser's default white canvas (its body carries NO class since
+     the reference dropped `antialiased` after v25 — the v26 G1
+     measurement; classless on /login, /, and the 404), and its warm
+     #fafaf8 paper is painted by the APP SHELL wrapper (app-shell.tsx,
+     via --neutral-warm below). The old #fafaf8 here came from the
+     v7-era MANIFEST read (the PWA background_color splash color — a
+     different surface): visually invisible (the login gradient covers
+     the body) but a computed-style + layer-structure drift, now pinned
+     by the v25 specs. */
   --color-background: #ffffff;
   --color-foreground: #0a0a0a;
   --color-card: #ffffff;

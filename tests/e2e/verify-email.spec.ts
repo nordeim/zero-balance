@@ -99,6 +99,11 @@ test.describe("register verify-email gate (v21 — plan G3)", () => {
             radius: cs.borderRadius,
             ta: cs.textAlign,
             mode: i.getAttribute("inputmode"),
+            // v26 — plan G2: the reference runs autocomplete one-time-code
+            // on the FIRST box only and off on the rest (measured live —
+            // the standard OTP convention; the browser's code offer targets
+            // the first box).
+            ac: i.getAttribute("autocomplete"),
           };
         }),
         btn: verifyBtn
@@ -126,6 +131,16 @@ test.describe("register verify-email gate (v21 — plan G3)", () => {
       expect(i.ta).toBe("center");
       expect(i.mode).toBe("numeric");
     }
+    // v26 — plan G2: the autocomplete distribution — one-time-code on the
+    // first box, off on the other five (the reference's measured pattern).
+    expect(chrome.inputs.map((i) => i.ac)).toEqual([
+      "one-time-code",
+      "off",
+      "off",
+      "off",
+      "off",
+      "off",
+    ]);
     // The 44px #0f172a primary button (the sign-up-state height, radius 12).
     expect(chrome.btn!.h).toBe(44);
     expect(chrome.btn!.bg).toBe("rgb(15, 23, 42)");

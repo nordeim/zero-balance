@@ -55,7 +55,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      {/* v26 — plan G1 (measured live): the reference's <body> carries NO
+          class — the `antialiased` class v25 measured was removed on the
+          reference side (body class "" on /login, /, and the 404;
+          -webkit-font-smoothing auto). Rendering identical on Linux
+          Chromium (A/B pixel-verified); on macOS the reference's subpixel
+          text is the target, so the clone matches its classless body. */}
+      <body>
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
