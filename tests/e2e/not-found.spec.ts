@@ -60,6 +60,30 @@ test.describe("custom not-found page (v7 — plan G7)", () => {
     await expect(page.getByRole("heading", { name: "Budget Dashboard" })).toBeVisible();
   });
 
+  // v25 G2: the reference's Go Home button carries `focus:outline-none
+  // focus:ring-2 focus:ring-offset-2 focus:ring-slate-500` — a plain
+  // `focus:` (engages on ANY focus, not keyboard-only) with a SLATE-500
+  // #64748b ring (measured live: white 2px offset + rgb(100,116,139) 4px).
+  // The clone had the keyboard-gated slate-400 #94a3b8 family. Every other
+  // 404 value was already pinned (structure v21; geometry/title/meta below).
+  test("the Go Home button renders the reference's slate-500 focus ring (v25 G2)", async ({ page }) => {
+    await page.goto("/nonexistent-page-xyz");
+    await expect(page.getByRole("link", { name: /Go Home/i })).toBeVisible();
+    const ring = await page.evaluate(async () => {
+      const b = [...document.querySelectorAll("a")].find((x) =>
+        /Go Home/i.test((x.textContent || "").trim()),
+      )!;
+      // Plain programmatic focus — the reference's ring is `focus:`-gated,
+      // not `focus-visible:` (no focusVisible option needed; the contrast
+      // with the v19 dialog-button test's focusVisible cast is the point).
+      b.focus();
+      await new Promise((r) => setTimeout(r, 350));
+      return getComputedStyle(b).boxShadow;
+    });
+    expect(ring).toContain("rgb(255, 255, 255) 0px 0px 0px 2px");
+    expect(ring).toContain("rgb(100, 116, 139) 0px 0px 0px 4px");
+  });
+
   test("the tab title mirrors the reference's page-name | ZeroBudget format", async ({ page }) => {
     await page.goto("/nonexistent-page-xyz");
     // The reference sets "Nonexistent Page Xyz | ZeroBudget" — a client-side

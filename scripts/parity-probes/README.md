@@ -651,3 +651,42 @@ server per `scripts/with-server.sh`, the v24 surfaces:
   signup-mobile screenshots): the pair returned IDENTICAL while the DOM
   found two real deltas — the 6th consecutive form-scale VLM blind
   spot; sub-6px differences are below its resolution.
+
+Session-49 additions (remediation-plan-v25 audit) — the keyboard-focus-ring
+sweep (the session-48 log's suggestion 2) + the sm-band auth census (its
+suggestion 1), the :3200 parity server per `scripts/with-server.sh`:
+
+- `kb-auth-ring-v25.sh` — the auth submit's focus ring via REAL Tab
+  presses (CDP key events move focus): opens /login fresh, parks the
+  pointer, Tabs until the submit button is focused, reads its FULL
+  computed box-shadow + class list (plus the first input's ring for
+  context). This produced the G1 finding (the reference's
+  `ring-ring` = zinc-950 rgb(9,9,11) vs the clone's #94a3b8) and
+  re-verified the fix live (identical composition). Its LESSON:
+  programmatic `focus()` inside agent-browser evals sets
+  document.activeElement but never matches `:focus`/`:focus-visible`
+  on either site (Playwright's page.evaluate DOES) — REAL Tab presses
+  are the only reliable focus-chrome probe.
+- `kb-login-walk-v25.sh` + `probe-v25-focus-stop.mjs` — the login
+  page's FULL focus walk: one Tab press per stop, a focus-chrome read
+  after each (tag/label/boxShadow/outline/color/bg). The reference's
+  table: Google → browser-default outline; inputs → the v13 #94a3b8
+  family; submit → G1's #09090b; the two swap buttons →
+  browser-default outlines; the 7th stop is the Base44 PLATFORM edit
+  badge (not app chrome, correctly absent from the clone).
+- `vlm-compare-v25.sh` — the v25 VLM pair wrapper (`/tmp/vlm25/`):
+  the login-page pair returned IDENTICAL "none" (correct on the
+  background — the body's tint is covered by the identical
+  full-viewport gradient; blind on the rings only because
+  keyboard-focus chrome is unphotographable in rest-state shots).
+- The v24 census probe was REUSED for the sm-band sweep (672×800 —
+  the sign-up font's 16px middle step): exact match on every axis on
+  both sites (signin 48/16 + 48 submit, signup 44/16 + 44, forgot
+  44/16 + 44, widths 368, gaps 10, relMt 6) — the v24 responsive
+  ladder verified at the third viewport.
+- Display-pipeline lesson (44): the tool-result text pipeline strips
+  the literal two-character sequence left-bracket+m from RENDERED
+  text — a `[mode, setMode]` destructure line DISPLAYS as if
+  corrupted. Verify suspected source corruption with charCodeAt
+  before "fixing" it (this session's false alarm: tsc + build were
+  green the whole time).

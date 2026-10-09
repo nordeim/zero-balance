@@ -578,3 +578,72 @@ test.describe("auth-form label→input gap (v24 — plan G2)", () => {
     for (const g of gaps) expect(g).toBe(10);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v25 — the auth submit ring + the login page's white backdrop
+// (docs/remediation-plan-v25.md G1/G3).
+//
+// Measured live on both sites via REAL Tab presses (kb-auth-ring-v25.sh,
+// pointer parked, 350ms settle): the reference's auth submits render
+// `box-shadow: #fff 0 0 0 2px, #09090b 0 0 0 4px, rgba(0,0,0,0.05) 0 1px 2px`
+// on keyboard focus — the shadcn ring-2/ring-offset-2 family with its
+// `--ring` = ZINC-950 #09090b (NOT the inputs' slate-400 #94a3b8 — the
+// reference runs the input ring and the button ring as two distinct
+// families; the clone had copied the input color onto the button). The
+// reference's other focusables: the Google + swap buttons show the
+// browser-default auto outline (no custom ring), the inputs the v13
+// #94a3b8 family — all already matching.
+//
+// The reference's <body> styles NO background (class `antialiased` only —
+// the browser's white canvas; its warm #fafaf8 paper lives on the
+// app-shell wrapper, and its 404 page paints its own #f8fafc root). The
+// clone painted #fafaf8 on the body (the v7-era manifest read — a PWA
+// splash color, not a rendered surface). VISUALLY invisible (the login
+// gradient covers the body), but a real computed-style + layer-structure
+// drift: this pin holds the corrected white-canvas body.
+test.describe("auth submit ring + login backdrop (v25 — plan G1/G3)", () => {
+  test("the submit buttons render the reference's zinc-950 keyboard ring (G1)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    // focusVisible is a real Chromium FocusOptions member (the v19 dialog
+    // probe technique); TS's DOM lib lags it — hence the cast. 350ms settle:
+    // the 200ms transition family (the v23 65%-opacity lesson).
+    const signin = await page.evaluate(async () => {
+      const b = document.querySelector<HTMLButtonElement>("button[type=submit]")!;
+      b.focus({ focusVisible: true } as unknown as FocusOptions);
+      await new Promise((r) => setTimeout(r, 350));
+      return getComputedStyle(b).boxShadow;
+    });
+    // The reference's composition: white 2px offset + zinc-950 2px ring +
+    // the v3 ambient (compared in visible layers; v4's transparent lead
+    // layers paint nothing — the v10 lesson).
+    expect(signin).toContain("rgb(255, 255, 255) 0px 0px 0px 2px");
+    expect(signin).toContain("rgb(9, 9, 11) 0px 0px 0px 4px");
+    expect(signin).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+
+    // The sign-up state's Create account button — same family (client-side
+    // state swap; no register-class API call).
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    const signup = await page.evaluate(async () => {
+      const b = document.querySelector<HTMLButtonElement>("button[type=submit]")!;
+      b.focus({ focusVisible: true } as unknown as FocusOptions);
+      await new Promise((r) => setTimeout(r, 350));
+      return getComputedStyle(b).boxShadow;
+    });
+    expect(signup).toContain("rgb(255, 255, 255) 0px 0px 0px 2px");
+    expect(signup).toContain("rgb(9, 9, 11) 0px 0px 0px 4px");
+    expect(signup).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+  });
+
+  test("the login page's body renders the reference's plain white canvas (G3)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    const bodyBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    // The reference styles NO body background — the browser's default white
+    // canvas (measured live; its warm #fafaf8 paper lives on the app-shell
+    // wrapper — pinned in tokens.spec; the login gradient covers the body,
+    // so this is a computed-style pin, byte-identical screenshots).
+    expect(bodyBg).toBe("rgb(255, 255, 255)");
+  });
+});

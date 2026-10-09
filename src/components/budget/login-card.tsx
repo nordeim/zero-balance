@@ -335,7 +335,7 @@ function AuthForm(p: AuthFormProps) {
         <button
           type="submit"
           disabled={p.busy}
-          className={`inline-flex w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 ${
+          className={`inline-flex w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#09090b] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 ${
             p.mode === "signin" ? "h-11 sm:h-12" : "h-10 sm:h-11"
           }`}
         >
@@ -621,7 +621,7 @@ export function LoginCard() {
                           <button
                             type="submit"
                             disabled={busy}
-                            className="mt-4 inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                            className="mt-4 inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#09090b] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                           >
                             {busy && <Loader2Icon className="h-4 w-4 animate-spin" />}
                             Verify email

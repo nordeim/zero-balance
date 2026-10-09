@@ -13,11 +13,62 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v17.md`, `docs/remediation-plan-v18.md`,
 `docs/remediation-plan-v19.md`, `docs/remediation-plan-v20.md`,
 `docs/remediation-plan-v21.md`, `docs/remediation-plan-v22.md`,
-and `docs/remediation-plan-v23.md`.
+`docs/remediation-plan-v23.md`, `docs/remediation-plan-v24.md`,
+and `docs/remediation-plan-v25.md`.
 
 ---
 
 ---
+
+---
+
+---
+
+## Session 49 — Parity iteration v25: the keyboard-focus-ring families + the body's layer (2026-10-09)
+
+**Goal:** refresh (`git pull` → `e7109fd`; environment intact), re-run the
+baseline chain, audit, sweep the session-48/50 suggestions (the sm-band
+auth pair + the auth submit focus rings), fix what the DOM finds,
+TDD-first, docs aligned, commit + push via the SSH wrapper.
+
+- Baseline fully green on the first run: 108/108 unit · 150/150 e2e ·
+  35/35 smoke + lint + typecheck + build. Audit clean (the same 5
+  dev-only `braces` advisories, secret scan clean, the v24 changeset
+  re-reviewed). One false alarm: a "syntax error" that was the display
+  pipeline stripping the literal bracket+m sequence (lesson 44 — tsc was
+  green the whole time).
+- Standing checks all clean: mobile-nav R1–R4 (19th — Tailwind v4 pins
+  hold; the clone fits 390 on all routes), data drift (19th), the SEO
+  pair, the v24 fixes re-verified live at 390×844 AND the sm band
+  672×800 (the sign-up font's 16px middle step — exact match on both
+  sites).
+- **The FIRST keyboard-focus-ring sweep (REAL Tab presses, pointer
+  parked) — three REAL fixes** (`docs/remediation-plan-v25.md`):
+  (G1) the auth submits' focus-visible ring — the reference renders
+  zinc-950 `#09090b` (its shadcn `ring-ring` + white offset + the v3
+  ambient); the clone had the INPUTS' slate-400 `#94a3b8` (the
+  reference runs DISTINCT ring families per component — inputs
+  #94a3b8 v13, submits #09090b, dialog buttons 1px #0a0a0a v19, the 404
+  #64748b); fixed on both submit lines in `login-card.tsx`.
+  (G2) the 404 Go Home button — plain `focus:` (any focus, not
+  keyboard-only) + slate-500 `#64748b`; fixed verbatim in
+  `not-found.tsx`. (G3) the body background layer — the reference
+  styles NO body bg (white canvas; the warm #fafaf8 paper on its
+  app-shell wrapper); the clone had the paper on the body (a v7-era
+  manifest read) — visually invisible (byte-identical screenshots,
+  PIL-verified) but a real computed-style + layer drift: fixed with
+  `--color-background: #ffffff` + the shell's `bg-(--neutral-warm)`.
+- TDD throughout: 4 new e2e written RED first, pin-sanity mutations
+  (ring colors + body white → the old values) all RED, restored, GREEN;
+  live re-verification with the REAL-Tab walk (the clone's submit ring
+  now `rgb(9,9,11) 0 0 0 4px`, the 404 ring `rgb(100,116,139)`, the
+  shell paper over the white body). Full chain now **108/154/35 green**.
+- Probe lessons 43 (programmatic focus() in agent-browser evals never
+  engages :focus/:focus-visible on either site — REAL Tab presses are
+  the only reliable focus-chrome probe) and 44 (the display pipeline
+  strips the literal bracket+m sequence — verify with charCodeAt before
+  "fixing" phantom corruption). Docs/screenshots/worklog aligned;
+  committed and pushed to main via the SSH wrapper.
 
 ---
 

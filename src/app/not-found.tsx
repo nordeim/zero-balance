@@ -57,7 +57,7 @@ export default function NotFound() {
           <div className="pt-6">
             <Link
               href="/"
-              className="inline-flex items-center rounded-lg border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-medium text-[#334155] transition-colors duration-200 hover:border-[#cbd5e1] hover:bg-[#f8fafc] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="inline-flex items-center rounded-lg border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-medium text-[#334155] transition-colors duration-200 hover:border-[#cbd5e1] hover:bg-[#f8fafc] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#64748b]"
             >
               <HomeIcon className="mr-2 h-4 w-4" aria-hidden="true" />
               Go Home

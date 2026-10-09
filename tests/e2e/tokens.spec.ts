@@ -418,3 +418,37 @@ test.describe("gradient Add-button chrome (v11)", () => {
     expect(dash).toBe(16);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v25 — the app shell's warm paper + the body's white canvas
+// (docs/remediation-plan-v25.md G3).
+//
+// Measured live up the DOM chain on both sites: the reference styles NO
+// body background (browser-white canvas) and paints its warm #fafaf8
+// paper on the app-shell wrapper (`min-h-screen flex w-full` →
+// rgb(250,250,248)); its 404 page paints its own #f8fafc root (v21 pin).
+// The clone had the paper on the BODY (the v7-era manifest read — the PWA
+// splash color, not a rendered surface) — visually invisible (every page
+// covers the body), but a real computed-style + layer-structure drift
+// (the login body pinned in login-parity). This pin holds the corrected
+// layering on an authenticated app page.
+test.describe("app-shell warm paper + white body (v25 — plan G3)", () => {
+  test("the shell wrapper paints #fafaf8 over a white body canvas", async ({ page }) => {
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Income", exact: true })).toBeVisible();
+    const layers = await page.evaluate(() => {
+      const shell = [...document.querySelectorAll("body div")].find((d) =>
+        /min-h-svh/.test((d as HTMLElement).className || "") && /flex/.test((d as HTMLElement).className || ""),
+      );
+      return {
+        body: getComputedStyle(document.body).backgroundColor,
+        shell: shell ? getComputedStyle(shell).backgroundColor : null,
+      };
+    });
+    // The reference's layering: white body canvas + the warm paper on the
+    // shell wrapper (rgb(250,250,248) — the same rendered color the app
+    // pages always showed, now painted at the reference's layer).
+    expect(layers.body).toBe("rgb(255, 255, 255)");
+    expect(layers.shell).toBe("rgb(250, 250, 248)");
+  });
+});

@@ -9,7 +9,7 @@ description: >
 version: 1.0.0
 last_updated: 2026-10-09
 
-project_state: 108 unit tests / 150 e2e tests / 35 smoke steps — all green
+project_state: 108 unit tests / 154 e2e tests / 35 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -1256,6 +1256,7 @@ Parity claims are validated against the live reference with `agent-browser`:
 | Smoke script | `scripts/smoke-test.sh` (30 steps, port 3210) |
 | Screenshot capture | `scripts/capture-screenshots.mjs` (port 3100) |
 | Remediation record | `docs/remediation-plan.md` |
+| 2026-10-09 | Session 49 — parity iteration v25 (`docs/remediation-plan-v25.md`) | **Three DOM-verified fixes from the FIRST keyboard-focus-ring sweep of the auth + 404 surfaces** (REAL Tab presses, pointer parked, 350ms settle): (G1) the auth SUBMIT buttons' focus-visible ring — the reference renders zinc-950 `#09090b` (its shadcn `ring-ring`: white 2px offset + the v3 ambient) where the clone had copied the INPUTS' slate-400 `#94a3b8` — the reference runs DISTINCT ring families per component (inputs two-layer #94a3b8 v13, submits #09090b, dialog buttons 1px #0a0a0a v19, the 404 button plain-focus slate-500 #64748b); fixed on both submit lines in `login-card.tsx`. (G2) the 404 Go Home button — plain `focus:` (ANY focus, not keyboard-only) + `#64748b`; the clone had the keyboard-gated slate-400; fixed verbatim in `not-found.tsx`. (G3) the BODY BACKGROUND layer — the reference styles NO body bg (the browser's white canvas; class `antialiased` only) and paints its warm `#fafaf8` paper on the app-shell wrapper; the clone had the paper on the body (the v7-era MANIFEST read — a PWA splash color): visually invisible (the login gradient, the shell, and the 404 root cover the body everywhere — regenerated screenshots byte-identical, PIL-verified) but a computed-style + layer-structure drift, corrected (`--color-background: #ffffff` + the shell's `bg-(--neutral-warm)`). Swept clean: the auth forms at the sm band 672×800 (the sign-up font's 16px middle step — exact match, the v24 ladder at the third viewport), the login full focus walk (Google/swap buttons' browser-default outlines match; the reference's 7th stop is the Base44 PLATFORM badge, not app chrome), the v24 fixes re-verified live, mobile-nav R1–R4 + SEO + data drift (19th) — 108/154/35 green (4 new e2e; lesson 43 — agent-browser eval programmatic focus() never engages :focus/:focus-visible on either site, REAL Tab presses are the only reliable focus-chrome probe; lesson 44 — the tool-result display pipeline strips the literal left-bracket+m sequence from rendered text, so a bracketed destructure line displays corrupted: verify with charCodeAt before fixing) |
 | Tailwind trap log | `docs/Tailwind-V4-Validation-Report.md` |
 
 **Commands:** `npm run dev` · `npm run build` · `npm start` ·

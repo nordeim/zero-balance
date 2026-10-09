@@ -90,7 +90,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-svh w-full">
+    // v25 G3 (measured live on the reference): its app shell paints the
+    // warm #fafaf8 paper HERE — on the shell wrapper, not the body (its
+    // body renders the browser's white canvas; the login gradient and
+    // the 404 root cover it elsewhere). The clone had the paper on the
+    // body (a v7-era manifest read) — visually invisible but a
+    // layer-structure drift; --neutral-warm paints it at the reference's
+    // layer.
+    <div className="flex min-h-svh w-full bg-(--neutral-warm)">
       <AppSidebar navOpen={navOpen} onNavOpenChange={setNavOpen} />
       {/* min-w-0: as a flex-1 item, main's automatic minimum size is its
           content's min-content width — an unbreakable string (e.g. a long
