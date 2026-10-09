@@ -185,8 +185,17 @@ test.describe("net worth view", () => {
     // Card: name + gray type badge + grouped amount + stacked footer.
     await expect(page.getByText("Everyday Account").first()).toBeVisible();
     const badge = page.getByText("Bank Account", { exact: true }).first();
-    await expect(badge).toHaveClass(/bg-gray-100/);
-    await expect(badge).toHaveClass(/text-gray-700/);
+    // v29 G1: the reference's card type label is a Badge-base DIV — rest
+    // bg rgb(243,244,246) (gray-100 v3) / text rgb(55,65,81) (gray-700
+    // v3) + the REAL-hover tint rgba(245,245,245,0.8). The TW4 palette
+    // utilities computed oklab — pinned via hex + the zb-badge-hover
+    // class (the v28 G1 pin) like the item-card badges before them.
+    await expect(badge).toHaveClass(/bg-\[#f3f4f6\]/);
+    await expect(badge).toHaveClass(/text-\[#374151\]/);
+    await expect(badge).toHaveClass(/transition-colors/);
+    await expect(badge).toHaveClass(/zb-badge-hover/);
+    await expect(badge).toHaveCSS("background-color", "rgb(243, 244, 246)");
+    await expect(badge).toHaveCSS("color", "rgb(55, 65, 81)");
     await expect(page.getByText("$4,200.00").first()).toBeVisible();
     await expect(page.getByText("Commonwealth Bank").first()).toBeVisible();
     await expect(page.getByText("$48,500.00").first()).toBeVisible();
@@ -213,6 +222,16 @@ test.describe("net worth view", () => {
 
     await expect(page.getByText("$310,000.00").first()).toBeVisible();
     await expect(page.getByText("$1,250.00").first()).toBeVisible();
+    // v29 G1 (family consistency): the liability card's type label carries
+    // the same pinned family (the reference's own liability data is empty —
+    // its shared Badge component implies the identical base). Scoped to the
+    // label span: the seeded home loan's NAME is also "Home Loan" (h4).
+    const liabBadge = page.locator("span.zb-badge-hover").filter({ hasText: "Home Loan" }).first();
+    await expect(liabBadge).toHaveClass(/bg-\[#f3f4f6\]/);
+    await expect(liabBadge).toHaveClass(/text-\[#374151\]/);
+    await expect(liabBadge).toHaveClass(/zb-badge-hover/);
+    await expect(liabBadge).toHaveCSS("background-color", "rgb(243, 244, 246)");
+    await expect(liabBadge).toHaveCSS("color", "rgb(55, 65, 81)");
     // The liability-only "{rate}% interest" footer line.
     await expect(page.getByText("5.75% interest")).toBeVisible();
     await expect(page.getByText("19.99% interest")).toBeVisible();

@@ -71,7 +71,7 @@ function AssetCard({ asset }: { asset: Asset }) {
               {asset.name}
             </h4>
           </div>
-          <span className="inline-flex items-center rounded-md border border-transparent bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-700">
+          <span className="inline-flex items-center rounded-md border border-transparent bg-[#f3f4f6] px-2.5 py-0.5 text-xs font-semibold text-[#374151] transition-colors zb-badge-hover">
             {ASSET_LABELS[asset.type]}
           </span>
         </div>
@@ -175,7 +175,7 @@ function LiabilityCard({ liability }: { liability: Liability }) {
               {liability.name}
             </h4>
           </div>
-          <span className="inline-flex items-center rounded-md border border-transparent bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-700">
+          <span className="inline-flex items-center rounded-md border border-transparent bg-[#f3f4f6] px-2.5 py-0.5 text-xs font-semibold text-[#374151] transition-colors zb-badge-hover">
             {LIABILITY_LABELS[liability.type]}
           </span>
         </div>

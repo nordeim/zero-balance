@@ -17,13 +17,69 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 and `docs/remediation-plan-v25.md`,
 and `docs/remediation-plan-v26.md`,
 and `docs/remediation-plan-v27.md`,
-and `docs/remediation-plan-v28.md`.
+and `docs/remediation-plan-v28.md`,
+and `docs/remediation-plan-v29.md`.
 
 ---
 
 ---
 
 ---
+
+---
+
+## Session 57 — Parity iteration v29: the net-worth card labels + the keyboard-semantics measurements (2026-10-10)
+
+**Goal:** workspace re-clone (the sandbox reset) + rebuild, re-run the
+baseline chain, audit, sweep the session-57 suggestions (the details
+sheet's keyboard semantics, the VLM details pair, the edit entry-point
+consistency, the net-worth interactive-family census), fix what the
+DOM finds, TDD-first, docs aligned, commit + push via the SSH wrapper.
+
+- The workspace was RESET — the repo re-cloned (`zero-balance` at
+  `34b4970`, `scandihaven` re-cloned); the environment rebuilt and
+  re-verified (.env, db re-pushed + re-seeded, node_modules). Baseline
+  green: 108/158/35 + lint + typecheck + build (one transient
+  not-found-spec e2e flake under fresh-sandbox load — investigated: a
+  transient /api/auth/me failure flips the boot gate to the login
+  redirect; isolated + full re-runs green; environmental, pre-existing).
+  Audit clean (the same 5 dev-only `braces` advisories, secret scan
+  clean).
+- Standing checks all clean: mobile-nav R1–R4 (23rd — Tailwind v4 pins
+  hold, both sites), data drift (23rd — the reference read-only this
+  session), the SEO pair.
+- **G1 (the one fix)**: the net-worth asset/liability card TYPE labels
+  — the reference's are Badge-base DIVs (rest bg `rgb(243,244,246)` /
+  text `rgb(55,65,81)` + the REAL-hover tint `rgba(245,245,245,0.8)`
+  over 150ms — the v28 G1 family on a surface never diffed); the
+  clone's spans computed TW4 oklab with no hover family. Fixed on both
+  label strings: the hex pins `bg-[#f3f4f6] text-[#374151]` + the
+  existing `.zb-badge-hover` class; TDD (RED → GREEN → pin-sanity) and
+  live-verified byte-identical on both axes.
+- The session-57 suggestions all resolved: the details sheet's KEYBOARD
+  semantics measured for the first time (the reference: NO focus, NO
+  trap, NO role, NO Escape — its Tab walk tours the whole underlying
+  page; the clone's Radix initial-focus→X + trap + Escape is the
+  documented superset, and Chrome renders the pinned X ring on open);
+  the VLM details pair (both DIFFERENT flags DOM-explained: the X ring
+  = the superset, the fact rows = data); the ellipsis-Edit vs
+  footer-Edit (the SAME 14-field dialog — no finding); the net-worth
+  census (tabs/tablist/gradients/containers/menus all byte-identical —
+  the finding above).
+- The net-worth mobile VLM pair's three flags all DOM-arbitrated
+  NO-change: the 1-col summary stacking re-proven as the v4 data-fit
+  superset by a LIVE 2-col DOM experiment (the seeded $65,300/$311,250
+  glyphs need 152/169px vs the 107px cells; the reference's own
+  $25,000 already micro-overflows); the trend icon inset 48px on both;
+  the tab icons the v14 circle-arrow pair.
+- Also verified: the breakdown-row hover is INERT on both sites (each
+  site's inline background-color overrides its own hover class), the
+  reference's asset-card click opens NOTHING, and its liability tab
+  holds 0 items. Full chain **108/158/35 green**; the screenshots
+  regenerated (14 byte-identical + 2 sub-pixel net-worth captures);
+  probe lessons persisted (the reference's tab triggers ignore
+  synthetic clicks; VLM glyph claims need computed-geometry
+  arbitration; the clone's dialog X is found by its sr-only text).
 
 ---
 

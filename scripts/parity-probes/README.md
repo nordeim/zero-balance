@@ -788,3 +788,49 @@ discovery + the badge-hover discipline:
   login-in-one-invocation patterns: the census, the real-Tab walks to the
   Edit/Calculate buttons, the R1–R4 mobile-nav standing check, the dead
   card-click verification, and the post-fix live re-verification.
+
+Session-57 additions (remediation-plan-v29 audit) — the net-worth census
++ the details-sheet keyboard semantics + the VLM-flag arbitration
+discipline:
+
+- `probe-v29-refdata.mjs` — the standing five-metric reference census
+  (allocation/Balance/per-view totals; the 23rd drift check).
+- `clone-nw-census-v29.sh` / `clone-nwmenu-v29.sh` — the clone-side
+  net-worth census (tab triggers, tablist, the asset card + label) and
+  the asset-card dropdown menu class diff (panel/items/computed — all
+  byte-identical; the trigger snapshot pattern: the aria-labeled
+  "Actions for X" buttons).
+- `clone-sweep-v29.sh` / `clone-sweep2-v29.sh` / `clone-bdhover-v29.sh`
+  — the clone-side details-sheet keyboard-semantics check (initial
+  focus → the X, the Radix trap, Escape close — the superset), the
+  asset-label hover probe, and the breakdown nested-row hover (inert on
+  BOTH sites — the inline `background-color` style overrides the
+  `hover:bg-gray-100` class everywhere).
+- `clone-xchrome-v29.sh` — the details X's computed chrome in the OPEN
+  state (Chrome applies `:focus-visible` to Radix's programmatic focus —
+  the pinned 1px ring RENDERS on open; the reference's BODY-focus leaves
+  its X ringless — the superset's visible signature; find the X by its
+  sr-only "Close" textContent, there is no aria-label).
+- `clone-details-shot-v29.sh` / `vlm-compare-v29.sh` — the details-sheet
+  VLM pair (capture + verdict; the two DIFFERENT flags were both
+  DOM-explained: the X ring = the Radix superset, the fact-row count =
+  data).
+- `clone-gridtest-v29.sh` — the live DOM experiment that flipped the
+  clone's mobile summary grid to the reference's 2-col and measured the
+  seeded values' glyph overflow (152/169px vs the 107px box — the v4
+  stacking superset re-verified; scrollWidth stayed 390).
+- `clone-trendicon-v29.sh` — the trend-icon inset arbitration (48px on
+  both sites — the VLM's "overlapping the border" was a false positive;
+  measure with the gradient-card finder, not a text-wrapper finder).
+- `clone-verify-v29.sh` / `clone-mobgrid-v29.sh` — the post-fix live
+  re-verification (rest rgb + the REAL CDP hover tint) and the mobile
+  summary-grid measurement.
+- LESSONS: the reference's tab TRIGGERS do not respond to synthetic
+  `element.click()` (real ref clicks only — the v28 real-click lesson
+  now extends to tabs); VLM glyph/icon claims at 16–24px are unreliable
+  (all three mobile flags were false positives or data-driven — always
+  arbitrate with computed geometry); the reference's /networth 464px
+  overflow culprit is its SIDEBAR WRAPPER (hide rootChild0 → 390), not
+  the summary grid; and the details-sheet keyboard family is the
+  reference's weakest surface (no focus, no trap, no role, no Escape —
+  the clone's Radix behavior is the documented superset).
