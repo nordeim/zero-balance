@@ -549,3 +549,35 @@ per `scripts/with-server.sh`, the v21 surfaces:
   encoded: a malformed throwaway email (`a@b@c.com`) fails native
   `type=email` validation SILENTLY (no submit, no error, no request) —
   check `form.checkValidity()` before suspecting React state.
+
+Session-43 additions (remediation-plan-v22 audit) — sessions
+`ref24`/`clone24` (desktop 1280×800 + 390×844), the :3200 parity server
+per `scripts/with-server.sh`, the v22 surfaces:
+
+- `vlm-compare-v21.sh` (reused — same wrapper, `/tmp/vlm21/` pairs): the
+  v22 sweep's pairs — the MOBILE calculator (the first pair's row-action
+  "missing" flag was a SCREENSHOT POINTER ARTIFACT: the reference's shot
+  caught its row under the mouse parked from an earlier real click
+  [opacity 1] while the clone's pointer sat at its Save button
+  [opacity 0]; re-taken with the pointer parked away on both sides: only
+  the X-close claim remained, DOM-refuted for the FOURTH time) and the
+  line-item EDIT SUB-DIALOG pair (only the same X-close misread —
+  DOM-refuted; the real finding, the panel cap + form gaps, came from the
+  DOM decomposition below, not the VLM).
+- `probe-v22-row-actions.mjs` — measures the calculator row-action
+  container's computed opacity/classes/geometry at rest and under a
+  parked mouse (the triage probe that separated the hover state from the
+  artifact; verified identical classes + 32px/16px/colors both sites).
+- `probe-v22-li-edit.mjs` — opens the line-item Edit sub-dialog through
+  the DOM and dumps its panel + inputs + buttons (the first measurement
+  of the nested dialog's populated state — found the 90vh-vs-85vh cap).
+- `probe-v22-sub-decomp.mjs` — decomposes the sub-dialog's vertical
+  structure (header / form / form children with classes + heights) —
+  isolated the `space-y-6` vs the reference's `space-y-5` form gap.
+- `probe-v22-kb-sweep.mjs` + `probe-v22-focus-now.mjs` — the app-view
+  keyboard sweep: real Tab presses (agent-browser `press Tab`) with a
+  per-press focus read (tag/label/position/ring/outline). The synthetic
+  keydown variant does NOT move focus — only real key presses do.
+- `probe-v22-xclose.mjs` — the X-close chrome dump (the 4th refutation
+  probe: identical 29×36 mobile / 36×36 desktop, 0px border,
+  transparent bg, 16px svg `#0a0a0a`, radius 6 both sites).

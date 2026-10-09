@@ -32,6 +32,15 @@ async function registerFreshAccount(page: import("@playwright/test").Page, email
   await page.getByLabel("Confirm Password").fill(PASSWORD);
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.getByRole("heading", { name: "Verify your email" })).toBeVisible();
+  // v22 G1 (docs/remediation-plan-v22.md): the pointer stays parked at the
+  // Create-account click point, and the swapped-in "Verify email" button
+  // lands under it — :hover applies and its 200ms transition from #0f172a
+  // toward #1e293b is mid-flight when a chrome read lands (the baseline's
+  // rgb(19,27,46) failure). Park far away + settle past the transition
+  // (the AGENTS.md transition discipline; the prior session's green run
+  // was timing luck).
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(350);
 }
 
 async function readDevCode(page: import("@playwright/test").Page): Promise<string> {

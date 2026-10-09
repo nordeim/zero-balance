@@ -112,12 +112,18 @@ export function LineItemDialog() {
 
   return (
     <Dialog open onOpenChange={(open) => !open && closeLineItemModal()}>
-      <DialogContent aria-describedby={undefined}>
+      {/* v22 G2 (docs/remediation-plan-v22.md): the reference's THIRD dialog
+          family — max-w-2xl + max-h-[85vh] + overflow-y-auto + form
+          p-6 space-y-5 (measured live at both viewports on its populated
+          Edit state). The generic .zb-modal-panel default (90vh) and the
+          budget family's space-y-6 are overridden here: the panel cap via
+          this inline style, the form gap via the class below. */}
+      <DialogContent aria-describedby={undefined} style={{ maxHeight: "85vh" }}>
         <DialogHeader>
           <DialogTitle>{editing ? "Edit Line Item" : "Add Line Item"}</DialogTitle>
           <DialogCloseButton />
         </DialogHeader>
-        <form className="space-y-6 p-6" onSubmit={onSubmit}>
+        <form className="p-6 space-y-5" onSubmit={onSubmit}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="line-name">Item Name *</Label>

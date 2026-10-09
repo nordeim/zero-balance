@@ -9,7 +9,7 @@ description: >
 version: 1.0.0
 last_updated: 2026-10-09
 
-project_state: 108 unit tests / 142 e2e tests / 35 smoke steps — all green
+project_state: 108 unit tests / 143 e2e tests / 35 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -827,6 +827,24 @@ Numbered institutional lessons. Each traces to a concrete fix in
     before suspecting React state (plan v21, the probe-v21 live-audit
     lesson).
 
+40. **A clicked submit parks the pointer on the next state's button — and
+    screenshots inherit the pointer too.** v22's verify-email spec flake:
+    Playwright's mouse stays at the "Create account" click point; the
+    card swaps to the verify state and the "Verify email" button renders
+    UNDER the parked pointer; its 200ms hover transition (`#0f172a` →
+    `#1e293b`) was mid-flight when the chrome read landed
+    (`rgb(19,27,46)` — a "wrong color" that was really a wrong TIME).
+    The app was correct; the fix is procedural: `page.mouse.move(5, 5)` +
+    a 350ms settle after any state swap that re-renders a button under
+    the click point (the same discipline as the v11/v13 transition
+    settles, now encoded in `registerFreshAccount`). The same pass's
+    screenshot corollary: a VLM pair shot captured with the pointer
+    parked from an earlier real click showed the reference's
+    hover-revealed row actions VISIBLE while the clone's (pointer
+    elsewhere) stayed hidden — a false "missing actions" diff. Park the
+    pointer away on BOTH sides before every comparison capture (plan
+    v22 G1 + the mobile-calculator triage).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1158,6 +1176,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-09 | Session 37 — parity iteration v19 (`docs/remediation-plan-v19.md`) | The **VLM VISUAL SWEEP** — the first full-page visual-AI comparison layer (the session-36 log's top suggestion): 12 auth-state pairs + 5 app views + 3 dialogs compared through the z-ai vision CLI with a mechanical pixel-diff layer + MD5 asset hashing. Results: the auth surfaces IDENTICAL ×6 (the v12/v13 text pins held under full-page diffing; the logo PNGs byte-identical by MD5, both 80×80), the app views LAYOUT_IDENTICAL ×5 (the dashboard's three flags are known supersets/data), the dialogs clean except ONE real drift: the item dialog's RECURRING-TOGGLE ROW (the reference runs the switch LEFT — the row's first child, 12px gap to the label block — with NO calendar icon, NO border, and a green-tinted rgb(245,248,245) inline background, h 72; the clone ran icon+label left, switch right (justify-between), 1px border, transparent bg, h 74) — DOM-verified on four axes, fixed to the reference's arrangement, pinned by the dialog-buttons spec's new recurring-row test; two VLM hallucinations DOM-refuted (the "faded logo", the "taller button" — lesson 37: the VLM is a screening layer, every flag needs measurement); the calculator's "extra line" refuted as a matching data-conditional; tablet breakpoints 767/768/1024 re-measured (rail switch at 768 both, heading x=288 both); mobile-nav R1–R4 re-verified + data drift clean (thirteenth check) — 96/135/30 green |
 | 2026-10-09 | Session 39 — parity iteration v20 (`docs/remediation-plan-v20.md`) | The **mobile-app-view + populated-edit-dialog VLM sweep** (the session-38 log's two top suggestions): 5 mobile views at 390×844 + the populated Edit dialog + the breakdown drill-down, compared pairwise through z-ai vision. Results: the mobile dashboard IDENTICAL; the networth flags all decomposed into the documented superset fix #4 (the reference's own 464px overflow: 48px `text-5xl` figure, 2-col grid, off-screen Add button) plus one refuted tab-tint hallucination (identical rgb(220,252,231)); the badge-wrap mechanism verified identical (data-driven wrap); the drill-down clean. TWO real drifts found, DOM-verified, fixed TDD-first, live-re-measured exact, and pinned: (G1) the ITEMS-VIEW HEADER ROW — base `items-start` missing so the Add button stretched full-width 358px on mobile (the reference's auto-width 147/155/150) and `mb-6` vs `mb-8` (a 24 vs 32px header→filter gap at BOTH viewports; the dashboard's row already carried the correct pattern); (G2) the CLASSIFICATION TILES — the reference's tile labels carry 16px lucide icons (circle-alert #e07a3b / heart #3b7ea1 / piggy-bank #8fbc3f) between the radio and the text in both Add and Edit states, missed by the v19 empty-dialog sweep. Also: the census probe's base64→atob UTF-8 mangling root-caused and fixed transport-safe (lesson 38); mobile-nav R1–R4 re-verified + data drift clean (fourteenth check) — 96/137/30 green |
 | 2026-10-09 | Session 41 — parity iteration v21 (`docs/remediation-plan-v21.md`) | **SEO + the register verification gate.** Three finding groups: (G1) the sitemap.xml/robots.txt the reference serves, added via Next.js MetadataRoute routes (`src/app/robots.ts` + `src/app/sitemap.ts`) — the reference's five-URL/priority/weekly structure mirrored with the clone's routes, `/login` excluded like the reference, Next's canonicalizations documented as protocol-equivalent; (G2) the calculator's line-item row actions re-measured HOVER-REVEALED on the live reference (`opacity-0 group-hover:opacity-100` — the v6-era always-visible pin had aged with the reference's chrome change) — matched with the `@variant group-hover (.group:hover &)` pin in globals.css keeping the reveal alive on hover:none devices; (G3) the REGISTER POST-SUCCESS LANDING measured live for the first time: the reference gates registration behind a "Verify your email" state (6-digit code inputs 40×44, a 5-attempt countdown, resend semantics, unverified-login rejection) — rebuilt as the honest superset: the full state chrome + `/api/auth/verify-email` + `/api/auth/resend` + the register re-issue path + a 403 unverified-login rejection with the reference's exact banner + the honest dev-code delivery (no mail transport; the v12 forgot-password precedent) + the seeded demo user pre-verified. Swept clean: the mobile sheet-open VLM pair, the net-worth populated edit-asset pair (X-close thrice-refuted), the login keyboard-focus spot check (the v13 ring holds once settled + read in full); mobile-nav R1–R4 + data drift (fifteenth check) clean — 108/142/35 green |
+| 2026-10-09 | Session 43 — parity iteration v22 (`docs/remediation-plan-v22.md`) | **The line-item sub-dialog's third dialog family.** Two finding groups: (G1) the verify-email spec's parked-pointer race root-caused — the Create-account click leaves Playwright's mouse where the swapped-in Verify button renders, and the 200ms hover transition reads mid-flight (a deterministic flake on a correct app; fixed with the park + settle discipline in `registerFreshAccount`); (G2) the line-item sub-dialog measured live for the first time at both viewports — the reference caps its panel at 85vh (desktop 672×680, mobile 358×717) with `space-y-5` form gaps (20px), while the clone rode the generic budget-item family (90vh + 24px gaps) — fixed with the inline `maxHeight: "85vh"` + `p-6 space-y-5` form, pinned by the dialog-buttons spec's third-family test (which also pins the budget dialog's 90vh so the family split can't regress). Swept clean: the mobile calculator VLM pair (the row-action "missing" flag = a screenshot pointer artifact — DOM-identical at rest AND under hover; the X-close claim refuted a FOURTH time), keyboard Tab sweeps on the dashboard + income views (order + focus chrome identical; the clone's computed rings carry invisible transparent lead layers), the SEO pair live on both sites, mobile-nav R1–R4 + data drift (sixteenth check) clean — 108/143/35 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

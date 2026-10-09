@@ -12,11 +12,69 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v15.md`, `docs/remediation-plan-v16.md`,
 `docs/remediation-plan-v17.md`, `docs/remediation-plan-v18.md`,
 `docs/remediation-plan-v19.md`, `docs/remediation-plan-v20.md`,
-and `docs/remediation-plan-v21.md`.
+`docs/remediation-plan-v21.md`, and `docs/remediation-plan-v22.md`.
 
 ---
 
 ---
+
+---
+
+## Session 43 — Fresh verification & parity iteration v22 (2026-10-09)
+
+**Goal:** rebuild the workspace from scratch (the sandbox had been
+reset — the repo re-cloned at `dee3176`, node_modules/`.env`/
+`db/custom.db` re-created, all standing brief requirements re-verified:
+the DATABASE_URL at `file:../db/custom.db` with `db/` at the repo root,
+the Vitest/Playwright configs, the sitemap/robots pair in the build),
+re-verify the v21 baseline, code-audit the recent changes (repo skills:
+code-review-and-audit native-CLI fallback — lint/tsc/tests green; npm
+audit = the same 5 dev-only ESLint braces advisories; secret scan
+clean), then the fresh two-site parity surfaces — the session-42 log's
+three suggested classes (the MOBILE calculator pair, the line-item
+EDIT SUB-DIALOG, the app-view KEYBOARD sweeps) + the standing
+mobile-navigation re-verification + data-drift check + the SEO pair.
+Formal log: `docs/session_44.md` (the session_43.md slot holds the
+incoming session-41 conversation summary).
+
+- Baseline chain: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **141/142 e2e — ONE deterministic failure** (the verify-email chrome
+  spec; the session's first finding, root-caused below) · smoke green.
+- Mobile stack re-verified end-to-end (R1 the toast-container
+  interception, R2 the sheet trap, R3 the root-route highlight, R4 the
+  per-route overflow — ref 395/464 vs clone 390 on all six) + data
+  drift clean (sixteenth consecutive check) + the SEO pair served on
+  both sites (robots/sitemap live-verified).
+- **The v22 sweep**: the mobile calculator pair (the row-actions
+  "missing" flag = a SCREENSHOT POINTER ARTIFACT — the reference's shot
+  caught its row under the parked mouse; re-measured pointer-away on
+  both sides: identical classes/opacities/geometry/colors; the X-close
+  claim DOM-refuted for the FOURTH time), the line-item Edit
+  sub-dialog measured live for the first time (found the THIRD dialog
+  family: 85vh panel cap + `space-y-5` form gaps — the clone rode the
+  generic 90vh/`space-y-6` budget family), and the keyboard Tab
+  sweeps on the dashboard + income views (order + focus chrome
+  identical — no findings).
+- **Two finding groups fixed TDD-first** (RED → GREEN each): **(G1)**
+  the verify-email spec's parked-pointer race — the Create-account
+  click parks Playwright's mouse where the swapped-in Verify button
+  renders, and its 200ms hover transition read mid-flight
+  (`rgb(19,27,46)` on a correct `#0f172a` button); fixed with the
+  park-at-(5,5) + 350ms settle discipline in `registerFreshAccount`
+  (the app needed no change); **(G2)** the line-item sub-dialog
+  matched to the reference's third family — the inline
+  `maxHeight: "85vh"` + the `p-6 space-y-5` form — pinned by the new
+  dialog-buttons spec test (which also pins the budget dialog's 90vh
+  so the family split can't regress).
+- Full chain: lint · typecheck · **108/108 unit** · build ·
+  **143/143 e2e** (1 new) · **35/35 smoke**.
+- Live parity re-verified: the sub-dialog panel 672×680 desktop /
+  358×717 mobile / form gaps 20px — exactly the reference's
+  measurements at both viewports. The demo DB restored after the
+  audit's line-item mutation. All 15 screenshots regenerated.
+- Docs aligned: README, CLAUDE.md, AGENTS.md, SKILL (lesson 40 +
+  Appendix B), the probe README (the v22 catalog),
+  `docs/session_44.md`, this worklog.
 
 ---
 

@@ -667,4 +667,63 @@ test.describe("dialog chrome (v9)", () => {
     expect(row!.gap).toBe("12px");
     await page.keyboard.press("Escape");
   });
+
+  test("the line-item sub-dialog carries the reference's third family (v22 G2)", async ({
+    page,
+  }) => {
+    // Measured live on the reference at BOTH viewports (the populated
+    // Edit state — docs/remediation-plan-v22.md G2): the line-item
+    // sub-dialog is the reference's THIRD dialog family — max-w-2xl +
+    // max-h-[85vh] + overflow-y-auto + form p-6 space-y-5 (the calculator
+    // family is max-w-3xl/85vh/overflow-hidden; the budget-item family is
+    // max-w-2xl/90vh/overflow-y-auto + space-y-6). The pre-fix clone rode
+    // the generic budget-item family: desktop panel 720 vs the reference's
+    // 680 (90vh vs 85vh), form row gaps 24 vs 20.
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+    const rent = page.locator("main .group", { hasText: "Rent" }).first();
+    await rent.hover();
+    await page.getByRole("button", { name: "Calculate" }).first().click();
+    const calc = page.locator('[role="dialog"]');
+    await expect(calc).toBeVisible();
+    await page.getByRole("button", { name: "Add First Item" }).click();
+    const sub = page.locator('[role="dialog"]').nth(1);
+    await expect(sub).toBeVisible();
+
+    const family = await page.evaluate(() => {
+      const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+      const d = dialogs[dialogs.length - 1];
+      const cs = getComputedStyle(d);
+      const form = d.querySelector("form")!;
+      // The form's first-level row gap: the field-grid bottom → the Notes
+      // block top (space-y-5 = 20px; the budget family's space-y-6 = 24).
+      const grid = form.children[0] as HTMLElement;
+      const notes = form.children[1] as HTMLElement;
+      const gap = Math.round(
+        notes.getBoundingClientRect().top - grid.getBoundingClientRect().bottom,
+      );
+      return {
+        maxH: cs.maxHeight,
+        vhCap: Math.round((parseFloat(cs.maxHeight) / innerHeight) * 100),
+        formRowGap: gap,
+      };
+    });
+    // The 85vh panel cap — NOT the budget-item family's 90vh (the
+    // reference's measured cap at both viewports).
+    expect(family.vhCap).toBe(85);
+    // The form's 20px row gaps — NOT space-y-6's 24px.
+    expect(family.formRowGap).toBe(20);
+    // The budget-item dialog (the OTHER family) keeps its 90vh cap — this
+    // test pins the split, not a global restyle.
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: "Add Expense" }).click();
+    const itemDialog = page.locator('[role="dialog"]');
+    await expect(itemDialog).toBeVisible();
+    const itemCap = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]')!;
+      return Math.round((parseFloat(getComputedStyle(d).maxHeight) / innerHeight) * 100);
+    });
+    expect(itemCap).toBe(90);
+  });
 });
