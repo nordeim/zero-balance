@@ -624,3 +624,30 @@ parity server per `scripts/with-server.sh`, the v23 surfaces:
   line-item sub-dialog's third-family geometry at the CURRENT viewport
   (the v22 G2 fix re-verified at both: 672×680/85vh/20px desktop,
   358×717/85vh/20px mobile — identical to the reference).
+
+Session-47 additions (remediation-plan-v24 audit) — the shared parity
+browser (the open+settle discipline; this session's OWN false-read: two
+"reference" class dumps read the CLONE's forgot page left in the tab by
+an intervening with-server.sh invocation — lesson 42: read ALL states
+of a multi-state surface in ONE eval right after the fresh open, and
+arbitrate disagreements with the CLASS ATTRIBUTE), the :3200 parity
+server per `scripts/with-server.sh`, the v24 surfaces:
+
+- `probe-v24-signup-rows.mjs` — the sign-up form's per-row
+  decomposition (label y/h, input y/h, label→input gap, row→row gap,
+  submit gap) — the first measurement that isolated the 4px vs 10px
+  label gap and the 40 vs 44 input heights at mobile.
+- `probe-v24-auth-census.mjs` — the reliable multi-state form: ONE eval
+  that walks signin → signup → back → forgot right after a fresh open,
+  reading each state's input/submit height + font + height/fs class
+  list + label gap + rel-wrapper margin-top. This census produced the
+  three-family table (v24 G1) and re-verified the fix live (40/40/44
+  mobile, gap 10, relMt 6 — identical to the reference).
+- `kb-sheet-arrows-v24.sh` — the mobile sheet's ARROW-key sweep (the
+  session-46 suggestion): opens the sheet, presses each arrow key with
+  per-press focus/scroll/sheet-state reads. Verdict: arrows are INERT
+  on both sites (no roving focus, no scroll, sheet stays open).
+- The VLM pair wrapper reused at `/tmp/vlm24/` (ref/clone
+  signup-mobile screenshots): the pair returned IDENTICAL while the DOM
+  found two real deltas — the 6th consecutive form-scale VLM blind
+  spot; sub-6px differences are below its resolution.

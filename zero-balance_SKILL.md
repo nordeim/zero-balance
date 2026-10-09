@@ -9,7 +9,7 @@ description: >
 version: 1.0.0
 last_updated: 2026-10-09
 
-project_state: 108 unit tests / 145 e2e tests / 35 smoke steps — all green
+project_state: 108 unit tests / 150 e2e tests / 35 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -865,6 +865,25 @@ Numbered institutional lessons. Each traces to a concrete fix in
     tie-breaker before declaring a finding (plan v23, the
     verify-mobile probe trio).
 
+42. **When two probe reads disagree, distrust the one that ran LAST
+    without a fresh open — and arbitrate with the class attribute.** The
+    v24 pass re-learned lesson 41a the hard way: two "reference" class
+    dumps read the CLONE's forgot page left in the shared browser tab by
+    an intervening `with-server.sh` invocation (they showed `h-11` flat
+    where a fresh-open census showed the reference's `h-10 sm:h-11`
+    family). The reliable probe form for MULTI-STATE surfaces: one eval
+    that walks every state (open → click → settle → read → click → …)
+    immediately after the fresh open — the auth-census pattern
+    (`scripts/parity-probes/probe-v24-auth-census.mjs`); per-state probes
+    that re-query after other commands have crossed the tab invite the
+    false read. When two geometry reads disagree, the CLASS ATTRIBUTE is
+    the tie-breaker (it is rendered HTML, not a layout snapshot — it
+    cannot be transient). And the form-scale VLM blind spot is now SIX
+    consecutive: the sign-up mobile pair returned IDENTICAL while the DOM
+    found a 4px input-height, 2px font, and 6px label-gap delta — sub-6px
+    differences are below the VLM's resolution; DOM-decompose before
+    believing a clean VLM verdict on form chrome (plan v24 G1/G2).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1198,6 +1217,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-09 | Session 41 — parity iteration v21 (`docs/remediation-plan-v21.md`) | **SEO + the register verification gate.** Three finding groups: (G1) the sitemap.xml/robots.txt the reference serves, added via Next.js MetadataRoute routes (`src/app/robots.ts` + `src/app/sitemap.ts`) — the reference's five-URL/priority/weekly structure mirrored with the clone's routes, `/login` excluded like the reference, Next's canonicalizations documented as protocol-equivalent; (G2) the calculator's line-item row actions re-measured HOVER-REVEALED on the live reference (`opacity-0 group-hover:opacity-100` — the v6-era always-visible pin had aged with the reference's chrome change) — matched with the `@variant group-hover (.group:hover &)` pin in globals.css keeping the reveal alive on hover:none devices; (G3) the REGISTER POST-SUCCESS LANDING measured live for the first time: the reference gates registration behind a "Verify your email" state (6-digit code inputs 40×44, a 5-attempt countdown, resend semantics, unverified-login rejection) — rebuilt as the honest superset: the full state chrome + `/api/auth/verify-email` + `/api/auth/resend` + the register re-issue path + a 403 unverified-login rejection with the reference's exact banner + the honest dev-code delivery (no mail transport; the v12 forgot-password precedent) + the seeded demo user pre-verified. Swept clean: the mobile sheet-open VLM pair, the net-worth populated edit-asset pair (X-close thrice-refuted), the login keyboard-focus spot check (the v13 ring holds once settled + read in full); mobile-nav R1–R4 + data drift (fifteenth check) clean — 108/142/35 green |
 | 2026-10-09 | Session 43 — parity iteration v22 (`docs/remediation-plan-v22.md`) | **The line-item sub-dialog's third dialog family.** Two finding groups: (G1) the verify-email spec's parked-pointer race root-caused — the Create-account click leaves Playwright's mouse where the swapped-in Verify button renders, and the 200ms hover transition reads mid-flight (a deterministic flake on a correct app; fixed with the park + settle discipline in `registerFreshAccount`); (G2) the line-item sub-dialog measured live for the first time at both viewports — the reference caps its panel at 85vh (desktop 672×680, mobile 358×717) with `space-y-5` form gaps (20px), while the clone rode the generic budget-item family (90vh + 24px gaps) — fixed with the inline `maxHeight: "85vh"` + `p-6 space-y-5` form, pinned by the dialog-buttons spec's third-family test (which also pins the budget dialog's 90vh so the family split can't regress). Swept clean: the mobile calculator VLM pair (the row-action "missing" flag = a screenshot pointer artifact — DOM-identical at rest AND under hover; the X-close claim refuted a FOURTH time), keyboard Tab sweeps on the dashboard + income views (order + focus chrome identical; the clone's computed rings carry invisible transparent lead layers), the SEO pair live on both sites, mobile-nav R1–R4 + data drift (sixteenth check) clean — 108/143/35 green |
 | 2026-10-09 | Session 45 — parity iteration v23 (`docs/remediation-plan-v23.md`) | **A clean verification pass — the pins ARE the deliverable.** Two finding groups, both TEST-PINS of newly measured surfaces (the app matched the reference on every axis): (G1) the mobile sheet's KEYBOARD semantics measured live for the first time — initial focus lands on a sheet container, real Tab presses cycle the five links at identical positions and WRAP in a focus loop, the visible indicator is the blue #3b82f6 2px sidebar-ring layer (read in FULL — v4's transparent lead layers), Escape closes; pinned by the mobile-navigation spec's new test (the ring fades in ~200ms — settle 350ms before reading); (G2) the register verify-email state's MOBILE chrome measured for the first time at 390×844 — the responsive scale (circle 56/icon 28/h2 20px vs desktop 64/32/24; inputs 6×40×44 gap 6; button 294×44 #0f172a); pinned by the verify-email spec's new mobile describe (register budget 5→6 calls). Swept clean: the budget-item dialog's mobile pair (the VLM radio claim DOM-refuted — the 5th dialog-scale misread), the 404 at mobile, the v22 sub-dialog fix re-verified at both viewports, mobile-nav R1–R4 + SEO + data drift (17th check — the false alarm was the shared-browser lesson, lesson 41a) — 108/145/35 green (2 new e2e) |
+| 2026-10-09 | Session 47 — parity iteration v24 (`docs/remediation-plan-v24.md`) | **Two REAL app fixes behind a clean VLM verdict — the DOM found what the VLM could not.** Pairing the register SIGN-UP state at mobile (390×844, first time) surfaced: (G1) the reference runs THREE responsive families across its auth forms — sign-in `h-11 sm:h-12`/`text-base md:text-sm`, sign-up `h-10 sm:h-11`/`text-sm sm:text-base md:text-sm` (40px/14px mobile), forgot `h-10 sm:h-11`/`text-base md:text-sm` (40px/16px) — the clone rendered the flat 44px sign-in family everywhere (desktop coincides on every axis, which is why the v9 pins and all prior desktop measurements passed; the drift was mobile-only: 4px taller inputs/buttons + 2px larger sign-up font); fixed with per-mode height/font branches (`login-card.tsx` — `INPUT_CLS` now carries only the invariant chrome). (G2) the v4 `space-y-1.5` inline-label trap — the v9 globals.css v3-pin stopped at `space-y-2` (the dialogs): v4's margin-block-end on the INLINE auth label is absorbed by the line box, collapsing the label→input gap to 4px where the reference renders 10px at every viewport (v3's margin-top sits on the input's `relative` wrapper); the pin extended to `space-y-1.5`. Swept clean: the sheet's ARROW keys (inert both), the forgot state's desktop chrome (identical), the v23 sheet-keyboard fix re-verified live, the v9 dialog label gap (12px both), mobile-nav R1–R4 + SEO + data drift (18th) — 108/150/35 green (5 new e2e; lesson 42 — the shared-tab false read struck again, arbitrated by the class attribute) |
 
 ## Appendix C: Live-Site Validation Methodology
 

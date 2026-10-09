@@ -21,6 +21,59 @@ and `docs/remediation-plan-v23.md`.
 
 ---
 
+## Session 47 — Parity iteration v24: the auth forms' mobile families + the v4 space-y-1.5 label gap (2026-10-09)
+
+**Goal:** refresh (`git pull` → `dd49681`; environment intact — `.env`
+DATABASE_URL `file:../db/custom.db`, `db/` at root, node_modules,
+configs, sitemap/robots all verified), re-run the baseline chain,
+audit, sweep the session-46 suggestions, fix what the DOM finds,
+TDD-first, docs aligned, commit + push via the SSH wrapper.
+
+- Baseline fully green on the first run: 108/108 unit · 145/145 e2e ·
+  35/35 smoke + lint + typecheck + build (robots/sitemap prerendered).
+  Audit clean: same 5 dev-only `braces` advisories, secret scan clean,
+  scandihaven unchanged at `d4789c3`, the v23 changeset re-reviewed.
+- Standing checks all clean: mobile-nav R1–R4 (18th — Tailwind v4 pins
+  hold), data drift (18th — reference unchanged since session 19), the
+  SEO pair live on both sites, the v23 sheet-keyboard fix re-verified
+  live (Tab loop + Escape identical), the v9 dialog label gap (12px
+  both).
+- The v24 sweep (session-46's suggestions): the register SIGN-UP state
+  at mobile — the VLM said IDENTICAL, the DOM found TWO real drifts:
+  (G1) the reference's THREE auth-form responsive families (sign-up/
+  forgot run `h-10 sm:h-11` — 40px at mobile — the sign-up font 14px;
+  the clone rendered the flat 44px family; desktop coincides, which is
+  why every prior pin passed); (G2) the label→input gap (the reference
+  10px at every viewport via v3 space-y-1.5's margin-top on the
+  input's wrapper; the clone's v4 margin-bottom on the INLINE label is
+  absorbed by the line box → 4px). The sheet's ARROW keys: inert on
+  both (no findings). The forgot state: desktop identical, mobile
+  same two findings.
+- Fixed both: per-mode height/font branches in `login-card.tsx` (the
+  `INPUT_CLS` constant now carries only the invariant chrome) + the
+  globals.css v3-pin extended to `space-y-1.5` (the v9 space-y-2
+  pattern's missing scope).
+- TDD: 5 new e2e written RED first (4 failing + the sign-in guard) →
+  fixes → GREEN → pin-sanity mutations (heights 40→44, gap 10→4 both
+  RED) → restored. The live census re-run confirms the clone now
+  matches the reference's auth table exactly.
+- Full chain green: 108/108 unit · 150/150 e2e (5 new) · 35/35 smoke ·
+  lint/typecheck/build. Screenshots regenerated (2 changed — the
+  desktop auth forms moved 6px closer to the reference, correctly);
+  .env.example verified.
+- Docs aligned: README, CLAUDE.md, AGENTS.md, SKILL (lesson 42 — the
+  shared-tab false-read struck again; the census pattern + the class
+  attribute as tie-breaker), probe README (v24 catalog), the v24 plan,
+  `docs/session_48.md`, this worklog. Commit + push to
+  git@github.com:nordeim/zero-balance.git main via the SSH wrapper
+  (key materialized outside the repo, shredded after).
+
+---
+
+---
+
+---
+
 ## Session 45 — Fresh verification & parity iteration v23 (2026-10-09)
 
 **Goal:** refresh the workspace (`git pull` to `93e3b70` — the

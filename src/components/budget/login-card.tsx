@@ -179,16 +179,22 @@ function GoogleBlock({ onUnavailable }: { onUnavailable: () => void }) {
 
 // NOTE: literal hexes, not template interpolation — Tailwind's scanner
 // reads source text; a `border-[${VAR}]` class would never be generated.
-// Base input chrome (plan v9 G7): h-11 = 44px — the reference's SIGN-UP and
-// FORGOT states render 44px controls; only SIGN-IN grows to 48px (sm:h-12),
-// appended per-mode inside AuthForm.
+// Base input chrome (plan v9 G7 + v24 G1): the reference runs THREE
+// distinct responsive families across its auth forms (measured live on
+// its DOM at 390×844 and 1280×800, the class list as tie-breaker) —
+//   sign-in  h-11 sm:h-12 (44/48) · text-base md:text-sm (16/14)
+//   sign-up  h-10 sm:h-11 (40/44) · text-sm sm:text-base md:text-sm
+//            (14 mobile, 16 in the 640–768 band, 14 at ≥768)
+//   forgot   h-10 sm:h-11 (40/44) · text-base md:text-sm (16/14)
+// Height/font tokens live in the per-mode branches below; this constant
+// carries only the viewport-invariant chrome.
 // v13 G3 (measured live on the reference): on :focus the inputs render the
 // shadcn two-layer ring — white 0 0 0 2px + slate-400 0 0 0 4px — on top of
 // the slate-400 border. v4's color-only ring utility emits NO shadow without
 // a width class, so the ring is an arbitrary box-shadow (hex = the exact
 // measured rgb values; v3's trailing transparent layer paints nothing).
 const INPUT_CLS =
-  "flex h-11 w-full rounded-xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.5)] px-3 py-2 pl-10 text-base text-[#09090b] transition-colors placeholder:text-[#475569] focus:border-[#94a3b8] focus:shadow-[0_0_0_2px_#fff,0_0_0_4px_#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm";
+  "flex w-full rounded-xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.5)] px-3 py-2 pl-10 text-[#09090b] transition-colors placeholder:text-[#475569] focus:border-[#94a3b8] focus:shadow-[0_0_0_2px_#fff,0_0_0_4px_#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
 const LABEL_CLS = "text-sm font-medium text-[#334155] peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
 
 interface AuthFormProps {
@@ -211,9 +217,18 @@ interface AuthFormProps {
  * button instead (reference structure). Spacing follows the reference:
  * sign-up form space-y-3 sm:space-y-4, others space-y-4 sm:space-y-5. */
 function AuthForm(p: AuthFormProps) {
-  // Reference per-state geometry (plan v9 G7, measured live): sign-in
-  // controls are 48px at >=640px; sign-up/forgot stay 44px (h-11).
-  const inputCls = p.mode === "signin" ? `${INPUT_CLS} sm:h-12` : INPUT_CLS;
+  // Reference per-state geometry (plan v9 G7 + v24 G1, measured live): the
+  // height/font families are per-mode — sign-in h-11 sm:h-12 (48 at ≥640);
+  // sign-up/forgot h-10 sm:h-11 (40 at mobile, 44 at ≥640); sign-up's font
+  // drops to 14px at mobile (text-sm sm:text-base md:text-sm) while the
+  // other two keep 16px (text-base md:text-sm).
+  const sizeCls =
+    p.mode === "signin"
+      ? "h-11 sm:h-12 text-base md:text-sm"
+      : p.mode === "signup"
+        ? "h-10 sm:h-11 text-sm sm:text-base md:text-sm"
+        : "h-10 sm:h-11 text-base md:text-sm";
+  const inputCls = `${INPUT_CLS} ${sizeCls}`;
   return (
     <form
       className={p.mode === "signup" ? "space-y-3 sm:space-y-4" : "space-y-4 sm:space-y-5"}
@@ -320,7 +335,9 @@ function AuthForm(p: AuthFormProps) {
         <button
           type="submit"
           disabled={p.busy}
-          className={`inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50${p.mode === "signin" ? " sm:h-12" : ""}`}
+          className={`inline-flex w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 ${
+            p.mode === "signin" ? "h-11 sm:h-12" : "h-10 sm:h-11"
+          }`}
         >
           {p.busy && <Loader2Icon className="h-4 w-4 animate-spin" />}
           {p.mode === "signin" && "Sign in"}

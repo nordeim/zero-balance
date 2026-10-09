@@ -456,3 +456,125 @@ test.describe("register flow + input chrome (v13)", () => {
     expect(pw.shadow).toContain("rgb(148, 163, 184) 0px 0px 0px 4px");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v24 — the auth forms' MOBILE responsive families + the label→input gap
+// (docs/remediation-plan-v24.md G1/G2).
+//
+// Measured live on both sites (fresh-open + settled census, the
+// probe-v24-auth-census pattern): the reference runs THREE distinct
+// responsive families across its auth forms —
+//   sign-in  input `h-11 sm:h-12` (44/48) · `text-base md:text-sm` (16/14)
+//   sign-up  input `h-10 sm:h-11` (40/44) · `text-sm sm:text-base md:text-sm`
+//            (14/16/14 — 16px only in the 640–768 band)
+//   forgot   input `h-10 sm:h-11` (40/44) · `text-base md:text-sm` (16/14)
+// with the submit buttons following their state's height family. The
+// reference's class list was read off its live DOM as the tie-breaker (one
+// shared-tab false-read this session makes the class attribute the arbiter).
+// The label→input gap: the reference's v3 space-y-1.5 puts margin-top 6px
+// on the input's relative wrapper → a 10px rect gap under an inline
+// text-sm/20 label (16px glyph rect + 4px leading + 6px margin). The
+// clone's v4 space-y-1.5 puts margin-bottom on the INLINE label — absorbed
+// by the line box → 4px. The dialogs were pinned by the v9 globals.css
+// space-y-2 fix; these tests pin the auth-card counterpart.
+
+test.describe("auth-form mobile responsive families (v24 — plan G1)", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("sign-in keeps its 44px controls at mobile (the family that already matches)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    const geo = await page.evaluate(() => {
+      const submit = [...document.querySelectorAll('button[type="submit"]')][0];
+      const email = document.querySelector<HTMLInputElement>('input[type="email"]')!;
+      return {
+        submitH: Math.round(submit.getBoundingClientRect().height),
+        inputH: Math.round(email.getBoundingClientRect().height),
+        inputFs: getComputedStyle(email).fontSize,
+      };
+    });
+    // h-11 sm:h-12 renders 44 below 640 — the reference's sign-in family.
+    expect(geo.submitH).toBe(44);
+    expect(geo.inputH).toBe(44);
+    expect(geo.inputFs).toBe("16px");
+  });
+
+  test("sign-up renders the reference's 40px h-10 family + 14px input font at mobile", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    const geo = await page.evaluate(() => {
+      const submit = [...document.querySelectorAll('button[type="submit"]')][0];
+      const inputs = [...document.querySelectorAll("form input")];
+      const email = document.querySelector<HTMLInputElement>('input[type="email"]')!;
+      return {
+        submitH: Math.round(submit.getBoundingClientRect().height),
+        inputHs: inputs.map((i) => Math.round(i.getBoundingClientRect().height)),
+        emailFs: getComputedStyle(email).fontSize,
+      };
+    });
+    // h-10 sm:h-11 renders 40 below 640; text-sm sm:text-base renders 14.
+    expect(geo.submitH).toBe(40);
+    for (const h of geo.inputHs) expect(h).toBe(40);
+    expect(geo.emailFs).toBe("14px");
+  });
+
+  test("forgot renders the reference's 40px h-10 family at mobile (16px input font)", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Forgot password?" }).click();
+    await expect(page.getByRole("heading", { name: "Reset your password" })).toBeVisible();
+    const geo = await page.evaluate(() => {
+      const submit = [...document.querySelectorAll('button[type="submit"]')][0];
+      const email = document.querySelector<HTMLInputElement>('input[type="email"]')!;
+      return {
+        submitH: Math.round(submit.getBoundingClientRect().height),
+        inputH: Math.round(email.getBoundingClientRect().height),
+        inputFs: getComputedStyle(email).fontSize,
+      };
+    });
+    // h-10 sm:h-11 + text-base md:text-sm: 40px/16px below 640.
+    expect(geo.submitH).toBe(40);
+    expect(geo.inputH).toBe(40);
+    expect(geo.inputFs).toBe("16px");
+  });
+});
+
+test.describe("auth-form label→input gap (v24 — plan G2)", () => {
+  // Desktop viewport (the gap is viewport-invariant — the trap is the v4
+  // space-y selector, not a breakpoint): the reference's 10px rect gap =
+  // inline label (16px glyph rect inside a 20px line box) + 6px margin on
+  // the input's relative wrapper.
+  test("the sign-in form's first field renders the reference's 10px label→input gap", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    const gap = await page.evaluate(() => {
+      const label = document.querySelector("form label")!;
+      const wrap = label.parentElement?.querySelector(":scope > div");
+      if (!wrap) return null;
+      const lr = label.getBoundingClientRect();
+      const wr = wrap.getBoundingClientRect();
+      return Math.round(wr.y - (lr.y + lr.height));
+    });
+    expect(gap).toBe(10);
+  });
+
+  test("the sign-up form's fields render the same 10px gap at mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    const gaps = await page.evaluate(() => {
+      return [...document.querySelectorAll("form label")]
+        .map((label) => {
+          const wrap = label.parentElement?.querySelector(":scope > div");
+          if (!wrap) return null;
+          const lr = label.getBoundingClientRect();
+          const wr = wrap.getBoundingClientRect();
+          return Math.round(wr.y - (lr.y + lr.height));
+        })
+        .filter((g) => g !== null);
+    });
+    expect(gaps.length).toBe(3);
+    for (const g of gaps) expect(g).toBe(10);
+  });
+});
