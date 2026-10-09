@@ -834,3 +834,30 @@ discipline:
   the summary grid; and the details-sheet keyboard family is the
   reference's weakest surface (no focus, no trap, no role, no Escape —
   the clone's Radix behavior is the documented superset).
+
+Session-31 additions (remediation-plan-v30 audit — the session-59 brief):
+
+- `clone-sweep-v30.sh` — the clone-side standing sweep (login + mobile-nav
+  R1-R4, 24th) plus the guideline rows' rest/hover and the quick-action
+  buttons' rest/hover (REAL CDP hover; the v4 `scale: 1.1` property reads
+  `transform: none` — read `.scale` + the rendered rect; the hover shadow's
+  2 extra TRANSPARENT v4 lead layers precede the byte-identical visible
+  pair).
+- `ref-guidelines-v30.mjs` — the reference's guideline-row finder (the rows
+  are `p-4 rounded-lg` divs with inline tints BELOW the donut's "Needs vs
+  Wants vs Savings" card — found by description text, not by a "guideline"
+  heading, which does not exist).
+- `probe-head-v30.mjs` — the full head-metadata census (SEO deep check:
+  description/OG/Twitter/apple-title byte-identical; the reference's
+  /manifest.json endpoint serves EMPTY while the clone's webmanifest serves
+  the full document — a superset).
+- `vlm-compare-v30.sh` — the dashboard (quick-actions + guidelines region)
+  and mobile details-sheet VLM pairs (both IDENTICAL, "none" differences).
+- LESSONS: bash mangles template literals with `$`-bearing selectors passed
+  inline — persist regex/`$` probes as files (the run-probe.sh base64
+  discipline); a static `tabIndex=-1` on BOTH tab triggers with the
+  tablist container at `tabIndex=0` is the correct Radix RovingFocusGroup
+  fresh state (not a broken roving pattern — the reference renders the
+  identical attribute set); and the arrow-key roving contract (focus move +
+  automatic activation + the roving tabindex update) is now pinned by the
+  v30 e2e tests.

@@ -432,6 +432,58 @@ test.describe("net worth tabs (v5 — remediation-plan-v5.md G3)", () => {
     expect(labels.assets).toBe("rgba(255, 255, 255, 0.7)");
     expect(labels.ratio).toBe("rgba(255, 255, 255, 0.8)");
   });
+
+  // v30 G2 (docs/remediation-plan-v30.md): the tablist's ROVING arrow-key
+  // semantics — measured live on BOTH sites in v30 (the reference is Radix
+  // too: the identical attribute set down to data-orientation /
+  // data-radix-collection-item, only the ID namespace differs). Both
+  // tablists carry the RovingFocusGroup entry-focus pattern (container
+  // tabIndex=0, both triggers -1 on a fresh load), and on both a REAL
+  // ArrowRight from the focused Assets trigger moves focus to Liabilities,
+  // flips aria-selected, and updates the roving tabindex. The v5 test above
+  // pins the static geometry; this pins the behavior.
+  test("the tablist roves on arrow keys: focus moves, selection flips, panel switches (v30 G2)", async ({ page }) => {
+    // Focus the active (Assets) trigger programmatically, like a real
+    // Tab-into-the-group entry focus would leave it.
+    await page.evaluate(() => {
+      const active = [...document.querySelectorAll('button[role="tab"]')].find(
+        (x) => x.getAttribute("aria-selected") === "true",
+      ) as HTMLElement | undefined;
+      active?.focus();
+    });
+    await page.waitForTimeout(200);
+
+    await page.keyboard.press("ArrowRight");
+    await page.waitForTimeout(400); // activation + panel-mount settle
+
+    const after = await page.evaluate(() => {
+      const tabs = [...document.querySelectorAll('button[role="tab"]')];
+      const ae = document.activeElement;
+      return {
+        focusedTxt: ae && ae !== document.body ? (ae.textContent || "").trim() : "(body)",
+        focusedIsTab: !!(ae && ae.closest('[role="tablist"]')),
+        assets: {
+          sel: tabs[0]?.getAttribute("aria-selected"),
+          tabIndex: tabs[0]?.getAttribute("tabindex"),
+        },
+        liabilities: {
+          sel: tabs[1]?.getAttribute("aria-selected"),
+          tabIndex: tabs[1]?.getAttribute("tabindex"),
+        },
+      };
+    });
+    // Focus moved to the Liabilities trigger (still inside the tablist).
+    expect(after.focusedTxt).toBe("Liabilities");
+    expect(after.focusedIsTab).toBe(true);
+    // Automatic activation: aria-selected flipped.
+    expect(after.assets.sel).toBe("false");
+    expect(after.liabilities.sel).toBe("true");
+    // The roving tabindex updated (the entry-focus stop moved).
+    expect(after.assets.tabIndex).toBe("-1");
+    expect(after.liabilities.tabIndex).toBe("0");
+    // The panel switched: the seeded liability cards render.
+    await expect(page.locator("div.rounded-xl").filter({ hasText: "Home Loan" }).first()).toBeVisible();
+  });
 });
 
 test.describe("net-worth dialogs (v6 — remediation-plan-v6.md G4/G5)", () => {

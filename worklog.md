@@ -18,13 +18,59 @@ and `docs/remediation-plan-v25.md`,
 and `docs/remediation-plan-v26.md`,
 and `docs/remediation-plan-v27.md`,
 and `docs/remediation-plan-v28.md`,
-and `docs/remediation-plan-v29.md`.
+and `docs/remediation-plan-v29.md`,
+and `docs/remediation-plan-v30.md`.
 
 ---
 
 ---
 
 ---
+
+---
+
+## Session 59 — Parity iteration v30: zero drift, the semantics pinned (2026-10-10)
+
+**Goal:** pull the session-60 transcript doc, re-run the baseline chain,
+audit, sweep the session-59 suggestions (the guideline-row hovers, the
+quick-action card-button hovers, the savings card family, the net-worth
+tablist's arrow-key semantics, the details sheet's keyboard semantics at
+MOBILE), fix what the DOM finds, TDD-first, docs aligned, commit + push
+via the SSH wrapper.
+
+- `git pull` fast-forwarded `368712d` → `ece66b5` (the session-60
+  transcript doc); the workspace intact (node_modules, .env, seeded db/,
+  scandihaven). Baseline green on the FIRST full run: **108/158/35** +
+  lint + typecheck + build. Audit clean (the same 5 dev-only `braces`
+  advisories, secret scan clean).
+- Standing checks all clean: mobile-nav R1–R4 (**24th** — Tailwind v4
+  pins hold, both sites), data drift (24th — the reference read-only),
+  the SEO pair — **DEEPENED to the full head-metadata census**
+  (description/OG/Twitter byte-identical; the reference's /manifest.json
+  endpoint serves EMPTY — the clone's webmanifest is the superset).
+- **ZERO production-code drift found** — every session-59 suggested
+  surface swept clean with first-time REAL-hover/keyboard measurements:
+  the guideline rows (no hover family on either site), the quick-action
+  buttons (rendered parity: v4's `scale: 1.1` property + the extra
+  TRANSPARENT shadow lead layers — the visible pair byte-identical), the
+  savings card family (byte-identical; the details sheet opens on
+  savings-card click), the tablist's arrow-key semantics (the reference
+  IS Radix — the identical RovingFocusGroup contract), and the mobile
+  details-sheet keyboard (geometry byte-identical 0/390/717.4px; the
+  reference's no-trap bug confirmed at the bottom-sheet breakpoint; the
+  clone's trap holds). Two VLM pairs: both IDENTICAL.
+- **The remediation = the pins** (`docs/remediation-plan-v30.md`): three
+  new e2e tests — the details sheet's keyboard semantics (initial focus
+  X + Tab containment + Escape, desktop AND mobile with the measured
+  bottom-sheet geometry) and the tablist's roving arrow-key contract
+  (focus move + automatic activation + the roving tabindex update + the
+  panel switch). TDD: GREEN → pin-sanity mutations (flipped trap
+  containment, flipped maxH, flipped focus target + aria-selected) →
+  FAIL → restored → GREEN.
+- Full chain **108/161/35 green**; both pins live-re-verified on the
+  :3200 parity server; the 16 screenshots regenerated; docs aligned
+  (probe README, README, CLAUDE, AGENTS, SKILL, session_61, this log);
+  committed and pushed to main via the SSH wrapper.
 
 ---
 

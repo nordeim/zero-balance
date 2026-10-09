@@ -174,4 +174,116 @@ test.describe("budget item details sheet (v28 — plan G3)", () => {
     await expect(editDialog.getByText(/Add Budget Item|Edit Budget Item|Budget Item/)).toBeVisible();
     await expect(editDialog.getByRole("heading", { name: "Budget Item Details" })).toHaveCount(0);
   });
+
+  // v30 G1 (docs/remediation-plan-v30.md): the sheet's KEYBOARD semantics —
+  // measured live on both sites in v29 (desktop) and v30 (mobile). The
+  // reference opens with NO initial focus (activeElement stays BODY), no
+  // role/aria-modal, and a real Tab walk tours the ENTIRE underlying page
+  // (stops 1–14: the sidebar links, Add Expense, the filter triggers, the
+  // cards' Edit/Calculate buttons) — its sheet never traps and its single
+  // focusable (the X) is reachable only after every page element. The
+  // clone (Radix) is the documented accessible superset: initial focus ON
+  // the X, full Tab containment, Escape close. Nothing pinned these before.
+  test("the sheet's keyboard semantics: initial focus on X, Tab traps, Escape closes", async ({ page }) => {
+    await page.goto("/expenses");
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await expect(rent).toBeVisible();
+    await rent.locator("h4").click();
+
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("heading", { name: "Budget Item Details" })).toBeVisible();
+    // Radix's open animation settle before reading programmatic focus.
+    await page.waitForTimeout(300);
+
+    // Initial focus lands on the X (the sr-only "Close" text — the v29
+    // probe lesson: the clone's X has no aria-label).
+    const initialFocus = await page.evaluate(() => {
+      const el = document.activeElement;
+      if (!el || el === document.body) return null;
+      return {
+        tag: el.tagName,
+        txt: (el.textContent || "").trim(),
+        inDialog: !!el.closest('[role="dialog"]'),
+      };
+    });
+    expect(initialFocus).not.toBeNull();
+    expect(initialFocus!.txt).toBe("Close");
+    expect(initialFocus!.inDialog).toBe(true);
+
+    // The trap: every Tab stop stays inside the dialog (the reference's
+    // stops 1–14 tour the underlying page — activeInSheet: false).
+    const stops: Array<{ txt: string; inDialog: boolean }> = [];
+    for (let i = 0; i < 3; i++) {
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(60);
+      stops.push(
+        await page.evaluate(() => {
+          const el = document.activeElement;
+          return {
+            txt: el && el !== document.body ? (el.textContent || "").trim().slice(0, 24) : "(body)",
+            inDialog: !!(el && el.closest('[role="dialog"]')),
+          };
+        }),
+      );
+    }
+    for (const stop of stops) {
+      expect(stop.inDialog).toBe(true);
+    }
+
+    // Escape closes (the reference's sheet ignores it).
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  });
+
+  // v30 G1 (mobile variant): the same keyboard contract at the bottom-sheet
+  // breakpoint, plus the computed mobile geometry measured on BOTH sites in
+  // v30 (the reference's inner panel and the clone's self-positioned panel
+  // compute the identical rectangle: x=0, y=127, w=390, h=717 with max-h
+  // 85vh = 717.4px).
+  test("the keyboard trap + bottom-sheet geometry hold at MOBILE (390x844)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/expenses");
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await expect(rent).toBeVisible();
+    await rent.locator("h4").click();
+
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(300);
+
+    // The bottom-sheet geometry (measured on both sites, byte-identical).
+    const geom = await dialog.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      const cs = getComputedStyle(el);
+      return {
+        x: Math.round(r.x),
+        y: Math.round(r.y),
+        w: Math.round(r.width),
+        maxH: cs.maxHeight,
+        overflowY: cs.overflowY,
+      };
+    });
+    expect(geom.x).toBe(0);
+    expect(geom.w).toBe(390);
+    expect(geom.maxH).toBe("717.4px"); // 85% of 844
+    expect(geom.overflowY).toBe("auto");
+
+    // The trap holds at mobile: initial focus on the X, Tab stays inside.
+    const initialFocus = await page.evaluate(() => {
+      const el = document.activeElement;
+      return el && el !== document.body ? (el.textContent || "").trim() : null;
+    });
+    expect(initialFocus).toBe("Close");
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(60);
+    const inDialog = await page.evaluate(() => {
+      const el = document.activeElement;
+      return !!(el && el.closest('[role="dialog"]'));
+    });
+    expect(inDialog).toBe(true);
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  });
 });
