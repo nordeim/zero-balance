@@ -9,7 +9,7 @@ description: >
 version: 1.0.0
 last_updated: 2026-10-09
 
-project_state: 96 unit tests / 137 e2e tests / 30 smoke steps — all green
+project_state: 108 unit tests / 142 e2e tests / 35 smoke steps — all green
 ---
 
 # ZeroBalance — Engineering Skill
@@ -811,6 +811,22 @@ Numbered institutional lessons. Each traces to a concrete fix in
     mobile-view flag into superset-fix vs data vs real drift before
     filing (plan v20, Observations).
 
+39. **The reference site itself drifts — re-measure pinned chrome on every
+    pass.** v21's calculator row-actions finding: the v6 pin said the
+    reference renders its line-item row actions always-visible (measured
+    at rest, session 11) — but the LIVE reference now wraps them in
+    `opacity-0 group-hover:opacity-100`. A pinned "always" claim is only
+    as fresh as its last measurement; when a VLM flag contradicts a pin,
+    re-measure BOTH sides before refuting the flag (the flag was right,
+    the pin had aged). Same family as v19's recurring-row drift.
+    Same pass, second lesson: a "silent" form submit usually means native
+    validation — a malformed test email (`a@b@c.com`) fails `type=email`
+    constraint validation with NO visible error and NO network call
+    (the live register flow "did nothing"); check
+    `form.checkValidity()` + the invalid inputs' `validationMessage`
+    before suspecting React state (plan v21, the probe-v21 live-audit
+    lesson).
+
 ---
 
 ## 13. Pitfalls to Avoid
@@ -1141,6 +1157,7 @@ Full reasoning: `Project_Architecture_Document.md` (7 ADRs expanded).
 | 2026-10-09 | Session 35 — parity iteration v18 (`docs/remediation-plan-v18.md`) | The NET-WORTH ASSET/LIABILITY ERROR TIER measured for the first time (the last unpinned dialog family, per the session-34 suggestion): the reference is SILENT on both paths with its entity API dead (asset delete → no confirmation, card stays, zero feedback; asset save → dialog stays open, no feedback); the clone's save-failure superset verified live and PINNED ("Could not save the asset" / "Could not save the liability"), while BOTH delete paths swallowed the rejection (`void deleteAsset()` / `void deleteLiability()` — the v17 void accident in its last hiding place) — fixed with caught confirm-bar handlers + the "Could not delete the asset/liability" toasts (per-click semantics, surfaces unchanged) — and the post-fix grep sweep surfaced a THIRD site (`void deleteItem()` in item-card.tsx, the card-menu path the v16 dialog audit missed), fixed identically with "Could not delete the item"; 5 new e2e specs (asset/liability save/delete under route-aborted APIs + the item-card delete); G2: the register duplicate-email flake root-caused as Next.js's route announcer rendering a second empty `role=alert` — the spec's bare waitForSelector matched it and raced the banner; hardened with a text-filtered retrying locator (lesson 36); mobile-nav R1–R4 re-verified + data drift clean (twelfth check) — 96/134/30 green |
 | 2026-10-09 | Session 37 — parity iteration v19 (`docs/remediation-plan-v19.md`) | The **VLM VISUAL SWEEP** — the first full-page visual-AI comparison layer (the session-36 log's top suggestion): 12 auth-state pairs + 5 app views + 3 dialogs compared through the z-ai vision CLI with a mechanical pixel-diff layer + MD5 asset hashing. Results: the auth surfaces IDENTICAL ×6 (the v12/v13 text pins held under full-page diffing; the logo PNGs byte-identical by MD5, both 80×80), the app views LAYOUT_IDENTICAL ×5 (the dashboard's three flags are known supersets/data), the dialogs clean except ONE real drift: the item dialog's RECURRING-TOGGLE ROW (the reference runs the switch LEFT — the row's first child, 12px gap to the label block — with NO calendar icon, NO border, and a green-tinted rgb(245,248,245) inline background, h 72; the clone ran icon+label left, switch right (justify-between), 1px border, transparent bg, h 74) — DOM-verified on four axes, fixed to the reference's arrangement, pinned by the dialog-buttons spec's new recurring-row test; two VLM hallucinations DOM-refuted (the "faded logo", the "taller button" — lesson 37: the VLM is a screening layer, every flag needs measurement); the calculator's "extra line" refuted as a matching data-conditional; tablet breakpoints 767/768/1024 re-measured (rail switch at 768 both, heading x=288 both); mobile-nav R1–R4 re-verified + data drift clean (thirteenth check) — 96/135/30 green |
 | 2026-10-09 | Session 39 — parity iteration v20 (`docs/remediation-plan-v20.md`) | The **mobile-app-view + populated-edit-dialog VLM sweep** (the session-38 log's two top suggestions): 5 mobile views at 390×844 + the populated Edit dialog + the breakdown drill-down, compared pairwise through z-ai vision. Results: the mobile dashboard IDENTICAL; the networth flags all decomposed into the documented superset fix #4 (the reference's own 464px overflow: 48px `text-5xl` figure, 2-col grid, off-screen Add button) plus one refuted tab-tint hallucination (identical rgb(220,252,231)); the badge-wrap mechanism verified identical (data-driven wrap); the drill-down clean. TWO real drifts found, DOM-verified, fixed TDD-first, live-re-measured exact, and pinned: (G1) the ITEMS-VIEW HEADER ROW — base `items-start` missing so the Add button stretched full-width 358px on mobile (the reference's auto-width 147/155/150) and `mb-6` vs `mb-8` (a 24 vs 32px header→filter gap at BOTH viewports; the dashboard's row already carried the correct pattern); (G2) the CLASSIFICATION TILES — the reference's tile labels carry 16px lucide icons (circle-alert #e07a3b / heart #3b7ea1 / piggy-bank #8fbc3f) between the radio and the text in both Add and Edit states, missed by the v19 empty-dialog sweep. Also: the census probe's base64→atob UTF-8 mangling root-caused and fixed transport-safe (lesson 38); mobile-nav R1–R4 re-verified + data drift clean (fourteenth check) — 96/137/30 green |
+| 2026-10-09 | Session 41 — parity iteration v21 (`docs/remediation-plan-v21.md`) | **SEO + the register verification gate.** Three finding groups: (G1) the sitemap.xml/robots.txt the reference serves, added via Next.js MetadataRoute routes (`src/app/robots.ts` + `src/app/sitemap.ts`) — the reference's five-URL/priority/weekly structure mirrored with the clone's routes, `/login` excluded like the reference, Next's canonicalizations documented as protocol-equivalent; (G2) the calculator's line-item row actions re-measured HOVER-REVEALED on the live reference (`opacity-0 group-hover:opacity-100` — the v6-era always-visible pin had aged with the reference's chrome change) — matched with the `@variant group-hover (.group:hover &)` pin in globals.css keeping the reveal alive on hover:none devices; (G3) the REGISTER POST-SUCCESS LANDING measured live for the first time: the reference gates registration behind a "Verify your email" state (6-digit code inputs 40×44, a 5-attempt countdown, resend semantics, unverified-login rejection) — rebuilt as the honest superset: the full state chrome + `/api/auth/verify-email` + `/api/auth/resend` + the register re-issue path + a 403 unverified-login rejection with the reference's exact banner + the honest dev-code delivery (no mail transport; the v12 forgot-password precedent) + the seeded demo user pre-verified. Swept clean: the mobile sheet-open VLM pair, the net-worth populated edit-asset pair (X-close thrice-refuted), the login keyboard-focus spot check (the v13 ring holds once settled + read in full); mobile-nav R1–R4 + data drift (fifteenth check) clean — 108/142/35 green |
 
 ## Appendix C: Live-Site Validation Methodology
 

@@ -104,3 +104,44 @@ test.describe("document head parity (v7 — plan G8)", () => {
     expect(head.title).toBe("ZeroBudget");
   });
 });
+
+test.describe("sitemap + robots (v21 — plan G1)", () => {
+  test("robots.txt allows all and links the sitemap; sitemap.xml lists the five routes", async ({ page }) => {
+    // The reference serves both files (measured live): robots.txt is a
+    // two-line allow-all + Sitemap link, and sitemap.xml carries five URLs
+    // — the origin at priority 1.0 and its four app routes at 0.8, all
+    // changefreq weekly (its own capitalized paths; /login excluded). The
+    // clone serves the same structure with its own lowercase routes.
+    const robots = await page.request.get("/robots.txt");
+    expect(robots.status()).toBe(200);
+    const robotsText = await robots.text();
+    // Next's generator emits the canonical "User-Agent" casing (the
+    // reference writes "User-agent"); robots directives are case-
+    // insensitive per RFC 9309 — match case-insensitively.
+    expect(robotsText.toLowerCase()).toContain("user-agent: *");
+    expect(robotsText).toMatch(/Allow:\s*\//);
+    expect(robotsText).toMatch(/Sitemap:\s*https?:\/\/\S+\/sitemap\.xml/);
+
+    const sitemap = await page.request.get("/sitemap.xml");
+    expect(sitemap.status()).toBe(200);
+    const xml = await sitemap.text();
+    // The five routes at the reference's priorities/changefreq — /login
+    // (and /api/*) never listed: the sitemap mirrors the reference's
+    // public-surface choices, not the auth gate.
+    const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    expect(urls).toHaveLength(5);
+    const paths = urls.map((u) => new URL(u).pathname);
+    expect(paths).toEqual(["/", "/income", "/savings", "/expenses", "/networth"]);
+    for (const u of urls) {
+      expect(u).toMatch(/^https?:\/\/[^\/]+/);
+    }
+    // Next serializes the number 1.0 as "1" (numeric equivalence holds).
+    expect((xml.match(/<priority>1(?:\.0)?<\/priority>/g) || [])).toHaveLength(1);
+    expect((xml.match(/<priority>0\.8<\/priority>/g) || [])).toHaveLength(4);
+    expect((xml.match(/<changefreq>weekly<\/changefreq>/g) || [])).toHaveLength(5);
+    // The reference's sitemap carries exactly loc + changefreq + priority
+    // — no <lastmod> (measured live); a per-build timestamp would be
+    // shape drift, not SEO value.
+    expect(xml).not.toContain("<lastmod>");
+  });
+});

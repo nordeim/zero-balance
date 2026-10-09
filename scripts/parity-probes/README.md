@@ -527,3 +527,25 @@ MOBILE app views + the populated EDIT dialogs + the drill-down:
   (the icons = G2; the radio/switch "differences" = data states —
   different items being edited; the X-close "bordered" = the same
   hallucination twice, DOM-identical), the drill-down (clean).
+
+Session-41 additions (remediation-plan-v21 audit) — sessions
+`ref23`/`clone23` (desktop 1280×800 + 390×844), the :3200 parity server
+per `scripts/with-server.sh`, the v21 surfaces:
+
+- `vlm-compare-v21.sh` — the VLM wrapper, v21 edition (same
+  layout-focused prompt; `/tmp/vlm21/` pairs). The v21 sweep's flags:
+  the calculator POPULATED pair (the row-actions visibility = G2, a
+  real reference chrome change; the "Will update category total" line =
+  data-driven — the reference's Rent parent equals its line-item sum),
+  the mobile SHEET-OPEN pair (both flags = the documented superset #3
+  root-route highlight + the avatar letter), the net-worth populated
+  EDIT-ASSET pair (the X-close claim = the same thrice-DOM-refuted
+  misread), and the verify-email state pair (IDENTICAL — the clone's
+  dev-code box excluded by instruction as the documented superset).
+- `probe-v21-verify-flow.mjs` — completes the clone's verify-email flow
+  through the DOM (reads the dev code from the honest box, sets the six
+  inputs via the native value setter + input events, clicks Verify) —
+  the live counterpart of the e2e spec. The live-audit lesson it
+  encoded: a malformed throwaway email (`a@b@c.com`) fails native
+  `type=email` validation SILENTLY (no submit, no error, no request) —
+  check `form.checkValidity()` before suspecting React state.

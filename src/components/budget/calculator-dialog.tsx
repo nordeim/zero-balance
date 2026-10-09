@@ -216,10 +216,15 @@ export function CalculatorDialog() {
                         </p>
                       )}
                     </div>
-                    {/* Reference row actions are ALWAYS visible (opacity 1 at
-                        rest — no hover gating), 32px buttons with 16px icons,
-                        edit near-black, delete red (v6 G9/G10). */}
-                    <div className="flex items-center gap-1">
+                    {/* Reference row actions (v21 re-measure): HOVER-REVEALED —
+                        the live reference wraps the pair in opacity-0
+                        group-hover:opacity-100 (measured at rest; the v6-era
+                        always-visible chrome predates the reference's change).
+                        32px buttons, 16px icons, edit near-black, delete red
+                        (v6 G10 geometry/colors hold). The globals.css
+                        @variant group-hover pin keeps the reveal working on
+                        hover:none devices — never remove it. */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
                         aria-label={`Edit ${li.name}`}

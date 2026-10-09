@@ -10,7 +10,7 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeftIcon, Loader2Icon, LockIcon, MailIcon } from "lucide-react";
+import { ArrowLeftIcon, Loader2Icon, LockIcon, MailIcon, ShieldCheckIcon } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore } from "./store";
 
@@ -23,7 +23,7 @@ import { messageOf, useBudgetStore } from "./store";
 // (Applied as literal class hexes / inline styles — Tailwind's scanner
 // reads source text, so classes must never interpolate variables.)
 
-type Mode = "signin" | "signup" | "forgot";
+type Mode = "signin" | "signup" | "forgot" | "verify";
 
 const GOOGLE_SVG = (
   <svg className="h-5 w-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -69,6 +69,74 @@ function LogoMark() {
           className="aspect-square h-full w-full object-cover"
         />
       </span>
+    </div>
+  );
+}
+
+/** v21 G3 — the verify-email state's six single-digit code inputs (measured
+ *  live on the reference): each 40×44 (`w-10 h-11`), radius 8 (`rounded-lg`),
+ *  border `#e4e4e7`, white bg, 14px/600 centered digits, `inputmode=numeric`,
+ *  in a `flex items-center justify-center gap-1.5` row. Typing a digit
+ *  advances; Backspace on an empty cell steps back. */
+function CodeInputs({
+  digits,
+  onSetDigit,
+  disabled,
+}: {
+  digits: string[];
+  onSetDigit: (index: number, value: string) => void;
+  disabled?: boolean;
+}) {
+  const refs = React.useRef<(HTMLInputElement | null)[]>([]);
+  const focusAt = (i: number) => {
+    const el = refs.current[Math.max(0, Math.min(5, i))];
+    el?.focus();
+  };
+  return (
+    <div className="flex items-center justify-center gap-1.5">
+      {digits.map((d, i) => (
+        <input
+          key={i}
+          ref={(el) => {
+            refs.current[i] = el;
+          }}
+          type="text"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          aria-label={`Digit ${i + 1}`}
+          value={d}
+          disabled={disabled}
+          onChange={(e) => {
+            const v = e.target.value.replace(/\D/g, "");
+            if (!v) {
+              onSetDigit(i, "");
+              return;
+            }
+            // Land the (last typed) digit, then advance.
+            onSetDigit(i, v.slice(-1));
+            if (i < 5) focusAt(i + 1);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Backspace" && !digits[i] && i > 0) {
+              e.preventDefault();
+              onSetDigit(i - 1, "");
+              focusAt(i - 1);
+            }
+            if (e.key === "ArrowLeft" && i > 0) focusAt(i - 1);
+            if (e.key === "ArrowRight" && i < 5) focusAt(i + 1);
+          }}
+          onPaste={(e) => {
+            e.preventDefault();
+            const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+            if (!pasted) return;
+            pasted.split("").forEach((ch, j) => {
+              if (i + j <= 5) onSetDigit(i + j, ch);
+            });
+            focusAt(Math.min(5, i + pasted.length));
+          }}
+          className="h-11 w-10 rounded-lg border border-[#e4e4e7] bg-white text-center text-sm font-semibold text-[#0f172a] transition-colors focus:border-[#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-11"
+        />
+      ))}
     </div>
   );
 }
@@ -288,6 +356,8 @@ export function LoginCard() {
   const searchParams = useSearchParams();
   const login = useBudgetStore((s) => s.login);
   const register = useBudgetStore((s) => s.register);
+  const verifyEmailAction = useBudgetStore((s) => s.verifyEmail);
+  const resendCode = useBudgetStore((s) => s.resendCode);
   const { toast } = useToast();
   const [mode, setMode] = React.useState<Mode>("signin");
   const [email, setEmail] = React.useState("");
@@ -298,6 +368,16 @@ export function LoginCard() {
   // v12 G4: the forgot submit transitions to a confirmation-style state
   // (the reference renders "Check your email" here — measured live).
   const [resetNotice, setResetNotice] = React.useState(false);
+  // v21 G3: the register flow's email-verification state (measured live on
+  // the reference — "Verify your email", a 6-digit code, a 5-attempt
+  // countdown, and a Resend link). The devCode is the HONEST no-mail
+  // delivery: a self-hosted instance has no SMTP, so the code rides the
+  // register/resend response and renders here with explicit copy (the
+  // v12 forgot-password precedent class).
+  const [verifyTarget, setVerifyTarget] = React.useState<string | null>(null);
+  const [devCode, setDevCode] = React.useState<string | null>(null);
+  const [digits, setDigits] = React.useState<string[]>(() => Array.from({ length: 6 }, () => ""));
+  const [resentNotice, setResentNotice] = React.useState(false);
 
   // The reference lands on the ROOT route after login (it renders the
   // dashboard there) — plan v7 G1. ?from_url= still wins when present.
@@ -307,6 +387,10 @@ export function LoginCard() {
     setMode("signin");
     setError(null);
     setResetNotice(false);
+    setVerifyTarget(null);
+    setDevCode(null);
+    setDigits(Array.from({ length: 6 }, () => ""));
+    setResentNotice(false);
   };
   const notifyGoogleUnavailable = () =>
     toast({
@@ -333,10 +417,18 @@ export function LoginCard() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        await register(email, password);
-      } else {
-        await login(email, password);
+        // v21 G3: the reference lands registration on the email-verification
+        // gate (measured live) — no session until the code is confirmed.
+        const payload = await register(email, password);
+        setVerifyTarget(payload.email);
+        setDevCode(payload.devCode);
+        setDigits(Array.from({ length: 6 }, () => ""));
+        setError(null);
+        setResentNotice(false);
+        setMode("verify");
+        return;
       }
+      await login(email, password);
       const target = fromUrl.startsWith("/") ? fromUrl : "/";
       router.push(target);
     } catch (cause) {
@@ -344,6 +436,55 @@ export function LoginCard() {
     } finally {
       setBusy(false);
     }
+  };
+
+  // v21 G3: submit the 6-digit code — a correct code verifies + opens the
+  // session + lands on the app (the natural post-verify landing, "/").
+  const onVerifySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (busy || !verifyTarget) return;
+    setError(null);
+    const code = digits.join("");
+    if (!/^\d{6}$/.test(code)) {
+      setError("Enter the 6-digit code from your email");
+      return;
+    }
+    setBusy(true);
+    try {
+      await verifyEmailAction(verifyTarget, code);
+      const target = fromUrl.startsWith("/") ? fromUrl : "/";
+      router.push(target);
+    } catch (cause) {
+      setError(messageOf(cause));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // v21 G3: "Didn't receive the code? Resend" (the reference re-issues the
+  // code and resets the attempts — measured live).
+  const onResend = async () => {
+    if (busy || !verifyTarget) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const code = await resendCode(verifyTarget);
+      setDevCode(code);
+      setDigits(Array.from({ length: 6 }, () => ""));
+      setResentNotice(true);
+    } catch (cause) {
+      setError(messageOf(cause));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onSetDigit = (index: number, value: string) => {
+    setDigits((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
   };
 
   const formProps = {
@@ -413,7 +554,81 @@ export function LoginCard() {
             ) : (
               <div className="flex flex-col items-center space-y-6 text-center sm:space-y-8">
                 <div className="w-full">
-                  {resetNotice ? (
+                  {mode === "verify" ? (
+                    // v21 G3: the reference's register post-success landing
+                    // (measured live): a top-left "Back to sign in", a 64px
+                    // slate-100 circle carrying a 32px lucide-shield-check
+                    // in #334155, the h2 "Verify your email" (the same
+                    // text-xl/700/#0f172a family), "We've sent a 6-digit
+                    // code to {email}" on two lines, six 40×44 numeric code
+                    // inputs (gap 6), the 12px #64748b hint, the 44px
+                    // #0f172a "Verify email" button, and "Didn't receive
+                    // the code? Resend". The wrong-code line renders the
+                    // reference's exact countdown text in 14px #b91c1c.
+                    // The dev-code box is the HONEST no-mail delivery (the
+                    // v12 forgot-password precedent).
+                    <div className="space-y-4">
+                      <button
+                        type="button"
+                        className="-mb-2 flex items-center gap-2 text-sm font-medium text-[#64748b] transition-colors hover:text-[#334155]"
+                        onClick={backToSignin}
+                      >
+                        <ArrowLeftIcon className="h-4 w-4" />
+                        Back to sign in
+                      </button>
+                      <div className="flex flex-col items-center space-y-4 text-center">
+                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[9999px] bg-[#f1f5f9] sm:h-16 sm:w-16">
+                          <ShieldCheckIcon className="h-7 w-7 text-[#334155] sm:h-8 sm:w-8" />
+                        </div>
+                        <h2 className="text-xl font-bold text-[#0f172a] sm:text-2xl">
+                          Verify your email
+                        </h2>
+                        <p className="text-sm text-[#475569] sm:text-base">
+                          We&apos;ve sent a 6-digit code to
+                          <br />
+                          {verifyTarget}
+                        </p>
+                        <div className="w-full rounded-lg bg-[#f8fafc] px-3 py-2 text-xs text-[#475569]">
+                          No mail transport is configured on this self-hosted
+                          instance — your verification code is{" "}
+                          <span className="font-semibold text-[#0f172a]">{devCode}</span>
+                        </div>
+                        <form onSubmit={onVerifySubmit} className="w-full">
+                          <CodeInputs digits={digits} onSetDigit={onSetDigit} disabled={busy} />
+                          <p className="mt-2 text-xs text-[#64748b]">
+                            Enter the verification code sent to your email
+                          </p>
+                          {error && (
+                            <p className="mt-2 text-sm font-normal text-[#b91c1c]">{error}</p>
+                          )}
+                          <button
+                            type="submit"
+                            disabled={busy}
+                            className="mt-4 inline-flex h-11 w-full items-center justify-center gap-1 rounded-xl bg-[#0f172a] px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-all duration-200 hover:bg-[#1e293b] focus-visible:ring-2 focus-visible:ring-[#94a3b8] focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                          >
+                            {busy && <Loader2Icon className="h-4 w-4 animate-spin" />}
+                            Verify email
+                          </button>
+                          {resentNotice && (
+                            <p className="mt-3 text-sm text-[#475569]">
+                              New verification code sent to your email
+                            </p>
+                          )}
+                          <p className="mt-4 text-sm text-[#475569]">
+                            Didn&apos;t receive the code?{" "}
+                            <button
+                              type="button"
+                              className="font-medium text-[#334155] transition-colors hover:text-[#0f172a] disabled:pointer-events-none disabled:opacity-50"
+                              onClick={onResend}
+                              disabled={busy}
+                            >
+                              Resend
+                            </button>
+                          </p>
+                        </form>
+                      </div>
+                    </div>
+                  ) : resetNotice ? (
                     // v12 G4: the reference's forgot-confirmation state
                     // (measured live on its "Check your email" view): a
                     // centered H2 24px/700 #0f172a lh 32, a 16px/400

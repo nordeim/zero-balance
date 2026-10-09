@@ -71,6 +71,20 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required").max(128),
 });
 
+// v21 G3: the register flow's email-verification gate (measured live on
+// the reference — a 6-digit numeric code through six single-char inputs).
+export const verifyEmailSchema = z.object({
+  email: emailSchema,
+  code: z
+    .string()
+    .regex(/^\d{6}$/, "Enter the 6-digit code from your email")
+    .max(6),
+});
+
+export const resendSchema = z.object({
+  email: emailSchema,
+});
+
 const budgetItemBase = {
   type: z.enum(ITEM_TYPES),
   classification: z.enum(CLASSIFICATIONS),

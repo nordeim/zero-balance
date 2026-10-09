@@ -59,6 +59,58 @@ code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 \
   -d '{"email":"demo@zerobalance.app","password":"WrongPassword!"}')
 if [ "$code" = "401" ]; then ok "wrong password rejected (401)"; else bad "wrong password -> $code"; fi
 
+# ---- 3b. register lands on the verify-email gate (v21 G3) ----
+SMOKE_EMAIL="smoke-$(date +%s)@example.com"
+code=$(curl -s -o /tmp/zb-smoke-register.json -w "%{http_code}" --max-time 10 \
+  -X POST "$BASE/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"$SMOKE_EMAIL\",\"password\":\"TestPass123!\"}")
+DEVCODE=$(jqget /tmp/zb-smoke-register.json "['data']['devCode']")
+if [ "$code" = "201" ] && [ -n "$DEVCODE" ] && [ "${#DEVCODE}" = "6" ]; then
+  ok "register issues the verify gate (201 + 6-digit code)"
+else
+  bad "register -> $code $(cat /tmp/zb-smoke-register.json)"
+fi
+
+# ---- 3c. unverified sign-in is rejected with the reference's banner ----
+code=$(curl -s -o /tmp/zb-smoke-unverified.json -w "%{http_code}" --max-time 10 \
+  -X POST "$BASE/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"$SMOKE_EMAIL\",\"password\":\"TestPass123!\"}")
+if [ "$code" = "403" ] && grep -q "verify your email" /tmp/zb-smoke-unverified.json; then
+  ok "unverified login blocked (403 + banner)"
+else
+  bad "unverified login -> $code $(cat /tmp/zb-smoke-unverified.json)"
+fi
+
+# ---- 3d. wrong code counts down; the correct code verifies ----
+code=$(curl -s -o /tmp/zb-smoke-wrongcode.json -w "%{http_code}" --max-time 10 \
+  -X POST "$BASE/api/auth/verify-email" \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"$SMOKE_EMAIL\",\"code\":\"000000\"}")
+if [ "$code" = "400" ] && grep -q "attempts remaining" /tmp/zb-smoke-wrongcode.json; then
+  ok "wrong code counted down (400)"
+else
+  bad "wrong code -> $code $(cat /tmp/zb-smoke-wrongcode.json)"
+fi
+if [ "$DEVCODE" != "000000" ]; then
+  code=$(curl -s -o /tmp/zb-smoke-verify.json -w "%{http_code}" --max-time 10 \
+    -c /tmp/zb-smoke-verify-cookies.txt \
+    -X POST "$BASE/api/auth/verify-email" \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"$SMOKE_EMAIL\",\"code\":\"$DEVCODE\"}")
+  if [ "$code" = "200" ] && grep -q '"ok":true' /tmp/zb-smoke-verify.json; then
+    ok "correct code verifies + opens the session (200)"
+  else
+    bad "verify-email -> $code $(cat /tmp/zb-smoke-verify.json)"
+  fi
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 \
+    -b /tmp/zb-smoke-verify-cookies.txt "$BASE/api/budget-items")
+  if [ "$code" = "200" ]; then ok "post-verify session is authed (budget-items 200)"; else bad "post-verify session -> $code"; fi
+else
+  ok "post-verify session (code coincided with 000000 — skipped the dup check)"
+fi
+
 # ---- 4. unauthenticated access must be 401 ----
 code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE/api/budget-items")
 if [ "$code" = "401" ]; then ok "unauthenticated budget-items blocked (401)"; else bad "unauth budget-items -> $code"; fi

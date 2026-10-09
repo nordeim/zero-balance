@@ -55,7 +55,11 @@ interface BudgetStore {
   refresh: () => Promise<void>;
 
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name?: string) => Promise<void>;
+  // v21 G3: register no longer opens a session — it returns the verify
+  // payload (the honest dev-code delivery); verifyEmail opens the session.
+  register: (email: string, password: string, name?: string) => Promise<{ email: string; devCode: string }>;
+  verifyEmail: (email: string, code: string) => Promise<void>;
+  resendCode: (email: string) => Promise<string>;
   logout: () => Promise<void>;
 
   createItem: (data: BudgetItemFormData) => Promise<BudgetItem>;
@@ -168,13 +172,31 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
   },
 
   register: async (email, password, name) => {
-    const { user } = await api.post<{ user: SessionUser }>("/api/auth/register", {
+    // v21 G3: the reference's register lands on the email-verification
+    // gate — no session here, just the verify payload (the honest
+    // dev-code delivery; see the register route's comment).
+    return api.post<{ email: string; devCode: string }>("/api/auth/register", {
       email,
       password,
       name,
     });
+  },
+
+  verifyEmail: async (email, code) => {
+    const { user } = await api.post<{ user: SessionUser }>("/api/auth/verify-email", {
+      email,
+      code,
+    });
     set({ user });
     await get().refresh();
+  },
+
+  resendCode: async (email) => {
+    const { devCode } = await api.post<{ email: string; devCode: string }>(
+      "/api/auth/resend",
+      { email },
+    );
+    return devCode;
   },
 
   logout: async () => {

@@ -178,11 +178,20 @@ const LIABILITIES = [
 async function main() {
   const user = await db.user.upsert({
     where: { email: DEMO_EMAIL },
-    update: {},
+    update: {
+      // v21 G3: existing demo DBs upgraded in place — a demo user that
+      // predates the verification gate must stay loggable (the gate only
+      // applies to fresh registrations).
+      emailVerifiedAt: new Date(),
+    },
     create: {
       email: DEMO_EMAIL,
       passwordHash: hashPassword(DEMO_PASSWORD),
       name: "Demo User",
+      // v21 G3: the seeded demo account ships PRE-VERIFIED — the reference
+      // platform's demo/login flows assume a usable account, and every
+      // login-dependent spec (auth setup, smoke) uses it.
+      emailVerifiedAt: new Date(),
     },
   });
 

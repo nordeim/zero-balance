@@ -7,6 +7,15 @@
    parity holds on hover:none contexts too (remediation-plan-v5.md G7). */
 @variant hover (&:hover);
 
+/* Same v4 media-gate for the GROUP family (v21 G2): `group-hover:`
+   utilities compile inside @media (hover: hover) too, so a hover-revealed
+   surface (the calculator's line-item row actions — opacity-0
+   group-hover:opacity-100) would stay INVISIBLE forever on hover:none
+   devices. Pin the v3 group semantics (the group's own :hover, any
+   device — tap-to-reveal on touch) so the reveal chain matches the
+   reference's engine behavior. */
+@variant group-hover (.group:hover &);
+
 /* SPACE-Y V3 SEMANTICS (trap 4b, plan v9 G3): v4 rewrote `space-y-*` to
    margin-block-end on `:not(:last-child)`. With a BLOCK first child that is
    layout-equivalent to v3's margin-top-on-following-sibling (sibling

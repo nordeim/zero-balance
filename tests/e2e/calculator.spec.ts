@@ -225,10 +225,15 @@ test.describe("rent calculator", () => {
     await expect(lineDialog).toBeHidden();
     await expect(dialog.getByText("Based on 1 item")).toBeVisible();
 
-    // G9/G10: the row's edit/delete buttons are ALWAYS visible on the
-    // reference (no hover-gating) — 32px buttons, 16px icons, edit icon
-    // near-black, delete red — measured with the mouse outside the row.
+    // G9/G10 (v21 re-measure): the reference's row actions are now
+    // HOVER-REVEALED — the action container renders `opacity-0
+    // group-hover:opacity-100` (measured at rest with the pointer parked
+    // far from the row; the v6-era always-visible measurement predates the
+    // reference's chrome change). The buttons keep the geometry: 32px
+    // buttons, 16px icons, edit near-black, delete red. A real .hover() on
+    // the row flips the container to opacity 1.
     await page.mouse.move(8, 400); // park the pointer far from the row
+    await page.waitForTimeout(300); // let any transition settle
     const rowChrome = await page.evaluate(() => {
       const dlg = document.querySelector('[role="dialog"]');
       const editBtn = dlg?.querySelector<HTMLButtonElement>('button[aria-label="Edit Contents Insurance"]');
@@ -240,6 +245,7 @@ test.describe("rent calculator", () => {
         const r = svg ? svg.getBoundingClientRect() : null;
         return {
           opacity: cs.opacity,
+          containerOpacity: getComputedStyle(b.parentElement!).opacity,
           w: Math.round(b.getBoundingClientRect().width),
           iconW: r ? Math.round(r.width) : null,
           color: cs.color,
@@ -257,14 +263,26 @@ test.describe("rent calculator", () => {
       };
     });
     expect(rowChrome).not.toBeNull();
-    expect(rowChrome!.edit.opacity).toBe("1");
-    expect(rowChrome!.del.opacity).toBe("1");
+    // At rest the actions are hidden (the reference's hover-gate).
+    expect(rowChrome!.edit.containerOpacity).toBe("0");
+    expect(rowChrome!.del.containerOpacity).toBe("0");
     expect(rowChrome!.edit.w).toBe(32);
     expect(rowChrome!.del.w).toBe(32);
     expect(rowChrome!.edit.iconW).toBe(16);
     expect(rowChrome!.del.iconW).toBe(16);
     expect(rowChrome!.edit.color).toBe("rgb(10, 10, 10)");
     expect(rowChrome!.del.color).toBe("rgb(220, 38, 38)");
+    // Under a real row hover the actions reveal (opacity 1) — the
+    // group-hover chain works (and the v4 media-gate pin in globals.css
+    // keeps it working on hover:none devices too).
+    await page.hover("text=Contents Insurance");
+    await page.waitForTimeout(350); // transition-opacity settle
+    const revealed = await page.evaluate(() => {
+      const dlg = document.querySelector('[role="dialog"]');
+      const editBtn = dlg?.querySelector<HTMLButtonElement>('button[aria-label="Edit Contents Insurance"]');
+      return editBtn ? getComputedStyle(editBtn.parentElement!).opacity : null;
+    });
+    expect(revealed).toBe("1");
     // G11: the active status pill = green-50/green-700 in plain rgb.
     expect(rowChrome!.pill!.bg).toBe("rgb(240, 253, 244)");
     expect(rowChrome!.pill!.color).toBe("rgb(21, 128, 61)");

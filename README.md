@@ -24,7 +24,7 @@ ZeroBalance tracks income, savings, and expenses as budget items, computes your 
 | 💰 **Net Worth tracker** | Assets vs liabilities tabs grouped **by type** under capitalize headers, gradient summary card with the `0.21:1` / `∞:1` asset-to-liability ratio |
 | 🔍 **Filterable item views** | Search + category + frequency (+ payment method on expenses) filters; per-classification/per-frequency badge maps, capitalized green Recurring badge; hover-revealed Edit/Calculate buttons on expense cards (plus a superset delete in the edit dialog) |
 | 📱 **Working mobile navigation** | Hamburger + slide-in sheet at 288px with the current route highlighted (the reference's forest-gradient active style) — plus both reference bugs fixed (below) |
-| 🔐 **Cookie-session auth** | scrypt password hashing + HMAC-signed sessions, per-IP rate limiting (10 attempts / 15 min), zod-validated API, three-state login card (sign-in / sign-up / forgot) |
+| 🔐 **Cookie-session auth** | scrypt password hashing + HMAC-signed sessions, per-IP rate limiting (10 attempts / 15 min), zod-validated API, four-state login card (sign-in / sign-up / forgot / verify-email) with the register flow gated behind a 6-digit email-verification code (honest self-hosted delivery — see the v21 plan) |
 
 ### Superset fixes over the reference
 
@@ -87,10 +87,10 @@ flowchart TB
 │   └── 📂 lib/                    # Domain seams: money, dashboard, validation,
 │                                  #   auth, rate-limit, serializers, db-path
 ├── 📂 tests/
-│   ├── 📄 *.test.ts               # Vitest unit suites (96 tests)
-│   └── 📂 e2e/                    # Playwright specs (135 tests) + global setup
+│   ├── 📄 *.test.ts               # Vitest unit suites (108 tests)
+│   └── 📂 e2e/                    # Playwright specs (142 tests) + global setup
 ├── 📂 scripts/
-│   ├── 📄 smoke-test.sh           # 30-step production API smoke test
+│   ├── 📄 smoke-test.sh           # 35-step production API smoke test
 │   └── 📄 capture-screenshots.mjs # docs/screenshots generator
 ├── 📄 docs/                       # Tailwind v4 report, SSH push runbook, DEPLOYMENT.md, remediation plan, session log
 └── 📄 db/custom.db                # SQLite database (gitignored)
@@ -136,7 +136,7 @@ npm start            # boots .next/standalone/server.js
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `DATABASE_URL` | yes | `file:../db/custom.db` — **relative to `prisma/schema.prisma`**, not the CWD. `src/lib/db-path.ts` anchors the same rule at runtime so CLI and server agree. |
-| `NEXT_PUBLIC_SITE_URL` | no | Canonical public origin for metadata (default `http://localhost:3000`). |
+| `NEXT_PUBLIC_SITE_URL` | no | Canonical public origin for metadata, `sitemap.xml` and `robots.txt` (default `http://localhost:3000`). |
 | `AUTH_SECRET` | prod | HMAC key for session cookies. Generate with `openssl rand -hex 32`. Falls back to an insecure dev constant when unset. |
 
 > **Database-location gotcha:** Prisma resolves a relative `file:` URL from a shell-inherited `DATABASE_URL` against the **CWD**, but from a `.env`-loaded value against the **schema dir**. The npm scripts pin `DATABASE_URL` (runtime) and use `env -u` (Prisma CLI) so both always land at `<repo>/db/custom.db`. Don't run bare `prisma db push` from an arbitrary directory.
@@ -144,9 +144,9 @@ npm start            # boots .next/standalone/server.js
 ## Testing
 
 ```bash
-npm test            # Vitest unit suite (96 tests) — pure domain seams
-npm run test:e2e    # Playwright e2e (137 tests) — needs `npm run build` first
-bash scripts/smoke-test.sh   # 30-step production API smoke (own server, port 3210)
+npm test            # Vitest unit suite (108 tests) — pure domain seams
+npm run test:e2e    # Playwright e2e (142 tests) — needs `npm run build` first
+bash scripts/smoke-test.sh   # 35-step production API smoke (own server, port 3210)
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint (react-hooks v6 rules enforced)
 ```
@@ -199,6 +199,7 @@ Measured from the reference's `:root` (computed styles as ground truth):
 | [`docs/remediation-plan-v18.md`](docs/remediation-plan-v18.md) | Session-35 parity iteration — the NET-WORTH ASSET/LIABILITY ERROR TIER measured for the first time (the last unpinned dialog family the session-34 log suggested): the reference is SILENT on both paths with its entity API dead (asset delete → card stays, no confirmation, no feedback; asset save → the dialog stays open, no feedback); the clone's save-failure superset verified live and PINNED ("Could not save the asset" / "Could not save the liability"), while the delete paths swallowed the rejection in THREE files (`void deleteAsset()` / `void deleteLiability()` in net-worth-view, and — found by the post-fix grep sweep — `void deleteItem()` in item-card, the card-menu path the v16 dialog audit missed) — all fixed with caught confirm-bar handlers + the "Could not delete the asset/liability/item" toasts (per-click semantics, surfaces unchanged: the card + confirm bar stay); 5 new e2e specs (asset/liability save/delete under route-aborted APIs + the item-card delete); G2: the register duplicate-email spec's flake root-caused as the Next.js ROUTE ANNOUNCER also rendering role=alert (the old waitForSelector matched the empty announcer, not the 409 banner) — hardened with a text-filtered retrying locator; mobile-nav R1–R4 re-verified + data drift clean (twelfth check) — 96/134/30 green |
 | [`docs/remediation-plan-v19.md`](docs/remediation-plan-v19.md) | Session-37 parity iteration — the **VLM VISUAL SWEEP** (the first full-page visual-AI comparison layer, the session-36 log's top suggestion): 12 auth-state pairs + 5 app views + 3 dialogs compared through `z-ai vision` with a mechanical pixel-diff layer — the auth surfaces IDENTICAL ×6 (the v12/v13 text pins held; the logo assets byte-identical by MD5), the app views LAYOUT_IDENTICAL ×5, the dialogs LAYOUT_IDENTICAL except ONE real drift: the item dialog's RECURRING-TOGGLE ROW (the reference runs the switch LEFT with the label right, NO calendar icon, borderless, on a green-tinted rgb(245,248,245) surface — the clone ran icon+label left, switch right, 1px border, transparent) — found by the VLM and DOM-verified on four axes (also DOM-refuted: two VLM hallucinations — the "faded logo" (MD5-identical assets) and the "taller button" (294×44 both)), fixed to the reference's exact arrangement and pinned by a new e2e spec; the calculator's flagged "extra line" refuted as a matching data-conditional (the reference shows the same "• Will update category total" on a non-zero item); tablet breakpoints 767/768/1024 re-measured (visual parity holds — heading x=288 both); mobile-nav R1–R4 re-verified + data drift clean (thirteenth check) — 96/135/30 green |
 | [`docs/remediation-plan-v20.md`](docs/remediation-plan-v20.md) | Session-39 parity iteration — the **mobile-app-view + populated-edit-dialog VLM sweep** (the session-38 log's two top suggestions): 5 mobile views at 390×844 + the populated Edit dialog + the breakdown drill-down compared pairwise — the mobile dashboard IDENTICAL, the networth flags all documented superset fix #4 manifestations (plus one tab-tint hallucination refuted: identical rgb(220,252,231) both), and TWO real drifts found and fixed: the ITEMS-VIEW HEADER ROW (base `items-start` missing → the Add button stretched full-width 358px on mobile vs the reference's auto-width 147; `mb-6` vs the reference's `mb-8` → a 24 vs 32px header→filter gap at BOTH viewports — the dashboard's row already carried the correct pattern) and the CLASSIFICATION TILES (the reference's tiles carry 16px lucide icons — circle-alert #e07a3b / heart #3b7ea1 / piggy-bank #8fbc3f — between the radio and the text in BOTH Add and Edit dialog states; the v19 empty-dialog sweep had missed them); both fixed TDD-first and live-re-measured exact; mobile-nav R1–R4 + data drift (fourteenth check) clean; the census probe's base64→atob UTF-8 mangling root-caused (the v19 "mid-pass fix") and fixed transport-safe — 96/137/30 green |
+| [`docs/remediation-plan-v21.md`](docs/remediation-plan-v21.md) | Session-41 parity iteration — **SEO + the register verification gate**: the sitemap.xml/robots.txt the reference serves added via Next.js MetadataRoute routes (its five-URL/priority structure mirrored with the clone's routes; `/login` excluded like the reference); the calculator's line-item row actions re-measured HOVER-REVEALED on the live reference (its `opacity-0 group-hover:opacity-100` chrome changed since the v6 pin — the same class as v19's recurring-row drift) and matched, with the `@variant group-hover` pin keeping the reveal alive on hover:none devices; and the REGISTER POST-SUCCESS flow measured for the first time (the reference gates registration behind a "Verify your email" state — 6-digit code inputs, a 5-attempt countdown, Resend semantics, unverified-login rejection) and rebuilt as the honest superset: the full state chrome + `/api/auth/verify-email` + `/api/auth/resend` + a 403 unverified-login rejection + the seeded demo user pre-verified; swept clean: the mobile sheet-open pair, the net-worth populated edit-asset pair (the X-close thrice-DOM-refuted), a keyboard-focus spot check — 108/142/35 green |
 | [`docs/session_1.md`](docs/session_1.md) · [`docs/session_2.md`](docs/session_2.md) · [`docs/session_3.md`](docs/session_3.md) | Narrative logs of the build + re-verification sessions |
 | [`worklog.md`](worklog.md) | Rolling project worklog (all sessions, latest first) |
 | [`Project_Architecture_Document.md`](Project_Architecture_Document.md) | 7 ADRs, topology, ER diagram, security model |

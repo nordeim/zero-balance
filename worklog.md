@@ -11,9 +11,81 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v13.md`, `docs/remediation-plan-v14.md`,
 `docs/remediation-plan-v15.md`, `docs/remediation-plan-v16.md`,
 `docs/remediation-plan-v17.md`, `docs/remediation-plan-v18.md`,
-`docs/remediation-plan-v19.md`, and `docs/remediation-plan-v20.md`.
+`docs/remediation-plan-v19.md`, `docs/remediation-plan-v20.md`,
+and `docs/remediation-plan-v21.md`.
 
 ---
+
+---
+
+---
+
+## Session 41 — Fresh verification & parity iteration v21 (2026-10-09)
+
+**Goal:** refresh the workspace (`git pull` to `dc09bf5` — the
+environment survived the boundary: `.env`/`db/`/node_modules intact,
+all standing brief requirements re-verified), re-verify the v20
+baseline, code-audit the recent changes (repo skills:
+code-review-and-audit native-CLI fallback — lint/tsc/tests green; npm
+audit = the same 5 dev-only ESLint braces advisories; secret scan
+clean), then the fresh two-site parity surfaces — the session-40 log's
+three suggested classes (the calculator's POPULATED state, the mobile
+SHEET-OPEN state, the net-worth populated EDIT dialogs) + the two
+remaining unmeasured auth flows (the register post-success landing —
+measured live for the first time — + a keyboard-focus spot sweep) +
+the brief's new standing SEO check — plus the explicit
+mobile-navigation re-verification + data-drift check. Formal log:
+`docs/session_42.md` (the session_41.md slot holds the incoming
+session-39 conversation summary).
+
+- Baseline chain at `dc09bf5` fully green (96/137/30 + lint/typecheck/
+  build — first full run, no flakes); the pulled v20 changeset
+  re-verified in the code first.
+- Mobile stack re-verified end-to-end (R1 the toast-container
+  interception, R2 the sheet trap, R3 the root-route highlight, R4 the
+  per-route overflow — ref 395/464 vs clone 390 on all six) + data
+  drift clean (fifteenth consecutive check).
+- **The v21 sweep**: the calculator populated pair (the row-actions
+  flag = a REAL reference chrome change — the live reference now
+  hover-reveals its line-item row actions, `opacity-0
+  group-hover:opacity-100`; the v6-era always-visible pin had aged; the
+  "Will update category total" flag = data-driven), the mobile
+  sheet-open pair (both flags = the documented superset #3 + avatar
+  data — chrome parity holds), the net-worth populated edit-asset pair
+  (the X-close claim thrice-DOM-refuted), the register flow measured
+  live (the "Verify your email" gate: 6-digit code inputs, the
+  5-attempt countdown, resend, re-register-re-issues, the unverified
+  sign-in rejection — all measured on the reference with a throwaway
+  account), the keyboard spot sweep (clean — the v13 focus ring holds
+  once settled + read in full), and the SEO check (the reference
+  serves robots.txt + sitemap.xml; the clone 404'd both).
+- **Three finding groups fixed TDD-first** (RED → GREEN each):
+  **(G1)** `src/app/robots.ts` + `src/app/sitemap.ts` via the Next.js
+  MetadataRoute conventions (the reference's five-URL/priority/weekly
+  structure mirrored with the clone's routes; Next's canonicalizations
+  documented as protocol-equivalent); **(G2)** the calculator row
+  actions matched to the live reference + the `@variant group-hover`
+  pin in globals.css (v4 media-gates the group family — the pin keeps
+  the reveal alive on hover:none devices); **(G3)** the register
+  verification gate rebuilt as the honest superset — the full state
+  chrome (the 64px shield-check circle, the 6×40×44 inputs, the 44px
+  primary button, the countdown line, resend), the new
+  `/api/auth/verify-email` + `/api/auth/resend` routes, the register
+  re-issue path (no session), the 403 unverified-login rejection with
+  the reference's exact banner, the honest no-mail dev-code delivery
+  (the v12 forgot-password precedent), and the seeded demo user
+  pre-verified (every login-dependent flow unaffected).
+- Full chain: lint · typecheck · **108/108 unit** · build ·
+  **142/142 e2e** (6 new) · **35/35 smoke** (5 new verify-gate steps).
+- Live parity re-verified: G1 both files served, G2 the byte-identical
+  container classes + the rest/hover opacities + geometry, G3 the full
+  live flow (register → the state → the correct code → the `/`
+  dashboard) + the VLM pair on the verify state: **IDENTICAL**. The
+  calculator shot regenerated (the G2 surface); all other shots
+  pixel-stable.
+- Docs aligned: README, CLAUDE.md, AGENTS.md, SKILL (lesson 39 +
+  Appendix B), the probe README (v21 catalog), `docs/session_42.md`,
+  this worklog.
 
 ---
 

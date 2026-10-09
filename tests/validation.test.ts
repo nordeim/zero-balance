@@ -6,7 +6,9 @@ import {
   createLiabilitySchema,
   loginSchema,
   registerSchema,
+  resendSchema,
   updateBudgetItemSchema,
+  verifyEmailSchema,
 } from "@/lib/validation";
 
 // The validation boundary: unknown input is rejected with a field-level
@@ -229,5 +231,25 @@ describe("auth schemas", () => {
     expect(registerSchema.safeParse({ email: "not-an-email", password: "Demo1234!" }).success).toBe(
       false,
     );
+  });
+});
+
+describe("verify-email schemas (v21 G3)", () => {
+  it("accepts a 6-digit numeric code", () => {
+    const parsed = verifyEmailSchema.parse({ email: "a@b.co", code: "012345" });
+    expect(parsed.code).toBe("012345");
+  });
+
+  it("rejects codes with letters or the wrong length", () => {
+    expect(verifyEmailSchema.safeParse({ email: "a@b.co", code: "12a456" }).success).toBe(false);
+    expect(verifyEmailSchema.safeParse({ email: "a@b.co", code: "12345" }).success).toBe(false);
+    expect(verifyEmailSchema.safeParse({ email: "a@b.co", code: "1234567" }).success).toBe(false);
+    expect(verifyEmailSchema.safeParse({ email: "a@b.co", code: "" }).success).toBe(false);
+  });
+
+  it("rejects malformed emails on both schemas", () => {
+    expect(verifyEmailSchema.safeParse({ email: "nope", code: "123456" }).success).toBe(false);
+    expect(resendSchema.safeParse({ email: "nope" }).success).toBe(false);
+    expect(resendSchema.parse({ email: " A@B.CO " }).email).toBe("a@b.co");
   });
 });
