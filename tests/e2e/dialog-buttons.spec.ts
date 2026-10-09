@@ -437,6 +437,7 @@ test.describe("dialog chrome (v9)", () => {
               svgW: svg ? Math.round(svg.getBoundingClientRect().width) : null,
               radius: xcs?.borderRadius,
               color: xcs?.color,
+              cls: x ? (x as HTMLElement).className || "" : null,
             }
           : null,
       };
@@ -450,6 +451,19 @@ test.describe("dialog chrome (v9)", () => {
     expect(chrome.x!.svgW).toBe(16);
     expect(chrome.x!.radius).toBe("6px");
     expect(chrome.x!.color).toBe("rgb(10, 10, 10)");
+    // v27 G1 — the X's keyboard-focus + hover family: the reference runs the
+    // shadcn ghost-icon base (focus-visible:ring-1, hover:text-accent-foreground
+    // — the SAME family as the dialog Cancel/Save buttons v26 verified
+    // byte-identical). The clone had drifted to focus:outline-none
+    // focus-visible:ring-2 with no hover text; the class attribute is the
+    // reliable arbiter (measured live with REAL Tab walks on both sites: the
+    // reference renders a 1px #0a0a0a ring, the drift rendered 2px).
+    expect(chrome.x!.cls).toContain("focus-visible:outline-none");
+    expect(chrome.x!.cls).toContain("focus-visible:ring-1");
+    expect(chrome.x!.cls).not.toContain("focus-visible:ring-2");
+    expect(chrome.x!.cls).not.toContain("focus:outline-none");
+    expect(chrome.x!.cls).toContain("hover:bg-accent");
+    expect(chrome.x!.cls).toContain("hover:text-accent-foreground");
   });
 
   test("field labels sit 12px above their inputs (inline label line box)", async ({ page }) => {

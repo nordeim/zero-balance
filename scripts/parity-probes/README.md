@@ -725,3 +725,37 @@ session-51 log's two suggestions), the :3200 parity server per
   gap): the reference's `/api/auth/register` started answering
   `400 "Security verification is required"` after ~2 synthetic
   registrations this session — a platform anti-automation gate.
+
+Session-53 additions (remediation-plan-v27 audit) — the suggested-surface
+sweep (reduced-motion, print/overscroll, scrollbars) ran as inline evals
+(no dedicated files needed — each was a one-shot CSSOM + computed-style
+walk); the finding surfaces got persisted probes:
+
+- `probe-v27-x-tabwalk.mjs` — the dialog X-close button's REAL-Tab focus
+  walk (the G1 evidence): dispatches keydown Tab events inside ONE eval
+  until the 36px X (svg + .sr-only) is focused, then reads its FULL
+  focused box-shadow + outline. Needed because the clone's Radix dialog
+  TRAPS focus while the reference's plain-div dialogs do not — the two
+  sites' Tab-walk-to-X stop counts differ (the reference reached the X
+  at walk stop 18; the clone's trap lands it on the first dispatched
+  Tab). Run with the dialog open (the Add Income button clicked first).
+- `probe-v27-x-hover.mjs` — the X's HOVER family read (bg + currentColor
+  + the hover: class list) with the dialog open; produced the second G1
+  axis (the reference runs `hover:bg-accent
+  hover:text-accent-foreground`, the clone only `hover:bg-accent`).
+- `probe-v27-x-focus-read.mjs` — the active element's full focused
+  shadow (a generic stop-sampler for the Tab walk).
+- `probe-v27-filter-triggers.mjs` — the items-view filter Select
+  triggers ("All Categories"/"All Frequencies") class + geometry read
+  (byte-identical on both sites — the `focus:ring-1 focus:ring-ring`
+  plain-focus family).
+- The reduced-motion sheet measurement: `agent-browser set media light
+  reduced-motion` + a synthetic-click sheet open sampled at 33ms
+  intervals (both sites animate the full 500ms slide-in; the spinner
+  probed via an injected `animate-spin` element — `animationName: spin`,
+  `1s`, `running`, transform rotating on both).
+- Probe-infrastructure note: the `with-server.sh` one-invocation pattern
+  kills the server after each command, so a page `open`ed in one
+  invocation boots against a dying server — the clone correctly renders
+  its v16 stay-in-app zero-state (data-dependent probes must run inside
+  ONE invocation; focus-ring probes are data-independent).
