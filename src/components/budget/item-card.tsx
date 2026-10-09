@@ -60,6 +60,7 @@ function formatDate(iso: string): string {
 export function BudgetItemCard({ item }: { item: BudgetItem }) {
   const openItemModal = useBudgetStore((s) => s.openItemModal);
   const openCalculator = useBudgetStore((s) => s.openCalculator);
+  const openDetails = useBudgetStore((s) => s.openDetails);
   const deleteItem = useBudgetStore((s) => s.deleteItem);
   const { toast } = useToast();
   const [confirming, setConfirming] = React.useState(false);
@@ -75,6 +76,16 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
         item.type === "expense" && "relative",
       )}
       style={{ border: `1px solid ${rgb.border}`, boxShadow: "rgba(0, 0, 0, 0.04) 0px 2px 8px" }}
+      // v28 G3: the card BODY opens the read-only details sheet (the
+      // reference's card-click surface). Clicks originating inside the
+      // card's own action controls (buttons, menu items) are ignored so
+      // Edit/Calculate/ellipsis keep acting on their own — the reference
+      // behaves the same way (its buttons act, its body opens details).
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest("button, [role='menuitem'], a, input, select, textarea"))
+          return;
+        openDetails(item);
+      }}
     >
       {item.type === "expense" && (
         /* Hover-revealed action row (reference: absolute top-3 right-3, z-10,
@@ -84,7 +95,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
           <button
             type="button"
             title="Edit Category"
-            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-input bg-white px-3 text-xs font-medium shadow-md transition-colors hover:bg-[#f9fafb]"
+            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-input bg-white px-3 text-xs font-medium shadow-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-[#f9fafb] hover:text-accent-foreground"
             onClick={() => openItemModal({ mode: "edit", item })}
           >
             <PenIcon className="mr-1 h-3.5 w-3.5" />
@@ -93,7 +104,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
           <button
             type="button"
             title="Open Calculator"
-            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-[#fed7aa] bg-white px-3 text-xs font-medium text-[#ea580c] shadow-md transition-colors hover:bg-[#fff7ed]"
+            className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-[#fed7aa] bg-white px-3 text-xs font-medium text-[#ea580c] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-[#fff7ed]"
             onClick={() => openCalculator(item)}
           >
             <CalculatorIcon className="mr-1 h-3.5 w-3.5" />
@@ -147,7 +158,7 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
       <div className="mb-3 flex flex-wrap gap-2">
         <span
           className={cn(
-            "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold",
+            "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors zb-badge-hover",
             clsBadge.chip,
           )}
         >
@@ -156,19 +167,19 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
         </span>
         <span
           className={cn(
-            "inline-flex items-center rounded-md border border-transparent px-2.5 py-0.5 text-xs font-semibold",
+            "inline-flex items-center rounded-md border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors zb-badge-hover",
             freqBadge,
           )}
         >
           {item.frequency}
         </span>
         {item.recurring && (
-          <span className="inline-flex items-center rounded-md border border-transparent bg-[#f0fdf4] px-2.5 py-0.5 text-xs font-semibold text-[#15803d]">
+          <span className="inline-flex items-center rounded-md border border-transparent bg-[#f0fdf4] px-2.5 py-0.5 text-xs font-semibold text-[#15803d] transition-colors zb-badge-hover">
             <RepeatIcon className="mr-1 h-3 w-3" />
             Recurring
           </span>
         )}
-        <span className="inline-flex items-center rounded-md border border-transparent bg-[#f8fafc] px-2.5 py-0.5 text-xs font-semibold text-[#334155]">
+        <span className="inline-flex items-center rounded-md border border-transparent bg-[#f8fafc] px-2.5 py-0.5 text-xs font-semibold text-[#334155] transition-colors zb-badge-hover">
           {item.status}
         </span>
       </div>

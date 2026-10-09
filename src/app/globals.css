@@ -293,6 +293,18 @@
   overflow-y: auto;
 }
 
+/* v28 G1 (docs/remediation-plan-v28.md): the card badges' hover tint — the
+   reference's shadcn Badge base carries hover:bg-secondary/80, which on the
+   live reference computes to plain rgba(245, 245, 245, 0.8). Tailwind v4
+   computes the same utility as oklab (lab(96.5375 0 0 / 0.8) — the v7 G6
+   oklab drift, same class as the overlay/border pins); this rule pins the
+   reference's exact computed value so the parity probes read identical
+   strings. transition-colors still animates it (the utility class on the
+   badge keeps the 150ms family). */
+.zb-badge-hover:hover {
+  background-color: rgba(245, 245, 245, 0.8);
+}
+
 /* Toast viewport — the reference's sonner-style positioning.
    FIX over the reference: the container is pointer-events-none so the
    EMPTY toaster can never swallow clicks (the live app's container has

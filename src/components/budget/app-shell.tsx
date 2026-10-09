@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/toast";
 import { AppSidebar, MobileTopbar } from "./sidebar";
 import { BudgetItemDialog } from "./budget-item-dialog";
 import { CalculatorDialog } from "./calculator-dialog";
+import { ItemDetailsDialog } from "./item-details-dialog";
 import { LineItemDialog } from "./line-item-dialog";
 import { AssetDialog } from "./asset-dialog";
 import { LiabilityDialog } from "./liability-dialog";
@@ -20,6 +21,7 @@ function ModalHost() {
     <>
       {modal.item && <BudgetItemDialog key="item" />}
       {modal.calculator && <CalculatorDialog key="calculator" />}
+      {modal.details && <ItemDetailsDialog key="details" />}
       {modal.lineItem && <LineItemDialog key="line-item" />}
       {modal.asset && <AssetDialog key="asset" />}
       {modal.liability && <LiabilityDialog key="liability" />}

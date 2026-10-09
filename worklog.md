@@ -15,13 +15,66 @@ live in `docs/remediation-plan.md` (v1), `docs/remediation-plan-v2.md`,
 `docs/remediation-plan-v21.md`, `docs/remediation-plan-v22.md`,
 `docs/remediation-plan-v23.md`, `docs/remediation-plan-v24.md`,
 and `docs/remediation-plan-v25.md`,
-and `docs/remediation-plan-v26.md`.
+and `docs/remediation-plan-v26.md`,
+and `docs/remediation-plan-v27.md`,
+and `docs/remediation-plan-v28.md`.
 
 ---
 
 ---
 
 ---
+
+---
+
+## Session 55 — Parity iteration v28: the Budget Item Details sheet + the badge/button families (2026-10-09)
+
+**Goal:** workspace re-clone (the sandbox reset) + rebuild, re-run the
+baseline chain, audit, sweep the session-55 suggestions (the button
+census, the card action trigger, the avatar chip, the toast close
+buttons), fix what the DOM finds, TDD-first, docs aligned, commit + push
+via the SSH wrapper.
+
+- The workspace was RESET — both repos re-cloned (`zero-balance` at
+  `8329114`, `scandihaven` at `d4789c3`); the environment rebuilt and
+  re-verified (.env, db re-pushed + re-seeded, node_modules). Baseline
+  green on the first run: 108/155/35 + lint + typecheck + build. Audit
+  clean (the same 5 dev-only `braces` advisories, secret scan clean).
+- Standing checks all clean: mobile-nav R1–R4 (22nd — Tailwind v4 pins
+  hold, both sites), data drift (22nd — the toast probes' throwaway
+  items deleted through the reference's own UI, census re-verified), the
+  SEO pair.
+- The session-55 suggestions all resolved: the one-pass button census
+  (found G1+G2), the avatar chip (non-interactive on both — no
+  finding), the toast close buttons (the reference renders NO toasts on
+  add-success — viewport heights [32,32] at 200ms/900ms/3.4s — the
+  clone's toasts remain the superset).
+- **G3 (the headline — a whole missing surface)**: the reference's
+  card-body click opens a read-only **Budget Item Details sheet**; the
+  clone's card click was dead. Fully measured (all three types, both
+  viewports: the forest-50%+blur overlay, the mobile bottom sheet /
+  desktop 512px max-w-lg panel, the sticky header + X-close, the
+  pill-badge summary with the type-colored amount, the tinted
+  classification block with its own copy map, the icon-led fact rows
+  incl. conditional Payment Method + Notes, the Created/Last Updated
+  footer) and built: `item-details-dialog.tsx` + the store's `details`
+  slot + the card's guarded onClick + the app-shell mount.
+- **G1**: the card badges' hover family — the reference tints to
+  `rgba(245,245,245,0.8)` on a REAL CDP hover; fixed via the
+  `.zb-badge-hover` globals.css pin (the direct TW4 utility computes as
+  oklab — the v7 G6 drift class).
+- **G2**: the expense-card Edit/Calculate buttons' keyboard family —
+  `focus-visible:ring-1` + the Edit's `hover:text-accent-foreground`
+  (the clone's hand-written strings had none; the UA default outline
+  rendered on real Tab).
+- TDD throughout: RED first for all three, pin-sanity mutations all
+  FAIL, restored; live re-verification on :3200 (the sheet's geometry
+  byte-identical at both viewports; the badge tint + the real-Tab ring
+  measured exact). Full chain **108/158/35 green** (3 new e2e);
+  screenshots regenerated — 15 byte-identical + the new
+  `16-item-details.png`. Probe lessons persisted: synthetic mouseenter
+  NEVER engages :hover (REAL `mouse move` does); the reference's
+  dialogs don't close on Escape; its number-input's value stays empty.
 
 ---
 

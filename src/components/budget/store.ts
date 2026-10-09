@@ -26,6 +26,9 @@ export interface ModalState {
   item: { mode: "create"; type: BudgetItem["type"] } | { mode: "edit"; item: BudgetItem } | null;
   /** Rent calculator, scoped to one expense item. */
   calculator: { item: BudgetItem } | null;
+  /** v28 G3: the read-only "Budget Item Details" sheet — the reference's
+   *  card-body-click surface (docs/remediation-plan-v28.md). */
+  details: { item: BudgetItem } | null;
   /** Add/edit line item inside the calculator. */
   lineItem:
     | { mode: "create"; budgetItemId: string }
@@ -81,6 +84,8 @@ interface BudgetStore {
 
   openItemModal: (modal: ModalState["item"]) => void;
   openCalculator: (item: BudgetItem) => void;
+  /** v28 G3: open the read-only details sheet for one item. */
+  openDetails: (item: BudgetItem) => void;
   openLineItemModal: (modal: ModalState["lineItem"]) => void;
   openAssetModal: (modal: ModalState["asset"]) => void;
   openLiabilityModal: (modal: ModalState["liability"]) => void;
@@ -108,6 +113,7 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
   modal: {
     item: null,
     calculator: null,
+    details: null,
     lineItem: null,
     asset: null,
     liability: null,
@@ -331,12 +337,13 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
 
   openItemModal: (item) => set((s) => ({ modal: { ...s.modal, item } })),
   openCalculator: (item) => set((s) => ({ modal: { ...s.modal, calculator: { item } } })),
+  openDetails: (item) => set((s) => ({ modal: { ...s.modal, details: { item } } })),
   openLineItemModal: (lineItem) => set((s) => ({ modal: { ...s.modal, lineItem } })),
   openAssetModal: (asset) => set((s) => ({ modal: { ...s.modal, asset } })),
   openLiabilityModal: (liability) => set((s) => ({ modal: { ...s.modal, liability } })),
   closeModals: () =>
     set({
-      modal: { item: null, calculator: null, lineItem: null, asset: null, liability: null },
+      modal: { item: null, calculator: null, details: null, lineItem: null, asset: null, liability: null },
     }),
   closeLineItemModal: () => set((s) => ({ modal: { ...s.modal, lineItem: null } })),
 }));

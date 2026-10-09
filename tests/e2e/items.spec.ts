@@ -270,6 +270,20 @@ test.describe("expenses view", () => {
     await expect(recurring).toHaveClass(/bg-\[#f0fdf4\]/);
     await expect(recurring).toHaveClass(/text-\[#15803d\]/);
     await expect(recurring.locator("svg.lucide-repeat")).toBeVisible();
+    // v28 G1: the reference's badge hover family — every card badge
+    // carries transition-colors + the hover tint (a REAL CDP hover tints
+    // the bg to rgba(245,245,245,0.8), secondary #f5f5f5 at 80%; measured
+    // live on the reference's status/need badges this session). The tint
+    // is pinned via .zb-badge-hover (globals.css) — Tailwind v4 computes
+    // hover:bg-secondary/80 as oklab, the reference renders plain rgba
+    // (the v7 G6 oklab-drift lesson). The reference's inert focus classes
+    // (focus:ring-2 on non-focusable DIVs) render nothing on either site
+    // — not pinned.
+    await expect(needBadge).toHaveClass(/transition-colors/);
+    await expect(needBadge).toHaveClass(/zb-badge-hover/);
+    await expect(rent.getByText("monthly", { exact: true })).toHaveClass(/zb-badge-hover/);
+    await expect(rent.getByText("active", { exact: true })).toHaveClass(/zb-badge-hover/);
+    await expect(recurring).toHaveClass(/zb-badge-hover/);
   });
 
   test("expense cards carry the hover-revealed Edit and Calculate buttons", async ({ page }) => {
@@ -285,6 +299,21 @@ test.describe("expenses view", () => {
     await expect(calculate).toHaveClass(/text-\[#ea580c\]/);
     // Expense cards have NO ellipsis menu (reference DOM: 0/3 cards).
     await expect(rent.getByRole("button", { name: /Actions for/ })).toHaveCount(0);
+    // v28 G2: the footer buttons' keyboard family — the reference's Edit/
+    // Calculate carry the shadcn focus base (focus-visible:ring-1 — a 1px
+    // #0a0a0a ring on a REAL Tab walk, the same family as every reference
+    // button); the clone's hand-written strings had NO focus family (the
+    // UA default outline rendered instead). Edit also carries the
+    // reference's hover:text-accent-foreground; Calculate keeps its
+    // orange text on hover (no hover-text class on the reference either).
+    await expect(edit).toHaveClass(/focus-visible:outline-none/);
+    await expect(edit).toHaveClass(/focus-visible:ring-1/);
+    await expect(edit).not.toHaveClass(/focus-visible:ring-2/);
+    await expect(edit).toHaveClass(/hover:text-accent-foreground/);
+    await expect(calculate).toHaveClass(/focus-visible:outline-none/);
+    await expect(calculate).toHaveClass(/focus-visible:ring-1/);
+    await expect(calculate).not.toHaveClass(/focus-visible:ring-2/);
+    await expect(calculate).not.toHaveClass(/hover:text-accent-foreground/);
   });
 
   test("the edit dialog offers the superset delete path", async ({ page }) => {

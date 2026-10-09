@@ -13,7 +13,8 @@
 //   12-mobile-networth (the responsive summary card, superset fix #6) ·
 //   13-not-found (the reference's custom 404 — plan v7 G7) ·
 //   14-login-error (the reference's error-banner — plan v12 G1) ·
-//   15-forgot-reset (the forgot confirmation state — plan v12 G4)
+//   15-forgot-reset (the forgot confirmation state — plan v12 G4) ·
+//   16-item-details (the read-only Budget Item Details sheet — plan v28 G3)
 //
 // Usage:   node scripts/capture-screenshots.mjs
 // Requires `bun run build` (the standalone server) + a seeded db/custom.db.
@@ -183,6 +184,17 @@ async function main() {
     await editDialog.getByLabel("Amount").fill("1850");
     await editDialog.getByRole("button", { name: "Save Item" }).click();
     await page.getByText("3 items · $2235.00").waitFor();
+
+    // 6b. the Budget Item Details sheet (v28 G3 — the reference's
+    // card-body-click surface): click the Rent card's heading (the card
+    // body, not its action buttons) and shoot the read-only sheet.
+    await rent.locator("h4").click();
+    const details = page.getByRole("dialog", { name: "Budget Item Details" });
+    await details.waitFor();
+    await wait(350);
+    await shoot(page, "16-item-details.png");
+    await details.getByRole("button", { name: "Close" }).click();
+    await details.waitFor({ state: "hidden" });
 
     // 7. mobile chrome (390×844) — a separate context: carry the session
     // over with a real API login (cookies live in the context).

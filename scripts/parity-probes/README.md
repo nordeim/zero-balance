@@ -759,3 +759,32 @@ walk); the finding surfaces got persisted probes:
   invocation boots against a dying server — the clone correctly renders
   its v16 stay-in-app zero-state (data-dependent probes must run inside
   ONE invocation; focus-ring probes are data-independent).
+
+Session-55 additions (remediation-plan-v28 audit) — the details-sheet
+discovery + the badge-hover discipline:
+
+- `probe-v28-btn-census.mjs` — the ONE-PASS button-variant census (every
+  `<button>` on the items views with full class strings; found G2 and the
+  badge-hover lead).
+- `probe-v28-card-dump.mjs` / `probe-v28-badge-hover.mjs` — the expense
+  card's interactive structure + all badge classes + the synthetic-hover
+  probe (NOTE: synthetic mouseenter never engages `:hover` — the REAL
+  CDP `agent-browser mouse move` to the badge center is the arbiter).
+- `probe-v28-details-*.mjs` — the Budget Item Details sheet contract:
+  `-leaves.mjs` (fact-row/classification/summary styles), `-expense.mjs` /
+  `-savings.mjs` (type variants), `-clsvar.mjs` (want/savings
+  classification variants), `-overlay.mjs` (overlay + outside-click),
+  `-esc.mjs` (Escape + mobile geometry).
+- `probe-v28-toast.mjs` / `probe-v28-toast2.mjs` / `probe-v28-toast3.mjs`
+  — the reference's toast-render timing check (viewport heights at
+  200ms/900ms/3.4s after a save: [32,32] — the reference renders NO
+  toasts; the number-input finder must match `input[type=number]`, its
+  value stays EMPTY, "0.00" is the placeholder).
+- `probe-v28-focus-stop.mjs` — the real-Tab walk stop reader (full
+  box-shadow + outline per stop).
+- `clone-sweep-v28.sh` / `clone-tabwalk-v28.sh` / `clone-tabwalk-full-v28.sh`
+  / `clone-edit-focus-v28.sh` / `clone-mobile-nav-v28.sh` /
+  `clone-cardclick-v28.sh` / `clone-verify-v28.sh` — the clone-side
+  login-in-one-invocation patterns: the census, the real-Tab walks to the
+  Edit/Calculate buttons, the R1–R4 mobile-nav standing check, the dead
+  card-click verification, and the post-fix live re-verification.
