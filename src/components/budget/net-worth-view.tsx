@@ -77,7 +77,7 @@ function AssetCard({ asset }: { asset: Asset }) {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
             aria-label={`Actions for ${asset.name}`}
           >
             <EllipsisVerticalIcon className="h-4 w-4" />
@@ -88,7 +88,7 @@ function AssetCard({ asset }: { asset: Asset }) {
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="text-[#dc2626] focus:text-[#dc2626]"
+              className="text-[#dc2626]"
               onSelect={() => setConfirming(true)}
             >
               Delete
@@ -181,7 +181,7 @@ function LiabilityCard({ liability }: { liability: Liability }) {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md opacity-0 transition-opacity focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
             aria-label={`Actions for ${liability.name}`}
           >
             <EllipsisVerticalIcon className="h-4 w-4" />
@@ -191,7 +191,7 @@ function LiabilityCard({ liability }: { liability: Liability }) {
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="text-[#dc2626] focus:text-[#dc2626]"
+              className="text-[#dc2626]"
               onSelect={() => setConfirming(true)}
             >
               Delete

@@ -1119,3 +1119,72 @@ frequency Select's listbox keyboard contract, the API error-tier audit):
   (f) The reference's burger has no aria-label (sr-only span names
   it); the reference's mobile sheet closes via the burger TOGGLE (no
   X button).
+
+
+Session-68 additions (remediation-plan-v35 audit — the session-70
+suggested surfaces: the item-card action menus' open-state focus chrome,
+the dashboard quick-action buttons' focus-visible family, the
+deep-link/URL contract):
+
+- `census-v35.mjs` — the standing data-drift census (29th — clean; the
+  reference's own live numbers re-verified unchanged before + after).
+- `clone-mobile-nav-v35.sh` — the clone-side standing checks (R1–R4 +
+  the census) against the :3200 parity server; reuses the v34 probe
+  files (R1/R2/R3/R4 are date-stable standing checks).
+- `probe-menu-census-v35.mjs` / `probe-menu-full-v35.mjs` — the action
+  menu's OPEN-STATE structure census: the portal wrapper
+  (`data-radix-popper-content-wrapper`), the role=menu container, the
+  two menuitems, the full class strings, and the initial focus. NOTE
+  the full-open probe dispatches pointerdown + mousedown + click (a
+  bare `.click()` does NOT open Radix's DropdownMenuTrigger — it opens
+  on pointerdown).
+- `probe-menu-itemfocus-v35.mjs` — the REAL-key item-focus reader: the
+  active item's `:focus` match + the accent bg + the text color of
+  BOTH items (the focused + the resting — the Delete renders red at
+  rest but accent-foreground #171717 when FOCUSED on the reference;
+  the clone's invented `focus:text-[#dc2626]` was the v35 G1 drift).
+- `probe-menu-cls-v35.mjs` — the full menu + item class strings (the
+  reference's Delete carries `text-red-600` appended — a plain
+  single-class utility that its base `focus:text-accent-foreground`
+  OUTSPECIFIES when focused; the cascade IS the contract).
+- `probe-focus-add-v35.mjs` / `probe-read-add-fv-v35.mjs` — the
+  quick-action Add Item button's focus-visible reader (programmatic
+  focus + REAL Tab out-and-back — the `:focus-visible` engagement
+  pattern) and the computed four-layer box-shadow composite reader.
+- `probe-trig-fv-v35.mjs` — the menu TRIGGER's focus-visible reader
+  (REAL Tab landing; the shadcn 1px #0a0a0a ring family — the clone's
+  raw Radix triggers lacked it entirely, the v35 G2 fix).
+- `clone-surfaceA-v35.sh` / `clone-surfaceA-clean-v35.sh` / `
+  clone-surfaceBC-v35.sh` — the clone-side surface probes (the menu
+  contract, the quick-action family, the from_url deep link, the 404
+  link semantics) against the :3200 parity server.
+- `vlm-compare` (ad-hoc, /tmp/vlm35) — the VLM pairs: the dashboard
+  (one flag DOM-explained = superset #3 + the demo-data letter/fill)
+  and the menu-OPEN state with Delete highlighted (VERDICT IDENTICAL,
+  zero flags — the G1 red-vs-dark text is below VLM resolution; the
+  DOM-level measurement is the authority).
+- LESSONS: (a) **COMPARE THE SAME OPEN PATH** — click-open and
+  Enter-open land focus DIFFERENTLY on BOTH sites (click → the menu
+  CONTAINER; Enter → the FIRST item); the first cross-path comparison
+  (reference click-open vs clone Enter-open) fabricated a phantom
+  "the clone lands on an item" finding — measure the FULL matrix (2
+  open paths × 2 sites) before claiming a landing difference.
+  (b) The genuine reference contract: ArrowUp from the click-open
+  CONTAINER lands on the LAST item (the standard Radix convention) —
+  an Enter-open-then-ArrowUp sequence reads a CLAMP at index 0 and
+  looks like "both arrows land on the first item" (the contamination
+  this session's first S1 draft encoded — caught when the test went
+  RED on the wrong assertion). (c) The persistent eval scope strikes
+  EVERY session — wrap probe bodies in IIFEs via run-probe.sh (the
+  `Identifier already declared` family). (d) A "rest" style read
+  AFTER a REAL-Tab focus sequence is still a FOCUSED read — blur
+  first (the Add Item rest-shadow probe initially read the focused
+  composite; the reference's two transparent lead slots are the v3
+  compiled-output artifact, the visible pixels identical). (e) A sed
+  regex chokes on Tailwind class strings containing `[state=open]`
+  (a character-class, not a literal) — use the Edit tool for class
+  strings; and a wide sed on a shared substring can strip MORE
+  classes than intended (the v35 mutation-B strip also removed the
+  expense-card buttons' ring family — caught by the full-chain
+  re-run, restored, and the final changeset re-verified against
+  `git diff` before shipping).

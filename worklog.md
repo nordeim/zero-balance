@@ -23,7 +23,8 @@ and `docs/remediation-plan-v30.md`,
 and `docs/remediation-plan-v31.md`,
 and `docs/remediation-plan-v32.md`,
 and `docs/remediation-plan-v33.md`,
-and `docs/remediation-plan-v34.md`.
+and `docs/remediation-plan-v34.md`,
+and `docs/remediation-plan-v35.md`.
 
 ---
 
@@ -32,6 +33,49 @@ and `docs/remediation-plan-v34.md`.
 ---
 
 ---
+
+## Session 68 — Parity iteration v35: the action-menu focus family fixed + the quick-action/deep-link surfaces pinned (2026-10-10)
+
+**Goal:** rebuild the reset workspace, re-run the baseline chain, audit,
+sweep the session-70 suggestions (the item-card action menus' open-state
+focus chrome, the dashboard quick-action buttons' focus-visible family,
+the deep-link/URL contract), fix what the DOM finds, TDD-first, docs
+aligned, commit + push via the SSH wrapper.
+
+- Workspace REBUILT from scratch (the sandbox was reset): fresh clone
+  (`54b07f4`), npm install, .env restored, db/ pushed + seeded,
+  scandihaven re-cloned. Baseline green on the FIRST full run:
+  **108/168/35** + lint + typecheck + build. Audit clean (the same 5
+  dev-only braces advisories, secret scan clean, .env.example current).
+- Standing checks all clean: mobile-nav R1–R4 (**29th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395/464 overflows all still live), data drift
+  (29th — reference read-only, verified before + after), the SEO pair
+  (head census matching the pinned values), the VLM dashboard +
+  menu-open pairs (dashboard flags DOM-explained = superset #3 + demo
+  data; menu-open IDENTICAL, zero flags).
+- The session-70 suggested surfaces, first-time REAL-key measurements:
+  **G1** — the action-menu DELETE's FOCUSED text color (the reference
+  renders accent-foreground rgb(23,23,23); the clone's v5-era
+  `focus:text-[#dc2626]` kept it RED) — fixed on all three Delete
+  items; **G2** — the menu TRIGGERS lacked the reference's shadcn
+  `focus-visible:ring-1 ring-ring` family entirely (the raw Radix
+  primitive) — fixed on all three triggers; the rest of the menu
+  contract byte-identical (click-open container / Enter-open first
+  item / ArrowUp-from-container LAST item / roving / Home-End /
+  Tab-trap / Escape→trigger / 118×32 items / 36×36 hover-revealed
+  trigger); the quick-action Add Item's focus-visible four-layer
+  composite byte-identical (pinned at the dashboard instance); the
+  from_url deep-link honored identically on both sites (pinned); the
+  404's Go Home link-vs-button documented as a SUPERSET.
+- THREE new pins (TDD: S1 RED on exactly the G1 drift → the fixes →
+  GREEN → both pin-sanity mutations bite → restored; S2/S3 GREEN with
+  the mutation verified) — `docs/remediation-plan-v35.md` written and
+  validated against the codebase pre-execution.
+- Full chain **108/171/35 green** (168 → 171); the 16 screenshots
+  regenerated (the net-worth diffs = the seeded relative dates rolling
+  forward); docs aligned (README/CLAUDE/AGENTS/SKILL/probe-README/
+  session_72); committed and pushed to main via the SSH wrapper.
 
 ## Session 67 — Parity iteration v34: the forgot-state focus walk + the frequency listbox contract pinned, zero production-code drift (2026-10-10)
 

@@ -96,6 +96,98 @@ test.describe("neutral token parity (v5)", () => {
     await page.keyboard.press("Escape");
   });
 
+  test("the action-menu keyboard contract + focused Delete family (v35 G1/S1)", async ({ page }) => {
+    // Session-70 surface #1, first measured v35: the dropdown's keyboard
+    // contract is the Radix roving family — fresh-open via CLICK lands
+    // focus on the menu CONTAINER; both arrows from the container land on
+    // the FIRST item; arrows rove with the accent highlight following;
+    // Home/End jump to the ends; Tab while open is TRAPPED (the menu
+    // survives, focus stays on the item); Escape closes and returns
+    // focus to the trigger; the trigger's focus-visible chrome is the
+    // shadcn 1px #0a0a0a ring family.
+    const card = page.locator("main .group", { hasText: "Salary" }).first();
+    await card.hover();
+    await page.getByRole("button", { name: "Actions for Salary" }).click({ force: true });
+    const menu = page.locator('[role="menu"]');
+    await expect(menu).toBeVisible();
+
+    // Fresh-open via CLICK: focus sits on the menu container (role=menu),
+    // not an item — the reference's click-open family (both sites).
+    const freshOpen = await page.evaluate(() => {
+      const m = document.querySelector('[role="menu"]');
+      const ae = document.activeElement;
+      return {
+        onContainer: ae === m,
+        activeRole: ae ? ae.getAttribute("role") : null,
+        itemCount: m ? m.querySelectorAll('[role="menuitem"]').length : 0,
+      };
+    });
+    expect(freshOpen.onContainer).toBe(true);
+    expect(freshOpen.activeRole).toBe("menu");
+    expect(freshOpen.itemCount).toBe(2);
+
+    // ArrowUp from the container lands on the LAST item; ArrowDown on the
+    // first (the standard Radix menu convention — measured live on the
+    // reference's click-open state).
+    await page.keyboard.press("ArrowUp");
+    await expect(page.locator('[role="menuitem"]').filter({ hasText: "Delete" })).toBeFocused();
+    // Roving up: Delete → Edit; then back down: Edit → Delete — the focused
+    // DELETE renders the accent family (v35 G1): bg #f5f5f5 +
+    // accent-foreground text rgb(23,23,23) — the reference's
+    // focus:text-accent-foreground outspecifies its text-red-600 when
+    // focused. Red only at REST.
+    await page.keyboard.press("ArrowUp");
+    await expect(page.locator('[role="menuitem"]').filter({ hasText: "Edit" })).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator('[role="menuitem"]').filter({ hasText: "Delete" })).toBeFocused();
+    await page.waitForTimeout(250); // transition-colors 150ms settle
+    const focusedDelete = await page.evaluate(() => {
+      const del = [...document.querySelectorAll('[role="menuitem"]')].find(
+        (x) => (x.textContent || "").trim() === "Delete",
+      );
+      if (!del) return null;
+      const cs = getComputedStyle(del);
+      return { bg: cs.backgroundColor, color: cs.color };
+    });
+    expect(focusedDelete).not.toBeNull();
+    expect(focusedDelete!.bg).toBe("rgb(245, 245, 245)");
+    expect(focusedDelete!.color).toBe("rgb(23, 23, 23)");
+
+    // Home/End jump to the ends (Delete → Edit → Delete).
+    await page.keyboard.press("Home");
+    await expect(page.locator('[role="menuitem"]').filter({ hasText: "Edit" })).toBeFocused();
+    await page.keyboard.press("End");
+    await expect(page.locator('[role="menuitem"]').filter({ hasText: "Delete" })).toBeFocused();
+
+    // Tab while open is TRAPPED: the menu survives, focus stays on the
+    // highlighted item (Radix contains focus inside the open menu).
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(300);
+    await expect(menu).toBeVisible();
+    await expect(page.locator('[role="menuitem"]').filter({ hasText: "Delete" })).toBeFocused();
+
+    // Escape closes the menu and returns focus to the trigger.
+    await page.keyboard.press("Escape");
+    await expect(menu).not.toBeVisible();
+    await expect(page.getByRole("button", { name: "Actions for Salary" })).toBeFocused();
+
+    // The trigger's REAL focus-visible chrome: the shadcn 1px #0a0a0a ring
+    // (white 0px lead + 1px ring + the family's trailing slot).
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Shift+Tab");
+    await page.waitForTimeout(350); // ring fade-in settle (v23 G1)
+    const trig = page.getByRole("button", { name: "Actions for Salary" });
+    const trigChrome = await trig.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return {
+        fv: el.matches(":focus-visible"),
+        shadow: cs.boxShadow,
+      };
+    });
+    expect(trigChrome.fv).toBe(true);
+    expect(trigChrome.shadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+  });
+
   test("select dropdown highlighted item matches the reference (G5)", async ({ page }) => {
     await page.getByRole("combobox").first().click();
     const option = page.locator('[role="option"]').first();

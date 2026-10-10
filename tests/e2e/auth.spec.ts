@@ -163,6 +163,20 @@ test.describe("login route", () => {
     await expect(page.getByRole("heading", { name: "Budget Dashboard" })).toBeVisible();
   });
 
+  test("a from_url deep link lands on the param route after sign-in (v35 S3)", async ({ page }) => {
+    // Session-70 surface #3, first measured v35: the reference's login
+    // HONORS ?from_url — with /income it lands on /income after a valid
+    // sign-in (measured live on its own /login?from_url=/income). The
+    // no-param fallback / is the v7 G1 pin above. The clone honors the
+    // param identically — this pins the deep-link contract.
+    await page.goto("/login?from_url=/income");
+    await page.getByLabel("Email").fill(DEMO_EMAIL);
+    await page.getByLabel("Password").fill(DEMO_PASSWORD);
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page).toHaveURL(/\/income$/, { timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: "Income", exact: true })).toBeVisible();
+  });
+
   test("the root route serves the dashboard for a signed-in session", async ({ page }) => {
     // This file opted out of the storageState, so sign in via the API to
     // prove the authenticated root behavior: "/" and "/dashboard" both

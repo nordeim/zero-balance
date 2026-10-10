@@ -32,6 +32,30 @@ test.describe("dashboard", () => {
     expect(bg).toContain("linear-gradient(135deg, rgb(45, 90, 74), rgb(143, 188, 63))");
   });
 
+  test("the quick-action Add Item renders the reference focus-visible composite (v35 S2)", async ({ page }) => {
+    // Session-70 surface #2, first measured v35: the reference's "Add Item"
+    // header button, REAL-Tab-measured, renders the FOUR-layer composite —
+    // the v4 white zero-spread lead + the shadcn 1px #0a0a0a ring + the
+    // gradient family's two ambient layers — with v3's outline-none
+    // (transparent 2px, offset 2px). The clone's .zb-btn-add:focus-visible
+    // (globals.css, v11) emits it; this pins the dashboard instance.
+    const add = page.getByRole("button", { name: "Add Item" });
+    await expect(add).toBeVisible();
+    const focused = await add.evaluate((el) => {
+      // focusVisible is a real Chromium FocusOptions member (the live
+      // probes used it) — TS's DOM lib lags it, hence the cast.
+      (el as HTMLElement).focus({ focusVisible: true } as unknown as FocusOptions);
+      const cs = getComputedStyle(el);
+      return { fv: el.matches(":focus-visible"), shadow: cs.boxShadow, outline: cs.outline };
+    });
+    expect(focused.fv).toBe(true);
+    expect(focused.shadow).toContain("rgb(255, 255, 255) 0px 0px 0px 0px");
+    expect(focused.shadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+    expect(focused.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(focused.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+    expect(focused.outline).toBe("rgba(0, 0, 0, 0) solid 2px");
+  });
+
   test("NET ZERO GOAL hero shows allocation, |balance| and Under Budget status", async ({ page }) => {
     await expect(page.getByText("NET ZERO GOAL")).toBeVisible();
     await expect(page.getByText("Income = Savings + Expenses")).toBeVisible();
