@@ -35,6 +35,81 @@ and `docs/remediation-plan-v36.md`.
 
 ---
 
+---
+
+## Session 71 — Parity iteration v37: the filter triggers' focus family + the search typing contract + the payment-method filter pinned, zero production-code drift (2026-10-11)
+
+**Goal:** re-clone the reset workspace, re-run the baseline chain,
+audit, sweep the session-76 suggestions (the filter Select TRIGGERS'
+focus-visible family, the search input's focus + typing contract, the
+/expenses payment-method filter), fix what the DOM finds, TDD-first,
+docs aligned, commit + push via the SSH wrapper.
+
+- Workspace re-cloned fresh (`118a45b`; the old one had been reset —
+  only an "Initial commit", no remote). Environment rebuilt: npm
+  install, `cp .env.example .env` (`DATABASE_URL="file:../db/
+  custom.db"`), db:push + db:seed. Baseline green on the FIRST full
+  run: **108/174/35** + lint + typecheck + build. Audit clean (the
+  same 5 dev-only braces advisories, secret scan clean,
+  `.env.example` current).
+- Standing checks all clean: mobile-nav R1–R4 (**31st** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395/464 overflows all still live), data drift
+  (31st — reference read-only, verified before + after; the PM probe
+  Escape-closed without selecting, the edit-dialog probe opened +
+  Escape-closed without saving), the SEO pair (robots/sitemap/head
+  census matching the pinned values; the reference's sitemap
+  capitalizes its app-route URLs — measured live, documented), the
+  VLM /expenses+PM-open pair (all five flags data-explained: the card
+  count, the extra tags + footer chips + the two extra dropdown
+  options = the clone's seed carrying paymentMethod values, the
+  avatar letter).
+- The session-76 suggested surfaces, all first-time measurements,
+  **ZERO production-code drift**:
+  - **Surface A** — the filter Select TRIGGERS' focus-visible family
+    (the v36 census walked past the stops without asserting their
+    chrome): a REAL Tab onto the closed trigger renders the 1px
+    #0a0a0a ring + the ambient shadow over the UNTINTED border
+    (216×36). Pinned (S1) with the mutation sanity (stripping the
+    SelectTrigger's `focus:ring-1 focus:ring-ring` FAILS it). **O1
+    documented (not drift)**: the full box-shadow strings differ in
+    their INVISIBLE lead layers (the reference's v3 three-slot
+    white-offset construct vs the clone's v4 five-slot transparent
+    construct — every lead a 0px-spread shadow, invisible by
+    construction; the VISIBLE layers byte-identical, the v11
+    shadow-scale precedent).
+  - **Surface B** — the search input's focus + typing contract: the
+    same ring family on the REAL-Tab landing + the REAL-key behavior
+    (an exact-name match narrows the list + recomputes the header; a
+    no-match string swaps to the EMPTY state — the reference's h3;
+    clearing restores the cards). Pinned (S2) with the mutation
+    sanity (stripping the Input's `focus-visible:ring-1
+    focus-visible:ring-ring` FAILS it).
+  - **Surface C** — the /expenses payment-method filter (the third
+    Select, first-time live): the trigger chrome + the DYNAMIC option
+    derivation + the Credit Card round-trip (2 cards, "2 items ·
+    $385.00") + the reset. The reference's own list carries only its
+    All option (its demo items hold no paymentMethod values —
+    data-level; its edit dialog carries the "payment method" field,
+    verified read-only — the model matches). Pinned (S3) with the
+    mutation sanity (emptying the `paymentMethods` derivation FAILS
+    it). Also re-verified: the reference's expense cards carry the
+    inline Edit (77×32) + Calculate (110×32) hover-revealed buttons
+    (the v8-pinned family).
+- Probe lessons: the reference's card titles are h4 (its empty-state
+  heading h3 — an h3-only card census fabricated "no cards"
+  readings); `agent-browser keyboard press Backspace` does not
+  register in the reference's focused search input and the CLI's
+  `fill ""` dispatches no input event — clear React-controlled
+  inputs via the native value setter + a bubbled input Event
+  (Playwright's `fill("")` is unaffected); the e2e drives the
+  PRODUCTION build — rebuild before a pin-sanity mutation can bite.
+- Three new pins (S1/S2/S3, TDD — every pin's mutation verified to
+  FAIL it) → **108/177/35 green**. The final changeset verified
+  against `git diff`: exactly the one spec file (+149 lines), zero
+  production changes. The 16 screenshots regenerated.
+- Committed and pushed to main via the SSH wrapper.
+
 ## Session 70 — Parity iteration v36: the hover-highlight family + the filter listbox + the Tab-order census pinned, zero production-code drift (2026-10-10)
 
 **Goal:** refresh the workspace, re-run the baseline chain, audit,

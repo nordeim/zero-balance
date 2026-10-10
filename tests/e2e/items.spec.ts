@@ -298,6 +298,106 @@ test.describe("income view", () => {
     expect(afterWrap).toBe(true);
   });
 
+  test("the filter Select triggers' focus-visible family (v37 S1)", async ({ page }) => {
+    // Session-76 surface #1, first measured v37 with a REAL Tab walk on
+    // both sites: a REAL Tab onto the CLOSED category-filter trigger
+    // engages :focus-visible and renders the 1px #0a0a0a ring layered
+    // over the ambient shadow — the border stays untinted
+    // rgb(229,229,229) and the geometry unchanged (216×36). O1 (the
+    // v3/v4 construct note): the reference's full box-shadow string
+    // carries the v3 three-slot construct (a white ring-offset lead)
+    // while the clone compiles Tailwind v4's five-slot construct (four
+    // transparent leads) — every lead is a 0px-spread shadow, invisible
+    // by construction; the VISIBLE layers are byte-identical and are
+    // what this pin asserts.
+    await page.evaluate(() => {
+      if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    });
+    // The v36 census order: five nav links → Add Income → the search
+    // input → the category combobox (the 8th Tab).
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(120);
+    }
+    const trigger = page.getByRole("combobox", { name: "Filter by category" });
+    await expect(trigger).toBeFocused();
+    const chrome = await trigger.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return {
+        fv: el.matches(":focus-visible"),
+        boxShadow: cs.boxShadow,
+        borderColor: cs.borderColor,
+        borderWidth: cs.borderWidth,
+        w: (el as HTMLElement).offsetWidth,
+        h: (el as HTMLElement).offsetHeight,
+      };
+    });
+    expect(chrome.fv).toBe(true);
+    // The VISIBLE ring layer (byte-identical to the reference's)…
+    expect(chrome.boxShadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+    // …layered over the ambient shadow-sm family.
+    expect(chrome.boxShadow).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+    // The border stays untinted (the v33 code-input lesson).
+    expect(chrome.borderColor).toBe("rgb(229, 229, 229)");
+    expect(chrome.borderWidth).toBe("1px");
+    expect(chrome.w).toBe(216);
+    expect(chrome.h).toBe(36);
+  });
+
+  test("the search input's focus + typing contract (v37 S2)", async ({ page }) => {
+    // Session-76 surface #2, first measured v37 on both sites: the search
+    // input's REAL-Tab focus family (the same 1px #0a0a0a ring + ambient,
+    // border untinted) and the REAL-key typing contract — an exact-name
+    // match narrows the list + recomputes the header, a no-match string
+    // swaps to the EMPTY state (the h3 "No income items yet"), and
+    // clearing restores the full card list. The existing fill()-based
+    // specs pin the filtering arithmetic; this pin adds the focus chrome
+    // and the typed-char path.
+    await page.evaluate(() => {
+      if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    });
+    // The 7th Tab lands on the search input (the v36 census order).
+    for (let i = 0; i < 7; i++) {
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(120);
+    }
+    const search = page.getByPlaceholder("Search income items...");
+    await expect(search).toBeFocused();
+    const chrome = await search.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return {
+        fv: el.matches(":focus-visible"),
+        boxShadow: cs.boxShadow,
+        borderColor: cs.borderColor,
+        borderWidth: cs.borderWidth,
+      };
+    });
+    expect(chrome.fv).toBe(true);
+    expect(chrome.boxShadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+    expect(chrome.boxShadow).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+    expect(chrome.borderColor).toBe("rgb(229, 229, 229)");
+    expect(chrome.borderWidth).toBe("1px");
+
+    // REAL typed chars: the exact card name narrows the list.
+    await search.pressSequentially("Salary");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Freelance" })).toHaveCount(0);
+    await expect(page.getByText("1 items · $5200.00")).toBeVisible();
+
+    // A no-match string swaps to the empty state (its title is the h3 —
+    // the reference's card titles are h4, its empty-state heading h3;
+    // the L1 probe lesson).
+    await search.pressSequentially("zzz");
+    await expect(page.getByRole("heading", { name: "No income items yet" })).toBeVisible();
+    await expect(page.getByText("0 items · $0.00")).toBeVisible();
+
+    // Clearing restores the full card list.
+    await search.fill("");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Freelance" })).toBeVisible();
+    await expect(page.getByText("2 items · $5550.00")).toBeVisible();
+  });
+
   test("classification tiles match the reference chrome (flex gap-4, border-2, per-class colors)", async ({
     page,
   }) => {
@@ -524,6 +624,55 @@ test.describe("expenses view", () => {
     await page.getByRole("option", { name: "Groceries" }).click();
     await expect(page.getByText("Rent")).toHaveCount(0);
     await expect(page.getByText("Groceries").first()).toBeVisible();
+  });
+
+  test("the payment-method filter's full contract (v37 S3)", async ({ page }) => {
+    // Session-76 surface #3, first measured v37 live on both sites: the
+    // third Select's trigger ("All Payment Methods", 216×36) opens a
+    // listbox whose options are DERIVED from the seed's expense payment
+    // methods (the reference's own list carries only its All option —
+    // its demo items hold no paymentMethod values; its edit dialog
+    // carries the "payment method" field, so the model matches). The
+    // clone's seed: Rent/Bank Transfer, Groceries/Credit Card,
+    // Entertainment/Credit Card. Selecting "Credit Card" narrows the
+    // cards to the two Credit Card expenses + recomputes the header;
+    // resetting to All restores the three cards.
+    const pm = page.getByRole("combobox", { name: "Filter by payment method" });
+    await expect(pm).toHaveText(/All Payment Methods/);
+    const trigGeom = await pm.evaluate((el) => ({
+      w: (el as HTMLElement).offsetWidth,
+      h: (el as HTMLElement).offsetHeight,
+    }));
+    expect(trigGeom.w).toBe(216);
+    expect(trigGeom.h).toBe(36);
+
+    // Open: the dynamically derived option list (the seed's two
+    // payment methods + the All option).
+    await pm.click();
+    const listbox = page.locator('[role="listbox"]');
+    await expect(listbox).toBeVisible();
+    await expect(page.getByRole("option", { name: "All Payment Methods" })).toBeVisible();
+    await expect(page.getByRole("option", { name: "Bank Transfer" })).toBeVisible();
+    await expect(page.getByRole("option", { name: "Credit Card" })).toBeVisible();
+
+    // Select "Credit Card" → the trigger text updates, the cards narrow
+    // to the two Credit Card expenses, the header recomputes.
+    await page.getByRole("option", { name: "Credit Card" }).click();
+    await expect(pm).toHaveText(/Credit Card/);
+    await expect(page.getByRole("heading", { name: "Entertainment" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Groceries" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Rent" })).toHaveCount(0);
+    await expect(page.getByText("2 items · $385.00")).toBeVisible();
+
+    // Reset to All (the fixture-restore discipline): the three cards
+    // and the full header count come back.
+    await pm.click();
+    await page.getByRole("option", { name: "All Payment Methods" }).click();
+    await expect(pm).toHaveText(/All Payment Methods/);
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Groceries" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Entertainment" })).toBeVisible();
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
   });
 });
 

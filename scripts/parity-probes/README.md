@@ -1246,3 +1246,37 @@ census):
   racing it hits the trigger instead of the option (the S2 spec's
   fixture-restore initially failed exactly there; interleave a
   `toBeFocused()` between presses — the AGENTS.md e2e-race lesson).
+
+Session-71 additions (remediation-plan-v37 audit — the session-76
+suggested surfaces: the filter Select TRIGGERS' focus-visible family,
+the search input's focus + typing contract, the /expenses payment-method
+filter):
+
+- `clone-v37.sh` — the clone-side standing checks (the 31st: R1–R4 +
+  the census) + all three v37 surfaces against the :3200 parity
+  server (the trigger ring walk, the search typing contract, the
+  payment-method round-trip with the fixture restore).
+- `vlm-compare-v37.mjs` — the VLM pair for the /expenses view with the
+  payment-method filter open (all five flags data-explained: the card
+  count, the extra tags + footer chips + the two extra dropdown
+  options = the clone's seed carrying paymentMethod values, the
+  avatar letter).
+- LESSONS: (a) **The reference's CARD titles are `h4` and its
+  EMPTY-state heading an `h3`** — an h3-only card census fabricated
+  "the reference's search shows no cards" readings until the h4
+  selector caught them; card probes must query the title tag the view
+  actually renders (or both). (b) `agent-browser keyboard press
+  Backspace` does NOT register in the reference's focused search
+  input (six presses, the value unchanged) and the CLI's `fill ""`
+  dispatches no input event either — clear a React-controlled input
+  in probes via the native value setter + a bubbled `input` Event
+  (the React onChange path). Playwright's own `fill("")` is
+  unaffected (it drives proper input events). (c) The v3/v4 ring
+  CONSTRUCT difference (O1): the reference's focus box-shadow carries
+  the v3 three-slot construct (a white ring-offset lead) while the
+  clone compiles v4's five-slot construct — every lead is a 0px-spread
+  shadow, invisible by construction; assert the VISIBLE layers (the
+  1px #0a0a0a ring + the ambient), never the lead count. (d) The
+  reference's payment-method filter list carries ONLY its All option
+  (its demo items hold no paymentMethod values; its edit dialog
+  carries the "payment method" field — read-only open + Escape).
