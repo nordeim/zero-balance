@@ -674,6 +674,64 @@ test.describe("expenses view", () => {
     await expect(page.getByRole("heading", { name: "Entertainment" })).toBeVisible();
     await expect(page.getByText("3 items · $2235.00")).toBeVisible();
   });
+
+  test("the frequency filter's option census + round-trip (v38 S1)", async ({ page }) => {
+    // Session-78 queue surface #1, first measured v38 live on BOTH sites:
+    // the second Select's option list is the STATIC 7-option list —
+    // byte-identical to the reference's (All Frequencies + One-time +
+    // Weekly + Bi-weekly + Monthly + Quarterly + Annually; the same
+    // static list the v34 pin covered in the sub-dialog instance — here
+    // measured live at the /expenses filter instance for the first time).
+    // The round-trip on the reference: "One-time" → 0 cards + "0 items ·
+    // $0.00" (its demo expenses are all recurring — data-level); on the
+    // clone: "Weekly" → the Groceries card + "1 items · $320.00". The
+    // contract shape is identical; the seed's frequencies differ.
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+
+    const freq = page.getByRole("combobox", { name: "Filter by frequency" });
+    await expect(freq).toHaveText(/All Frequencies/);
+    const geom = await freq.evaluate((el) => ({
+      w: (el as HTMLElement).offsetWidth,
+      h: (el as HTMLElement).offsetHeight,
+    }));
+    expect(geom.w).toBe(216);
+    expect(geom.h).toBe(36);
+
+    // Open: the static option census — the reference's byte-identical list.
+    await freq.click();
+    const listbox = page.locator('[role="listbox"]');
+    await expect(listbox).toBeVisible();
+    await expect(page.locator('[role="option"]')).toHaveCount(7);
+    // exact:true — "Weekly" is a substring of "Bi-weekly" (a strict-mode
+    // collision the census loop must avoid).
+    for (const name of [
+      "All Frequencies",
+      "One-time",
+      "Weekly",
+      "Bi-weekly",
+      "Monthly",
+      "Quarterly",
+      "Annually",
+    ]) {
+      await expect(page.getByRole("option", { name, exact: true })).toBeVisible();
+    }
+
+    // Select Weekly → the cards narrow to the seed's one weekly expense.
+    await page.getByRole("option", { name: "Weekly", exact: true }).click();
+    await expect(freq).toHaveText(/Weekly/);
+    await expect(page.getByRole("heading", { name: "Groceries" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Rent" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Entertainment" })).toHaveCount(0);
+    await expect(page.getByText("1 items · $320.00")).toBeVisible();
+
+    // Reset to All (the fixture-restore discipline): the three cards and
+    // the full header count come back.
+    await freq.click();
+    await page.getByRole("option", { name: "All Frequencies" }).click();
+    await expect(freq).toHaveText(/All Frequencies/);
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+  });
 });
 
 test.describe("savings view", () => {
@@ -695,6 +753,81 @@ test.describe("savings view", () => {
     const savingsBadge = fund.getByText("savings", { exact: true });
     await expect(savingsBadge).toHaveClass(/bg-\[#f0fdf4\] text-\[#15803d\] border-\[#bbf7d0\]/);
     await expect(savingsBadge.locator("svg.lucide-piggy-bank")).toBeVisible();
+  });
+
+  test("the filter-card instance + the category round-trip (v38 S2)", async ({ page }) => {
+    // Session-78 queue surface #2, first measured v38 live on BOTH sites:
+    // the /savings filter card is byte-identical to the reference's —
+    // the white rounded-2xl card (bg rgb(255,255,255), radius 16px,
+    // border rgb(229,231,227), padding 24px), the 447×36 search input,
+    // the two 216×36 comboboxes ("All Categories" / "All Frequencies"),
+    // the 4-column grid (md:grid-cols-4 with the search spanning 2). The
+    // reference's own category list carries only its All + "Emergency
+    // Fund" (its demo savings has ONE item — data-level); the clone's
+    // adds "Investments" (its richer seed). The reference's search input
+    // carries NO aria-label; the clone's does (the superset).
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    // The filter card's chrome (measured on both sites).
+    const card = page.locator("main .rounded-2xl").first();
+    const chrome = await card.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return {
+        bg: cs.backgroundColor,
+        radius: cs.borderRadius,
+        borderColor: cs.borderColor,
+        padding: cs.padding,
+      };
+    });
+    expect(chrome.bg).toBe("rgb(255, 255, 255)");
+    expect(chrome.radius).toBe("16px");
+    expect(chrome.borderColor).toBe("rgb(229, 231, 227)");
+    expect(chrome.padding).toBe("24px");
+
+    // The search input: 447×36 with the savings placeholder + the
+    // aria-label superset (the reference's input carries no label).
+    const search = page.getByPlaceholder("Search savings items...");
+    await expect(search).toHaveAttribute("aria-label", "Search savings items...");
+    const searchGeom = await search.evaluate((el) => ({
+      w: (el as HTMLElement).offsetWidth,
+      h: (el as HTMLElement).offsetHeight,
+    }));
+    expect(searchGeom.w).toBe(447);
+    expect(searchGeom.h).toBe(36);
+
+    // The two comboboxes at the reference's 216×36.
+    const cat = page.getByRole("combobox", { name: "Filter by category" });
+    const freqC = page.getByRole("combobox", { name: "Filter by frequency" });
+    for (const combo of [cat, freqC]) {
+      const g = await combo.evaluate((el) => ({
+        w: (el as HTMLElement).offsetWidth,
+        h: (el as HTMLElement).offsetHeight,
+      }));
+      expect(g.w).toBe(216);
+      expect(g.h).toBe(36);
+    }
+
+    // The category round-trip: the options = All + the seed's two
+    // categories (the reference's list adds only its own one).
+    await cat.click();
+    const listbox = page.locator('[role="listbox"]');
+    await expect(listbox).toBeVisible();
+    await expect(page.getByRole("option", { name: "All Categories" })).toBeVisible();
+    await expect(page.getByRole("option", { name: "Emergency Fund" })).toBeVisible();
+    await expect(page.getByRole("option", { name: "Investments" })).toBeVisible();
+    await page.getByRole("option", { name: "Emergency Fund" }).click();
+    await expect(cat).toHaveText(/Emergency Fund/);
+    await expect(page.getByRole("heading", { name: "Emergency Fund" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Investments" })).toHaveCount(0);
+    await expect(page.getByText("1 items · $800.00")).toBeVisible();
+
+    // Reset to All (the fixture-restore discipline): both cards and the
+    // full header count come back.
+    await cat.click();
+    await page.getByRole("option", { name: "All Categories" }).click();
+    await expect(cat).toHaveText(/All Categories/);
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
   });
 });
 

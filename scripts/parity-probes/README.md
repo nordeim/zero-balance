@@ -1280,3 +1280,48 @@ filter):
   reference's payment-method filter list carries ONLY its All option
   (its demo items hold no paymentMethod values; its edit dialog
   carries the "payment method" field — read-only open + Escape).
+
+Session-72 additions (remediation-plan-v38 audit — the session-78
+suggested-surface queue: the a11y tooling pass, the /expenses frequency
+filter, the /savings filter-card instance):
+
+- `ref-v38.sh` / `clone-v38.sh` — the reference + clone standing checks
+  (the 32nd: R1–R4 + the census + the SEO pair) and both new surfaces:
+  the frequency-filter option census + round-trip (A) and the /savings
+  filter-card instance + the category round-trip (B), plus the a11y
+  structural census (C: landmarks, unlabeled controls, headings).
+- `a11y-scan-v38.mjs` — the axe-core 4.13 deep scan (BOTH sites; the
+  wcag2a/2aa/21a/21aa tags, desktop 1280×800, the booted state) that
+  drives the permanent `tests/e2e/a11y.spec.ts` gate. Use
+  `node a11y-scan-v38.mjs clone|ref` (clone runs INSIDE with-server.sh).
+  THE HEADLINE MEASUREMENT: the reference FAILS `button-name` (critical
+  — its unlabeled Select triggers + card kebabs) and `svg-img-alt` (its
+  recharts donut sectors `path[name=…]`) while the clone PASSES both
+  (the aria-label superset + the v31 inert donut); the clone's ONLY
+  failures are color-contrast — every flagged node 1:1 with the
+  reference's own failure at a byte-identical color (7-color palette).
+- `axe-detail-v38.mjs` / `axe-detail-ref-v38.mjs` — the per-node
+  enumeration with computed colors (the palette provenance evidence for
+  the spec's GATE 2; also the scripts that validated reading computed
+  colors off axe node.target selector chains).
+- `vlm-shots-v38.sh` + `vlm-compare-v38.mjs` — the VLM pair for the
+  /savings view (all four flags data-explained: the card count, the
+  classification tags, the payment-method footer chips, the avatar
+  letter).
+- `hasfocus-gate.sh` — **the v34 discipline formalized as a shared
+  helper** (the session-72 tooling pass's first half): `source` it and
+  call `focus_gate <session>` before ANY :focus-computed read — it
+  asserts `document.hasFocus()`, re-focuses with a REAL `press Shift`
+  when the sandbox dropped focus, re-asserts, and fails loud otherwise.
+  Bake it into every v39+ standing script that reads focus chrome.
+- LESSONS: (a) **`getByRole("option", { name: "Weekly" })` collides with
+  "Bi-weekly"** — accessible-name matching is substring-based; use
+  `exact: true` in option census loops (the S1 spec's first run hit the
+  strict-mode violation). (b) `AxeBuilder.analyze()` requires a page
+  from `browser.newContext()` (a bare `browser.newPage()` throws
+  "Please use browser.newContext()"). (c) `test.use({ storageState … })`
+  is HOISTED per describe — a logged-out test must live in its own
+  describe or the opt-out leaks to every test in the block. (d) The axe
+  node.target selector chains (escaped classes included) resolve cleanly
+  through `document.querySelector` — the color-provenance gate reads
+  computed colors off them directly.

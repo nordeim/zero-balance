@@ -37,6 +37,91 @@ and `docs/remediation-plan-v36.md`.
 
 ---
 
+## Session 72 — Parity iteration v38: the a11y tooling pass shipped as a permanent gate + the expenses frequency filter + the savings filter-card pinned, zero production-code changes (2026-10-11)
+
+**Goal:** refresh the workspace (git pull — intact this session), re-run
+the baseline chain, sweep the session-78/79 queue (the a11y tooling pass
+open since session 72, the /expenses frequency-filter option census, the
+/savings filter-card instance), fix what the DOM finds, TDD-first, docs
+aligned, commit + push via the SSH wrapper.
+
+- Workspace INTACT (git pull `c035106..bac2246`; no re-clone/reinstall).
+  Baseline green on the FIRST full run: **108/177/35** + lint + typecheck
+  + build. Audit clean (the same 5 dev-only braces advisories).
+  `@axe-core/playwright` 4.13.0 added as a devDependency.
+- Standing checks all clean: mobile-nav R1–R4 (**32nd** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395 overflows all still live), data drift (32nd —
+  reference read-only, verified before + after; the frequency + category
+  probes reset to All), the SEO pair (robots/sitemap live on both; the
+  reference's capitalized app-route URLs still documented), the VLM
+  /savings pair (all four flags data-explained: the card count, the
+  classification tags, the payment-method footer chips, the avatar
+  letter).
+- **THE A11Y TOOLING PASS (open since session 72) — shipped**:
+  - The exploratory axe-core 4.13 deep scan on BOTH sites
+    (a11y-scan-v38.mjs, the wcag2a/2aa/21a/21aa tags, desktop
+    1280×800, the booted state) + the per-node enumeration with
+    computed colors (axe-detail-v38.mjs / axe-detail-ref-v38.mjs):
+    **the reference FAILS `button-name` (critical — its unlabeled
+    Select triggers + card kebabs) and `svg-img-alt` (its recharts
+    donut sectors) while the clone PASSES both** (the aria-label
+    superset + the v31 inert donut). The clone's ONLY failures are
+    color-contrast — every flagged node 1:1 with the reference's own
+    failure at a byte-identical color (7-color palette: the lime/
+    blue/orange type accents, the hero status rgb(245,169,98), the
+    stat-card sublabel rgb(107,114,128), the 404 slate
+    rgb(203,213,225), the net-worth inactive tab rgb(115,115,115)).
+    /savings + /login scan CLEAN on both sites.
+  - **The permanent gate** (`tests/e2e/a11y.spec.ts`, 8 tests): the 6
+    authed routes + the 404 + the logged-out login (its own
+    storageState-opt-out describe — `test.use` is hoisted per
+    describe). GATE 1 (structural): no violation id other than
+    color-contrast may appear. GATE 2 (provenance): every flagged
+    node's computed color (read via its axe node.target selector
+    chain) must be one of the reference's 7 palette colors. The login
+    asserts ZERO violations. Mutation-verified (a stripped
+    SelectTrigger aria-label → the button-name gate FAILS, restored →
+    GREEN).
+  - **The hasFocus() helper** (`scripts/parity-probes/
+    hasfocus-gate.sh`): the v34 discipline formalized — assert
+    `document.hasFocus()`, re-focus with a REAL `press Shift`,
+    re-assert, fail loud. Demonstrated live; baked into the v39+
+    standing-script discipline (README section).
+- **Surface A — the /expenses frequency filter (first-time live, NO
+  drift)**: the second Select's STATIC 7-option list BYTE-IDENTICAL to
+  the reference's (All Frequencies + One-time/Weekly/Bi-weekly/
+  Monthly/Quarterly/Annually); the round-trip (the clone: Weekly →
+  Groceries + "1 items · $320.00", reset → 3 cards; the reference:
+  One-time → 0 cards — its demo expenses are all recurring,
+  data-level). Pinned (S1) with the mutation sanity (removing the
+  Weekly SelectItem FAILS the census).
+- **Surface B — the /savings filter-card instance (the third
+  items-view, first-time live, NO drift)**: the white rounded-2xl card
+  (bg/radius/border/padding byte-identical), the 447×36 search with
+  the aria-label superset (the reference's input carries NO label),
+  the two 216×36 comboboxes, the 4-column grid; the category
+  round-trip (Emergency Fund → 1 card + "1 items · $800.00" → the
+  reset; the reference's own list carries only All + Emergency Fund —
+  its demo savings has ONE item, data-level). Pinned (S2) with the
+  mutation sanity (changing the savings searchPlaceholder FAILS).
+- Probe lessons: `getByRole("option", {name:"Weekly"})` collides with
+  "Bi-weekly" (substring matching — use exact:true in census loops);
+  AxeBuilder.analyze() requires a page from browser.newContext();
+  test.use({storageState}) is hoisted per describe; the axe
+  node.target selector chains resolve cleanly for the
+  color-provenance reads; the reference's /income holds ONE card
+  (Salary $5000) — its 1-vs-2 flagged-node difference is demo data.
+- The full chain re-run: **108/187/35** (177 → 187: the 8 a11y tests +
+  S1 + S2). The 16 screenshots regenerated. Docs aligned: README (the
+  187 counts + the v38 row), CLAUDE.md (the a11y-gate entry), AGENTS.md
+  (the v38 paragraph), the SKILL doc (Session 73 row), session_80.md,
+  the probe README (the v38 section). Changeset: +1 devDependency,
+  +133 items.spec lines, the new a11y.spec, the v38 probes + the
+  helper, **zero production-code changes**.
+
+---
+
 ## Session 71 — Parity iteration v37: the filter triggers' focus family + the search typing contract + the payment-method filter pinned, zero production-code drift (2026-10-11)
 
 **Goal:** re-clone the reset workspace, re-run the baseline chain,
