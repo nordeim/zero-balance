@@ -34,7 +34,16 @@ test.describe("net zero breakdown drill-down", () => {
 
   test("clicking a section expands categories in place (no navigation)", async ({ page }) => {
     const card = page.locator("div.rounded-2xl").filter({ hasText: "Net Zero Breakdown" }).first();
-    await card.getByRole("button", { name: /Total Expenses/ }).click();
+    const expenseRow = card.getByRole("button", { name: /Total Expenses/ });
+
+    // v32 S1 (the superset pin): the section rows carry aria-expanded with
+    // ACCURATE state — the reference's rows have no attribute (its screen
+    // readers can't tell the row expands). A deliberate, kept a11y superset
+    // in the same family as the row-action aria-labels; pinned here so a
+    // future parity sweep doesn't "fix" it away as drift.
+    await expect(expenseRow).toHaveAttribute("aria-expanded", "false");
+    await expenseRow.click();
+    await expect(expenseRow).toHaveAttribute("aria-expanded", "true");
 
     // Categories appear sorted by amount desc, each with its total.
     const catSalary = card.getByRole("button", { name: /^Rent/ });
@@ -42,6 +51,11 @@ test.describe("net zero breakdown drill-down", () => {
     await expect(catSalary).toContainText("$1850.00");
     await expect(card.getByRole("button", { name: /^Groceries/ })).toContainText("$320.00");
     await expect(card.getByRole("button", { name: /^Entertainment/ })).toContainText("$65.00");
+
+    // The category drill-down rows carry the same accurate state.
+    await expect(catSalary).toHaveAttribute("aria-expanded", "false");
+    await catSalary.click();
+    await expect(catSalary).toHaveAttribute("aria-expanded", "true");
 
     // The section footer: "3 categories" + the section total in orange.
     await expect(card.getByText("3 categories")).toBeVisible();

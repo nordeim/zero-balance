@@ -259,6 +259,20 @@
     0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
+/* v32 G1: the calculator's line-item row actions (the 32px Edit/Delete
+   icon buttons). The reference's buttons carry the shadcn focus family —
+   REAL-Tab-measured: outline solid 2px TRANSPARENT + offset 2 (v3's
+   outline-none form) + the 1px #0a0a0a ring shadow with the white
+   zero-width lead layer. v4's outline-none utility emits
+   outline-style:none ONLY (the class-name parity trap — same family as
+   the shadow-scale shift and the hover media-gate), so the v3 form is
+   pinned here; the ring utilities render correctly in v4 and stay inline
+   (focus-visible:ring-1 focus-visible:ring-ring on the buttons). */
+.zb-row-action:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
 /* Modal overlay + panel (the reference's Base44 dialog chrome). */
 .zb-modal-overlay {
   position: fixed;

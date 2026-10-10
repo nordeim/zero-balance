@@ -295,6 +295,75 @@ test.describe("rent calculator", () => {
     await expect(dialog).toBeHidden();
     await restoreRent(page);
   });
+
+  test("row actions render the reference's focus-visible ring family (v32 G1)", async ({ page }) => {
+    // The reference's 32px row-action buttons carry the shadcn focus
+    // family (measured live via a REAL Tab walk: the focused Edit renders
+    // outline solid 2px TRANSPARENT + the 1px #0a0a0a ring shadow with
+    // the white 0-width lead layer — the class string includes
+    // focus-visible:outline-none focus-visible:ring-1
+    // focus-visible:ring-ring). The clone's raw buttons rendered the
+    // browser-default `outline: auto` instead — this test pins the fix.
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+
+    // Create the fixture row (the row-chrome test's pattern).
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await lineDialog.getByLabel("Item Name *").fill("Contents Insurance");
+    await lineDialog.getByLabel("Amount *").fill("25");
+    await lineDialog.getByRole("button", { name: "Save Item" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Based on 1 item")).toBeVisible();
+
+    // Park the pointer far from the row (the hover-gate stays closed —
+    // the reveal is hover-only, the ring is what a keyboard user gets).
+    await page.mouse.move(8, 400);
+    await page.waitForTimeout(300);
+
+    // focusVisible:true is the same probe technique the dialog-buttons
+    // spec uses (a real Chromium FocusOptions member; TS's DOM lib lags).
+    // SETTLE before reading: the buttons carry transition-colors, whose v4
+    // property list includes outline-color — an immediate read catches the
+    // transparent settle MID-FLIGHT (oklab-interpolated, the v23 G1 lesson).
+    const focused = await page.evaluate(async () => {
+      const dlg = document.querySelector('[role="dialog"]');
+      const read = async (b: HTMLButtonElement | null) => {
+        if (!b) return null;
+        (b as HTMLElement).focus({ focusVisible: true } as unknown as FocusOptions);
+        await new Promise((r) => setTimeout(r, 350));
+        const cs = getComputedStyle(b);
+        return {
+          shadow: cs.boxShadow,
+          outline: `${cs.outlineStyle}/${cs.outlineWidth}/${cs.outlineColor}`,
+          offset: cs.outlineOffset,
+        };
+      };
+      return {
+        edit: await read(dlg?.querySelector<HTMLButtonElement>('button[aria-label="Edit Contents Insurance"]') ?? null),
+        del: await read(dlg?.querySelector<HTMLButtonElement>('button[aria-label="Delete Contents Insurance"]') ?? null),
+      };
+    });
+    expect(focused.edit).not.toBeNull();
+    expect(focused.del).not.toBeNull();
+    // The 1px #0a0a0a ring (ring-1 ring-ring — --color-ring: #0a0a0a).
+    expect(focused.edit!.shadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+    expect(focused.del!.shadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+    // The v3 outline-none form: transparent 2px + offset 2 — NOT the
+    // browser-default `auto` outline the drifted build rendered.
+    expect(focused.edit!.outline).toBe("solid/2px/rgba(0, 0, 0, 0)");
+    expect(focused.edit!.offset).toBe("2px");
+
+    // --- cleanup: remove the row, restore the seed's Rent amount.
+    await dialog.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await dialog.getByText("Based on 0 items").waitFor();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await restoreRent(page);
+  });
 });
 
 /** Restore the seed's Rent amount through the real edit flow (the expense

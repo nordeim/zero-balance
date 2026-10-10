@@ -223,12 +223,20 @@ export function CalculatorDialog() {
                         32px buttons, 16px icons, edit near-black, delete red
                         (v6 G10 geometry/colors hold). The globals.css
                         @variant group-hover pin keeps the reveal working on
-                        hover:none devices — never remove it. */}
+                        hover:none devices — never remove it. v32 G1: the
+                        reference's buttons carry the shadcn focus family
+                        (focus-visible:outline-none focus-visible:ring-1
+                        focus-visible:ring-ring — REAL-Tab-measured: the 1px
+                        #0a0a0a ring + white lead layer; a keyboard user
+                        focusing an action gets the ring, never the reveal).
+                        The zb-row-action class pins v3's outline-none form
+                        (2px transparent, offset 2) in globals.css — v4's
+                        utility emits outline-style:none only. */}
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
                         aria-label={`Edit ${li.name}`}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent"
+                        className="zb-row-action inline-flex h-8 w-8 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring"
                         onClick={() => openLineItemModal({ mode: "edit", lineItem: li })}
                       >
                         <PenIcon className="h-4 w-4" />
@@ -236,7 +244,7 @@ export function CalculatorDialog() {
                       <button
                         type="button"
                         aria-label={`Delete ${li.name}`}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#dc2626] transition-colors hover:bg-accent"
+                        className="zb-row-action inline-flex h-8 w-8 items-center justify-center rounded-md text-[#dc2626] transition-colors hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring"
                         onClick={() => setConfirmingId(confirmingId === li.id ? null : li.id)}
                       >
                         <Trash2Icon className="h-4 w-4" />

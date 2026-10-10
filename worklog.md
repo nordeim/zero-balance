@@ -20,13 +20,85 @@ and `docs/remediation-plan-v27.md`,
 and `docs/remediation-plan-v28.md`,
 and `docs/remediation-plan-v29.md`,
 and `docs/remediation-plan-v30.md`,
-and `docs/remediation-plan-v31.md`.
+and `docs/remediation-plan-v31.md`,
+and `docs/remediation-plan-v32.md`.
 
 ---
 
 ---
 
 ---
+
+---
+
+## Session 63 — Parity iteration v32: the calculator row actions' focus-visible ring family + the breakdown aria-expanded superset pinned (2026-10-10)
+
+**Goal:** workspace re-clone (the sandbox reset) + rebuild, re-run the
+baseline chain, audit, sweep the session-63 suggestions (the net-worth
+dropdown menus' keyboard contract, the calculator line-item row actions'
+Tab order, the breakdown accordion's arrow semantics), fix what the DOM
+finds, TDD-first, docs aligned, commit + push via the SSH wrapper.
+
+- The workspace was RESET — the repo re-cloned (`zero-balance` at
+  `0c91904`, `scandihaven` re-cloned); the environment rebuilt and
+  re-verified (node_modules, .env with `DATABASE_URL="file:../db/custom.db"`,
+  db/ re-pushed + re-seeded at the repo root). Baseline green on the FIRST
+  full run: **108/164/35** + lint + typecheck + build. Audit clean (the
+  same 5 dev-only `braces` advisories, secret scan clean, .env.example
+  current).
+- Standing checks all clean: mobile-nav R1–R4 (**26th** — Tailwind v4
+  pins hold, both sites; R2 re-verified with a robust STRUCTURE-based
+  sheet detector — the v31 white-bg matcher missed the reference's sheet
+  this session), data drift (26th — the reference read-only, verified
+  before + after the calculator probe cycles), the SEO pair (full
+  head-metadata census byte-identical; the reference's /manifest.json
+  endpoint 302s empty — the clone's webmanifest is the superset).
+- **The session-63 suggested surfaces resolved**: the net-worth dropdown
+  menus' keyboard contract (NO finding — byte-identical: click-open
+  container focus / Enter-open first item / arrow roving with
+  data-highlighted / CLAMPED at the ends / Home-End / NO typeahead /
+  Escape returns focus to the trigger); the calculator line-item row
+  actions' Tab order (the 4-stop census + the REAL-Tab walk byte-identical
+  — the row actions are Tab stops inside their opacity-0 hover-reveal
+  container on BOTH sites; the reveal is hover-only, never focus; the
+  reference's dialog EXITS after the last stop vs the clone's Radix wrap
+  = the documented trap superset); and the breakdown accordion's arrow
+  semantics (NO functional finding — arrows/Home/End inert on both,
+  Enter expands both, Escape collapses on neither; the reference's row
+  delete is IMMEDIATE, the clone's inline confirm is the documented
+  "unconfirmed deletes fixed" superset).
+- **G1 (the calculator row actions' focus-visible ring family)**: the
+  reference's 32px Edit/Delete buttons carry the shadcn focus family —
+  REAL-Tab-measured, the focused Edit renders `outline: solid 2px
+  rgba(0,0,0,0)` + the 1px #0a0a0a ring shadow (`rgb(255,255,255) 0 0 0
+  0, rgb(10,10,10) 0 0 0 1px, …`) — while the clone's raw
+  `h-8 w-8 … hover:bg-accent` buttons rendered the browser-default
+  `outline: auto`. Fixed with `focus-visible:ring-1
+  focus-visible:ring-ring` inline + a NEW globals.css pin
+  `.zb-row-action:focus-visible` — **a THIRD Tailwind v4 class-name-parity
+  trap documented**: v4's `outline-none` utility emits `outline-style:
+  none` ONLY, so v3's `outline: 2px solid transparent; outline-offset:
+  2px` form must be pinned in CSS (the same trap family as the
+  shadow-scale shift and the hover media-gate). The test-side trap:
+  `transition-colors`' v4 property list INCLUDES outline-color — the
+  focus-chrome read must settle ≥350ms or it catches the transparent
+  settle mid-flight in oklab form.
+- **S1 (the breakdown rows' aria-expanded)**: the clone's section +
+  category rows carry accurate `aria-expanded` (the reference's have
+  none) — measured, KEPT as a deliberate a11y superset (the aria-label
+  family: invisible, correct, no spurious semantics), and pinned by the
+  breakdown spec so a future sweep doesn't "fix" it away.
+- Two VLM pairs (dashboard + calculator): both DIFFERENT flags
+  DOM-explained (the Dashboard-active rail = superset #3; the X's
+  open-state ring = the documented v29 Radix superset).
+- TDD: RED → GREEN → pin-sanity mutations (the ring utilities removed,
+  the globals pin removed, the aria-expanded attribute removed) → FAIL →
+  restored → GREEN. Full chain **108/165/35 green** (164 → 165); the fix
+  live-re-verified byte-identical on the :3200 parity server (the REAL-Tab
+  focused Edit reads the reference's exact outline + ring); the 16
+  screenshots regenerated (2 PNGs byte-noise only); docs aligned (probe
+  README, README, CLAUDE, AGENTS, SKILL, session_66, the worklog);
+  committed and pushed to main via the SSH wrapper.
 
 ---
 

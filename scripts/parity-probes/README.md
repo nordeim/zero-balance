@@ -905,3 +905,49 @@ Session-33 additions (remediation-plan-v31 audit — the session-61 brief):
   `attachKeyboardHandlers` ArrowLeft=++wrap / ArrowRight=--wrap / Escape
   blur+reset was REMOVED in 3.x — the clone replicates it in
   `usePieKeyboardParity`, dashboard-view.tsx).
+
+Session-35 additions (remediation-plan-v32 audit — the session-63 brief):
+
+- `probe-nw-menu-v32.mjs` + `kb-nw-menu-v32.sh` — the net-worth dropdown
+  menus' keyboard contract (suggestion #1 — NO finding): the census +
+  the REAL-key walk (click-open container focus / Enter-open first item /
+  ArrowDown-Up roving with data-highlighted / CLAMPED at the ends — no
+  wrap / Home-End work / NO typeahead / Escape closes + returns focus to
+  the trigger). Byte-identical on both sites; the clone's aria-labeled
+  "Actions for X" triggers are the documented v29 naming superset.
+- `probe-calc-row-v32.mjs` + `kb-calc-rowactions-v32.sh` — the
+  calculator line-item row actions' Tab order (suggestion #2 — G1): the
+  strict focusable census (4 stops on both sites: X 36 / Add Item 110 /
+  Edit 32 / Delete 32, the row actions focusable inside their opacity-0
+  container — the reveal is hover-ONLY, never focus) + the REAL-Tab walk
+  with the SETTLED focused-chrome read (the G1 evidence: the reference's
+  buttons carry focus-visible:outline-none ring-1 ring-ring; the clone's
+  raw buttons rendered the browser-default auto outline — fixed in
+  calculator-dialog.tsx + the globals.css zb-row-action pin).
+- `probe-bd-rows-v32.mjs` — the breakdown accordion's arrow semantics
+  (suggestion #3 — NO functional finding): plain buttons on both sites,
+  arrows/Home/End inert, Enter expands, Escape does NOT collapse on
+  either; the clone's aria-expanded is the kept + pinned S1 superset.
+- `probe-r2-ref-v32.mjs` — the ROBUST R2 sheet detector (structure +
+  body-lock + overlay census — the v31 white-bg matcher missed the
+  reference's sheet this session; prefer structure over background-color
+  matching).
+- `vlm-compare-v32.sh` — the dashboard + calculator VLM pairs (both
+  DIFFERENT flags DOM-explained: the Dashboard-active rail = superset
+  #3; the X's open-state box = the v29 Radix focus superset).
+- LESSONS: (a) Tailwind v4's `outline-none` utility emits
+  `outline-style: none` ONLY — v3's `outline: 2px solid transparent;
+  outline-offset: 2px` form must be pinned in globals.css (the
+  zb-row-action pattern, the same trap family as the shadow-scale shift
+  and the hover media-gate); (b) `transition-colors`' v4 property list
+  INCLUDES outline-color — an immediate post-focus read catches the
+  transparent settle mid-flight in oklab-interpolated form (settle
+  ≥350ms before reading focus chrome; the v23 G1 lesson generalized);
+  (c) a form fill finder must anchor on LABEL text or DOM order, never
+  `placeholder*=name` (the reference's Provider placeholder "Insurance
+  Company Name" swallowed an Item Name fill); (d) a calculator
+  add/delete probe cycle recalculates the parent amount to the line-item
+  sum — the dev custom.db needs the amount restored afterward (the
+  seed's natural-key upsert does NOT restore it); (e) the reference's
+  calculator row delete is IMMEDIATE (no confirm) — the clone's inline
+  confirm is the documented "unconfirmed deletes fixed" superset.
