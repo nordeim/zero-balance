@@ -24,13 +24,78 @@ and `docs/remediation-plan-v31.md`,
 and `docs/remediation-plan-v32.md`,
 and `docs/remediation-plan-v33.md`,
 and `docs/remediation-plan-v34.md`,
-and `docs/remediation-plan-v35.md`.
+and `docs/remediation-plan-v35.md`,
+and `docs/remediation-plan-v36.md`.
 
 ---
 
 ---
 
 ---
+
+---
+
+## Session 70 — Parity iteration v36: the hover-highlight family + the filter listbox + the Tab-order census pinned, zero production-code drift (2026-10-10)
+
+**Goal:** refresh the workspace, re-run the baseline chain, audit,
+sweep the session-72 suggestions (the item-card menu's hover-highlight
+family, the filter Selects' listbox keyboard contract, the items-view
+Tab-order census), fix what the DOM finds, TDD-first, docs aligned,
+commit + push via the SSH wrapper.
+
+- Workspace refreshed (`51f1fd9` — the session-73 transcript; the
+  environment otherwise intact). Baseline green on the FIRST full
+  run: **108/171/35** + lint + typecheck + build. Audit clean (the
+  same 5 dev-only braces advisories, secret scan clean,
+  `.env.example` current).
+- Standing checks all clean: mobile-nav R1–R4 (**30th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395/464 overflows all still live), data drift
+  (30th — reference read-only, verified before + after), the SEO pair
+  (robots/sitemap/head census matching the pinned values), the VLM
+  dashboard + filter-open pairs (all flags DOM-explained: superset #3
+  + demo data + the Base44 platform badge).
+- The session-72 suggested surfaces, all first-time measurements,
+  **ZERO production-code drift**:
+  - **Surface A** — the action menu's HOVER-highlight family (REAL
+    `agent-browser hover` on both sites; synthetic mouse events do
+    NOT move Radix's highlight — the probe lesson): hover → Radix
+    moves DOM focus to the item → the SAME accent family as keyboard
+    focus (bg rgb(245,245,245) + text rgb(23,23,23); the hovered
+    Delete NOT red — the v35 G1 cascade holds on the hover path);
+    pointer-off → focus back to the container, items at rest, the
+    menu survives. Pinned (S1) with the mutation sanity (the
+    re-added `focus:text-[#dc2626]` FAILS it).
+  - **Surface B** — the filter Selects' listbox keyboard contract
+    (the /income instances; v34 covered the sub-dialog): fresh-open
+    via click AND Enter → the SELECTED option's accent highlight;
+    arrows rove clamped at both ends; Home/End; Escape → trigger
+    (popup only); Enter selects + updates the trigger text. Pinned
+    (S2) with the fixture-restore discipline + the mutation sanity
+    (the stripped `focus:bg-accent` FAILS it).
+  - **Surface C** — the items-view Tab-order census (page-level,
+    first-time): the five nav links → Add Income → the search input →
+    the two filter comboboxes → the card kebabs — the same sequence
+    the reference walks MINUS its Base44 platform badge
+    (`#base44-edit-badge` — platform chrome, correctly not
+    replicated). Pinned (S3). **Superset #7 documented + pinned from
+    the walk**: the reference's kebab stays INVISIBLE (opacity 0)
+    when keyboard-focused and when keyboard-opened; the clone's
+    day-one `focus-visible:opacity-100` +
+    `data-[state=open]:opacity-100` keep it visible. Also documented:
+    the clone's invisible aria-labels on the filter controls (a
+    day-one superset), the reference's closed-trigger aria-controls
+    persistence (a Radix-minor-version detail).
+- Three new pins (S1/S2/S3, TDD — every pin's mutation verified to
+  FAIL it) → **108/174/35 green**. The final changeset verified
+  against `git diff`: exactly the two spec files, zero production
+  changes. The 16 screenshots regenerated (byte-identical).
+- Probe lessons: synthetic mouse events do not move Radix's hover
+  highlight (only a REAL pointer move); a blur does not reset the
+  sequential focus navigation position (walk past the wrap); Radix
+  Select's post-open focus landing is ASYNC (a racing key press hits
+  the trigger — interleave a toBeFocused() between presses).
+- Committed and pushed to main via the SSH wrapper.
 
 ---
 

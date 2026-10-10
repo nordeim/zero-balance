@@ -1188,3 +1188,61 @@ deep-link/URL contract):
   expense-card buttons' ring family — caught by the full-chain
   re-run, restored, and the final changeset re-verified against
   `git diff` before shipping).
+
+Session-70 additions (remediation-plan-v36 audit — the session-72
+suggested surfaces: the item-card menu's hover-highlight family, the
+filter selects' listbox keyboard contract, the items-view Tab-order
+census):
+
+- `probe-menu-hover-v36.mjs` — the action menu's HOVER path (synthetic
+  mouse events dispatch + read; the LESSON below: they do NOT move the
+  Radix highlight — use this file only to open the menu and read the
+  pre-hover state; the REAL hover runs via `agent-browser hover`).
+- `probe-menu-openonly-v36.mjs` — opens the card action menu via the
+  pointerdown family and reads the fresh-open container-focus state
+  (the pre-hover baseline for the hover measurement).
+- `probe-filter-open-v36.mjs` — the FILTER-card Select's fresh-open
+  census (the v34 listbox contract at the /income instances the v34
+  pass never measured): the trigger geometry/aria + the selected
+  option's accent highlight, `data-highlighted`, `aria-selected`,
+  `:focus` match, per-option colors.
+- `probe-tabwalk-v36.mjs` — the Tab-stop READER (one stop per call —
+  the walk itself needs REAL Tab presses, driven by `tabwalk-v36.sh`).
+- `tabwalk-v36.sh` — the REAL-Tab walk driver: blurs, then alternates
+  `agent-browser press Tab` with the reader eval (450ms settles).
+  Found the reference's Base44 platform badge in its tab order AND the
+  kebab's focus-reveal superset (the clone's opacity reads 1 at the
+  stop, the reference's 0).
+- `probe-head-seo-v36.mjs` — the head-metadata census (title, desc,
+  canonical, OG/Twitter, apple title, manifest) — the standing SEO
+  pair's reader.
+- `clone-surfaceA-v36.sh` / `clone-surfaceB-v36.sh` /
+  `clone-surfaceC-v36.sh` — the clone-side surface sweeps (login +
+  census, the hover family, the filter listbox contract, the Tab walk)
+  against the :3200 parity server.
+- `clone-mobile-nav-v36.sh` — the clone-side standing checks (R1–R4 +
+  the census, the 30th).
+- `clone-vlm-v36.sh` + `vlm-compare-v36.mjs` — the VLM pair captures
+  (dashboard + the /income filter-open state) and the pairwise
+  comparison via `zai.chat.completions.createVision` (the plain
+  `create` endpoint REJECTS image content — error 1210).
+- LESSONS: (a) **SYNTHETIC MOUSE EVENTS DO NOT MOVE RADIX'S HOVER
+  HIGHLIGHT** — `dispatchEvent(mousemove/mouseenter)` leaves the
+  menu's highlight untouched; only a REAL pointer move
+  (`agent-browser hover` / Playwright `.hover()`) triggers Radix's
+  pointer-driven focus move (the first probe fabricated "the reference
+  ignores hover" until the real-hover retry). (b) A blur does NOT
+  reset the sequential focus navigation position — Chromium resumes
+  the Tab walk from the last focus position; walk the cycle past the
+  wrap to read the document-order sequence. (c) The reference's Tab
+  order includes the Base44 PLATFORM badge (`#base44-edit-badge` +
+  its 18×18 "Close badge" button, fixed bottom-right z-index 999999)
+  — platform chrome, NOT app UI; exclude it from tab-order
+  comparisons (the VLM pair flags it too). (d) The reference's kebab
+  trigger stays INVISIBLE (opacity 0) when keyboard-focused and when
+  keyboard-opened — the clone's `focus-visible:opacity-100` +
+  `data-[state=open]:opacity-100` (day-one) are the superset #7.
+  (e) Radix Select's post-open focus landing is ASYNC — a key press
+  racing it hits the trigger instead of the option (the S2 spec's
+  fixture-restore initially failed exactly there; interleave a
+  `toBeFocused()` between presses — the AGENTS.md e2e-race lesson).

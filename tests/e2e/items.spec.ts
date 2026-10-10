@@ -110,6 +110,194 @@ test.describe("income view", () => {
     expect(filterCard!.iconCls).toContain("w-5");
   });
 
+  test("the category filter's listbox keyboard contract (v36 S2)", async ({ page }) => {
+    // Session-72 surface #2, first measured v36 on the reference's FILTER
+    // instances (v34 covered the calculator sub-dialog only): fresh-open
+    // via click AND Enter both land focus on the SELECTED option with the
+    // accent highlight (the same :focus-driven family as the menu items);
+    // the arrows rove with clamping at both ends; Home/End jump; Escape
+    // closes the popup ONLY (focus → the trigger, the page unaffected);
+    // Enter selects the highlighted option and updates the trigger text.
+    // The clone's seed categories: All Categories / Freelance / Salary.
+    const trigger = page.getByRole("combobox", { name: "Filter by category" });
+    await trigger.click();
+    const listbox = page.locator('[role="listbox"]');
+    await expect(listbox).toBeVisible();
+
+    // Fresh-open via CLICK: focus on the SELECTED option ("All Categories")
+    // with the accent family (bg #f5f5f5 + text rgb(23,23,23)).
+    const freshOpen = await page.evaluate(() => {
+      const sel = [...document.querySelectorAll('[role="option"]')].find(
+        (o) => o.getAttribute("aria-selected") === "true",
+      );
+      if (!sel) return null;
+      const cs = getComputedStyle(sel);
+      return {
+        text: (sel.textContent || "").trim(),
+        focused: document.activeElement === sel,
+        bg: cs.backgroundColor,
+        color: cs.color,
+        optionCount: document.querySelectorAll('[role="option"]').length,
+      };
+    });
+    expect(freshOpen).not.toBeNull();
+    expect(freshOpen!.text).toBe("All Categories");
+    expect(freshOpen!.focused).toBe(true);
+    expect(freshOpen!.bg).toBe("rgb(245, 245, 245)");
+    expect(freshOpen!.color).toBe("rgb(23, 23, 23)");
+    expect(freshOpen!.optionCount).toBe(3);
+
+    // ArrowDown roves to Freelance; ArrowDown again lands Salary (the last);
+    // a third ArrowDown CLAMPS at Salary.
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator('[role="option"]').filter({ hasText: "Freelance" })).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator('[role="option"]').filter({ hasText: "Salary" })).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator('[role="option"]').filter({ hasText: "Salary" })).toBeFocused();
+    // ArrowUp steps back; Home/End jump to the ends.
+    await page.keyboard.press("ArrowUp");
+    await expect(page.locator('[role="option"]').filter({ hasText: "Freelance" })).toBeFocused();
+    await page.keyboard.press("Home");
+    await expect(page.locator('[role="option"]').filter({ hasText: "All Categories" })).toBeFocused();
+    await page.keyboard.press("End");
+    await expect(page.locator('[role="option"]').filter({ hasText: "Salary" })).toBeFocused();
+
+    // Escape closes the popup ONLY — focus returns to the trigger, the
+    // page stays (no dialog in the filter instance).
+    await page.keyboard.press("Escape");
+    await expect(listbox).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await expect(page.locator('[role="dialog"]')).toHaveCount(0);
+
+    // Enter-open: focus lands on the SELECTED option again (the Select's
+    // two open paths land identically — unlike the DropdownMenu).
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(listbox).toBeVisible();
+    await expect(
+      page.locator('[role="option"]').filter({ hasText: "All Categories" }),
+    ).toBeFocused();
+
+    // Enter selects the highlighted option: popup closes, the trigger text
+    // updates, focus rests on the trigger.
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator('[role="option"]').filter({ hasText: "Freelance" })).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(listbox).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await expect(trigger).toHaveText(/Freelance/);
+
+    // Fixture restore: re-select "All Categories" (the header-count specs
+    // below depend on the unfiltered view). Wait for Radix to land focus on
+    // the (now) selected option BEFORE the key presses — the focus move is
+    // async on mount and a racing Home hits the trigger instead (the v36
+    // lesson: interleave a toBeFocused() between presses).
+    await trigger.click();
+    await expect(listbox).toBeVisible();
+    await expect(page.locator('[role="option"]').filter({ hasText: "Freelance" })).toBeFocused();
+    await page.keyboard.press("Home");
+    await expect(
+      page.locator('[role="option"]').filter({ hasText: "All Categories" }),
+    ).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(listbox).not.toBeVisible();
+    await expect(trigger).toHaveText(/All Categories/);
+  });
+
+  test("the items-view Tab-order census + the trigger's focus reveal (v36 S3)", async ({ page }) => {
+    // Session-72 surface #3, first measured v36 at the PAGE level (v33
+    // covered the sub-dialog): the REAL-Tab walk on /income is exactly
+    // the five nav links → the Add button → the search input → the
+    // category combobox → the frequency combobox → the card kebab
+    // triggers (one per card, DOM order) — the same sequence the
+    // reference walks minus its Base44 platform badge (platform chrome,
+    // not app UI). The kebab stop also pins superset #7: the clone's
+    // trigger REVEALS on keyboard focus (focus-visible:opacity-100) —
+    // the reference's stays invisible (opacity 0) when Tab-focused and
+    // when keyboard-opened.
+    const stops: Array<{ tag: string; name: string }> = [];
+    const readStop = () =>
+      page.evaluate(() => {
+        const el = document.activeElement;
+        if (!el || el === document.body) return null;
+        const r = el.getBoundingClientRect();
+        return {
+          tag: el.tagName.toLowerCase(),
+          role: el.getAttribute("role"),
+          name: (
+            el.getAttribute("aria-label") ||
+            (el.textContent || "").trim().replace(/\s+/g, " ")
+          ).slice(0, 30),
+          rect: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)],
+          opacity: getComputedStyle(el).opacity,
+        };
+      });
+
+    // Blur to the page start, then walk with REAL Tab presses (450ms
+    // settles — the sheet-ring fade discipline).
+    await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null;
+      if (el && el !== document.body) el.blur();
+    });
+    const expected = [
+      { tag: "a", name: "Dashboard" },
+      { tag: "a", name: "Income" },
+      { tag: "a", name: "Expenses" },
+      { tag: "a", name: "Savings" },
+      { tag: "a", name: "Net Worth" },
+      { tag: "button", name: "Add Income" },
+      { tag: "input", name: "Search income items..." },
+      { tag: "button", name: "Filter by category" },
+      { tag: "button", name: "Filter by frequency" },
+      { tag: "button", name: "Actions for Freelance" },
+      { tag: "button", name: "Actions for Salary" },
+    ];
+    for (const want of expected) {
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(450);
+      const stop = await readStop();
+      expect(stop).not.toBeNull();
+      stops.push({ tag: stop!.tag, name: stop!.name });
+      expect(stop!.tag).toBe(want.tag);
+      expect(stop!.name).toBe(want.name);
+    }
+
+    // Geometry bands measured on both sites (1280×800): nav links at
+    // x=20 starting y≈145 with the 40px rail pitch; the search 447×36;
+    // the comboboxes 216×36; the kebabs 36×36.
+    const navPitch = await page.evaluate(() => {
+      const links = [...document.querySelectorAll("nav a")].slice(0, 5);
+      return links.map((l) => Math.round(l.getBoundingClientRect().y));
+    });
+    expect(navPitch[0]).toBeGreaterThan(140);
+    expect(navPitch[0]).toBeLessThan(150);
+    for (let i = 1; i < navPitch.length; i++) {
+      expect(navPitch[i] - navPitch[i - 1]).toBe(40);
+    }
+
+    // The kebab stop (the last walk landing): the REAL Tab engaged
+    // :focus-visible, so the clone's superset reveal fires — opacity "1"
+    // (the reference's stays "0" at this stop — superset #7, pinned).
+    const kebab = page.getByRole("button", { name: "Actions for Salary" });
+    await expect(kebab).toBeFocused();
+    const reveal = await kebab.evaluate((el) => ({
+      opacity: getComputedStyle(el).opacity,
+      fv: el.matches(":focus-visible"),
+    }));
+    expect(reveal.fv).toBe(true);
+    expect(reveal.opacity).toBe("1");
+
+    // The walk wraps to the body after the last card trigger (the
+    // platform-badge stop the reference carries does not exist here).
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(450);
+    const afterWrap = await page.evaluate(
+      () => document.activeElement === document.body,
+    );
+    expect(afterWrap).toBe(true);
+  });
+
   test("classification tiles match the reference chrome (flex gap-4, border-2, per-class colors)", async ({
     page,
   }) => {

@@ -188,6 +188,88 @@ test.describe("neutral token parity (v5)", () => {
     expect(trigChrome.shadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
   });
 
+  test("the action-menu HOVER-highlight family (v36 S1)", async ({ page }) => {
+    // Session-72 surface #1, first measured v36 with a REAL hover on both
+    // sites: hovering a menu item moves DOM focus to it (Radix's
+    // pointer-driven roving — a synthetic mousemove does NOT trigger it,
+    // Playwright's .hover() does) and renders the SAME accent family as
+    // keyboard focus: bg rgb(245,245,245) + text rgb(23,23,23). The hovered
+    // DELETE is NOT red (the v35 G1 cascade extends to the hover path).
+    // Moving the pointer off the menu returns focus to the CONTAINER and
+    // both items to rest (Delete red again); the menu survives the leave.
+    const card = page.locator("main .group", { hasText: "Salary" }).first();
+    await card.hover();
+    await page.getByRole("button", { name: "Actions for Salary" }).click({ force: true });
+    const menu = page.locator('[role="menu"]');
+    await expect(menu).toBeVisible();
+
+    // REAL hover onto the Delete item — the pointer-driven focus move.
+    const del = page.locator('[role="menuitem"]').filter({ hasText: "Delete" });
+    await del.hover();
+    await page.waitForTimeout(300); // transition-colors 150ms settle
+    const hovered = await page.evaluate(() => {
+      const d = [...document.querySelectorAll('[role="menuitem"]')].find(
+        (x) => (x.textContent || "").trim() === "Delete",
+      );
+      const e = [...document.querySelectorAll('[role="menuitem"]')].find(
+        (x) => (x.textContent || "").trim() === "Edit",
+      );
+      if (!d || !e) return null;
+      const dc = getComputedStyle(d);
+      return {
+        deleteFocused: document.activeElement === d,
+        deleteMatchesFocus: d.matches(":focus"),
+        deleteHighlighted: d.getAttribute("data-highlighted") !== null,
+        deleteBg: dc.backgroundColor,
+        deleteColor: dc.color,
+        editColor: getComputedStyle(e).color,
+        editBg: getComputedStyle(e).backgroundColor,
+      };
+    });
+    expect(hovered).not.toBeNull();
+    // The hover moved DOM focus to the Delete item (Radix roving).
+    expect(hovered!.deleteFocused).toBe(true);
+    expect(hovered!.deleteMatchesFocus).toBe(true);
+    expect(hovered!.deleteHighlighted).toBe(true);
+    // The hovered chrome is the accent family — NOT red (the v35 G1
+    // cascade holds on the hover path: the base focus:text-accent-foreground
+    // wins over the rest-red utility).
+    expect(hovered!.deleteBg).toBe("rgb(245, 245, 245)");
+    expect(hovered!.deleteColor).toBe("rgb(23, 23, 23)");
+    // The resting Edit stays at the near-black foreground on transparent.
+    expect(hovered!.editColor).toBe("rgb(10, 10, 10)");
+    expect(hovered!.editBg).toBe("rgba(0, 0, 0, 0)");
+
+    // Move the pointer OFF the menu: focus returns to the CONTAINER, both
+    // items back at rest (Delete red again), the menu survives the leave.
+    await page.mouse.move(5, 5);
+    await page.waitForTimeout(300);
+    const left = await page.evaluate(() => {
+      const m = document.querySelector('[role="menu"]');
+      const d = [...document.querySelectorAll('[role="menuitem"]')].find(
+        (x) => (x.textContent || "").trim() === "Delete",
+      );
+      if (!m || !d) return null;
+      const dc = getComputedStyle(d);
+      return {
+        menuOpen: !!m,
+        onContainer: document.activeElement === m,
+        deleteBg: dc.backgroundColor,
+        deleteColor: dc.color,
+        deleteHighlighted: d.getAttribute("data-highlighted") !== null,
+      };
+    });
+    expect(left).not.toBeNull();
+    expect(left!.menuOpen).toBe(true);
+    expect(left!.onContainer).toBe(true);
+    expect(left!.deleteBg).toBe("rgba(0, 0, 0, 0)");
+    expect(left!.deleteColor).toBe("rgb(220, 38, 38)");
+    expect(left!.deleteHighlighted).toBe(false);
+
+    await page.keyboard.press("Escape");
+    await expect(menu).not.toBeVisible();
+  });
+
   test("select dropdown highlighted item matches the reference (G5)", async ({ page }) => {
     await page.getByRole("combobox").first().click();
     const option = page.locator('[role="option"]').first();
