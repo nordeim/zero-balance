@@ -202,3 +202,122 @@ test.describe("dashboard", () => {
     await expect(page.getByRole("dialog")).toBeVisible();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Donut keyboard semantics (v31 — plan G1)
+// The reference (recharts 2.15) renders an INERT chart surface (no tabindex
+// attribute, no role), a tooltip with NO live-region semantics, and a pie
+// layer g.recharts-pie at tabIndex=0 whose keydown handler roves sector
+// focus: ArrowLeft = ++wrap (forward), ArrowRight = --wrap (BACKWARD — the
+// first ArrowRight from a fresh pie focuses the LAST sector in DOM order),
+// Escape blurs the tracked sector and resets the index. recharts 3 dropped
+// all three: the a11y layer defaults ON (surface tabIndex=0 + role=
+// application + tooltip role=status/aria-live=assertive) and the pie
+// keyboard handlers were removed. Pinned here after live measurement on
+// both sites (docs/remediation-plan-v31.md).
+// ---------------------------------------------------------------------------
+
+test.describe("donut keyboard semantics (v31 — plan G1)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+    await expect(page.locator(".recharts-pie")).toBeAttached();
+  });
+
+  test("the chart surface is inert and the tooltip carries no live-region role (reference = recharts 2)", async ({ page }) => {
+    // The reference's svg.recharts-surface has NO tabindex attribute and NO
+    // role — recharts 3's accessibilityLayer default (tabIndex="0" +
+    // role="application") drifted. SVG elements without the attribute read
+    // .tabIndex === -1 — assert the ATTRIBUTE is absent, not the property.
+    const surface = page.locator(".recharts-surface");
+    await expect(surface).toBeAttached();
+    const attrs = await surface.evaluate((s) => ({
+      tabindex: s.getAttribute("tabindex"),
+      role: s.getAttribute("role"),
+    }));
+    expect(attrs.tabindex).toBeNull();
+    expect(attrs.role).toBeNull();
+
+    // The pie layer IS the reference's tab stop (recharts rootTabIndex: 0 —
+    // identical in 2.15 and 3.10; the layer is where keyboard focus lands).
+    const layerTb = await page.locator(".recharts-pie").evaluate((l) => l.tabIndex);
+    expect(layerTb).toBe(0);
+
+    // The tooltip's default content renders NO live-region semantics on the
+    // reference — recharts 3's role="status" + aria-live="assertive" drift.
+    // Hover a sector synthetically (the mouse-following tooltip loops a
+    // Playwright .hover()), then census the tooltip's attribute set.
+    await page.evaluate(() => {
+      const sector = document.querySelector(".recharts-pie-sector path");
+      if (!sector) return;
+      const r = sector.getBoundingClientRect();
+      const cx = r.x + r.width / 2;
+      const cy = r.y + r.height / 2;
+      const ev = (type: string) =>
+        new MouseEvent(type, { bubbles: true, cancelable: true, clientX: cx, clientY: cy });
+      sector.dispatchEvent(
+        new PointerEvent("pointermove", { bubbles: true, cancelable: true, clientX: cx, clientY: cy }),
+      );
+      sector.dispatchEvent(ev("mouseover"));
+      sector.dispatchEvent(ev("mousemove"));
+    });
+    const tip = page.locator(".recharts-default-tooltip");
+    await expect(tip).toBeVisible();
+    const tipAttrs = await tip.evaluate((t) => ({
+      role: t.getAttribute("role"),
+      ariaLive: t.getAttribute("aria-live"),
+    }));
+    expect(tipAttrs.role).toBeNull();
+    expect(tipAttrs.ariaLive).toBeNull();
+  });
+
+  test("arrow keys rove sector focus and Escape resets (the recharts 2.15 pie contract)", async ({ page }) => {
+    // Focus the pie layer the way a keyboard user would (it is the tab
+    // stop), then drive the reference's exact roving contract.
+    await page.evaluate(() => {
+      const layer = document.querySelector(".recharts-pie");
+      if (layer instanceof SVGGElement) layer.focus();
+    });
+
+    // ArrowRight from a fresh pie (index 0): --0 → -1 → len-1 → the LAST
+    // sector in DOM order. The e2e seed's DOM order is value-DESC:
+    // [Need, Savings, Want] — the first ArrowRight focuses Want.
+    await page.keyboard.press("ArrowRight");
+    let focused: { isSector?: boolean; index: number } = await page.evaluate(() => {
+      const a = document.activeElement;
+      const sectors = [...document.querySelectorAll(".recharts-pie-sector")];
+      return { isSector: !!a && sectors.includes(a as Element), index: sectors.indexOf(a as Element) };
+    });
+    expect(focused.isSector).toBe(true);
+    expect(focused.index).toBe(2); // the LAST sector (the reference's --wrap quirk)
+
+    // A second ArrowRight moves BACKWARD to the middle sector (Savings).
+    await page.keyboard.press("ArrowRight");
+    focused = await page.evaluate(() => {
+      const sectors = [...document.querySelectorAll(".recharts-pie-sector")];
+      return { index: sectors.indexOf(document.activeElement as Element) };
+    });
+    expect(focused.index).toBe(1);
+
+    // ArrowLeft roves forward (back to the last sector).
+    await page.keyboard.press("ArrowLeft");
+    focused = await page.evaluate(() => {
+      const sectors = [...document.querySelectorAll(".recharts-pie-sector")];
+      return { index: sectors.indexOf(document.activeElement as Element) };
+    });
+    expect(focused.index).toBe(2);
+
+    // Escape blurs the tracked sector — focus resets to the body.
+    await page.keyboard.press("Escape");
+    const afterEscape = await page.evaluate(() => document.activeElement === document.body);
+    expect(afterEscape).toBe(true);
+
+    // The roving never opens the tooltip (the reference's keyboard focus is
+    // visual-only — measured: tip invisible across the whole walk).
+    const tipVisible = await page.evaluate(() => {
+      const t = document.querySelector(".recharts-tooltip-wrapper");
+      return !!t && t.textContent.trim().length > 0 && getComputedStyle(t).visibility !== "hidden";
+    });
+    expect(tipVisible).toBe(false);
+  });
+});

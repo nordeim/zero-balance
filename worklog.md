@@ -19,13 +19,77 @@ and `docs/remediation-plan-v26.md`,
 and `docs/remediation-plan-v27.md`,
 and `docs/remediation-plan-v28.md`,
 and `docs/remediation-plan-v29.md`,
-and `docs/remediation-plan-v30.md`.
+and `docs/remediation-plan-v30.md`,
+and `docs/remediation-plan-v31.md`.
 
 ---
 
 ---
 
 ---
+
+---
+
+## Session 61 — Parity iteration v31: the donut's keyboard semantics + the tiles' fresh roving state (2026-10-10)
+
+**Goal:** workspace re-clone (the sandbox reset) + rebuild, re-run the
+baseline chain, audit, sweep the session-61 suggestions (the donut's
+keyboard semantics, the filter selects' open-state arrow semantics, the
+dialog forms' full Tab order), fix what the DOM finds, TDD-first, docs
+aligned, commit + push via the SSH wrapper.
+
+- The workspace was RESET — the repo re-cloned (`zero-balance` at
+  `f9a9637`, `scandihaven` re-cloned); the environment rebuilt and
+  re-verified (node_modules, .env with `DATABASE_URL="file:../db/custom.db"`,
+  db/ re-pushed + re-seeded at the repo root). Baseline green on the FIRST
+  full run: **108/161/35** + lint + typecheck + build. Audit clean (the
+  same 5 dev-only `braces` advisories, secret scan clean, .env.example
+  current).
+- Standing checks all clean: mobile-nav R1–R4 (**25th** — Tailwind v4
+  pins hold, both sites; one timing artifact caught — a 2.5s settle read
+  the still-loading /networth as 390, the 6s re-measure restored the
+  documented 464), data drift (25th — the reference read-only), the SEO
+  pair (full head-metadata census byte-identical; the reference's
+  /manifest.json endpoint 302s empty — the clone's webmanifest is the
+  superset).
+- **The session-61 suggested surfaces resolved**: the filter selects'
+  arrow semantics (NO finding — identical Radix listbox roving on both
+  sites, no wrap at the ends); the dialog forms' full Tab order (the
+  strict 14-field census byte-identical — the reference's 1×1
+  native-select shadows are not stops on either site); and the donut's
+  keyboard semantics — **the recharts 3↔2.15 drift trio** (G1).
+- **G1 (the donut's keyboard semantics)**: recharts 3's
+  `accessibilityLayer` defaults ON — the clone's svg surface carried
+  `tabIndex=0` + `role="application"` (an extra tab stop rendering the
+  browser's unpinned 5px auto ring; the reference's surface is inert —
+  no attribute, no role) and its tooltip's default content carried
+  `role="status"` + `aria-live="assertive"` (the reference's renders
+  neither) — both killed by `<PieChart accessibilityLayer={false}>`;
+  AND recharts 3 REMOVED 2.15's `attachKeyboardHandlers` pie roving
+  (ArrowLeft `++n % len` forward / ArrowRight `--n < 0 → len-1`
+  BACKWARD — the first ArrowRight focuses the LAST sector / Escape blurs
+  + resets / alt-arrows ignored / no preventDefault; the contract read
+  from the installed 2.15.3 source) — replicated exactly in
+  `usePieKeyboardParity` (an onkeydown DOM property on the donut wrapper,
+  delegation via bubbling — immune to the ResponsiveContainer mount
+  race; the pie layer g stays the shared tab stop at `rootTabIndex: 0`).
+- **G2 (the tiles' fresh roving state)**: the reference's older Radix ties
+  the fresh roving tabindex to the CHECKED state (container 0 + checked
+  radio 0 = two stops; Radix 1.4.8's fresh state renders all radios −1)
+  — fixed with `tabIndex={selected ? 0 : −1}` on the tiles'
+  RadioGroupItem. Measured on both sites: a REAL Tab into the group lands
+  on the CHECKED item (the container's entry focus forwards instantly).
+- Two VLM pairs (dashboard + add-dialog): all flags DOM-explained (the
+  Dashboard-active rail = superset #3; the allocation bar + avatar =
+  seeded data; the X's open-state ring = the documented v29 Radix
+  superset — both X's byte-identical at rest).
+- TDD: RED → GREEN → pin-sanity mutations (the a11y prop removed, the
+  roving wrap broken, the tile prop flipped) → FAIL → restored → GREEN.
+  Full chain **108/164/35 green**; both fixes live-re-verified
+  byte-identical on the :3200 parity server; the 16 screenshots
+  regenerated (zero visual change); docs aligned (probe README, README,
+  CLAUDE, AGENTS, SKILL, session_63, the narrative, this log); committed
+  and pushed to main via the SSH wrapper.
 
 ---
 

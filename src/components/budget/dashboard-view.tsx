@@ -14,6 +14,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import {
   BarChart3Icon,
   ChevronDownIcon,
@@ -526,8 +527,60 @@ function StatCard({
 // Spending Breakdown donut (shadcn card shell, value-DESC slice order)
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Donut keyboard parity (v31 — plan G1c)
+// The reference (recharts 2.15.3) attaches pieRef.onkeydown in componentDidMount
+// (attachKeyboardHandlers) with an idiosyncratic roving contract that
+// recharts 3 REMOVED. Replicate it exactly:
+//   ArrowLeft  → ++n % len          → focus that sector (forward, wraps)
+//   ArrowRight → --n (< 0 → len-1)  → focus that sector (BACKWARD, wraps —
+//                                       the first ArrowRight from a fresh pie
+//                                       focuses the LAST sector in DOM order)
+//   Escape     → the tracked sector .blur()s (focus → body) + index resets
+//   alt-modified arrows: ignored · no preventDefault (the reference keeps
+//   the browser's arrow-scroll default) · sectors are tabIndex=-1 (focused
+//   only programmatically) · Enter/ArrowUp/ArrowDown: nothing.
+// Attached as an onkeydown DOM property on the donut WRAPPER (delegation:
+// the layer's keydowns bubble there) — avoids the ResponsiveContainer mount
+// race of a direct .recharts-pie attachment; the wrapper sees exactly the
+// focus states the reference's layer handler can (the layer g is the only
+// focusable chart element on both sites — the surface is inert, G1a).
+// ---------------------------------------------------------------------------
+
+function usePieKeyboardParity(wrapRef: React.RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    let sectorToFocus = 0; // the reference's component state, initial 0
+    wrap.onkeydown = (e) => {
+      if (e.altKey) return;
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Escape") return;
+      const sectors = wrap.querySelectorAll<SVGGElement>(".recharts-pie-sector");
+      if (!sectors.length) return;
+      if (e.key === "ArrowLeft") {
+        sectorToFocus = ++sectorToFocus % sectors.length;
+        sectors[sectorToFocus].focus();
+      } else if (e.key === "ArrowRight") {
+        sectorToFocus =
+          --sectorToFocus < 0 ? sectors.length - 1 : sectorToFocus % sectors.length;
+        sectors[sectorToFocus].focus();
+      } else {
+        // Escape: blur the tracked sector, reset the index (the reference's
+        // exact sequence — the blur resets focus to the body).
+        sectors[sectorToFocus].blur();
+        sectorToFocus = 0;
+      }
+    };
+    return () => {
+      wrap.onkeydown = null;
+    };
+  }, [wrapRef]);
+}
+
 function SpendingBreakdownCard() {
   const items = useBudgetStore((s) => s.items);
+  const donutWrapRef = useRef<HTMLDivElement>(null);
+  usePieKeyboardParity(donutWrapRef);
   // The reference renders its donut data sorted by value DESCENDING — its
   // pie sectors AND legend rows share the sorted array (measured live:
   // [Need $6025, Savings $300, Want $200], biggest slice anchored at
@@ -553,9 +606,21 @@ function SpendingBreakdownCard() {
       <div className="p-6 pt-0">
         {hasData ? (
           <>
-            <div style={{ width: "100%", height: 300 }}>
+            <div ref={donutWrapRef} style={{ width: "100%", height: 300 }}>
               <ResponsiveContainer>
-                <PieChart>
+                {/* v31 G1a/b: accessibilityLayer={false} — recharts 3's a11y
+                    layer defaults ON (useAccessibilityLayer() ?? true), which
+                    stamps the svg surface with tabIndex=0 + role="application"
+                    (an EXTRA tab stop rendering the browser's unpinned 5px
+                    auto ring) and the tooltip's default content with
+                    role="status" + aria-live="assertive". The reference
+                    (recharts 2.15) renders NEITHER — its surface is inert and
+                    its tooltip carries no live-region semantics. The explicit
+                    false overrides the default (RootSurface's prop precedence).
+                    The pie LAYER keeps its own rootTabIndex=0 (recharts 2.15
+                    AND 3.10 alike — the reference's real tab stop) and the
+                    keyboard roving is replicated in usePieKeyboardParity. */}
+                <PieChart accessibilityLayer={false}>
                   <Pie
                     data={data}
                     dataKey="value"

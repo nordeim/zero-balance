@@ -741,3 +741,86 @@ test.describe("dialog chrome (v9)", () => {
     expect(itemCap).toBe(90);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Classification tiles' fresh roving state (v31 — plan G2)
+// The reference's fresh dialog renders the classification field with TWO
+// tab stops: the radiogroup container (tabIndex=0 — the Radix
+// RovingFocusGroup entry-focus pattern, identical on both sites) AND the
+// CHECKED tile's radio button (tabIndex=0; unchecked tiles are -1) — its
+// older Radix ties the fresh roving tabindex to the checked state.
+// recharts… Radix 1.4.8's fresh state renders ALL radios at -1 (one stop).
+// Pinned: the checked radio must read tabindex=0 in the FRESH open state,
+// and the real Tab walk must tour container → checked radio → next field.
+// ---------------------------------------------------------------------------
+
+test.describe("classification tiles' fresh roving state (v31 — plan G2)", () => {
+  test("the checked tile's radio is a Tab stop in the fresh dialog (container + checked = two stops)", async ({ page }) => {
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    // The fresh static census: container tabIndex=0, checked radio
+    // tabIndex=0, unchecked radios -1 (the reference's fresh DOM).
+    const census = await page.evaluate(() => {
+      const rg = document.querySelector('[role="radiogroup"]') as HTMLElement | null;
+      if (!rg) return null;
+      const radios = [...rg.querySelectorAll<HTMLElement>('[role="radio"]')];
+      return {
+        containerTb: rg.tabIndex,
+        radios: radios.map((r) => ({
+          checked: r.getAttribute("aria-checked") === "true",
+          tb: r.tabIndex,
+        })),
+      };
+    });
+    expect(census).not.toBeNull();
+    expect(census!.containerTb).toBe(0);
+    // exactly one checked radio, and IT carries tabindex=0
+    const checked = census!.radios.filter((r) => r.checked);
+    expect(checked).toHaveLength(1);
+    expect(checked[0].tb).toBe(0);
+    // every unchecked radio stays out of the tab order
+    for (const r of census!.radios.filter((x) => !x.checked)) {
+      expect(r.tb).toBe(-1);
+    }
+
+    // The real keyboard experience (measured live on BOTH sites with a REAL
+    // Tab): Tab from the Amount input moves focus onto the radiogroup
+    // container, whose RovingFocusGroup entry-focus handler immediately
+    // forwards it to the checked radio — so activeElement reads the CHECKED
+    // RADIO, never the container. The landing is the parity surface; the
+    // pass-through is Radix behavior identical on both sites.
+    await page.evaluate(() => {
+      const inputs = [...document.querySelectorAll<HTMLInputElement>('[role="dialog"] input')];
+      const amount = inputs.find((i) => i.type === "number");
+      amount?.focus();
+    });
+    await page.keyboard.press("Tab"); // → container (transient) → checked radio
+    const radioStop = await page.evaluate(() => {
+      const a = document.activeElement;
+      return {
+        role: a?.getAttribute("role"),
+        checked: a?.getAttribute("aria-checked"),
+        tb: a instanceof HTMLElement ? a.tabIndex : null,
+        text: a?.closest("label")?.textContent?.trim().slice(0, 8),
+      };
+    });
+    expect(radioStop.role).toBe("radio");
+    expect(radioStop.checked).toBe("true");
+    expect(radioStop.tb).toBe(0); // the G2 pin: the checked radio is a real stop
+    expect(radioStop.text).toBe("Need"); // the add dialog's default classification
+    await page.keyboard.press("Tab"); // → Category input
+    const categoryStop = await page.evaluate(() => {
+      const a = document.activeElement as HTMLInputElement | null;
+      return a ? (a.labels && a.labels[0] ? a.labels[0].textContent : a.tagName) : "none";
+    });
+    expect(categoryStop).toBe("Category");
+
+    // Close the dialog (the Radix superset: Escape works on the clone).
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  });
+});

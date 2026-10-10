@@ -212,7 +212,20 @@ export function BudgetItemDialog() {
                         : undefined
                     }
                   >
-                    <RadioGroupItem value={c} />
+                    {/* v31 G2: tabIndex={selected ? 0 : -1} — the
+                        reference's older Radix ties the fresh roving
+                        tabindex to the CHECKED state: its fresh dialog
+                        renders the radiogroup container (0) AND the
+                        checked tile's radio (0) as two tab stops. Radix
+                        1.4.8's fresh RovingFocusGroup renders all radios
+                        at -1 (currentTabStopId starts null). The explicit
+                        prop flows through RovingFocusGroup.Item's
+                        ...itemProps spread and overrides the computed
+                        value; because checking always follows focus
+                        (automatic activation), a checked-based tabindex
+                        equals the roving tabindex in every reachable
+                        state — fresh, post-arrow, post-click. */}
+                    <RadioGroupItem value={c} tabIndex={selected ? 0 : -1} />
                     {/* v20 G2: the reference's tile label carries a 16px
                         lucide icon between the radio and the text (measured:
                         circle-alert rgb(224,122,59) / heart rgb(59,126,161) /

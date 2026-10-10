@@ -861,3 +861,47 @@ Session-31 additions (remediation-plan-v30 audit — the session-59 brief):
   identical attribute set); and the arrow-key roving contract (focus move +
   automatic activation + the roving tabindex update) is now pinned by the
   v30 e2e tests.
+
+Session-33 additions (remediation-plan-v31 audit — the session-61 brief):
+
+- `probe-drift-v31.mjs` / `probe-r1-v31.mjs` / `probe-r2-ref-v31.mjs` /
+  `probe-r2-trapped-v31.mjs` / `probe-r2-clone-v31.mjs` / `probe-r3-v31.mjs`
+  — the 25th standing sweep (data census, the burger hit-test, the
+  reference's sheet trap + the clone's close-on-nav with the Radix
+  `[role=dialog]` detector, the root-URL active-nav census).
+- `probe-select-open-v31.mjs` / `probe-select-arrows-v31.mjs` — the filter
+  selects' open-state arrow semantics (suggestion #2 — NO finding: both
+  sites are Radix listbox/option roving with `data-highlighted`, no wrap at
+  the ends, identical).
+- `probe-dialog-structure-v31.mjs` / `probe-dialog-taborder-v31.mjs` /
+  `probe-tiles-v31.mjs` / `probe-tile-arrows-v31.mjs` /
+  `probe-realtab-v31.mjs` — the form dialogs' full Tab order (suggestion
+  #3): the strict focusable census (tabindex property; the reference's
+  1×1 native select shadows are NOT stops), the classification tile
+  structure + arrow behavior, and the REAL Tab landing (the entry-focus
+  pass-through). Found G2 (the checked radio's fresh tabindex).
+- `probe-donut-census-v31.mjs` / `probe-donut-tip-v31.mjs` /
+  `probe-donut-kb-v31.mjs` / `probe-donut-rings-v31.mjs` — the donut's
+  keyboard semantics (suggestion #1): the surface/layer/sector tabindex
+  census, the tooltip's attribute set, the full arrow-key walk, and the
+  focus-ring rendering. Found G1 (the recharts-3 a11y defaults + the
+  missing 2.15 roving).
+- `probe-x-chrome-v31.mjs` — the VLM dialog-flag arbitration (the X's
+  computed chrome at rest — byte-identical; the open-state ring = the
+  documented v29 superset).
+- `vlm-compare-v31.sh` — the dashboard + add-dialog VLM pairs (all flags
+  DOM-explained: the Dashboard-active rail = superset #3, the allocation
+  bar + avatar = seeded data, the X box = the Radix focus superset).
+- LESSONS: a 2.5s post-navigation settle can read a still-loading route as
+  non-overflowing (the /networth 390-vs-464 artifact — re-measure with a
+  6s settle before declaring drift); the dialog X finder must scope to the
+  topmost fixed overlay (a page-wide 36×36+svg filter matches the card
+  action buttons underneath); SVG elements without a `tabindex` attribute
+  read `.tabIndex === -1` — distinguish "attribute absent" from
+  "attribute -1" before claiming parity; a REAL Tab into a Radix
+  RovingFocusGroup lands on the CHECKED ITEM (the container's entry-focus
+  forwards immediately — activeElement never reads the container); and
+  recharts' pie-layer roving is version-specific (2.15's
+  `attachKeyboardHandlers` ArrowLeft=++wrap / ArrowRight=--wrap / Escape
+  blur+reset was REMOVED in 3.x — the clone replicates it in
+  `usePieKeyboardParity`, dashboard-view.tsx).
