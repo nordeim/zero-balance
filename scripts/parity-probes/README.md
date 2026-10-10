@@ -951,3 +951,79 @@ Session-35 additions (remediation-plan-v32 audit — the session-63 brief):
   seed's natural-key upsert does NOT restore it); (e) the reference's
   calculator row delete is IMMEDIATE (no confirm) — the clone's inline
   confirm is the documented "unconfirmed deletes fixed" superset.
+
+Session-37 additions (remediation-plan-v33 audit — the session-67 brief):
+
+- `probe-data-v33.mjs` — the 27th data-drift census (read-only; the
+  standing fields: allocation 30.5%, Balance $3475.00, income
+  $5000.00/1, savings $1000.00/1, expenses $525.00/4).
+- `probe-r4-v33.mjs` — the per-route mobile overflow walk (superseded
+  by the CLI loop — kept for the route list; the 6s settle discipline
+  lives in the shell loop).
+- `clone-mobile-nav-v33.sh` — the clone-side standing R1–R4 (27th):
+  the burger hit DIRECT on the svg (390 fit), the sheet opens
+  (structure detector) and CLOSES after nav (superset fix #2), the
+  nav landmark present, all six routes fit 390.
+- `probe-lisub-census-v33.mjs` + `kb-lisub-v33.sh` — the line-item
+  sub-dialog's focusable census + REAL-Tab walk (suggestion #1 — NO
+  finding): 13 stops on both sites in the same order (X 36 / name /
+  amount / frequency / provider / policy / 2 native dates / payment /
+  status / notes 90px / cancel / save), the walk byte-identical
+  INCLUDING the native date segments (each `<input type="date">` is a
+  FOUR-STOP walk — 8 consecutive date stops on both sites); the
+  reference keeps focus on its trigger on mouse-open and EXITS after
+  the last stop (the clone's Radix auto-focus-X + trap = the
+  documented supersets).
+- `clone-lisub-v33.sh` — the clone-side twin of the sub-dialog walk
+  (same census + 18 REAL Tabs — the identical sequence, `inDlg:false`
+  is a probe artifact: `querySelector('[role=dialog]')` finds the
+  CALCULATOR dialog beneath, not the sub-dialog).
+- `clone-seltrigger-v33.sh` + `clone-seltrigger-deep-v33.sh` — the
+  select triggers' focus chrome (NO finding — the probe LESSON): the
+  first 85-char box-shadow read looked like "no ring"; the deep probe
+  reads `--tw-ring-color: #0a0a0a` + `--tw-ring-shadow: 0 0 0
+  calc(1px + 0px) #0a0a0a` and the FULL composed shadow — the 1px
+  ring IS present as the FOURTH layer behind v4's three transparent
+  placeholders.
+- `probe-toast-ref-v33.mjs` — the reference's toast-viewport census:
+  two plain `fixed top-0 z-[100]` divs, NO role/aria-live/aria-label,
+  `pointer-events: auto` (the standing R1 burger-blocker root cause).
+- `clone-toast-v33.sh` — the clone's live toast semantics (the save
+  toast via the calculator's add flow): the li (tabindex 0, no
+  role/live BY DESIGN) + Radix's hidden ANNOUNCER portal —
+  `<span role="status" aria-live="assertive">Notification Line item
+  added</span>` measured inside its 1-second mount window (the
+  +1.2s read misses it — read within ~0.5s).
+- `clone-perf-v33.sh` — the bundle/page-weight census (suggestion #4):
+  the clone's dashboard = 12 chunks 1,104KB raw / 338KB gz + 147KB
+  CSS, nav 66ms / DCL 26ms; the reference = one 1,060KB raw / 317KB
+  gz bundle + 68KB CSS + a 214KB dev-only badge.js.
+- `clone-vlmshots-v33.sh` + `vlm-compare-v33.sh` — the VLM pairs (the
+  dashboard + the verify-email state): both flags DOM-explained
+  (superset #3, the dev-code hint box). **Re-assert `set viewport`
+  before pairing** — the first dashboard pair compared a desktop
+  reference against a mobile clone shot (the stale default-session
+  viewport) and produced a phantom full-page drift verdict.
+- `clone-reverify-v33.sh` — the post-fix live re-verification: the
+  register lands with Digit 1 focused; the REAL-Tab-focused Digit 2
+  renders the 2px zinc ring + the untinted border (byte-matching the
+  reference modulo v4's invisible lead layers); the R1/R4 spot check.
+- LESSONS: (a) v4's ring composition puts the visible ring in the
+  FOURTH box-shadow layer behind three zero-width transparent
+  placeholders — a truncated read fabricates a missing-ring finding;
+  read the FULL string + the `--tw-ring-*` properties; (b) persistent
+  agent-browser sessions keep their LAST viewport — re-assert `set
+  viewport` before any screenshot pairing; (c) the clone's Radix
+  DialogContent is NOT inside a `div.fixed` (the overlay and the
+  content are portal SIBLINGS) — anchor probes with
+  `closest('[data-state=open],[role=dialog]')`, not
+  `closest('div.fixed')` (two silent probe failures this session);
+  (d) the reference's plain-div dialogs IGNORE Escape — verify the
+  DOM state, never assume closed; (e) the reference's register form
+  is a STATE on `/login` (the `/register` route 404s — enter via the
+  "Need an account? Sign up" link); (f) the empty-required-field save
+  is blocked by NATIVE form validation (no submit event, no toast —
+  drive the toast probes through a real fill); (g) the calculator
+  add/delete probe cycle under the DEMO user needs the line-item
+  cleanup + the parent restore (the probe users cascade-delete but
+  the demo user's fixtures do not).

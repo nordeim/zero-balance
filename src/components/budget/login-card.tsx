@@ -139,7 +139,18 @@ function CodeInputs({
             });
             focusAt(Math.min(5, i + pasted.length));
           }}
-          className="h-11 w-10 rounded-lg border border-[#e4e4e7] bg-white text-center text-sm font-semibold text-[#0f172a] transition-colors focus:border-[#94a3b8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-11"
+          // v33 G1 (docs/remediation-plan-v33.md): the reference's code-input
+          // focus family, REAL-Tab-measured on its verify state — the 2px
+          // zinc-950 ring (`box-shadow: rgb(255,255,255) 0 0 0 0, rgb(9,9,11)
+          // 0 0 0 2px`) with NO border tint (the border stays #e4e4e7 on
+          // focus — the ring alone signals focus; the register inputs'
+          // slate family at line ~200 is a DIFFERENT surface: the reference
+          // itself switches families between its forms). The explicit
+          // arbitrary-shadow form follows the register-input precedent.
+          // The first box carries the reference's AUTO-FOCUS (measured:
+          // activeElement = box 1 immediately after the register submit).
+          autoFocus={i === 0}
+          className="h-11 w-10 rounded-lg border border-[#e4e4e7] bg-white text-center text-sm font-semibold text-[#0f172a] transition-colors focus:shadow-[0_0_0_0_#fff,0_0_0_2px_#09090b] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:h-11"
         />
       ))}
     </div>

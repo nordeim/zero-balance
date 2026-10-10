@@ -21,7 +21,8 @@ and `docs/remediation-plan-v28.md`,
 and `docs/remediation-plan-v29.md`,
 and `docs/remediation-plan-v30.md`,
 and `docs/remediation-plan-v31.md`,
-and `docs/remediation-plan-v32.md`.
+and `docs/remediation-plan-v32.md`,
+and `docs/remediation-plan-v33.md`.
 
 ---
 
@@ -30,6 +31,78 @@ and `docs/remediation-plan-v32.md`.
 ---
 
 ---
+
+## Session 65 — Parity iteration v33: the verify-email code inputs' focus family + the toast announcer pinned (2026-10-10)
+
+**Goal:** `git pull` (the session-67 transcript commit) + re-verify the
+environment, re-run the baseline chain, audit, sweep the session-67
+suggestions (the line-item sub-dialog's focus traversal, the
+register/verify-email focus families, the toast's focus semantics, the
+performance/bundle pass), fix what the DOM finds, TDD-first, docs
+aligned, commit + push via the SSH wrapper.
+
+- Workspace refreshed via `git pull` (`3818922`); the v32 environment
+  survived intact (node_modules, .env, the db/ seed — re-verified);
+  `scandihaven` re-cloned (reference only). Baseline green on the FIRST
+  full run: **108/165/35** + lint + typecheck + build. Audit clean (the
+  same 5 dev-only `braces` advisories, secret scan clean, .env.example
+  current).
+- Standing checks all clean: mobile-nav R1–R4 (**27th** — Tailwind v4
+  pins hold, both sites), data drift (27th — the reference read-only,
+  verified before + after the probe cycles), the SEO pair (full
+  head-metadata census byte-identical; the reference's /manifest.json
+  still 302s empty — the clone's webmanifest is the superset).
+- **The session-67 suggested surfaces resolved**: the line-item
+  sub-dialog's focus traversal (NO finding — the 13-stop census +
+  the REAL-Tab walk byte-identical on both sites INCLUDING the native
+  date segments: each `<input type="date">` is a 4-stop walk; the
+  reference keeps focus on its trigger on mouse-open and EXITS after
+  the last stop, both documented Radix supersets; the reference's
+  plain-div dialogs IGNORE Escape — measured); the sub-dialog's select
+  triggers (NO finding — the 1px ring IS present as the FOURTH
+  box-shadow layer behind v4's three transparent placeholders; the
+  first 85-char read fabricated a missing ring — read FULL strings);
+  the register/verify-email focus families (the register inputs, the
+  verify submit, Resend, and Back all matched — the CODE inputs did
+  not); the toast's focus semantics (NO finding — the clone's
+  viewport is the labeled pe:none region, its live toast is a
+  focusable li PLUS Radix's hidden role=status/aria-live=assertive
+  announcer portal measured inside its 1s window; the reference's
+  viewports are semantic-less pe:auto divs and its toasts never fire
+  on the measured flows); the bundle pass (documented: 12 chunks
+  1,104KB raw/338KB gz vs the reference's 1,060KB/317KB single bundle
+  + a 214KB dev-only badge.js — wire-weight parity, route-split
+  superset).
+- **G1 (the code inputs' focus family)**: the reference's focused 40x44
+  boxes render the 2px zinc-950 ring (`rgb(255,255,255) 0 0 0 0,
+  rgb(9,9,11) 0 0 0 2px`) with NO border tint (stays #e4e4e7) and the
+  first box AUTO-FOCUSES on landing; the clone's
+  `focus:border-[#94a3b8] focus:outline-none` was an invented tint
+  with no ring and no auto-focus. Fixed with the register-input
+  idiom `focus:shadow-[0_0_0_0_#fff,0_0_0_2px_#09090b]
+  focus:outline-none` + `autoFocus={i === 0}` (the reference itself
+  switches families — register slate vs code zinc; each surface
+  measured separately).
+- **S1 (the toast announcer pin)**: the calculator's line-item-add test
+  now asserts the `[role="status"][aria-live]` announcer (count 1 +
+  the toast text, read inside the 1s window) — pin-sanity verified by
+  swapping the Radix Root for a plain li (the no-announcer rewrite
+  simulation): the pin FAILS, restored GREEN.
+- TDD: G1 RED (the auto-focus assertion) → GREEN → 2 pin-sanity
+  mutations (the shadow removed, the autoFocus removed — both FAIL)
+  → restored → GREEN. **Full chain re-run: 108 unit · 166 e2e
+  (165→166) · 35 smoke.** Live re-verification on the :3200 parity
+  server: the focused Digit 2 renders the 2px zinc ring + the
+  untinted border (byte-matching the reference modulo v4's invisible
+  lead layers); the mobile-nav R1/R4 spot check clean. The 16
+  screenshots regenerated; the dev db restored (0 line items,
+  Entertainment $65, 2235 total, the probe users deleted).
+- Docs aligned: README (v33 row + counts), CLAUDE.md (e2e description
+  + counts), AGENTS.md (v33 paragraph), the SKILL doc (session row +
+  166 state), docs/session_68.md, the probe README (the v33 catalog +
+  five lessons), this worklog.
+- Committed and pushed to main via docs/ssh_git_wrapper_v3.py
+  (paramiko shim; key shredded after).
 
 ## Session 63 — Parity iteration v32: the calculator row actions' focus-visible ring family + the breakdown aria-expanded superset pinned (2026-10-10)
 

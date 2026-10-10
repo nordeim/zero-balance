@@ -126,6 +126,20 @@ test.describe("rent calculator", () => {
     await expect(lineDialog).toBeHidden();
     await expect(dialog).toBeVisible();
 
+    // v33 S1 pin (docs/remediation-plan-v33.md — the session-67 toast
+    // surface): the toast ANNOUNCES. Radix's hidden portal mirrors the
+    // toast text into a role=status / aria-live region for ~1s after the
+    // toast mounts (measured: `Notification Line item added`,
+    // aria-live=assertive — the foreground-type default). Read promptly:
+    // the announcer unmounts at 1s (this read lands ~200ms after the
+    // save). The visible li itself carries NO role/live (Radix's design
+    // — the announcer handles the announcement), so this locator matches
+    // exactly one element. Guards a future toast-system rewrite from
+    // silently dropping the announcement.
+    const announcer = page.locator('[role="status"][aria-live]');
+    await expect(announcer).toHaveCount(1);
+    await expect(announcer).toContainText("Line item added");
+
     // The calculator banner + row reflect the new line item…
     await expect(dialog.getByText("Contents Insurance")).toBeVisible();
     await expect(dialog.getByText("Based on 1 item")).toBeVisible();

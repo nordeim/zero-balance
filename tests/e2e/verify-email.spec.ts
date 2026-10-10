@@ -214,6 +214,40 @@ test.describe("register verify-email gate (v21 — plan G3)", () => {
     // Silence the unused-var lint when codes coincide by chance.
     expect(firstCode).toMatch(/^\d{6}$/);
   });
+
+  test("the code inputs render the reference's focus family (v33 G1)", async ({ page }) => {
+    const email = `v33-focus-${Date.now()}@example.com`;
+    await registerFreshAccount(page, email);
+
+    // (a) The reference AUTO-FOCUSES the first code input when the verify
+    // state lands (measured live: document.activeElement = the first
+    // 40×44 box immediately after the register submit — the user can
+    // start typing the code without clicking).
+    await expect(page.getByLabel("Digit 1")).toBeFocused();
+
+    // (b) The REAL keyboard focus family (measured on the reference with
+    // a REAL Tab + a 400ms settle): the 2px zinc-950 ring — box-shadow
+    // `rgb(255, 255, 255) 0px 0px 0px 0px, rgb(9, 9, 11) 0px 0px 0px
+    // 2px` — and the border does NOT tint on focus (stays #e4e4e7). The
+    // reference's REGISTER inputs carry the slate-2px/4px family (v13,
+    // pinned) while its CODE inputs carry this zinc-2px family — each
+    // surface measured separately, never one family's color copied onto
+    // another.
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(400);
+    const chrome = await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement;
+      const cs = getComputedStyle(el);
+      return {
+        label: el.getAttribute("aria-label") ?? "",
+        box: cs.boxShadow,
+        border: cs.borderColor,
+      };
+    });
+    expect(chrome.label).toBe("Digit 2");
+    expect(chrome.box).toContain("rgb(9, 9, 11) 0px 0px 0px 2px");
+    expect(chrome.border).toBe("rgb(228, 228, 231)");
+  });
 });
 
 test.describe("register verify-email gate at MOBILE (v23 — plan G2)", () => {
