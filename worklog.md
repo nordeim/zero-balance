@@ -22,13 +22,85 @@ and `docs/remediation-plan-v29.md`,
 and `docs/remediation-plan-v30.md`,
 and `docs/remediation-plan-v31.md`,
 and `docs/remediation-plan-v32.md`,
-and `docs/remediation-plan-v33.md`.
+and `docs/remediation-plan-v33.md`,
+and `docs/remediation-plan-v34.md`.
 
 ---
 
 ---
 
 ---
+
+---
+
+## Session 67 — Parity iteration v34: the forgot-state focus walk + the frequency listbox contract pinned, zero production-code drift (2026-10-10)
+
+**Goal:** `git pull` (the session-69 transcript commit `3ff3d7c`) + re-verify the
+environment, re-run the baseline chain, audit, sweep the session-69
+suggestions (the forgot-password state's focus walk, the calculator
+frequency Select's listbox keyboard contract, the API error-tier audit),
+fix what the DOM finds, TDD-first, docs aligned, commit + push via the
+SSH wrapper.
+
+- Workspace refreshed via `git pull` (`3ff3d7c` — the session_69
+  transcript; the first pull ran before the user pushed it); the v33
+  environment survived intact (node_modules, .env, the db/ seed —
+  re-verified). Baseline green on the FIRST full run: **108/166/35** +
+  lint + typecheck + build. Audit clean (the same 5 dev-only `braces`
+  advisories, secret scan clean, .env.example current).
+- Standing checks all clean: mobile-nav R1–R4 (**28th** — Tailwind v4
+  pins hold, both sites; the clone's burger hit direct, its sheet
+  closes, its landmark + active state present, all six routes fit 390;
+  the reference's toast-blocker, sheet-trap, no-landmark, and 395/464
+  overflows all still live), data drift (28th — allocation 30.5% /
+  $3475.00 / $5000 / $1000 / $525, reference read-only, verified before
+  + after), the SEO pair (byte-identical head census + the superset
+  webmanifest), the VLM dashboard + forgot pairs (dashboard one flag
+  DOM-explained = superset #3; forgot IDENTICAL, zero flags).
+- The session-69 suggested surfaces ALL clean with first-time
+  measurements: **S1 (pin)** the forgot-password state's focus walk —
+  THREE app stops in order (Back → Email → Send reset link), NO
+  auto-focus on landing, the v13 slate input family + the v25 zinc
+  submit family (focus-VISIBLE-gated — programmatic focus never
+  engages it; programmatic-focus-then-real-Tab measures it) + the raw
+  back button, all byte-identical — pinned by login-parity; **S2 (pin)**
+  the frequency Select's listbox keyboard contract — the same Radix
+  combobox family, fresh-open accent highlight on the selected option
+  (`rgb(245,245,245)` — `:focus`-driven), arrows roving CLAMPED at both
+  ends, Home/End, NO typeahead (both sites), Escape closing the POPUP
+  only (focus → trigger, the sub-dialog stays), Enter selecting — pinned
+  by the calculator spec; **S3** the API error-tier audit (401/400/404/
+  429/403/409 consistent, the client layered network → non-JSON →
+  envelope, every Prisma query userId-scoped, money math pinned).
+- **The big probe lesson: the UNFOCUSED-HEADLESS-WINDOW `:focus`
+  ARTIFACT** — an eval that DOM-clicks a Select trigger open reads
+  `document.activeElement` = the selected option while
+  `element.matches(':focus')` is FALSE and
+  `document.querySelector(':focus')` returns NOTHING (the headless
+  page's OS-level window focus was lost after a navigation without
+  real key presses). The first fresh-open listbox comparison
+  FABRICATED a "the clone renders no highlight" finding — the reference
+  read had run after real key presses (page focused), the clone read
+  after JS clicks alone. GATE every `:focus`-computed read on
+  `document.hasFocus()` (a real `press Shift` re-focuses the page);
+  Playwright is immune (its pages hold real focus). Also: the display
+  pipeline eats `[h`/`[m` sequences DISPLAY-ONLY (a python repr read
+  fabricated a "file mangled" conclusion; byte-level reads proved every
+  file intact), `[tabindex=-1]` must be quoted in CSS selectors, the
+  reference's burger is named by its sr-only span (no aria-label), and
+  the reference's mobile sheet closes via the burger toggle (no X).
+- D1: the README's structure/commands sections still said 165 e2e
+  after v33's 166 — fixed to the new 168.
+- TDD: S1 RED→GREEN (the census mapping + the focus-visible
+  restructure) + 2 pin-sanity mutations; S2 GREEN (the roving
+  settle) + 1 pin-sanity mutation (SelectItem's `focus:bg-accent`
+  removed → FAILED → restored). Full chain re-run **108/168/35 green**
+  (166→168). The 16 screenshots regenerated; the dev DB census clean
+  (7 items / 0 line items / 0 probe users).
+- Docs aligned: README (the v34 row + counts), CLAUDE.md, AGENTS.md,
+  the SKILL doc, docs/session_70.md, this worklog, the probe README
+  (the v34 catalog + the L1–L7 lessons). Committed and pushed to main
+  via docs/ssh_git_wrapper_v3.py.
 
 ---
 

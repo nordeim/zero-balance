@@ -1027,3 +1027,95 @@ Session-37 additions (remediation-plan-v33 audit — the session-67 brief):
   add/delete probe cycle under the DEMO user needs the line-item
   cleanup + the parent restore (the probe users cascade-delete but
   the demo user's fixtures do not).
+
+Session-67 additions (remediation-plan-v34 audit — the session-69
+suggested surfaces: the forgot-password focus walk, the calculator
+frequency Select's listbox keyboard contract, the API error-tier audit):
+
+- `probe-drift-v34.mjs` / `probe-seo-v34.mjs` — the standing data-drift
+  census + the head-metadata census (28th consecutive — clean).
+- `probe-r1-v34.mjs` — the burger hit test (fixed: the reference's
+  burger has NO aria-label — its accessible name comes from the sr-only
+  "Toggle Sidebar" span; find it by textContent or the finder silently
+  skips the click).
+- `probe-r2-open-v34.mjs` + `probe-r2-nav-v34.mjs` +
+  `probe-sheet-toggle-v34.mjs` — the sheet open/nav/trap check (the
+  structure detector: fixed panel + nav links + body lock) and the
+  close via the burger TOGGLE (the sheet has no X on the reference —
+  the snapshot's dialog carries no close button).
+- `probe-r3-v34.mjs` + `probe-r3-active-v34.mjs` — the nav landmark +
+  active-state check (the clone's active rail is TEXT-COLOR based —
+  a bg-color-based active filter false-negatives; check computed
+  color/weight per link).
+- `probe-r4a-v34.mjs` + `probe-r4b-v34.mjs` — the per-route overflow
+  census split in halves (the 6-route × 6s single eval exceeds the
+  agent-browser CDP timeout — 3 routes per eval is the ceiling).
+- `probe-forgot-census-v34.mjs` + `probe-focus-read-v34.mjs` +
+  `probe-forgot-submit-v34.mjs` — the forgot-password state's census
+  (3 stops: Back → Email → Send reset link; 368×44 controls; no
+  auto-focus), the REAL-Tab focus-chrome reader, and the post-submit
+  state (the reference's "Check your email" vs the clone's honest
+  no-mail variant — the v12 G4 superset).
+- `probe-calc-open-v34.mjs` + `probe-lisub-open-v34.mjs` — the
+  REFERENCE-side calculator + sub-dialog openers (the reference's
+  dialogs are plain `fixed z-50/z-[60]` divs — the fixed-class
+  detector works THERE but NOT on the clone; see the Radix-aware
+  counterpart below).
+- `probe-freq-census-v34.mjs` + `probe-freq-state-v34.mjs` +
+  `probe-freq-reopen-v34.mjs` — the frequency listbox's structure
+  census (role=combobox + aria-controls + 6 same-order options), the
+  roving-state reader (data-highlighted index + activeElement), and
+  the re-open state (post-Escape: the selected option re-focuses).
+- `probe-clone-lisub-freq-v34.mjs` — the CLONE-side Radix-aware chain
+  (calculator → sub-dialog → listbox) — anchored via
+  `[role=dialog]`/`h2` textContent, NOT the fixed-class detector
+  (the v33 lesson (c): the clone's Radix DialogContent is NOT inside
+  a `div.fixed`).
+- `probe-freq-fresh-v34.mjs` — the self-contained fresh-open visual
+  census (single-click path — clicking an ALREADY-OPEN trigger
+  toggles it CLOSED; a two-probe sequence double-clicks and reads a
+  collapsing popup — a measurement artifact this session hit).
+- `probe-freq-focuscheck-v34.mjs` + `probe-freq-wherefocus-v34.mjs` —
+  THE L1 EVIDENCE: the `:focus`-computed read gated on
+  `document.hasFocus()`. See LESSONS (a) below — the unfocused
+  headless window fabricates a missing-highlight finding.
+- `clone-mobile-nav-v34.sh` + `clone-surfaces-v34.sh` — the clone-side
+  standing checks (R1–R4 + drift at 390×844) and the surfaces (the
+  forgot walk + the listbox) against the :3200 parity server inside
+  ONE `with-server.sh` invocation.
+- `vlm-compare-v34.sh` — the VLM pairs (the dashboard + the
+  forgot state): dashboard one flag DOM-explained (superset #3);
+  forgot VERDICT IDENTICAL, zero flags.
+- LESSONS: (a) **THE UNFOCUSED-HEADLESS-WINDOW `:focus` ARTIFACT** —
+  an eval that DOM-clicks a Select trigger open reads
+  `document.activeElement` = the selected option while
+  `element.matches(':focus')` is FALSE and
+  `document.querySelector(':focus')` returns NOTHING: the headless
+  page's OS-level window focus was lost (no real key press since the
+  last navigation), so the `:focus` pseudo-class matches nothing
+  while `activeElement` retains its value. The first fresh-open
+  comparison fabricated "the clone's selected option renders NO
+  highlight" (bg transparent vs the reference's #f5f5f5) — the
+  reference read had run after REAL key presses (page focused), the
+  clone read after JS clicks alone. **Gate every `:focus`-computed
+  read on `document.hasFocus()` (a real `press Shift` re-focuses the
+  page); Playwright is immune (its pages hold real focus).**
+  (b) `[tabindex=-1]` is an INVALID CSS selector unquoted (an
+  identifier cannot start with `-` followed by a digit) —
+  `querySelectorAll('[tabindex]:not([tabindex=-1])')` THROWS; quote
+  it: `[tabindex="-1"]`. (c) The display pipeline eats `[h` too (in
+  `a[href]` → `aref]` inside a displayed browser error message — the
+  lesson-44 `[m` family extension); arbitrate with char codes or
+  probe files, never by eye — INCLUDING python `repr()` outputs of file
+  reads (a repr output displayed mangled mid-session and fabricated a
+  "the command transport mangled the file" conclusion; byte-level reads
+  proved every file intact — command transport and file contents are
+  NEVER touched, only the DISPLAYED result text). (d) A REAL Tab into a `focus-visible:`
+  ring still needs the source focused first (programmatic focus +
+  real Tab is the working pattern; programmatic focus alone never
+  engages `:focus-visible`). (e) Back-to-back keyboard presses in a
+  test can outrace Radix's roving — interleave an
+  `expect(...).toBeFocused()` between presses (implicit settle).
+  (f) The reference's burger has no aria-label (sr-only span names
+  it); the reference's mobile sheet closes via the burger TOGGLE (no
+  X button).

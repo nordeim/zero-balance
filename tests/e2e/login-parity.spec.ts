@@ -478,6 +478,89 @@ test.describe("register flow + input chrome (v13)", () => {
 // by the line box → 4px. The dialogs were pinned by the v9 globals.css
 // space-y-2 fix; these tests pin the auth-card counterpart.
 
+test.describe("forgot-state focus-walk contract (v34 — plan S1)", () => {
+  test("the forgot state renders the reference's focus families + walk contract", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+
+    // Enter the forgot state (a STATE on /login — the reference's own
+    // register/forgot routes 404; the button swap is the entry).
+    await page.getByRole("button", { name: "Forgot password?" }).click();
+    await expect(page.getByRole("heading", { name: "Reset your password" })).toBeVisible();
+
+    // (1) NO auto-focus on landing — the reference leaves focus on the
+    // body (unlike the verify state's first-box auto-focus, v33 G1).
+    //   — the session-69 surface #1, measured live on both sites.
+    const landing = await page.evaluate(() => ({
+      tag: document.activeElement?.tagName,
+      // The card's ONLY focusable app stops, in DOM order.
+      census: [...document.querySelectorAll("main button, main input")]
+        .filter((e) => e.getClientRects().length > 0)
+        .map((e) =>
+          e.tagName === "INPUT"
+            ? "INPUT:" + (e.getAttribute("type") || "text")
+            : "BUTTON:" + (e.textContent?.trim().slice(0, 16) || "?"),
+        ),
+    }));
+    expect(landing.tag).toBe("BODY");
+    // Exactly THREE stops: Back to sign in → Email input → Send reset link.
+    expect(landing.census).toEqual([
+      "BUTTON:Back to sign in",
+      "INPUT:email",
+      "BUTTON:Send reset link",
+    ]);
+
+    // (2) The email input's focus family — the v13 SLATE family (white
+    // 2px offset + slate-400 4px ring + the tinted #94a3b8 border). The
+    // reference runs the SAME family here as its register inputs (each
+    // surface measured separately — the v33 zinc-vs-slate lesson).
+    const email = await page.evaluate(async () => {
+      const e = document.querySelector<HTMLInputElement>("form input#email")!;
+      e.focus();
+      await new Promise((r) => setTimeout(r, 350));
+      const cs = getComputedStyle(e);
+      return { border: cs.borderColor, shadow: cs.boxShadow };
+    });
+    expect(email.border).toBe("rgb(148, 163, 184)");
+    expect(email.shadow).toContain("rgb(255, 255, 255) 0px 0px 0px 2px");
+    expect(email.shadow).toContain("rgb(148, 163, 184) 0px 0px 0px 4px");
+
+    // (3) The submit's focus family — the v25 ZINC family (white 2px +
+    // zinc-950 4px + the ambient shadow layer), identical to the other
+    // auth submits. The ring is focus-VISIBLE-gated: programmatic focus
+    // never engages it — a REAL Tab from the email input does (the v25
+    // methodology lesson).
+    await page.evaluate(() => {
+      document.querySelector<HTMLInputElement>("form input#email")!.focus();
+    });
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(350);
+    const submit = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("form button[type=submit]")][0];
+      const cs = getComputedStyle(b);
+      return { shadow: cs.boxShadow, bg: cs.backgroundColor, focused: document.activeElement === b };
+    });
+    expect(submit.focused).toBe(true);
+    expect(submit.bg).toBe("rgb(15, 23, 42)");
+    expect(submit.shadow).toContain("rgb(255, 255, 255) 0px 0px 0px 2px");
+    expect(submit.shadow).toContain("rgb(9, 9, 11) 0px 0px 0px 4px");
+    expect(submit.shadow).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+
+    // (4) The Back button stays a RAW button — no focus utilities (the
+    // browser-default outline family on both sites). The class attribute
+    // is the arbiter (the v27 precedent — computed :focus chrome is
+    // focus-path dependent; the classes are the contract).
+    const backClasses = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("main button")].find((x) =>
+        /Back to sign in/.test(x.textContent || ""),
+      );
+      return (b?.className || "").toString();
+    });
+    expect(backClasses).not.toMatch(/focus/i);
+    expect(backClasses).toContain("text-[#64748b]");
+  });
+});
+
 test.describe("auth-form mobile responsive families (v24 — plan G1)", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

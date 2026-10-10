@@ -109,6 +109,90 @@ test.describe("rent calculator", () => {
     await expect(dialog).toBeHidden();
   });
 
+  test("the frequency Select's listbox keyboard contract (v34 S2)", async ({ page }) => {
+    // The session-69 surface #2, measured live on both sites: the
+    // sub-dialog's Frequency control is the reference's Radix combobox
+    // family — the same 6 options in the same order, the fresh-open
+    // highlight on the SELECTED option (:focus-driven, bg #f5f5f5), arrow
+    // roving CLAMPED at both ends, Home/End jumps, Escape closing the
+    // POPUP only (focus back to the trigger, the sub-dialog stays), and
+    // Enter selecting. Playwright's real page focus renders the :focus
+    // highlight (the agent-browser L1 artifact cannot strike here).
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await expect(lineDialog).toBeVisible();
+
+    // --- (1) fresh-open: the selected value (Monthly) is focused and
+    // renders the accent highlight (rgb(245,245,245) / rgb(23,23,23) —
+    // the :focus-driven shadcn family, byte-measured on both sites).
+    const freq = lineDialog.getByRole("combobox", { name: "Frequency" });
+    await freq.click();
+    const monthly = page.getByRole("option", { name: "Monthly", exact: true });
+    await expect(monthly).toBeVisible();
+    await expect(monthly).toBeFocused();
+    await expect(monthly).toHaveCSS("background-color", "rgb(245, 245, 245)");
+    await expect(monthly).toHaveCSS("color", "rgb(23, 23, 23)");
+
+    // --- (2) ArrowDown roves (Monthly → Quarterly), the highlight
+    // following the focus.
+    await page.keyboard.press("ArrowDown");
+    const quarterly = page.getByRole("option", { name: "Quarterly", exact: true });
+    await expect(quarterly).toBeFocused();
+    await expect(quarterly).toHaveCSS("background-color", "rgb(245, 245, 245)");
+
+    // --- (3) CLAMPED at the end: walk to Annually, then two more
+    // ArrowDowns leave it there (no wrap — measured on both sites).
+    await page.keyboard.press("ArrowDown");
+    const annually = page.getByRole("option", { name: "Annually", exact: true });
+    await expect(annually).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await expect(annually).toBeFocused();
+
+    // --- (4) Home jumps to the first; End back to the last.
+    await page.keyboard.press("Home");
+    const oneTime = page.getByRole("option", { name: "One-time", exact: true });
+    await expect(oneTime).toBeFocused();
+    await page.keyboard.press("End");
+    await expect(annually).toBeFocused();
+
+    // --- (5) Escape closes the POPUP ONLY — focus returns to the
+    // trigger and the sub-dialog stays open (the reference's plain-div
+    // dialogs ignore Escape, but its Radix popups do close; identical
+    // on the clone — measured).
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("option", { name: "Monthly", exact: true })).toHaveCount(0);
+    await expect(freq).toBeFocused();
+    await expect(lineDialog).toBeVisible();
+
+    // --- (6) Enter selects: re-open, rove, Enter — the trigger updates
+    // to the highlighted option and the popup closes with focus on the
+    // trigger. (Each rove gets an implicit-settle focus assertion — a
+    // back-to-back press burst can outrace Radix's roving.)
+    await freq.click();
+    await expect(monthly).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(quarterly).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(annually).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("option", { name: "Quarterly", exact: true })).toHaveCount(0);
+    await expect(freq).toContainText("Annually");
+    await expect(freq).toBeFocused();
+
+    // --- cleanup: cancel the sub-dialog (nothing persisted), close the
+    // calculator.
+    await lineDialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(lineDialog).toBeHidden();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+  });
+
   test("add a line item → parent amount recalculates immediately", async ({ page }) => {
     const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
     await rent.hover();
