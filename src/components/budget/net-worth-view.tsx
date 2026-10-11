@@ -96,7 +96,13 @@ function AssetCard({ asset }: { asset: Asset }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <p className="mb-2 text-2xl font-bold" style={{ color: ASSET_COLOR }}>
+      {/* v46 F1 (measured live, the reference's census): the value→facts
+          spacing is the reference's mb-4 wrap (16px) — the pre-fix bare
+          mb-2 P rendered 8px (the card h 186 vs the reference's 194; the
+          item-card's own mb-4 wrap is the in-repo precedent, item-card
+          :152). The margin lives on the P — the computed geometry is the
+          parity contract, the DOM shape is not (the v45 lesson). */}
+      <p className="mb-4 text-2xl font-bold" style={{ color: ASSET_COLOR }}>
         {formatMoneyGrouped(asset.value)}
       </p>
       <div className="space-y-2 text-xs" style={{ color: rgb.gray }}>
@@ -199,7 +205,9 @@ function LiabilityCard({ liability }: { liability: Liability }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <p className="mb-2 text-2xl font-bold" style={{ color: LIABILITY_COLOR }}>
+      {/* v46 F1 (the liability twin): the reference's 16px value→facts
+          spacing — the same mb-4 as the AssetCard above. */}
+      <p className="mb-4 text-2xl font-bold" style={{ color: LIABILITY_COLOR }}>
         {formatMoneyGrouped(liability.value)}
       </p>
       <div className="space-y-2 text-xs" style={{ color: rgb.gray }}>

@@ -34,7 +34,8 @@ and `docs/remediation-plan-v41.md`,
 and `docs/remediation-plan-v42.md`,
 and `docs/remediation-plan-v43.md`,
 and `docs/remediation-plan-v44.md`,
-and `docs/remediation-plan-v45.md`.
+and `docs/remediation-plan-v45.md`,
+and `docs/remediation-plan-v46.md`.
 
 ---
 
@@ -43,6 +44,68 @@ and `docs/remediation-plan-v45.md`.
 ---
 
 ---
+
+---
+
+## Session 80 — Parity iteration v46: the net-worth card census + the value→facts spacing fix + the confirm-bar white-pill regression pin (2026-10-11)
+
+**Goal:** the session-101/102 queue's first and third candidates — the
+net-worth ASSET/LIABILITY card census at 1280 + the five-site
+confirm-bar white-pill family's shadow-sm. TDD-first, docs aligned,
+commit + push via the SSH wrapper. (The workspace was RESET this
+session: git clone fb8d00f → npm install → db:push → db:seed; the
+playwright chromium-1243 build fetched to match the lockfile-resolved
+1.63.0.)
+
+- Baseline: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **221/221 e2e ✓ (5.0m)** · 35/35 smoke ✓. Audit clean (the same 5
+  dev-only ESLint-chain advisories, --omit=dev = 0; the secret scan
+  clean; the v45 diff re-audited — PIN-ONLY, no src/ change).
+- Standing checks all clean: mobile-nav R1–R4 (**40th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, 395 overflows all still live), data drift (40th —
+  reference read-only), the SEO pair.
+- **THE V46 SWEEP (both sites — nw-card-v46.mjs + confirm-pill-v46.mjs
+  + the REAL-hover driver steps + vlm-compare-v46.mjs)**:
+  - **THE ONE REAL GAP (the value→facts spacing):** the reference
+    wraps its card value in `mb-4` (16px) while the clone's bare
+    `mb-2` P rendered 8px — the card h 186 vs the reference's 194, the
+    8px delta IS the gap (the census otherwise byte-identical). The
+    item-card's own `mb-4` wrap the in-repo precedent — the net-worth
+    cards were the one oversight. Fixed: `mb-2`→`mb-4` on both cards'
+    value P.
+  - **THE INCIDENT:** the reference's kebab menu → Delete click IS the
+    delete (no confirm bar — the v18 superset-fix-#6 family,
+    re-confirmed live): the probe deleted the reference's only asset;
+    restored via its Add Asset form ("Savings Account" / bank account
+    / 25000 / "Commonwealth Bank" / 2026-10-07) — the panel census
+    re-read "1 items · $25,000" byte-identical to the before state.
+  - The net-worth card census at 1280: the grid `md:grid-cols-2
+    lg:grid-cols-3 gap-4` 960/3×309.328/gap 16, the card chrome
+    byte-identical, **the REAL hover INERT on both sites** (the inline
+    beats the hover:shadow-lg utility) while the kebab REVEALS.
+  - The confirm-bar white-pill pin (the clone's superset chrome): the
+    bar chrome + the Cancel pill's shadow-sm VISIBLE layer
+    `rgba(0,0,0,0.05) 0px 1px 2px 0px` — the `--shadow-sm` theme pin's
+    regression net (the five-site family).
+  - Probe lessons: a Radix dropdown (and the reference's tabs) ignore
+    synthetic `el.click()` — NATIVE clicks only; the reference's
+    dialogs are plain `fixed inset-0` divs (no [role=dialog] — find by
+    the Save-button text); the agent-browser Chrome daemons must be
+    killed before a Playwright run (pthread_create exhaustion).
+- TDD: F2 RED first (the value mb 8 ≠ 16 + the card h 186 ≠ 194 — the
+  failure precisely on the gap), F3 GREEN immediately (pin-only), the
+  fix → 19/19 networth spec. FOUR pin-sanity mutations verified to
+  FAIL (the reverted mb-4; the pill's shadow-sm removed; the card
+  inline 0.04→0.08; the kebab's group-hover reveal removed).
+- Full chain: lint ✓ · typecheck ✓ · 108 unit ✓ · build ✓ ·
+  **223/223 e2e ✓ (221→223)** · 35/35 smoke ✓. The VLM pair on the
+  /networth view at 1280: **IDENTICAL — zero flags** (the second
+  fully-clean screening). 16 screenshots regenerated.
+- Docs: AGENTS.md + CLAUDE.md + README + the SKILL doc (Session 81) +
+  the PAD (v1.1.3) + the probe README (the incident + five lessons) +
+  session_104.md + session_105.md + this worklog.
+- Ship: commit + push to main via the SSH wrapper.
 
 ---
 

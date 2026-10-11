@@ -1665,3 +1665,51 @@ viewports + the donut legend's interaction):
   generalized). (f) `next build` typechecks the spec files too — an
   evaluate's early return with a narrower object shape fails the build,
   not the test run.
+
+## v46 — the net-worth card census + the value→facts fix + the white-pill pin (session-101/102)
+
+- `nw-card-v46.mjs` — the net-worth ASSET/LIABILITY CARD census at 1280
+  (the grid located by `lg:grid-cols-3` — NOT the summary card's inner
+  `sm:grid-cols-2` stat-blocks grid, the v4 G4 design; the first draft's
+  finder caught the wrong grid and read "no grid"): the grid 960 /
+  3×309.328 / gap 16, the card chrome (pad 20/radius 12/border
+  rgb(229,231,227)/the inline rest shadow), the title row, the type
+  badge, the value figure, the facts, the kebab (36×36 opacity 0,
+  tagged for the driver's click step).
+- `confirm-pill-v46.mjs` — the delete-confirm BAR census (the red bar +
+  the Cancel white-pill + the red Delete): the pill's shadow-sm VISIBLE
+  layer `rgba(0, 0, 0, 0.05) 0px 1px 2px 0px` — the `--shadow-sm` theme
+  pin's regression net (the five-site family: item-card, budget-item
+  dialog, calculator dialog, net-worth asset + liability).
+- `ref-v46.sh` / `clone-v46.sh` — the drivers (login → /networth at
+  1280 → the census → the REAL hover → the kebab → Delete → the bar
+  census → Cancel).
+- `vlm-compare-v46.mjs` + the /tmp/vlm46 pair — the standing VLM
+  screening (the /networth view at 1280): **IDENTICAL, zero flags — the
+  second fully-clean screening.**
+- THE V46 FINDING — the value→facts spacing: the reference wraps its
+  card value in `mb-4` (16px) while the clone's bare `mb-2` P rendered
+  8px (the card h 186 vs 194; the item-card's own `mb-4` wrap the
+  in-repo precedent — the net-worth cards were the one oversight). The
+  fix: `mb-2`→`mb-4` on both cards' value P.
+- LESSONS: (a) **THE INCIDENT — the reference's net-worth kebab flow is
+  NEVER safe to probe past the menu open**: the menu's Delete click IS
+  the delete attempt (no confirm bar on the reference — the v18
+  superset-fix-#6 family); this session's probe deleted the reference's
+  only asset and had to restore it via its Add Asset form (name
+  "Savings Account", type bank account, value 25000, institution
+  "Commonwealth Bank", date 2026-10-07 — the panel census re-read "1
+  items · $25,000" byte-identical to the before state). (b) A Radix
+  dropdown (and the reference's tab triggers) ignore synthetic
+  `el.click()` — only a NATIVE Playwright/agent-browser click engages
+  them (the v45 :hover lesson generalizes to pointer-driven widgets).
+  (c) The reference's dialogs are plain `fixed inset-0` divs with NO
+  `[role=dialog]` — find them by the Save-button text (the v45 lesson,
+  re-applied to the Add Asset form). (d) The confirm-bar's pill/text
+  colors compute as `lab(...)` strings (Tailwind v4's oklab emission
+  for the named palette) — ACCEPTED for superset-only surfaces (no
+  reference counterpart to byte-match); the shadow VISIBLE layer is the
+  pin that matters. (e) The agent-browser daemon's Chrome instances
+  survive across tool calls — kill them (`pkill -f agent-browser`)
+  before a Playwright run or the browser contexts crash on
+  pthread_create resource exhaustion.

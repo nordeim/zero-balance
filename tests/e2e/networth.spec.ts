@@ -844,3 +844,256 @@ test.describe("net worth summary card census (v41 — plan F2/F3)", () => {
     expect(geo.chip!.right).toBeLessThanOrEqual(geo.vw - 16 + 1);
   });
 });
+
+test.describe("net-worth asset card census (v46 — remediation-plan-v46.md F2/F3)", () => {
+  test("the ASSET CARD census at 1280 + the REAL-hover inert + the kebab reveal (v46 F2)", async ({ page }) => {
+    // The session-101 queue's first candidate, measured live on BOTH sites
+    // (nw-card-v46.mjs + the REAL-hover driver steps): the grid, the card
+    // chrome, the hover state — everything byte-identical EXCEPT the
+    // value→facts spacing (the reference's mb-4 wrap = 16px vs the clone's
+    // pre-v46 bare mb-2 P = 8px — the F1 fix; the card h 186→194).
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+    // The settle pattern: wait for the first seeded card before probing.
+    const card0 = page.locator("div.rounded-xl").filter({ hasText: "Everyday Account" }).first();
+    await expect(card0).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The asset-card grid: md:grid-cols-2 lg:grid-cols-3 at 1280
+      // (net-worth-view.tsx:459; the reference's own grid the identical
+      // family). NOT the summary card's inner sm:grid-cols-2 stat grid.
+      const grid = [...document.querySelectorAll("div")].find((d) => {
+        if (typeof d.className !== "string") return false;
+        return d.className.includes("lg:grid-cols-3") && d.children.length >= 1;
+      });
+      if (!grid) return null;
+      const gcs = getComputedStyle(grid);
+      const gr = grid.getBoundingClientRect();
+      const card = grid.children[0] as HTMLElement;
+      const cs = getComputedStyle(card);
+      const cr = card.getBoundingClientRect();
+      const titleEl = card.querySelector("h4");
+      const dot = [...card.querySelectorAll("div")].find((d) => {
+        const dcs = getComputedStyle(d);
+        const dcr = d.getBoundingClientRect();
+        return !d.children.length && dcr.width > 0 && dcr.width <= 12 && dcs.backgroundColor !== "rgba(0, 0, 0, 0)";
+      });
+      const value = [...card.querySelectorAll("p")].find((p) => {
+        const pcs = getComputedStyle(p);
+        return pcs.fontSize === "24px" && pcs.fontWeight === "700";
+      });
+      const facts = [...card.querySelectorAll("div")].find((d) =>
+        typeof d.className === "string" && d.className.includes("space-y-2"),
+      );
+      const kebab = [...card.querySelectorAll("button")].find(
+        (b) => !(b.textContent || "").trim() && b.querySelectorAll("svg").length === 1,
+      );
+      // Tag for the REAL hover step.
+      card.setAttribute("data-v46-card", "first");
+      if (kebab) kebab.setAttribute("data-v46-kebab", "first");
+      return {
+        grid: {
+          w: Math.round(gr.width),
+          cols: gcs.gridTemplateColumns,
+          gap: gcs.gap,
+        },
+        card: {
+          w: Math.round(cr.width),
+          h: Math.round(cr.height),
+          pad: cs.padding,
+          radius: cs.borderRadius,
+          border: `${cs.borderTopWidth} ${cs.borderTopStyle} ${cs.borderTopColor}`,
+          boxShadow: cs.boxShadow,
+          bg: cs.backgroundColor,
+          transition: cs.transitionProperty,
+          transitionDur: cs.transitionDuration,
+        },
+        titleRow: titleEl
+          ? {
+              gap: getComputedStyle(titleEl.parentElement!).gap,
+              dotW: dot ? Math.round(dot.getBoundingClientRect().width) : null,
+              dotBg: dot ? getComputedStyle(dot).backgroundColor : null,
+              titleFont: getComputedStyle(titleEl).fontSize,
+              titleWeight: getComputedStyle(titleEl).fontWeight,
+            }
+          : null,
+        value: value
+          ? {
+              font: getComputedStyle(value).fontSize,
+              weight: getComputedStyle(value).fontWeight,
+              mb: getComputedStyle(value).marginBottom,
+            }
+          : null,
+        facts: facts ? { font: getComputedStyle(facts).fontSize, color: getComputedStyle(facts).color } : null,
+        kebab: kebab
+          ? {
+              w: Math.round(kebab.getBoundingClientRect().width),
+              h: Math.round(kebab.getBoundingClientRect().height),
+              opacity: getComputedStyle(kebab).opacity,
+            }
+          : null,
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("card census found no grid");
+
+    // The grid: 960 = the rail 256 + the content column 1024 − the p-8 64;
+    // 3 columns × 309.328, gap 16 — byte-identical to the reference's.
+    expect(census.grid.w).toBe(960);
+    expect(census.grid.cols).toBe("309.328px 309.328px 309.328px");
+    expect(census.grid.gap).toBe("16px");
+
+    // The card chrome (the v45 items-card family): pad 20, radius 12, the
+    // border + the INLINE rest shadow (Chrome normalizes the 3-value inline
+    // to the reference's 4-value computed — byte-identical strings).
+    expect(census.card.w).toBe(309);
+    expect(census.card.pad).toBe("20px");
+    expect(census.card.radius).toBe("12px");
+    expect(census.card.border).toBe("1px solid rgb(229, 231, 227)");
+    expect(census.card.boxShadow).toContain("rgba(0, 0, 0, 0.04) 0px 2px 8px 0px");
+    expect(census.card.bg).toBe("rgb(255, 255, 255)");
+    expect(census.card.transition).toContain("all");
+    expect(census.card.transitionDur).toBe("0.2s");
+
+    // THE F1 FIX (the v46 gap): the value→facts spacing — the reference
+    // wraps its value in mb-4 (16px); the clone's pre-fix bare mb-2 P
+    // rendered 8px (the card h 186 vs the reference's 194).
+    expect(census.value!.mb).toBe("16px");
+    expect(census.card.h).toBe(194);
+
+    // The title row + the value + the facts (byte-identical chrome).
+    expect(census.titleRow!.gap).toBe("8px");
+    expect(census.titleRow!.dotW).toBe(8);
+    expect(census.titleRow!.dotBg).toBe("rgb(143, 188, 63)");
+    expect(census.titleRow!.titleFont).toBe("16px");
+    expect(census.titleRow!.titleWeight).toBe("600");
+    expect(census.value!.font).toBe("24px");
+    expect(census.value!.weight).toBe("700");
+    expect(census.facts!.font).toBe("12px");
+    expect(census.facts!.color).toBe("rgb(107, 114, 128)");
+
+    // The kebab: 36×36, opacity 0 at rest (the group-hover reveal).
+    expect(census.kebab!.w).toBe(36);
+    expect(census.kebab!.h).toBe(36);
+    expect(census.kebab!.opacity).toBe("0");
+
+    // The REAL hover (locator.hover — the ONLY way to engage CSS :hover,
+    // the v45 lesson): the card's shadow stays INERT (the inline beats the
+    // hover:shadow-lg utility — the v29 family, both sites) while the
+    // kebab REVEALS (opacity 0→1) and the card never translates.
+    const restShadow = census.card.boxShadow;
+    await page.locator('[data-v46-card="first"]').hover();
+    await page.waitForTimeout(300);
+    const hoverState = await page.evaluate(() => {
+      const c = document.querySelector('[data-v46-card="first"]')!;
+      const kb = document.querySelector('[data-v46-kebab="first"]');
+      return {
+        boxShadow: getComputedStyle(c).boxShadow,
+        kebabOpacity: kb ? getComputedStyle(kb).opacity : null,
+        translateY: getComputedStyle(c).translate,
+      };
+    });
+    expect(hoverState.boxShadow).toBe(restShadow); // INERT — byte-identical
+    expect(hoverState.kebabOpacity).toBe("1");
+    expect(hoverState.translateY).toBe("none");
+  });
+
+  test("the confirm-bar white-pill census + the shadow-sm regression pin (v46 F3)", async ({ page }) => {
+    // The five-site confirm-bar Cancel-pill family's shadow-sm (the
+    // session-101 queue's third candidate): the --shadow-sm theme pin's
+    // regression net — the reference has NO confirm bars (its deletes are
+    // direct, the v18 superset-fix-#6 family re-confirmed live this
+    // session), so this pins the CLONE's own superset chrome.
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+    const card = page.locator("div.rounded-xl").filter({ hasText: "Everyday Account" }).first();
+    await expect(card).toBeVisible();
+
+    // The native click opens the Radix menu (the v46 lesson: synthetic
+    // el.click() does NOT open it — Radix ignores non-pointer events).
+    await card.getByRole("button", { name: "Actions for Everyday Account" }).click();
+    await page.getByRole("menuitem", { name: "Delete" }).click();
+    await expect(card.getByText("Delete this asset?")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const bar = [...document.querySelectorAll("div")].find((d) => {
+        const bcs = getComputedStyle(d);
+        if (bcs.backgroundColor !== "rgb(254, 242, 242)") return false;
+        const btns = [...d.querySelectorAll("button")];
+        return btns.length === 2 && btns[0].textContent.trim() === "Cancel" && btns[1].textContent.trim() === "Delete";
+      });
+      if (!bar) return null;
+      const barCs = getComputedStyle(bar);
+      const barR = bar.getBoundingClientRect();
+      const label = bar.querySelector("p");
+      const cancel = [...bar.querySelectorAll("button")].find((b) => b.textContent.trim() === "Cancel")!;
+      const ccs = getComputedStyle(cancel);
+      const del = [...bar.querySelectorAll("button")].find((b) => b.textContent.trim() === "Delete")!;
+      const dcs = getComputedStyle(del);
+      return {
+        bar: {
+          mt: barCs.marginTop,
+          radius: barCs.borderRadius,
+          pad: barCs.padding,
+          bg: barCs.backgroundColor,
+          justify: barCs.justifyContent,
+          h: Math.round(barR.height),
+        },
+        label: label ? { font: getComputedStyle(label).fontSize, weight: getComputedStyle(label).fontWeight } : null,
+        cancelPill: {
+          bg: ccs.backgroundColor,
+          pad: ccs.padding,
+          radius: ccs.borderRadius,
+          font: ccs.fontSize,
+          weight: ccs.fontWeight,
+          boxShadow: ccs.boxShadow,
+          h: Math.round(cancel.getBoundingClientRect().height),
+        },
+        deleteBtn: {
+          color: dcs.color,
+          pad: dcs.padding,
+          radius: dcs.borderRadius,
+          font: dcs.fontSize,
+          weight: dcs.fontWeight,
+        },
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("confirm-bar census found no bar");
+
+    // The bar chrome (the v18 superset's family): the red-tinted row.
+    expect(census.bar.mt).toBe("16px");
+    expect(census.bar.radius).toBe("8px");
+    expect(census.bar.pad).toBe("12px");
+    expect(census.bar.bg).toBe("rgb(254, 242, 242)");
+    expect(census.bar.justify).toBe("space-between");
+    expect(census.label!.font).toBe("14px");
+
+    // The Cancel pill: the white bg + the 4/12 pad + the 6px radius + the
+    // 12px-500 — and THE PIN: the shadow-sm VISIBLE layer `rgba(0, 0, 0,
+    // 0.05) 0px 1px 2px 0px` (the --shadow-sm theme pin's restored v3
+    // value — the shadow-scale regression net's fifth site, the v45 family;
+    // toContain = the accepted-leads convention, the v10 lesson).
+    expect(census.cancelPill.bg).toBe("rgb(255, 255, 255)");
+    expect(census.cancelPill.pad).toBe("4px 12px");
+    expect(census.cancelPill.radius).toBe("6px");
+    expect(census.cancelPill.font).toBe("12px");
+    expect(census.cancelPill.weight).toBe("500");
+    expect(census.cancelPill.boxShadow).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+
+    // The Delete twin: the same pad/radius/font family, white text.
+    expect(census.deleteBtn.color).toBe("rgb(255, 255, 255)");
+    expect(census.deleteBtn.pad).toBe("4px 12px");
+    expect(census.deleteBtn.radius).toBe("6px");
+    expect(census.deleteBtn.font).toBe("12px");
+    expect(census.deleteBtn.weight).toBe("500");
+
+    // The fixture-restore discipline: Cancel dismisses the bar (the delete
+    // NEVER fires — the census ran while the bar was up).
+    await card.getByRole("button", { name: "Cancel" }).click();
+    await expect(card.getByText("Delete this asset?")).not.toBeVisible();
+    await expect(card.getByRole("heading", { name: "Everyday Account" })).toBeVisible();
+  });
+});

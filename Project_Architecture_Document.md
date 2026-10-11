@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.2
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.3
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,11 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.3 (Tracked Changes)
+
+- `[AUTH]` v1.1.3 (2026-10-11) — the v46 parity iteration: the counts 108 unit / 223 e2e / 35 smoke (two new pins: the net-worth asset-card census at 1280 + the confirm-bar white-pill shadow-sm regression pin); **THE VALUE→FACTS SPACING FIX** (the reference's `mb-4` wrap = 16px vs the clone's bare `mb-2` P = 8px — the card h 186→194, the `mb-2`→`mb-4` fix on both net-worth cards' value P; the item-card's own `mb-4` wrap the in-repo precedent); the net-worth card grid contract at 1280 (`md:grid-cols-2 lg:grid-cols-3 gap-4`, 960/3×309.328/gap 16 — the same family on both sites, the summary card's inner `sm:grid-cols-2` the v4 G4 stat-blocks design); the card's REAL hover INERT (the inline-beats-utility mechanism) + the kebab reveal; the confirm-bar white-pill family's shadow-sm visible layer pinned (the `--shadow-sm` theme pin's regression net, the five-site family); the 46th remediation plan + the probe catalog through v46.
+- `[SR]` The measured-parity ledger: 46 remediation plans (`docs/remediation-plan-v1.md` … `v46.md`), 16 screenshots, the session-document chain — see `README.md`'s parity table for the per-iteration detail.
 
 #### Revision Block — v1.1.2 (Tracked Changes)
 
