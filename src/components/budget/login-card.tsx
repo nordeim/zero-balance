@@ -721,6 +721,20 @@ export function LoginCard() {
             )}
           </div>
         </div>
+        {/* v49 F1: the reference's mobile-only spacer — an empty &nbsp;
+            line (mt-8 text-center text-xs text-slate-400 sm:hidden) below
+            the panel that lifts the card stack 24px above the geometric
+            center at 390 (the reference's panel y 57 vs the clone's
+            pre-fix 81; the wrapper 682 → 730). The color is pinned as the
+            #94a3b8 hex — Tailwind v4's named slate computes as oklab()
+            (the v7 login-family rule); the content is a bare &nbsp; so
+            the color never renders, but the census pins it byte-exact.
+            Hidden at sm+ — the desktop centering (and every v12/v13
+            desktop pin) is unchanged. A panel SIBLING, so every auth
+            state (sign-in / sign-up / forgot) carries it. */}
+        <div className="mt-8 text-center text-xs text-[#94a3b8] sm:hidden">
+          <p>&nbsp;</p>
+        </div>
       </div>
     </main>
   );

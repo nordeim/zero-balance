@@ -8,6 +8,10 @@
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
 
+#### Revision Block — v1.1.6 (Tracked Changes)
+
+- `[AUTH]` v1.1.6 (2026-10-12) — the v49 parity iteration (ONE production fix — the first since v46 — + two pins): the counts 108 unit / 232 e2e / 35 smoke; the login panel's mobile-only &nbsp; spacer added to `login-card.tsx` (the reference's `mt-8 text-center text-xs text-slate-400 sm:hidden` second child of the `w-full max-w-md` wrapper — h 16, mt 32, #94a3b8 — lifting the clone's card stack to the reference's panel y 57 at 390, the pre-fix clone centered alone at y 81; hidden at sm+, the desktop pins unchanged); the donut legend's mobile reflow pin at 390 (the container flex/column/gap 12/mt 24, the row 64/8px/12px/tinted, the dot 16/4, the leaves 16-500/16-700/12-400, the 16px icon); the calculator panel's chrome pin at 640 (w 608/radius 16/maxW 768/maxH 816/bg white/overflow hidden, the 2xl visible layer, the 36×36 close, the header border-b rgb(229,231,227), the centering invariant); the 49th remediation plan + the probe catalog through v49.
+
 #### Revision Block — v1.1.5 (Tracked Changes)
 
 - `[AUTH]` v1.1.5 (2026-10-12) — the v48 parity iteration (PIN-ONLY — no production-code change): the counts 108 unit / 229 e2e / 35 smoke (three new pins: the item-details sheet's shadow-2xl, the dialog-input focus composite at 390, the empty-state full census); the item-details panel's shadow-2xl VISIBLE layer `rgba(0,0,0,0.25) 0px 25px 50px -12px` on the 512×680/85vh-capped/radius-16 panel (the shadow-scale regression net's SEVENTH site — the 2xl end on the details surface, joining the v45 login-panel 2xl site) + the forest-scrim overlay rgba(26,58,46,0.5)/z 50/blur(8px); the dialog input's focus composite at MOBILE 390 (the input w 310 on both sites, the same visible layers as the desktop composite — the family viewport-independent); the empty-state full byte-parity census (the bare 358×328 py-16 block, the 64px icon at opacity 0.2, the 36px gradient Add button + v3's bare two-layer shadow); the 48th remediation plan + the probe catalog through v48.

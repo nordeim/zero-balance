@@ -37,7 +37,8 @@ and `docs/remediation-plan-v44.md`,
 and `docs/remediation-plan-v45.md`,
 and `docs/remediation-plan-v46.md`,
 and `docs/remediation-plan-v47.md`,
-and `docs/remediation-plan-v48.md`.
+and `docs/remediation-plan-v48.md`,
+and `docs/remediation-plan-v49.md`.
 
 ---
 
@@ -46,6 +47,75 @@ and `docs/remediation-plan-v48.md`.
 ---
 
 ---
+
+---
+
+## Session 83 — Parity iteration v49: the login panel's mobile-only &nbsp; spacer (THE FIX — the first production-code change since v46) + the donut legend's mobile reflow + the calculator dialog's 640 chrome (2026-10-12)
+
+**Goal:** the session-111 v49 queue's three candidates (the login
+panel's mobile 390 census — the surface that found ONE REAL DRIFT;
+the donut legend's mobile reflow at 390; the calculator dialog's 640
+chrome). TDD-first, docs aligned, commit + push via the SSH wrapper.
+(The workspace was INTACT — `git pull` 3f00e47→0bf89ce; the
+environment survived from the v48 session.)
+
+- Baseline: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **229/229 e2e ✓ (5.3m)** · 35/35 smoke ✓. Audit clean (the same 5
+  dev-only advisories, --omit=dev = 0; the secret scan clean; .env ≡
+  .env.example; the v48 diff = ZERO src/ changes — pin-only held).
+- Standing checks all clean: mobile-nav R1–R4 (**43rd** — Tailwind v4
+  pins hold, both sites; the reference's sheet-trap re-verified with
+  the PRECISE overlay census — the z-50 rgba(0,0,0,0.8) scrim still
+  open on /income after the nav; an earlier heuristic text-keyed
+  detector had missed it), data drift (43rd — read-only, "1 items ·
+  $25,000" / "1 items · $5000.00"), the SEO pair (both sites).
+- **THE v49 SWEEP (three surfaces, both sites — ref-v49.sh +
+  clone-v49.sh, READ-ONLY on the reference)**:
+  - **The login panel at 390: ONE REAL DRIFT — THE FIX (the first
+    production-code change since v46).** The reference's
+    `w-full max-w-md` wrapper carries a mobile-only SECOND child —
+    `<div class="mt-8 text-center text-xs text-slate-400
+    sm:hidden"><p>&nbsp;</p></div>` (h 16, mt 32, rgb(148,163,184),
+    empty content) — which lifts its card stack 24px above the
+    geometric center (the panel y 57 / the wrapper 730; the pre-fix
+    clone centered the panel ALONE at y 81 / 682). Verified on the
+    sign-in AND sign-up states (a panel SIBLING — every auth state
+    carries it); the 640 contract live (display none, the panel
+    re-centers). The v12/v13 pins were desktop-measured; the v24
+    mobile census walked the controls — first-time 390 measurement
+    caught it. The fix: the spacer added to login-card.tsx (+14
+    lines), the color as the `text-[#94a3b8]` hex (the v4 oklab
+    trap).
+  - **The donut legend at 390: BYTE-PARITY — PIN.** The container
+    flex/column/gap 12/mt 24; the row 64/8px/12px/tinted; the dot
+    16/4/classified; the leaves 16-500-forest / 16-700-classified /
+    12-400-gray; the right-aligned values; the 16px icon (the
+    reference's row w 313 rides its own 395 docSW overflow — the
+    clone's 308 fits; the v44 F3 pinned only 1280).
+  - **The calculator panel at 640: BYTE-PARITY — PIN.** w 608/x 16/
+    radius 16/maxW 768px/maxH 816px (85vh)/bg white/overflow
+    hidden/the 2xl VISIBLE layer (the clone's .zb-modal-panel emits
+    it directly — no leads)/the 36×36 close/the header border-b
+    1px rgb(229,231,227)/the centering invariant (the v45 F2b pinned
+    only the widths).
+- TDD: F1 RED first (the pre-fix run fails — the spacer absent),
+  the fix, the rebuild, GREEN. F2 + F3 pin-only — 3/3 GREEN
+  immediately. S1 six mutations, each with the standalone REBUILD:
+  (a) the spacer removed → F1 fails (the TDD RED); (b) mt-8→mt-4 →
+  F1 fails (730→722); (c) sm:hidden removed → the 640 sub-check
+  fails; (d) the legend p-3→p-2 → F2 fails (64→56); (e) the
+  zb-modal-panel shadow removed → F3 fails; (f) 85vh→90vh → F3
+  fails (816→864). All restored — `git diff --stat src/` = ONE
+  file, +14 lines.
+- Full chain: lint ✓ · typecheck ✓ · 108 unit ✓ · build ✓ ·
+  **232/232 e2e ✓ (5.3m — 229→232)** · 35/35 smoke ✓. The VLM pair
+  on the LOGIN page at 390 (THE FIXED SURFACE, a data-free form):
+  **IDENTICAL — zero app flags** (the only flag the reference's own
+  Base44 FAB). The 16 screenshots regenerated; the docs aligned
+  (AGENTS/CLAUDE/README/SKILL Session 84 row + the 232 state/PAD
+  v1.1.6/the probe README's v49 section/session_113 +
+  session_114/the repo worklog Session 83 + the ledger list). Three
+  new e2e, 229 to 232, 108/232/35 green.
 
 ---
 

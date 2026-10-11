@@ -664,3 +664,85 @@ test.describe("line-item row census + REAL hover (v45 — plan F2)", () => {
     await restoreRent(page);
   });
 });
+
+test.describe("calculator panel chrome census at 640 (v49 — plan F3)", () => {
+  test("the panel's full chrome at 640 — the read-only open state (v49 F3)", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 960 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(400);
+
+    // The reference's measured 640 contract (ref-v49.sh — the read-only
+    // open flow: hover → Calculate → census → X close): the panel w 608
+    // (640 − the 2×16 overlay padding) at x 16, radius 16, maxW 768px
+    // (max-w-3xl), maxH 816px (85vh of the 960 viewport), bg white,
+    // overflow hidden, the 2xl VISIBLE shadow layer, the 36×36 close, the
+    // header's border-b 1px solid rgb(229,231,227). The panel height is
+    // data-dependent (the e2e seed's Rent has no line items) — the pin
+    // asserts the CENTERING invariant, never the absolute height.
+    const census = await page.evaluate(() => {
+      const panel = [...document.querySelectorAll('[role="dialog"]')].find((d) =>
+        (d.textContent || "").includes("Rent Calculator"),
+      ) as HTMLElement | null;
+      if (!panel) return null;
+      const cs = getComputedStyle(panel);
+      const r = panel.getBoundingClientRect();
+      const closeBtn = [...panel.querySelectorAll("button")].find(
+        (b) => (b.getAttribute("aria-label") || "") === "Close" || !(b.textContent || "").trim(),
+      ) as HTMLElement | undefined;
+      const hdr = [...panel.querySelectorAll("div")].find(
+        (d) => getComputedStyle(d).borderBottomWidth !== "0px",
+      ) as HTMLElement | undefined;
+      return {
+        panel: {
+          w: Math.round(r.width),
+          x: Math.round(r.x),
+          y: Math.round(r.y),
+          h: Math.round(r.height),
+          radius: cs.borderRadius,
+          maxW: cs.maxWidth,
+          maxH: cs.maxHeight,
+          bg: cs.backgroundColor,
+          overflow: cs.overflow,
+          shadow: cs.boxShadow,
+        },
+        closeBtn: closeBtn
+          ? {
+              w: Math.round(closeBtn.getBoundingClientRect().width),
+              h: Math.round(closeBtn.getBoundingClientRect().height),
+            }
+          : null,
+        hdrBorder: hdr ? getComputedStyle(hdr).borderBottom : null,
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    expect(census!.panel.w).toBe(608);
+    expect(census!.panel.x).toBe(16);
+    expect(census!.panel.radius).toBe("16px");
+    expect(census!.panel.maxW).toBe("768px");
+    expect(census!.panel.maxH).toBe("816px");
+    expect(census!.panel.bg).toBe("rgb(255, 255, 255)");
+    expect(census!.panel.overflow).toBe("hidden");
+    // The 2xl VISIBLE layer (the reference's 2 transparent leads are the
+    // accepted lead-divergence class — v10/v25/v45; the clone's
+    // .zb-modal-panel emits the visible layer directly).
+    expect(census!.panel.shadow).toContain("rgba(0, 0, 0, 0.25) 0px 25px 50px -12px");
+    // The centering invariant (both sites center the panel in the
+    // viewport — the y tracks the data-dependent height).
+    expect(census!.panel.y).toBe(Math.round((960 - census!.panel.h) / 2));
+    expect(census!.closeBtn).toEqual({ w: 36, h: 36 });
+    expect(census!.hdrBorder).toBe("1px solid rgb(229, 231, 227)");
+    expect(census!.sw).toBe(640);
+
+    // Read-only close — no fixture restore needed (the Rent amount is
+    // never recalculated; no line items touched).
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+  });
+});

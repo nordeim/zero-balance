@@ -810,3 +810,107 @@ test.describe("shadow-scale regression pins (v45 — plan F4)", () => {
     expect(googleHover).not.toBe("none");
   });
 });
+
+test.describe("login panel mobile census (v49 — plan F1)", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("the mobile-only &nbsp; spacer lifts the card stack to the reference's y 57 (v49 F1)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+
+    // The reference's measured 390 contract (ref-v49.sh, sign-in AND
+    // sign-up states): the w-full max-w-md wrapper carries TWO children —
+    // the panel (682) + a mobile-only &nbsp; spacer (mt-8, h 16) = 730
+    // tall, centered in the 812 inner height → the panel y 57 (24px
+    // ABOVE the geometric center the pre-fix clone rendered at y 81).
+    const census = await page.evaluate(() => {
+      const panel = [...document.querySelectorAll("div")].find(
+        (d) =>
+          /rounded-2xl/.test(d.className) && d.querySelector("h1"),
+      );
+      if (!panel) return null;
+      const wrapper = panel.parentElement!;
+      const spacer = [...wrapper.children].find((c) => c !== panel) as HTMLElement | undefined;
+      const pr = panel.getBoundingClientRect();
+      const wr = wrapper.getBoundingClientRect();
+      const scs = spacer ? getComputedStyle(spacer) : null;
+      const sr = spacer ? spacer.getBoundingClientRect() : null;
+      const p = spacer?.querySelector("p");
+      const main = wrapper.parentElement!;
+      const mcs = getComputedStyle(main);
+      return {
+        main: {
+          minH: mcs.minHeight,
+          alignItems: mcs.alignItems,
+          pad: mcs.padding,
+        },
+        wrapper: { w: Math.round(wr.width), h: Math.round(wr.height) },
+        panel: { y: Math.round(pr.y), h: Math.round(pr.height), w: Math.round(pr.width) },
+        spacer: scs
+          ? {
+              present: true,
+              h: Math.round(sr!.height),
+              mt: scs.marginTop,
+              fs: scs.fontSize,
+              color: scs.color,
+              ta: scs.textAlign,
+              display: scs.display,
+              text: p ? p.textContent : null,
+            }
+          : { present: false },
+      };
+    });
+    expect(census).not.toBeNull();
+    // The root contract (both sites): the centered flex main with p-4.
+    expect(census!.main).toEqual({
+      minH: "844px",
+      alignItems: "center",
+      pad: "16px",
+    });
+    // THE v49 F1 FIX: the wrapper is 730 (682 + 32 + 16), NOT the
+    // pre-fix 682 — the spacer is what the reference renders.
+    expect(census!.wrapper.h).toBe(730);
+    expect(census!.panel.h).toBe(682);
+    expect(census!.panel.w).toBe(358);
+    // The panel sits at the reference's y 57 — NOT the pre-fix 81.
+    expect(census!.panel.y).toBe(57);
+    // The spacer census (the reference's mt-8 text-center text-xs
+    // text-slate-400 sm:hidden with a bare &nbsp;): the color pinned as
+    // the #94a3b8 hex (Tailwind v4's named slate computes as oklab() —
+    // the v7 login-family rule; the content is invisible anyway).
+    expect(census!.spacer).toEqual({
+      present: true,
+      h: 16,
+      mt: "32px",
+      fs: "12px",
+      color: "rgb(148, 163, 184)",
+      ta: "center",
+      display: "block",
+      text: "\u00A0",
+    });
+
+    // The sm:hidden contract (re-verified live on the reference): at
+    // 640 the spacer is display none and the panel re-centers — every
+    // desktop pin (v12/v13) is unchanged by the fix.
+    await page.setViewportSize({ width: 640, height: 960 });
+    await page.waitForTimeout(300);
+    const at640 = await page.evaluate(() => {
+      const panel = [...document.querySelectorAll("div")].find(
+        (d) => /rounded-2xl/.test(d.className) && d.querySelector("h1"),
+      );
+      if (!panel) return null;
+      const wrapper = panel.parentElement!;
+      const spacer = [...wrapper.children].find((c) => c !== panel) as HTMLElement | undefined;
+      const pr = panel.getBoundingClientRect();
+      return {
+        spacerDisplay: spacer ? getComputedStyle(spacer).display : "absent",
+        panelY: Math.round(pr.y),
+        panelH: Math.round(pr.height),
+        centeredY: Math.round((960 - pr.height) / 2),
+      };
+    });
+    expect(at640).not.toBeNull();
+    expect(at640!.spacerDisplay).toBe("none");
+    expect(at640!.panelY).toBe(at640!.centeredY);
+  });
+});

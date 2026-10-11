@@ -1537,3 +1537,121 @@ test.describe("category-level animation + quick-action hover shadow (v45 — pla
     expect(hovered).toContain("rgba(0, 0, 0, 0.1) 0px 4px 6px -4px");
   });
 });
+
+test.describe("donut legend mobile reflow census (v49 — plan F2)", () => {
+  test("the legend's full chrome at 390 — the mobile reflow (v49 F2)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.getByText("Spending Breakdown")).toBeVisible();
+    // The settle pattern: the dashboard's seeded net-balance text (the
+    // v42 idiom — the card title is a plain div, never a role=heading).
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+    // The reference's measured 390 contract (ref-v49.sh leaf census —
+    // the v44 F3 measured BOTH viewports but pinned only 1280; this pin
+    // locks the mobile reflow). The row width 308 (NOT the reference's
+    // 313): the reference's row rides its own 395 docSW overflow — the
+    // documented superset-fix-#4 bug; the clone fits at 390.
+    const census = await page.evaluate(() => {
+      const legend = document.querySelector("div.flex.flex-col.gap-3.mt-6");
+      if (!legend) return null;
+      const lcs = getComputedStyle(legend);
+      const row = legend.querySelector(":scope > div") as HTMLElement | null;
+      if (!row) return null;
+      const cs = getComputedStyle(row);
+      const leaves = [...row.querySelectorAll("p, span, div")].filter(
+        (el) => el.children.length === 0,
+      ) as HTMLElement[];
+      const dot = leaves.find((el) => {
+        const w = Math.round(el.getBoundingClientRect().width);
+        return w > 0 && w <= 20;
+      });
+      const label = row.querySelector("span");
+      const amount = [...row.querySelectorAll("p")].find((s) =>
+        /^\$\d/.test((s.textContent || "").trim()),
+      ) as HTMLElement | null;
+      const pct = [...row.querySelectorAll("p")].find((s) =>
+        /^\d+(\.\d+)?%$/.test((s.textContent || "").trim()),
+      ) as HTMLElement | null;
+      const rightBlock = amount ? amount.parentElement : null;
+      const svg = row.querySelector("svg");
+      return {
+        container: {
+          display: lcs.display,
+          dir: lcs.flexDirection,
+          gap: lcs.gap,
+          mt: lcs.marginTop,
+          w: Math.round(legend.getBoundingClientRect().width),
+        },
+        row: {
+          w: Math.round(row.getBoundingClientRect().width),
+          h: Math.round(row.getBoundingClientRect().height),
+          radius: cs.borderRadius,
+          pad: cs.padding,
+          bg: cs.backgroundColor,
+        },
+        dot: dot
+          ? {
+              w: Math.round(dot.getBoundingClientRect().width),
+              h: Math.round(dot.getBoundingClientRect().height),
+              radius: getComputedStyle(dot).borderRadius,
+              bg: getComputedStyle(dot).backgroundColor,
+            }
+          : null,
+        label: label
+          ? {
+              fs: getComputedStyle(label).fontSize,
+              fw: getComputedStyle(label).fontWeight,
+              color: getComputedStyle(label).color,
+              text: label.textContent?.trim(),
+            }
+          : null,
+        amount: amount
+          ? {
+              fs: getComputedStyle(amount).fontSize,
+              fw: getComputedStyle(amount).fontWeight,
+              color: getComputedStyle(amount).color,
+            }
+          : null,
+        pct: pct
+          ? { fs: getComputedStyle(pct).fontSize, fw: getComputedStyle(pct).fontWeight, color: getComputedStyle(pct).color }
+          : null,
+        rightAlign: rightBlock ? getComputedStyle(rightBlock).textAlign : null,
+        svg: svg
+          ? { w: Math.round(svg.getBoundingClientRect().width), color: getComputedStyle(svg).color }
+          : null,
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The container: the column reflow with the 12px gap + the 24px top
+    // margin (the clone's mt-6 flex flex-col gap-3 — the reference's
+    // identical family).
+    expect(census!.container).toEqual({
+      display: "flex",
+      dir: "column",
+      gap: "12px",
+      mt: "24px",
+      w: 308,
+    });
+    // The row chrome: byte-identical (the h 64 = 24px label line + 2×12
+    // pad + the 16px dot row).
+    expect(census!.row).toEqual({
+      w: 308,
+      h: 64,
+      radius: "8px",
+      pad: "12px",
+      bg: "rgb(245, 248, 245)",
+    });
+    // The Need row's dot: the orange 16×16 at radius 4.
+    expect(census!.dot).toEqual({ w: 16, h: 16, radius: "4px", bg: "rgb(224, 122, 59)" });
+    // The leaves: the label 16/500/forest; the amount 16/700/classified
+    // (orange for Need); the pct 12/400/gray.
+    expect(census!.label).toEqual({ fs: "16px", fw: "500", color: "rgb(26, 58, 46)", text: "Need" });
+    expect(census!.amount).toEqual({ fs: "16px", fw: "700", color: "rgb(224, 122, 59)" });
+    expect(census!.pct).toEqual({ fs: "12px", fw: "400", color: "rgb(107, 114, 128)" });
+    expect(census!.rightAlign).toBe("right");
+    expect(census!.svg).toEqual({ w: 16, color: "rgb(224, 122, 59)" });
+    // The clone's superset no-overflow contract holds at 390.
+    expect(census!.sw).toBe(390);
+  });
+});

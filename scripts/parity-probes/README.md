@@ -1810,3 +1810,57 @@ viewports + the donut legend's interaction):
   classification VALUE difference (need=red vs savings=green) — the
   CHIP chrome is identical per value; DOM-verify the color map before
   counting a badge flag (the v43 lesson, fourth application).
+
+## v49 — the login spacer fix + the donut legend mobile reflow + the calculator 640 chrome (session-111 v49 queue #1 + #2 + #3)
+
+- `ref-v49.sh` — the reference-side driver (READ-ONLY: the logged-out
+  login-panel census at 390; the login for the donut-legend leaf
+  census at 390; the calculator open via its Calculate click + census
+  + X close at 640 — no saves, no deletes, the v46 incident rule).
+- `clone-v49.sh` — the clone-side driver (the same three surfaces via
+  with-server on :3200).
+- `ref-standing-v49.sh` — the 43rd standing check, REFERENCE side
+  (login + the four reference bugs + the read-only data census + the
+  SEO pair).
+- `standing-checks-v49.sh` — the 43rd standing check, clone side
+  (R1–R4 + the SEO pair, one script — generated from the v48 family).
+- `vlm-compare-v49.mjs` + the /tmp/vlm49 pair — the standing VLM
+  screening (the LOGIN page at 390 — THE FIXED SURFACE, a data-free
+  static form): **IDENTICAL, zero app flags** (the only flag the
+  reference's own "Edit with Base44" FAB platform chrome) — the F1
+  fix's visual verification.
+- THE v49 FINDING — ONE REAL DRIFT (the first production-code change
+  since v46) + two pin-only surfaces: (1) the reference's login
+  wrapper carries a mobile-only SECOND child — `<div class="mt-8
+  text-center text-xs text-slate-400 sm:hidden"><p>&nbsp;</p></div>`
+  (h 16, mt 32, rgb(148,163,184)) below the panel — lifting its card
+  stack 24px above the geometric center at 390 (the panel y 57 /
+  wrapper 730; the clone pre-fix centered the panel ALONE at y 81 /
+  wrapper 682). Verified on the reference's sign-in AND sign-up
+  states; at 640 the spacer is display none (sm:hidden) and the panel
+  re-centers — the desktop pins were always safe, the drift was
+  mobile-only and first-measured this session. (2) The donut legend at
+  390: byte-identical chrome (the v44 F3 measured both viewports but
+  pinned only 1280 — the v49 pin locks the mobile reflow; the
+  reference's row w 313 rides its own 395 docSW overflow, the clone's
+  308 fits — the superset-fix-#4 family). (3) The calculator panel at
+  640: byte-identical chrome (the v45 F2b pinned only the widths after
+  a line-item add; the v49 pin censuses the read-only open state's
+  panel + close + header border + the centering invariant).
+- LESSONS: (a) **Census the WRAPPER's children, not just the panel** —
+  the reference's login-page vertical layout at 390 is a three-element
+  stack (main p-4 → the w-full max-w-md wrapper → panel + spacer); a
+  panel-only census reads the card as "centered" when the reference's
+  stack is not — the y-offset drift hides one level above the card.
+  (b) **agent-browser's screenshot syntax is `screenshot [selector]
+  [path]`** — `screenshot <path> full` mis-fires (the path parses as a
+  SELECTOR, the word "full" as the path; the file never lands). (c)
+  The reference's donut-legend row w 313 vs the clone's 308 IS the
+  reference's own 5px /dashboard overflow (docSW 395) — the row-width
+  diff rides the overflow, not a chrome gap (the v46/v47 lesson
+  family). (d) The reference's sheet-trap needs the PRECISE overlay
+  census (z-50 + rgba(0,0,0,0.8) + geometry) — a heuristic detector
+  keying on overlay TEXT misses it (the overlay div itself is
+  empty-texted; the sheet's content is a sibling). (e) The calculator
+  panel's absolute height is data-dependent — pin the CENTERING
+  invariant (y == round((vh − h)/2)) + the chrome, never the height.
