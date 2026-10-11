@@ -116,3 +116,104 @@ test.describe("a11y gate — the login page (logged out)", () => {
     ).toHaveLength(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v39 F1 — the a11y gate's MOBILE extension (docs/remediation-plan-v39.md).
+// The session-80/81 queue's third item: the desktop gate extended to the
+// mobile viewport (390×844, isMobile + hasTouch — the mobile-navigation
+// spec's emulation). Measured live on BOTH sites (a11y-scan-v39.mjs):
+//
+//  - The reference at mobile fails button-name (critical) on the four item
+//    views (its unlabeled Select triggers + kebabs) and svg-img-alt on
+//    / + /dashboard (its donut sectors) — the same families as desktop.
+//  - The clone passes both everywhere at mobile; its only failures are
+//    color-contrast, every flagged color enumerated in the reference's own
+//    7-color palette (axe-detail-v39.mjs / axe-detail-ref-v39.mjs — the
+//    mobile node counts differ from desktop only by the demo card counts).
+//  - The sheet-OPEN superset: the reference's mobile sheet is a plain
+//    fixed div (no role, no aria-labelledby, no nav landmark, no title);
+//    the clone's is a Radix Dialog — role=dialog + aria-labelledby → the
+//    sr-only "Navigation" DialogTitle + nav aria-label="Primary" + the
+//    named burger — pinned structurally by the sheet-open test below.
+// ---------------------------------------------------------------------------
+test.describe("a11y gate MOBILE (v39 F1 — the 390×844 sheet-state scan)", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  const authed: Array<[route: string, marker: string]> = [
+    ["/", "Total Income"],
+    ["/dashboard", "Total Income"],
+    ["/income", "Salary"],
+    ["/expenses", "Rent"],
+    ["/savings", "Emergency Fund"],
+    ["/networth", "Assets"],
+  ];
+
+  for (const [route, marker] of authed) {
+    test(`axe scan (authed, mobile 390×844): ${route} — structural rules clean, contrast failures carry only the reference's palette`, async ({ page }) => {
+      await page.goto(route);
+      await expect(page.getByText(marker).first()).toBeVisible();
+      await assertParityClean(page, `${route} (mobile 390×844)`);
+    });
+  }
+
+  test("the sheet-OPEN state: the accessible mobile navigation menu + both gates", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText("Total Income").first()).toBeVisible();
+
+    // A REAL click on the named burger — the clone's toast viewport never
+    // blocks it (superset fix #1; the reference's does — its probe needs
+    // the JS-click workaround, an e2e here does not).
+    await page.getByRole("button", { name: "Toggle Sidebar" }).click();
+    const sheet = page.locator("[data-state='open'][role='dialog']");
+    await expect(sheet).toBeVisible();
+    await page.waitForTimeout(1200); // the sheet-open settle (probe-measured)
+
+    // The structural pins — the reference's sheet has NONE of these:
+    // role=dialog, an aria-labelledby resolving to a titled element, a
+    // nav landmark with its label, the five links.
+    const structure = await sheet.evaluate((el) => {
+      const labelledBy = el.getAttribute("aria-labelledby");
+      const titleEl = labelledBy ? (el.querySelector(`#${CSS.escape(labelledBy)}`) || document.getElementById(labelledBy)) : null;
+      const nav = el.querySelector("nav");
+      return {
+        role: el.getAttribute("role"),
+        labelledBy,
+        titleText: titleEl ? titleEl.textContent?.trim() : null,
+        navPresent: !!nav,
+        navLabel: nav ? nav.getAttribute("aria-label") : null,
+        links: [...el.querySelectorAll("nav a")].map((a) => (a.textContent || "").trim()),
+      };
+    });
+    expect(structure.role, "the sheet must be a dialog (the reference's is a plain div)").toBe("dialog");
+    expect(structure.labelledBy, "the sheet must be labelled (aria-labelledby)").toBeTruthy();
+    expect(structure.titleText, "the labelledby must resolve to the sr-only Navigation title").toBe("Navigation");
+    expect(structure.navPresent, "the sheet must contain a nav landmark (the reference has none)").toBe(true);
+    expect(structure.navLabel).toBe("Primary");
+    expect(structure.links).toEqual(["Dashboard", "Income", "Expenses", "Savings", "Net Worth"]);
+
+    // Both gates against the sheet-open DOM (measured: the sheet adds no
+    // violations beyond the page's 14 color-contrast baseline nodes).
+    await assertParityClean(page, "/ (mobile, sheet open)");
+
+    // The sheet closes (the reference's traps — superset fix #2) — Escape.
+    await page.keyboard.press("Escape");
+    await expect(sheet).not.toBeVisible();
+  });
+});
+
+// The logged-out mobile login — its own describe (the v38 hoisting
+// lesson: test.use is hoisted PER describe; the opt-out never leaks).
+test.describe("a11y gate MOBILE — the login page (logged out, 390×844)", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  test.use({ storageState: { cookies: [], origins: [] } });
+  test("axe scan: the mobile login page — zero violations", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    await page.waitForTimeout(2500);
+    const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+    expect(
+      results.violations,
+      `mobile login page a11y violations: ${JSON.stringify(results.violations.map((v) => ({ id: v.id, nodes: v.nodes.length })))}`,
+    ).toHaveLength(0);
+  });
+});

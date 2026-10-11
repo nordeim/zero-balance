@@ -1325,3 +1325,46 @@ filter, the /savings filter-card instance):
   node.target selector chains (escaped classes included) resolve cleanly
   through `document.querySelector` — the color-provenance gate reads
   computed colors off them directly.
+
+Session-73 additions (remediation-plan-v39 audit — the session-80/81
+suggested queue's third item: the a11y gate's MOBILE extension):
+
+- `a11y-scan-v39.mjs` — the MOBILE extension of the v38 scanner (390×844,
+  isMobile + hasTouch — the mobile-navigation.spec.ts emulation, both
+  sites): every authed route sheet-closed + the sheet-OPEN state on /.
+  THE MEASUREMENT: the reference at mobile fails button-name (critical)
+  on the four item views + svg-img-alt on / + /dashboard — the same
+  families as desktop — while the clone passes both everywhere; its only
+  failures are color-contrast (the reference's own 7-color palette; the
+  mobile node counts differ from desktop only by the demo card counts).
+  The sheet-OPEN structural census: the reference's sheet is a plain
+  fixed div (no role, no labelledby, no nav, no title); the clone's is
+  role=dialog + aria-labelledby → sr-only "Navigation" + nav
+  aria-label="Primary" + the named burger.
+- `axe-detail-v39.mjs` / `axe-detail-ref-v39.mjs` — the MOBILE
+  color-provenance enumeration (the v39 GATE 2 evidence: every
+  color-contrast node's computed color on both sites' mobile routes).
+- `ref-v39.sh` / `clone-v39.sh` — the 33rd standing checks (R1–R4 + the
+  census + the SEO pair) + the mobile sheet-structure probes (the
+  ref/clone structural comparison above).
+- `vlm-compare-v39.mjs` — the VLM pair for the mobile sheet-open state
+  (VERDICT DIFFERENT, both flags explained: the clone's Dashboard active
+  highlight = superset fix #3 [the reference marks nothing active on /],
+  the avatar letter = the different demo users).
+- LESSONS: (a) **the agent-browser daemon can WEDGE after a killed
+  parity server** — a hung `agent-browser status` (30s+ timeout) means
+  the daemon is stuck; `pkill agent-browser` restarts it cleanly (the
+  fresh daemon answers immediately; sessions are disposable). (b) The
+  clone's burger is named by its sr-only SPAN, not an aria-label —
+  probes must find it via `querySelector('span.sr-only')` or the
+  accessible-name role query; `getAttribute('aria-label')` returns null.
+  (c) `document.querySelector('nav')` on mobile finds the DISPLAY:NONE
+  desktop rail first (DOM order) — the sheet's own nav lives in the
+  portal at the END of body; query the sheet element for its nav
+  (`sheet.querySelector('nav')`), never the document-wide first match.
+  (d) The reference's burger is hit-test BLOCKED by its toast viewport
+  (R1) — the mobile sheet probes must JS-click it (el.click()), like
+  R2's open probe; a Playwright click works only on the clone (the
+  pointer-events fix). (e) `playwright test -g "…"` with `(`/`)` in the
+  test title breaks the grep regex — quote-safe patterns or run the
+  whole spec.

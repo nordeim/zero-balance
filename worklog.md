@@ -37,6 +37,84 @@ and `docs/remediation-plan-v36.md`.
 
 ---
 
+## Session 73 — Parity iteration v39: the a11y gate's MOBILE extension — the 390×844 sheet-state scan, zero production-code changes (2026-10-11)
+
+**Goal:** re-clone the reset workspace, rebuild the environment, re-run
+the baseline chain, sweep the session-80/81 queue (the a11y gate's
+MOBILE extension — the 390×844 scan of the sheet-open state), fix what
+the DOM finds, TDD-first, docs aligned, commit + push via the SSH
+wrapper.
+
+- Workspace RE-CLONED fresh (`a2d5381`; the old one had been reset).
+  Environment rebuilt: npm install (495 packages), `cp .env.example
+  .env` (`DATABASE_URL="file:../db/custom.db"`), db:push + db:seed,
+  playwright chromium. Baseline: the first full e2e run flagged ONE
+  flake (not-found Go Home — a toBeVisible at 11.1s; passed in
+  isolation AND the full re-run — a first-run-after-rebuild warm-up
+  artifact); the re-run **187/187** + lint + typecheck + 108/108 unit
+  + build + 35/35 smoke. Audit clean (the same 5 dev-only braces
+  advisories, secret scan clean, `.env.example` current).
+- Standing checks all clean: mobile-nav R1–R4 (**33rd** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395 overflows all still live), data drift (33rd —
+  reference read-only, verified before + after), the SEO pair
+  (robots/sitemap live on both; the reference's capitalized app-route
+  URLs still documented).
+- **THE A11Y GATE'S MOBILE EXTENSION (the v38 queue's third item) —
+  shipped**:
+  - The exploratory scan (`a11y-scan-v39.mjs`, the 390×844
+    isMobile+hasTouch emulation, BOTH sites + the per-node color
+    enumeration `axe-detail-v39.mjs`/`axe-detail-ref-v39.mjs`): the
+    reference at mobile fails `button-name` (critical — its unlabeled
+    Select triggers + kebabs) on the four item views and
+    `svg-img-alt` (its donut sectors) on the two dashboard routes —
+    the same families as desktop — while the clone PASSES both
+    everywhere; the clone's only mobile failures are color-contrast,
+    every flagged color in the reference's own 7-color palette (the
+    mobile node counts differ from desktop only by the demo card
+    counts).
+  - **THE HEADLINE STRUCTURAL SUPERSET**: the reference's mobile sheet
+    is a plain fixed div — NO dialog role, NO aria-labelledby, NO
+    `<nav>` landmark, NO accessible title — while the clone's is
+    `role="dialog"` + `aria-labelledby` → the sr-only "Navigation"
+    DialogTitle + `<nav aria-label="Primary">` + the five links + the
+    named burger (sr-only "Toggle Sidebar").
+  - **The permanent mobile gate** (`tests/e2e/a11y.spec.ts`, 8 tests,
+    a new `test.use` describe): the six authed routes sheet-closed
+    under the SAME two gates (the shared assertParityClean helper) +
+    the sheet-OPEN test (the REAL burger click, the structural pins —
+    role=dialog, the labelledby resolving to "Navigation", the nav
+    label, the five links, the Escape close — then both gates) + the
+    logged-out mobile login (its own opt-out describe, ZERO
+    violations). All 17 a11y tests GREEN on the first run.
+  - **The stripped-burger mutation is the extension's raison d'être**:
+    removing the burger's sr-only span fires `button-name` on ALL SIX
+    mobile routes while every desktop scan stays green — the burger
+    is md:hidden at desktop, so a desktop-only gate can NEVER catch a
+    nameless burger (verified to FAIL; restored → GREEN). The removed
+    DialogTitle mutation breaks the aria-labelledby pin exactly as
+    designed (verified; restored → GREEN). Zero production-code
+    changes (`git diff src/` empty).
+- The VLM pair (the mobile sheet-open state, 390×844): VERDICT
+  DIFFERENT with BOTH flags explained (the clone's Dashboard active
+  highlight = superset fix #3 [the reference marks nothing active on
+  `/`]; the avatar letter = the different demo users).
+- Probe lessons: the agent-browser daemon can WEDGE after a killed
+  parity server (`pkill agent-browser` restarts it cleanly); the
+  clone's burger is named by its sr-only SPAN, not an aria-label;
+  `document.querySelector('nav')` on mobile finds the display:none
+  desktop rail first — query the sheet element for its own nav; the
+  reference's burger is hit-test blocked by its toast viewport (R1) —
+  mobile sheet probes must JS-click it; `playwright test -g` with
+  parens in the title breaks the grep regex.
+- The full chain re-run: **108/195/35** (187 → 195: the 8 mobile a11y
+  tests). The 16 screenshots regenerated. Docs aligned: README (the
+  195 counts + the v39 row), CLAUDE.md (the mobile-gate entry),
+  AGENTS.md (the v39 paragraph), the SKILL doc (Session 74 row),
+  session_83.md, the probe README (the v39 section), this worklog.
+
+---
+
 ## Session 72 — Parity iteration v38: the a11y tooling pass shipped as a permanent gate + the expenses frequency filter + the savings filter-card pinned, zero production-code changes (2026-10-11)
 
 **Goal:** refresh the workspace (git pull — intact this session), re-run
