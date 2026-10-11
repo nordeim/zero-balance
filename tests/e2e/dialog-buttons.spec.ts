@@ -824,3 +824,88 @@ test.describe("classification tiles' fresh roving state (v31 — plan G2)", () =
     await expect(dialog).toBeHidden();
   });
 });
+
+test.describe("dialog input focus composite (v47 — plan F1)", () => {
+  test("the amount input renders the reference's rest + focus shadow composition", async ({ page }) => {
+    // Session-101 queue #2, measured live on BOTH sites (v47): the
+    // reference's Add-Item dialog input composes, under REAL focus, a
+    // white zero-spread lead + the 1px #0a0a0a RING + the shadow-sm
+    // visible layer (3 layers — v3's slot count); the clone's shadcn
+    // stack (shadow-sm + focus-visible:ring-1 ring-ring) composes the
+    // SAME two visible layers with 4/3 transparent leads instead (the
+    // v4 5-slot construction — the accepted v10/v25/v45 class: the
+    // leads paint nothing). The rest state: the reference 2 leads + the
+    // shadow-sm visible layer; the clone 4 leads + the same visible
+    // layer (the --shadow-sm theme pin). The input chrome is identical
+    // on both sites, and the border color is UNCHANGED under focus on
+    // both sites (the ring does the work).
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const rest = await page.evaluate(() => {
+      const input = document.querySelector<HTMLInputElement>('[role="dialog"] input');
+      if (!input) return null;
+      const cs = getComputedStyle(input);
+      const layerCount = (cs.boxShadow.match(/px, /g) || []).length + 1;
+      return {
+        h: cs.height,
+        radius: cs.borderRadius,
+        pad: cs.padding,
+        border: `${cs.borderWidth} ${cs.borderColor}`,
+        bg: cs.backgroundColor,
+        shadow: cs.boxShadow,
+        layerCount,
+        outlineStyle: cs.outlineStyle,
+      };
+    });
+    expect(rest).not.toBeNull();
+    // The chrome (measured identical on both sites, live).
+    expect(rest!.h).toBe("36px");
+    expect(rest!.radius).toBe("6px");
+    expect(rest!.pad).toBe("4px 12px");
+    expect(rest!.border).toBe("1px rgb(229, 229, 229)");
+    expect(rest!.bg).toBe("rgba(0, 0, 0, 0)");
+    // The rest shadow: the shadow-sm VISIBLE layer (the theme pin's
+    // restored v3 value) + the v4 5-slot construction count.
+    expect(rest!.shadow).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+    expect(rest!.layerCount).toBe(5);
+    expect(rest!.outlineStyle).toBe("none");
+
+    // REAL focus with the visible heuristic (the v35 idiom — TS's DOM
+    // lib lags Chromium's FocusOptions.focusVisible member).
+    const focused = await page.evaluate(() => {
+      const input = document.querySelector<HTMLInputElement>('[role="dialog"] input');
+      if (!input) return null;
+      (input as HTMLElement).focus({ focusVisible: true } as unknown as FocusOptions);
+      const cs = getComputedStyle(input);
+      const layerCount = (cs.boxShadow.match(/px, /g) || []).length + 1;
+      return {
+        fv: input.matches(":focus-visible"),
+        shadow: cs.boxShadow,
+        layerCount,
+        borderColor: cs.borderColor,
+        outlineStyle: cs.outlineStyle,
+      };
+    });
+    expect(focused).not.toBeNull();
+    expect(focused!.fv).toBe(true);
+    // THE RING: the reference's 1px #0a0a0a focus ring (the v32/v35
+    // family) — the composed state keeps the rest shadow-sm visible
+    // layer beneath it (measured on both sites).
+    expect(focused!.shadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+    expect(focused!.shadow).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+    // The border is UNCHANGED under focus (the ring does the work, not
+    // the border — measured on both sites).
+    expect(focused!.borderColor).toBe("rgb(229, 229, 229)");
+    // The focus-state construction count (3 leads + ring + shadow).
+    expect(focused!.layerCount).toBe(5);
+    expect(focused!.outlineStyle).toBe("none");
+
+    // Close (the Radix superset: Escape works).
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  });
+});

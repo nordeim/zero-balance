@@ -375,3 +375,70 @@ test.describe("hover semantics on touch-capable contexts (v5 — plan G7)", () =
     expect(hovered.color).toBe("rgb(24, 24, 27)");
   });
 });
+
+test.describe("mobile sheet chrome census (v47 — plan F3)", () => {
+  test("the sheet's shadow-lg visible layers match the reference's mobile composite", async ({ page }) => {
+    // v47 — the session-104 queue's sheet item, measured live on BOTH
+    // sites at 390: the reference's sheet (288×844, x 0, bg
+    // rgb(250,250,250)) renders 2 transparent leads + the v3 shadow-lg
+    // PAIR — rgba(0,0,0,0.1) 0px 10px 15px -3px + rgba(0,0,0,0.1) 0px
+    // 4px 6px -4px; the clone's (the same geometry, already pinned by
+    // the v7 G6 test) renders 4 transparent leads + the SAME two
+    // visible layers (the v4 5-slot construction — the v45 systemic
+    // family, now at the lg end on the mobile surface). This pin joins
+    // the shadow-scale regression net as its SIXTH site (md/lg/sm/2xl
+    // from v45 + the white-pill sm from v46).
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Toggle Sidebar" }).click();
+    const sheet = page.locator("[data-state='open'].fixed.inset-y-0");
+    await expect(sheet).toBeVisible();
+    // The 500ms slide-in entrance must settle before the census (the
+    // existing geometry-test idiom).
+    await page.waitForTimeout(700);
+
+    const census = await page.evaluate(() => {
+      const sheet = document.querySelector<HTMLElement>("[data-state='open'].fixed.inset-y-0");
+      const ov = document.querySelector<HTMLElement>("[data-state='open'].fixed.inset-0:not(.inset-y-0)");
+      if (!sheet || !ov) return null;
+      const cs = getComputedStyle(sheet);
+      const ocs = getComputedStyle(ov);
+      const r = sheet.getBoundingClientRect();
+      const layerCount = (cs.boxShadow.match(/px, /g) || []).length + 1;
+      return {
+        sheet: {
+          w: Math.round(r.width),
+          x: Math.round(r.x),
+          bg: cs.backgroundColor,
+          shadow: cs.boxShadow,
+          layerCount,
+          transform: cs.transform,
+        },
+        overlay: { bg: ocs.backgroundColor, z: ocs.zIndex },
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("sheet census found no open sheet");
+
+    // The geometry + surface (the already-pinned family, re-verified).
+    expect(census.sheet.w).toBe(288);
+    expect(census.sheet.x).toBe(0);
+    expect(census.sheet.bg).toBe("rgb(250, 250, 250)");
+    expect(census.sheet.transform).toBe("none");
+    expect(census.overlay.bg).toBe("rgba(0, 0, 0, 0.8)");
+    expect(census.overlay.z).toBe("50");
+
+    // THE PIN: both shadow-lg VISIBLE layers (the reference's v3 pair,
+    // measured live) — toContain = the accepted-leads convention (the
+    // v10 lesson; the transparent leads diverge by construction).
+    expect(census.sheet.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 10px 15px -3px");
+    expect(census.sheet.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 4px 6px -4px");
+    // The v4 5-slot construction count (the regression net: a future
+    // Tailwind upgrade changing the composition fails here).
+    expect(census.sheet.layerCount).toBe(6);
+
+    // Close (the superset: the sheet closes on nav + Escape).
+    await page.keyboard.press("Escape");
+    await expect(sheet).toBeHidden();
+  });
+});

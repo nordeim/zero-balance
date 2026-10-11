@@ -35,7 +35,8 @@ and `docs/remediation-plan-v42.md`,
 and `docs/remediation-plan-v43.md`,
 and `docs/remediation-plan-v44.md`,
 and `docs/remediation-plan-v45.md`,
-and `docs/remediation-plan-v46.md`.
+and `docs/remediation-plan-v46.md`,
+and `docs/remediation-plan-v47.md`.
 
 ---
 
@@ -44,6 +45,76 @@ and `docs/remediation-plan-v46.md`.
 ---
 
 ---
+
+---
+
+## Session 81 — Parity iteration v47: the dialog-input focus composite + the net-worth card mobile census + the mobile sheet's shadow-lg — a PIN-ONLY iteration (2026-10-11)
+
+**Goal:** the session-101 queue's second candidate (the dialog inputs'
+focus-state shadow composition) + the v46 follow-up (the net-worth
+card's mobile census at 390) + the session-104 queue's sheet item (the
+mobile sheet's shadow-lg). TDD-first, docs aligned, commit + push via
+the SSH wrapper. (The workspace was RESET this session: git clone
+9981c43 → npm install → db:push → db:seed; the playwright
+chromium-1243 build fetched pre-emptively — the v46 session's lesson.)
+
+- Baseline: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **223/223 e2e ✓ (5.2m)** · 35/35 smoke ✓. Audit clean (the same 5
+  dev-only ESLint-chain advisories, --omit=dev = 0; the secret scan
+  clean; .env ≡ .env.example; the v46 diff re-audited — ONE src file,
+  the 12-line mb-2→mb-4 fix, matching the plan).
+- Standing checks all clean: mobile-nav R1–R4 (**41st** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker,
+  sheet-trap, no-landmark, 395/464 overflows all still live — the
+  toast-blocker measured via elementFromPoint at the burger's center,
+  the sheet-trap via the live nav), data drift (41st — reference
+  read-only, the v46 incident's restoration intact: "1 items ·
+  $25,000"), the SEO pair (both sites).
+- **THE v47 SWEEP (three surfaces, both sites — dlg-focus-v47.mjs +
+  nw-mobcard-v47.mjs + sheet-chrome-v47.mjs + ref/clone-v47.sh)**:
+  - **The dialog input's focus composite (session-101 queue #2): every
+    VISIBLE layer matches — PIN-ONLY.** The reference composes (under
+    REAL focus, :focus-visible matched) the white zero-spread lead +
+    the 1px rgb(10,10,10) ring + the shadow-sm visible layer (3
+    layers, v3); the clone's shadcn stack composes the same ring + the
+    same shadow-sm layer with 4/3 transparent leads (v4's 5-slot
+    construction — the accepted v10/v25/v45 class). The chrome
+    identical (h 36/radius 6/pad 4px 12px/border 1px
+    rgb(229,229,229)/bg transparent); the border UNCHANGED under focus
+    on both sites; the outline (v3 transparent-2px vs v4 none) both
+    invisible.
+  - **The net-worth card's MOBILE census at 390: byte-parity post-v46
+    — PIN-ONLY.** The reference's card h 194 (inside its 432-wide
+    OVERFLOWING grid, docSW 464 — its documented bug); the clone's
+    358×194 (the page fits, docSW 390) — **the card heights match
+    exactly**; the value mb 16 both sites (the v46 fix survives the
+    mobile reflow; the reference wraps in div.mb-4, the clone carries
+    mb-4 on the P — the computed geometry is the contract); the facts
+    12px rgb(107,114,128)/gap 16.
+  - **The mobile sheet's shadow-lg at 390: the visible pair matches —
+    PIN-ONLY.** Both sites: rgba(0,0,0,0.1) 0px 10px 15px -3px + 0px
+    4px 6px -4px (the shadow-scale regression net's SIXTH site); the
+    sheet 288×844/x 0/bg rgb(250,250,250); the overlay
+    rgba(0,0,0,0.8) z 50.
+  - Probe lessons: **a src/ mutation is invisible to the e2e suite
+    until `npm run build` runs** (the first ring-1 mutation "passed"
+    until the rebuild — the tests run against the standalone build);
+    the reference's net-worth grid class carries no grid-cols-1 (key
+    the shared finder on the md:/lg: pair); the reference's badges are
+    leaf DIVs; the VLM's 3 mobile-/income flags all DOM-verified as
+    data/platform classes (the richer seed's 4th Recurring badge
+    wrapping in the byte-identical flex-wrap container + the
+    reference's own Base44 FAB).
+- TDD: the three pins GREEN immediately (pin-only); FOUR pin-sanity
+  mutations verified to FAIL (the input's ring-1 removed; the input's
+  shadow-sm removed; the value mb-4 reverted; the sheet's shadow-lg
+  removed — each after the REBUILD). Full chain: **226/226 e2e
+  (223→226)** · 108 unit · 35 smoke · lint + typecheck + build green;
+  the VLM pair (mobile /income @390): 3 flags, all data/platform — no
+  chrome gaps; the 16 screenshots regenerated.
+- Docs: AGENTS/CLAUDE/README/SKILL/PAD (v1.1.4)/probe-README +
+  session_107.md + session_108.md + this entry + the workspace worklog.
+  Ship: commit + push to main via the SSH wrapper.
 
 ---
 

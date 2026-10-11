@@ -1097,3 +1097,99 @@ test.describe("net-worth asset card census (v46 — remediation-plan-v46.md F2/F
     await expect(card.getByRole("heading", { name: "Everyday Account" })).toBeVisible();
   });
 });
+
+test.describe("net-worth card mobile census (v47 — plan F2)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+  });
+
+  test("the asset card's mobile rhythm matches the reference's 194px census", async ({ page }) => {
+    // v47 — the v46 fix's mobile follow-up, measured live on BOTH sites
+    // at 390: the reference's asset card (inside its 432-wide
+    // OVERFLOWING grid — its documented superset-fix-#4 bug) renders h
+    // 194 / pad 20 / radius 12 / border 1px rgb(229,231,227) / rest
+    // shadow rgba(0,0,0,0.04) 0px 2px 8px 0px / transition 0.2s; the
+    // value→facts gap 16 (its div.mb-4 wrap); the facts 12px
+    // rgb(107,114,128). The clone's card: the identical chrome +
+    // rhythm (the v46 fix holds at 390 — the clone carries the margin
+    // ON the P, the computed geometry is the contract) — and the page
+    // FITS (docSW 390 vs the reference's 464, the superset fix).
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) =>
+          d.className.toString().includes("grid-cols-1") &&
+          d.className.toString().includes("md:grid-cols-2") &&
+          d.className.toString().includes("lg:grid-cols-3") &&
+          d.querySelector("button"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      const cs = getComputedStyle(card);
+      const r = card.getBoundingClientRect();
+      const vp = card.querySelector("p.text-2xl");
+      const facts = vp ? (vp.nextElementSibling as HTMLElement | null) : null;
+      return {
+        gridW: Math.round(grid.getBoundingClientRect().width),
+        gridGap: getComputedStyle(grid).gap,
+        gridCols: getComputedStyle(grid).gridTemplateColumns.split(" ").length,
+        card: {
+          w: Math.round(r.width),
+          h: Math.round(r.height),
+          pad: cs.padding,
+          radius: cs.borderRadius,
+          border: cs.border,
+          shadow: cs.boxShadow,
+          transition: cs.transition,
+        },
+        value: vp
+          ? {
+              mb: getComputedStyle(vp).marginBottom,
+              fs: getComputedStyle(vp).fontSize,
+              lh: getComputedStyle(vp).lineHeight,
+              color: getComputedStyle(vp).color,
+            }
+          : null,
+        facts: facts
+          ? {
+              fs: getComputedStyle(facts).fontSize,
+              color: getComputedStyle(facts).color,
+              gap: Math.round(facts.getBoundingClientRect().y - (vp as HTMLElement).getBoundingClientRect().bottom),
+            }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+        mainSW: document.querySelector("main")?.scrollWidth ?? null,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("mobile census found no card grid");
+
+    // The grid: single column at 390, the 16px gap — the page fits.
+    expect(census.gridW).toBe(358);
+    expect(census.gridGap).toBe("16px");
+    expect(census.gridCols).toBe(1);
+    expect(census.docSW).toBe(390);
+    expect(census.mainSW).toBe(390);
+
+    // The card chrome — byte-identical to the reference's measured
+    // mobile census (the 432-wide card's INTERNAL metrics, the same).
+    expect(census.card.w).toBe(358);
+    expect(census.card.h).toBe(194);
+    expect(census.card.pad).toBe("20px");
+    expect(census.card.radius).toBe("12px");
+    expect(census.card.border).toBe("1px solid rgb(229, 231, 227)");
+    expect(census.card.shadow).toContain("rgba(0, 0, 0, 0.04) 0px 2px 8px 0px");
+    expect(census.card.transition).toContain("0.2s cubic-bezier(0.4, 0, 0.2, 1)");
+
+    // The value→facts rhythm: the v46 fix holds at 390 — mb 16 / fs 24
+    // / lh 32 / the lime value color / the measured gap 16.
+    expect(census.value!.mb).toBe("16px");
+    expect(census.value!.fs).toBe("24px");
+    expect(census.value!.lh).toBe("32px");
+    expect(census.value!.color).toBe("rgb(143, 188, 63)");
+    expect(census.facts!.fs).toBe("12px");
+    expect(census.facts!.color).toBe("rgb(107, 114, 128)");
+    expect(census.facts!.gap).toBe(16);
+  });
+});

@@ -1713,3 +1713,55 @@ viewports + the donut legend's interaction):
   survive across tool calls — kill them (`pkill -f agent-browser`)
   before a Playwright run or the browser contexts crash on
   pthread_create resource exhaustion.
+
+## v47 — the dialog-input focus composite + the net-worth mobile census + the sheet's shadow-lg (the session-101 queue #2 + the v46 follow-up)
+
+- `dlg-focus-v47.mjs` — the dialog input's FOCUS-state shadow composition
+  census (the Add-Item/Add-Income dialog's first input, the clone's
+  [role=dialog] finder): the rest census (the shadow-sm visible layer +
+  the v4 5-slot layer count) + the REAL focus (`focus({ focusVisible:
+  true })`, the v35 idiom) census (the ring + the persisting rest
+  shadow + the unchanged border + the outline style).
+- `nw-mobcard-v47.mjs` — the net-worth ASSET card's MOBILE census at
+  390 (the wrap-aware value gap: the clone's P-carried mb-4 vs the
+  reference's div.mb-4 wrap — the computed geometry is the contract).
+  Works on BOTH sites (the reference's grid has no `grid-cols-1` in
+  its class string — the structural finder keys on md:lg: classes).
+- `sheet-chrome-v47.mjs` — the MOBILE SHEET chrome census at 390 (the
+  structural finder: fixed + 250–330 wide + contains links — covers
+  both the clone's [data-state=open] sheet and the reference's plain
+  fixed div; the overlay = the fixed dim layer without links): the
+  sheet's bg/geometry/shadow-lg visible pair + the layer count + the
+  overlay bg/z.
+- `ref-v47.sh` / `clone-v47.sh` — the drivers (READ-ONLY on the
+  reference: the dialog opens + Cancels, the sheet opens + closes, NO
+  Delete clicks — the v46 incident rule).
+- `vlm-compare-v47.mjs` + the /tmp/vlm47 pair — the standing VLM
+  screening (the MOBILE /income view at 390 — a fresh surface; the
+  reference's /income is overflow-free at 390, docSW verified live):
+  3 flags, all DOM-verified as data/platform classes (the clone's
+  richer seed carries a 4th Recurring badge that wraps in the
+  byte-identical `flex flex-wrap gap-2` container — the reference has
+  no second card; the "Edit with Base44" FAB is the reference's own
+  platform chrome) — no chrome gaps.
+- THE v47 FINDING — everything at parity on the VISIBLE layers, the
+  third pin-only iteration (v45-family): the dialog input's focus
+  composite (the reference's 3-layer v3 composition vs the clone's
+  5-layer v4 construction — the SAME ring + shadow-sm visible layers);
+  the net-worth card's mobile rhythm (h 194 both sites, the value mb
+  16 both sites — the v46 fix survives the mobile reflow); the mobile
+  sheet (the shadow-lg visible pair + the geometry/bg/overlay).
+- LESSONS: (a) **a src/ mutation is INVISIBLE to the e2e suite until
+  `npm run build` runs** — the tests run against the standalone build,
+  not the source tree; the first ring-1 mutation "passed" until the
+  rebuild, then bit. (b) The reference's net-worth grid class string
+  has no `grid-cols-1` (its mobile column count comes from the md/lg
+  responsive classes alone) — a structural finder keyed on grid-cols-1
+  finds only the clone; key on the md:/lg: pair for a shared probe.
+  (c) The reference's badge rows: the badge texts are leaf DIVs (not
+  spans) — find them by text with a children<=1 filter. (d) The
+  clone's /income seed carries a second card with the conditional
+  green Recurring badge (4 badges) — at 390 the 4th wraps; the
+  reference's single-card data never shows this; the wrap is the
+  byte-identical flex-wrap behavior, not a chrome gap (VLM flags need
+  the DOM verification — the v43 lesson, third application).
