@@ -30,7 +30,8 @@ and `docs/remediation-plan-v37.md`,
 and `docs/remediation-plan-v38.md`,
 and `docs/remediation-plan-v39.md`,
 and `docs/remediation-plan-v40.md`,
-and `docs/remediation-plan-v41.md`.
+and `docs/remediation-plan-v41.md`,
+and `docs/remediation-plan-v42.md`.
 
 ---
 
@@ -41,6 +42,66 @@ and `docs/remediation-plan-v41.md`.
 ---
 
 ---
+
+## Session 76 — Parity iteration v42: the mid-viewport census of the five routes + the breakdown card's single-divider fix — the first production-code change since v41 (2026-10-11)
+
+**Goal:** refresh the workspace (git pull — intact this session), re-run
+the baseline chain, sweep the session-90/91 queue (the MID viewport
+640×960 census of the five non-networth routes — the v41 lesson applied
+to the remaining route set), pin what the measurement finds, TDD-first,
+docs aligned, commit + push via the SSH wrapper.
+
+- Workspace SURVIVED the session break: git pull fast-forwarded
+  3f89e53 → d5068c8; the environment intact (node_modules, .env with
+  `DATABASE_URL="file:../db/custom.db"`, db/custom.db + db/e2e.db at
+  the repo root, playwright chromium). Baseline: lint ✓ · typecheck ✓
+  · 108/108 unit ✓ · build ✓ · **203/203 e2e ✓ (4.7m, the FIRST run,
+  zero flakes)**. Audit clean (the same 5 dev-only braces advisories,
+  the secret scan clean, .env = .env.example, the v41 src diff
+  re-audited — exactly the documented 3-file changeset).
+- Standing checks all clean: mobile-nav R1–R4 (**36th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395 overflows all still live), data drift (36th —
+  reference read-only, verified before + after), the SEO pair
+  (robots/sitemap live on both), the reference's mobile sheet
+  re-measured (still the plain fixed div).
+- **THE V42 SURFACE — the five routes measured live on BOTH sites at
+  640×960 (mid-census-v42.mjs)**:
+  - **The 32px rhythm HOLDS on all five routes** (gapRowToFirst === 32
+    everywhere — the v20 G1 pin's class extended to the mid viewport);
+    the header 61, the h1 30px/36, the cap 608, sw 640, the items-view
+    structure identical (the filter card block mb-24, the 1-col grid
+    gap-16).
+  - **THE PARITY GAP (the first production-code change since v41)**:
+    the dashboard's NetZeroBreakdownCard ran +13px taller at BOTH
+    viewports (640: 337 vs 324; 1280: 377 vs 364) — attributed
+    band-by-band: the goalCard byte-identical (316, bands 48/48/108,
+    donut 558×300), the row heights identical (56/64/64 at 1280 —
+    width-driven wrap) — **the delta was ONE EXTRA DIVIDER: the clone
+    rendered TWO (Income|Savings AND Savings|Expenses), the reference
+    ONE (Income|Savings only — the app's ONE rule grouped: [Income] |
+    [Savings, Expenses] | border-t | [Net Balance])**. The tail check:
+    lastBand mb=0 on both sites, scrollH 3029 vs 3042 — exactly the
+    +13, the divider alone. **Fixed: `{i === 1 && <Divider />}`.**
+- **F2/F3 — the three census e2e** (dashboard.spec.ts): the breakdown
+  band census at 1280 (the 5-band stack [56, 1, 64, 64, 45], the
+  single divider, the 364 card) + the hero grid census at 640
+  (goalCard 316, breakdownCard 324@y=569, hero 664, secondBand 925,
+  thirdBand 1635, scrollH 3029) + the five-route mid-viewport census
+  (the common rhythm + the route-class branches). TDD: written FIRST,
+  run RED (all three failed at exactly the expected pins), the fix
+  applied, GREEN on the first run.
+- **Three pin-sanity mutations verified to FAIL**: the reverted divider
+  condition → the band-count pin fails (6 ≠ 5); the items-view mb-8 →
+  mb-6 → the /income rhythm pin fails; the dashboard mb-8 → mb-6 →
+  the / rhythm pin fails. All restored → GREEN.
+- The full chain: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **206/206 e2e ✓ (4.7m — 203 → 206)** · 35/35 smoke ✓. The 16
+  screenshots regenerated. The VLM pair clean (all flags in the known
+  classes). Docs aligned (the probe README's v42 section, README's
+  v42 row + the 206 counts, CLAUDE.md's entries, AGENTS.md's v42
+  paragraph, the SKILL doc's state + Session 77 row, session_92.md,
+  the repo worklog, the workspace worklog).
 
 ## Session 75 — Parity iteration v41: the net-worth summary card's viewport census + the vertical-rhythm fix — the first production-code change since v38 (2026-10-11)
 

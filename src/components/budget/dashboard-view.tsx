@@ -405,9 +405,17 @@ function NetZeroBreakdownCard() {
         Net Zero Breakdown
       </h3>
       <div className="space-y-3">
+        {/* v42 F1: the reference renders ONE divider — between Income and
+            Savings only (bd-attrib-v42.mjs: the ref's stack is 5 bands
+            [Income, divider, Savings, Expenses, Net-footer]; the clone's
+            pre-fix `i > 0` rendered a second Savings|Expenses divider,
+            +13px on the card at BOTH viewports — 337 vs 324 at 640, 377
+            vs 364 at 1280 — carrying into every band below the hero).
+            The structure is the app's ONE rule grouped: [Income] |
+            [Savings, Expenses] | border-t | [Net Balance]. */}
         {sections.map(({ type, label, icon, color }, i) => (
           <React.Fragment key={type}>
-            {i > 0 && <Divider />}
+            {i === 1 && <Divider />}
             <BreakdownSection
               label={label}
               icon={icon}

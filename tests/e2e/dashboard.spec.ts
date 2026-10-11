@@ -489,3 +489,233 @@ test.describe("donut keyboard semantics (v31 — plan G1)", () => {
     await expect(page).toHaveURL(/\/savings$/);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Mid-viewport census (v42 — remediation-plan-v42.md F2/F3) — the
+// session-90/91 queue: the MID viewport 640×960 of the five non-networth
+// routes (the v41 lesson applied: an unmeasured VIEWPORT CLASS is as
+// dangerous as an unmeasured surface — the rhythm bug survived 40
+// iterations because 640 was never census'd; v41 measured /networth, v42
+// closes the set). Measured on BOTH sites with mid-census-v42.mjs +
+// hero-attrib-v42.mjs + bd-attrib-v42.mjs + tail-v42.mjs.
+//
+// THE V42 FINDING: the NetZeroBreakdownCard ran +13px taller than the
+// reference at BOTH viewports (640: 337 vs 324; 1280: 377 vs 364) — the
+// clone rendered TWO Dividers (Income|Savings AND Savings|Expenses), the
+// reference ONE (Income|Savings only — the app's ONE rule grouped:
+// [Income] | [Savings, Expenses] | border-t | [Net Balance]). F1 fixes
+// the divider condition; these census tests pin the fix.
+// ---------------------------------------------------------------------------
+test.describe("mid-viewport band census (v42 — plan F2/F3)", () => {
+  test("the breakdown card's band census at 1280 — the single divider, the 364px card (v42 F2)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      if (!bdH) return null;
+      const card = bdH.closest('div[class*="rounded-2xl"]');
+      const stack = bdH.parentElement
+        ? (bdH.parentElement.children[1] as HTMLElement | null)
+        : null;
+      if (!card || !stack) return null;
+      const cr = card.getBoundingClientRect();
+      const cs = getComputedStyle(card);
+      const bands = [...stack.children].map((c) => ({
+        text: (c.textContent || "").trim().slice(0, 20),
+        h: Math.round(c.getBoundingClientRect().height),
+      }));
+      return {
+        card: {
+          h: Math.round(cr.height),
+          pad: cs.padding,
+          radius: cs.borderRadius,
+          border: cs.borderTopWidth,
+        },
+        bands,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The F1 pin: ONE divider — the reference's 5-band stack (the clone's
+    // pre-fix was 6 with the second Savings|Expenses divider, +13px).
+    // Row heights at 1280 wrap identically on both sites (56/64/64) with
+    // their own datasets — the wrap is width-driven, not data-driven.
+    expect(census!.bands).toHaveLength(5);
+    expect(census!.bands.map((b) => b.h)).toEqual([56, 1, 64, 64, 45]);
+    // The band texts: the divider is the empty 1px band (index 1).
+    expect(census!.bands[1]!.text).toBe("");
+    expect(census!.bands[0]!.text.startsWith("Total Income")).toBe(true);
+    expect(census!.bands[2]!.text.startsWith("Total Savings")).toBe(true);
+    expect(census!.bands[3]!.text.startsWith("Total Expenses")).toBe(true);
+    expect(census!.bands[4]!.text.startsWith("Net Balance")).toBe(true);
+    // The card joins the reference's measured height (364; pre-fix 377).
+    expect(census!.card.h).toBe(364);
+    expect(census!.card.pad).toBe("24px");
+    expect(census!.card.radius).toBe("16px");
+    expect(census!.card.border).toBe("1px");
+  });
+
+  test("the dashboard hero grid census at 640 — the goalCard 316, the breakdownCard 324, the scrollHeight 3029 (v42 F2)", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 960 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+    // Settle the allocation bar's 500ms width transition before the
+    // scroll-height read.
+    await page.waitForTimeout(600);
+
+    const census = await page.evaluate(() => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const h1 = [...document.querySelectorAll("h1")]
+        .filter((h) => !h.closest("header"))
+        .find((h) => h.getBoundingClientRect().height > 0);
+      if (!h1) return null;
+      const cap = h1.closest('div[class*="max-w"]');
+      if (!cap) return null;
+      const kids = [...cap.children];
+      const hero = kids[1] as HTMLElement | undefined;
+      const secondBand = kids[2] as HTMLElement | undefined;
+      const thirdBand = kids[3] as HTMLElement | undefined;
+      const goalH = leaf("NET ZERO GOAL");
+      const goalCard = goalH ? goalH.closest('div[class*="rounded-2xl"]') : null;
+      const bdH = leaf("Net Zero Breakdown");
+      const bdCard = bdH ? bdH.closest('div[class*="rounded-2xl"]') : null;
+      if (!hero || !goalCard || !bdCard || !secondBand || !thirdBand) return null;
+      const gr = goalCard.getBoundingClientRect();
+      const br = bdCard.getBoundingClientRect();
+      const hr = hero.getBoundingClientRect();
+      const heroCs = getComputedStyle(hero);
+      const rowCs = getComputedStyle(kids[0] as HTMLElement);
+      const h1r = h1.getBoundingClientRect();
+      return {
+        hero: { h: Math.round(hr.height), display: heroCs.display, cols: heroCs.gridTemplateColumns, gap: heroCs.gap },
+        goalCard: { y: Math.round(gr.y), h: Math.round(gr.height) },
+        bdCard: { y: Math.round(br.y), h: Math.round(br.height) },
+        gapGoalToBd: Math.round(br.y - (gr.y + gr.height)),
+        secondBandY: Math.round(secondBand.getBoundingClientRect().y),
+        thirdBandY: Math.round(thirdBand.getBoundingClientRect().y),
+        headerRowMb: rowCs.marginBottom,
+        h1Font: getComputedStyle(h1).fontSize,
+        h1H: Math.round(h1r.height),
+        capW: Math.round(cap.getBoundingClientRect().width),
+        sw: document.documentElement.scrollWidth,
+        scrollH: document.documentElement.scrollHeight,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The full hero census at the MID viewport (all measured on BOTH
+    // sites — mid-census-v42.mjs + hero-attrib-v42.mjs):
+    expect(census!.hero.h).toBe(664); // 316 + 24 + 324 (post-fix; pre-fix 677)
+    expect(census!.hero.display).toBe("grid");
+    expect(census!.hero.cols).toBe("608px"); // 1 track at 640
+    expect(census!.hero.gap).toBe("24px");
+    expect(census!.goalCard.y).toBe(229);
+    expect(census!.goalCard.h).toBe(316);
+    expect(census!.bdCard.y).toBe(569);
+    expect(census!.bdCard.h).toBe(324); // post-fix; pre-fix 337
+    expect(census!.gapGoalToBd).toBe(24);
+    // Every band below the hero shifts back 13px post-fix (925/1635;
+    // pre-fix 938/1648) — the F1 fix's downstream pins.
+    expect(census!.secondBandY).toBe(925);
+    expect(census!.thirdBandY).toBe(1635);
+    // The whole-page pin: the reference's scrollHeight is 3029 at 640
+    // (the clone's pre-fix was 3042 — exactly the +13 divider band;
+    // tail-v42.mjs: the last band's mb=0 on both sites, so the delta
+    // is the divider alone).
+    expect(census!.scrollH).toBe(3029);
+    // The common mid-viewport rhythm (identical on both sites).
+    expect(census!.headerRowMb).toBe("32px");
+    expect(census!.h1Font).toBe("30px");
+    expect(census!.h1H).toBe(36);
+    expect(census!.capW).toBe(608);
+    expect(census!.sw).toBe(640); // no overflow at the mid viewport
+  });
+
+  test("the MID viewport (640×960) band census of the five authed routes — the 32px rhythm, the 608 cap, no overflow (v42 F3)", async ({ page }) => {
+    // The five-route loop (the a11y route-extension for-loop pattern):
+    // the common census — the 32px header→first-section rhythm (the v20
+    // G1 pin's class, now pinned at the mid viewport), the 608px cap
+    // (640 − 2×16), no horizontal overflow, the 30px h1 — plus the
+    // route-class branches: the dashboard routes' hero grid (1-col,
+    // 24px gap, 664 post-fix) and the items routes' filter card (block,
+    // mb-24) + item grid (1-col, 16px gap).
+    const routes: Array<[string, string, "dash" | "items"]> = [
+      ["/", "Budget Dashboard", "dash"],
+      ["/dashboard", "Budget Dashboard", "dash"],
+      ["/income", "Income", "items"],
+      ["/expenses", "Expenses", "items"],
+      ["/savings", "Savings", "items"],
+    ];
+    for (const [route, h1Text, cls] of routes) {
+      await page.setViewportSize({ width: 640, height: 960 });
+      await page.goto(route);
+      await expect(page.getByRole("heading", { name: h1Text })).toBeVisible();
+      await page.waitForTimeout(500);
+      const census = await page.evaluate(() => {
+        const h1 = [...document.querySelectorAll("h1")]
+          .filter((h) => !h.closest("header"))
+          .find((h) => h.getBoundingClientRect().height > 0);
+        if (!h1) return null;
+        const cap = h1.closest('div[class*="max-w"]');
+        if (!cap) return null;
+        const kids = [...cap.children];
+        const row = kids[0] as HTMLElement | undefined;
+        const first = kids[1] as HTMLElement | undefined;
+        const second = kids[2] as HTMLElement | undefined;
+        if (!row || !first || !second) return null;
+        const rowCs = getComputedStyle(row);
+        const firstCs = getComputedStyle(first);
+        const secondCs = getComputedStyle(second);
+        return {
+          path: location.pathname,
+          gapRowToFirst: Math.round(first.getBoundingClientRect().y - row.getBoundingClientRect().bottom),
+          headerRowMb: rowCs.marginBottom,
+          headerRowDir: rowCs.flexDirection,
+          h1Font: getComputedStyle(h1).fontSize,
+          capW: Math.round(cap.getBoundingClientRect().width),
+          sw: document.documentElement.scrollWidth,
+          first: {
+            display: firstCs.display,
+            mb: firstCs.marginBottom,
+            cols: firstCs.display === "grid" ? firstCs.gridTemplateColumns.split(" ").length : null,
+            gap: firstCs.display === "grid" ? firstCs.gap : null,
+            h: Math.round(first.getBoundingClientRect().height),
+          },
+          second: {
+            display: secondCs.display,
+            cols: secondCs.display === "grid" ? secondCs.gridTemplateColumns.split(" ").length : null,
+            gap: secondCs.display === "grid" ? secondCs.gap : null,
+          },
+        };
+      });
+      expect(census, `census on ${route}`).not.toBeNull();
+      // The common mid-viewport census (identical on BOTH sites —
+      // mid-census-v42.mjs, all five routes):
+      expect(census!.gapRowToFirst, `rhythm on ${route}`).toBe(32);
+      expect(census!.headerRowMb, `headerRow mb on ${route}`).toBe("32px");
+      expect(census!.headerRowDir, `headerRow dir on ${route}`).toBe("column");
+      expect(census!.h1Font, `h1 font on ${route}`).toBe("30px");
+      expect(census!.capW, `cap width on ${route}`).toBe(608);
+      expect(census!.sw, `no overflow on ${route}`).toBe(640);
+      if (cls === "dash") {
+        expect(census!.first.display, `hero display on ${route}`).toBe("grid");
+        expect(census!.first.cols, `hero cols on ${route}`).toBe(1);
+        expect(census!.first.gap, `hero gap on ${route}`).toBe("24px");
+        expect(census!.first.h, `hero height on ${route}`).toBe(664); // post-fix; pre-fix 677
+      } else {
+        expect(census!.first.display, `filter display on ${route}`).toBe("block");
+        expect(census!.first.mb, `filter mb on ${route}`).toBe("24px");
+        expect(census!.second.display, `grid display on ${route}`).toBe("grid");
+        expect(census!.second.cols, `grid cols on ${route}`).toBe(1);
+        expect(census!.second.gap, `grid gap on ${route}`).toBe("16px");
+      }
+    }
+  });
+});

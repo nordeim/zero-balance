@@ -1456,3 +1456,46 @@ at the savings-class viewports — the unmeasured MID viewport class):
   reaps background processes between tool calls — long jobs (e2e, the
   parity server) must run inside ONE invocation (`with-server.sh`); the
   agent-browser DAEMON and its logged-in sessions survive.
+
+Session-76 additions (remediation-plan-v42 audit — the session-90/91
+suggested queue: the MID viewport 640×960 census of the five non-networth
+routes — the v41 lesson applied to the remaining route set):
+
+- `mid-census-v42.mjs` — the five-route (/, /dashboard, /income,
+  /expenses, /savings) mid-viewport census: the vertical stack (header →
+  main → the page-header row → the first section), the section rhythm
+  (`gapRowToFirst`), the cap width, the band structure (display/cols/gap
+  per band), the overflow. Run on BOTH sites — THE FINDING: the rhythm
+  HOLDS on all five routes (32px everywhere, capW 608, sw 640, the
+  items-view structure identical) EXCEPT the dashboard's firstSection
+  height: ref 664 vs clone 677 (+13).
+- `hero-attrib-v42.mjs` — the dashboard hero grid's attribution: the
+  goalCard byte-identical (316, bands 48/48/108, donut 558×300), the
+  drift isolated to the breakdownCard (324 vs 337).
+- `bd-attrib-v42.mjs` — the breakdown card's band-by-band internals —
+  THE ROOT CAUSE: the clone rendered TWO `Divider`s (Income|Savings AND
+  Savings|Expenses) vs the reference's ONE (Income|Savings only); the
+  extra 12+1px band = the +13. The v42 F1 production fix
+  (`{i === 1 && <Divider />}`); the row heights wrap identically on both
+  sites at 1280 (56/64/64 — width-driven, not data-driven).
+- `tail-v42.mjs` — the last-band margin + the total scrollHeight (the
+  trailing-space class check): lastBand mb=0 on BOTH sites (no
+  trailing-margin class), scrollH 3029 vs 3042 — exactly the +13
+  divider band, nothing else.
+- `vlm-compare-v42.mjs` + the /tmp/vlm42 pair — the standing VLM
+  screening (the desktop dashboard post-fix): all three flags in the
+  known classes (the Dashboard-highlight superset #3, the allocation-%
+  seed data, the avatar letter) — no new drift.
+- `ref-v40.sh` / `clone-v40.sh` re-run as the 36th standing checks.
+- LESSONS: (a) a height drift ATTRIBUTES FASTER BAND-BY-BAND than
+  card-by-card — the bd-attrib probe isolated the divider in one run by
+  listing every stack child with its height/margins. (b) The
+  DOM-structure census (child COUNT) catches what the geometry census
+  misses: the +13px was visible in firstSection.h, but the root cause
+  was a 6-vs-5 child count — census BOTH. (c) The reference's divider
+  structure encodes the app's ONE rule ([Income] | [Savings, Expenses] |
+  border-t | [Net]) — uniform `i > 0` dividers were a build-time
+  assumption, never measured; the assumption class (uniform symmetric
+  chrome) is exactly where asymmetric reference design hides. (d) VLM
+  screening flags stay in the known classes (superset pins + seed data)
+  — the divider fix itself drew no flag, the heights now matching.
