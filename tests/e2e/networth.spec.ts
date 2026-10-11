@@ -606,3 +606,241 @@ test.describe("net worth mobile header chip (v14 — plan G3)", () => {
     expect(geo!.scrollWidth).toBeLessThanOrEqual(geo!.clientWidth + 1);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v41 F2/F3 (docs/remediation-plan-v41.md) — the summary card's viewport
+// census, measured live on BOTH sites (nw-summary-v41.mjs +
+// nw-yoffset-v41.mjs + nw-below-v41.mjs):
+//
+//  - At 640×960 (the unmeasured MID viewport): FULL geometry parity — the
+//    608px card, the 48px figure, the 64×64 chip at x=528, the 264×2 grid,
+//    the 32px page rhythm.
+//  - At 390×844: the superset pair — the reference's card is 432px wide
+//    (74px page overflow, sw=464, its chip 26px offscreen at x=352); the
+//    clone's fits (358px card, 24px figure, 1-col grid, chip inside).
+//  - THE v41 FIX: the net-worth page's section rhythm ran mb-6 (24px)
+//    where the reference runs mb-8 (32px) at BOTH gaps (header row→card,
+//    card→tablist) — the items-view pages carry mb-8 since v20 G1; the
+//    net-worth view was the one page left at the pre-v20 rhythm.
+// ---------------------------------------------------------------------------
+test.describe("net worth summary card census (v41 — plan F2/F3)", () => {
+  test("the MID viewport (640×960) geometry census + the 32px rhythm (v41 F2)", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 960 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const geo = await page.evaluate(() => {
+      const label = [...document.querySelectorAll("p, span, h2, div")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      if (!label) return null;
+      const card = label.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      const cr = card.getBoundingClientRect();
+      const cs = getComputedStyle(card);
+      // The figure (the net-worth amount).
+      const h2 = [...card.querySelectorAll("h1, h2, h3, p")].find(
+        (e) => /-?\$[\d,]+\.\d{2}/.test((e.textContent || "").trim()) && e !== label,
+      );
+      const h2r = h2 ? h2.getBoundingClientRect() : null;
+      const h2cs = h2 ? getComputedStyle(h2) : null;
+      // The 64×64 white/20% gradient chip (the rounded-full icon circle).
+      const chip = [...card.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        const c = getComputedStyle(d);
+        return (
+          r.width > 40 && r.width < 90 &&
+          (c.borderRadius === "9999px" || (parseFloat(c.borderRadius) > 40 && c.borderRadius !== "0px")) &&
+          d.querySelector("svg")
+        );
+      });
+      const chr = chip ? chip.getBoundingClientRect() : null;
+      const chcs = chip ? getComputedStyle(chip) : null;
+      // The stats grid (the "Total Assets" cell's [class*=grid] ancestor).
+      const assetsLabel = [...card.querySelectorAll("p, span")].find(
+        (e) => (e.textContent || "").trim() === "Total Assets",
+      );
+      const grid = assetsLabel ? assetsLabel.closest('[class*="grid"]') : null;
+      const gridcs = grid ? getComputedStyle(grid) : null;
+      const cells = grid
+        ? [...grid.children].map((c) => {
+            const r = c.getBoundingClientRect();
+            return { w: Math.round(r.width), h: Math.round(r.height), x: Math.round(r.x) };
+          })
+        : [];
+      // The ratio value (the border-t footer's right-hand span).
+      const ratioLabel = [...card.querySelectorAll("span, p, div")].find(
+        (e) => /Asset to Liability Ratio/.test((e.textContent || "")) && e.children.length === 0,
+      );
+      const ratioVal = ratioLabel
+        ? [...(ratioLabel.parentElement?.children || [])].find((e) => e !== ratioLabel)
+        : null;
+      // The rhythm anchors: the page header row (the h1's gap-3 flex row)
+      // and the tablist.
+      const h1 = [...document.querySelectorAll("main h1")].find(
+        (h) => (h.textContent || "").trim() === "Net Worth",
+      );
+      const chipRow = h1 ? (h1.parentElement!.parentElement!) : null;
+      const crr = chipRow ? chipRow.getBoundingClientRect() : null;
+      const tablist = document.querySelector('[role="tablist"]');
+      const tlr = tablist ? tablist.getBoundingClientRect() : null;
+      // The header chip (48×48, the v14 pin re-measured in the census).
+      const headerChip = h1
+        ? [...(h1.parentElement?.parentElement?.children || [])].find(
+            (c) => c.tagName === "DIV" && c !== h1.parentElement,
+          )
+        : null;
+      const hcr = headerChip ? headerChip.getBoundingClientRect() : null;
+      return {
+        card: {
+          x: Math.round(cr.x), w: Math.round(cr.width), pad: cs.padding,
+          radius: cs.borderRadius, bg: (cs.backgroundImage || "").slice(0, 60),
+          shadow: (cs.boxShadow || "").slice(0, 60),
+        },
+        figure: h2cs
+          ? { font: h2cs.fontSize, weight: h2cs.fontWeight, w: Math.round(h2r!.width) }
+          : null,
+        chip: chcs
+          ? {
+              w: Math.round(chr!.width), h: Math.round(chr!.height), x: Math.round(chr!.x),
+              radius: chcs.borderRadius, bg: chcs.backgroundColor,
+              iconW: Math.round(chip!.querySelector("svg")!.getBoundingClientRect().width),
+            }
+          : null,
+        grid: gridcs
+          ? { cols: gridcs.gridTemplateColumns, gap: gridcs.gap, cells }
+          : null,
+        ratio: ratioVal
+          ? { text: (ratioVal.textContent || "").trim(), font: getComputedStyle(ratioVal).fontSize }
+          : null,
+        headerChip: hcr ? { w: Math.round(hcr.width), x: Math.round(hcr.x) } : null,
+        rhythm: {
+          headerToCard: crr ? Math.round(cr.y - crr.bottom) : null,
+          cardToTablist: tlr ? Math.round(tlr.y - cr.bottom) : null,
+        },
+        sw: document.documentElement.scrollWidth,
+        vw: window.innerWidth,
+      };
+    });
+    expect(geo).not.toBeNull();
+    if (!geo) throw new Error("summary card census found no card");
+
+    // The card box — measured 608×(auto) at 640 on BOTH sites.
+    expect(geo.card.x).toBe(16); // the p-4 content edge
+    expect(geo.card.w).toBe(608); // 640 − 2×16
+    expect(geo.card.pad).toBe("32px"); // p-8
+    expect(geo.card.radius).toBe("16px"); // rounded-2xl
+    expect(geo.card.bg).toContain("linear-gradient(135deg, rgb(45, 90, 74)");
+    expect(geo.card.shadow).toContain("rgba(26, 58, 46, 0.3)");
+
+    // The figure — 48px/700 from sm up (the reference's text-5xl).
+    expect(geo.figure!.font).toBe("48px");
+    expect(geo.figure!.weight).toBe("700");
+
+    // The gradient chip — 64×64 at x=528, 9999px, white/20%, the 32px icon
+    // (the reference's chip at the same x — both sites' cards are 608 wide).
+    expect(geo.chip!.w).toBe(64);
+    expect(geo.chip!.h).toBe(64);
+    expect(geo.chip!.x).toBe(528);
+    expect(geo.chip!.radius).toBe("9999px");
+    expect(geo.chip!.bg).toBe("rgba(255, 255, 255, 0.2)");
+    expect(geo.chip!.iconW).toBe(32);
+
+    // The stats grid — the 2-col 264×264 tracks, 16px gap, 84px cells.
+    expect(geo.grid!.cols).toBe("264px 264px");
+    expect(geo.grid!.gap).toBe("16px");
+    expect(geo.grid!.cells).toEqual([
+      { w: 264, h: 84, x: 48 },
+      { w: 264, h: 84, x: 328 },
+    ]);
+
+    // The ratio footer — the seed's 0.21:1 at 18px (text-lg).
+    expect(geo.ratio!.text).toBe("0.21:1");
+    expect(geo.ratio!.font).toBe("18px");
+
+    // The header chip (the v14 pin, now in-census).
+    expect(geo.headerChip!.w).toBe(48);
+    expect(geo.headerChip!.x).toBe(16);
+
+    // THE v41 RHYTHM PINS — the reference's 32px section gaps (mb-8); the
+    // clone's pre-v41 mb-6 rendered 24 at both gaps, both viewports.
+    expect(geo.rhythm.headerToCard, "the header row→card gap must be 32 (the reference's mb-8; v41 F1)").toBe(32);
+    expect(geo.rhythm.cardToTablist, "the card→tablist gap must be 32 (the reference's mb-8; v41 F1)").toBe(32);
+
+    // No overflow at the mid viewport (both sites measured sw=vw=640).
+    expect(geo.sw).toBeLessThanOrEqual(geo.vw);
+  });
+
+  test("the MOBILE viewport (390×844) superset census — the card fits, the 24px figure, the 1-col grid (v41 F3)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const geo = await page.evaluate(() => {
+      const label = [...document.querySelectorAll("p, span, h2, div")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      if (!label) return null;
+      const card = label.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      const cr = card.getBoundingClientRect();
+      const cs = getComputedStyle(card);
+      const h2 = [...card.querySelectorAll("h1, h2, h3, p")].find(
+        (e) => /-?\$[\d,]+\.\d{2}/.test((e.textContent || "").trim()) && e !== label,
+      );
+      const h2cs = h2 ? getComputedStyle(h2) : null;
+      const chip = [...card.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        const c = getComputedStyle(d);
+        return (
+          r.width > 40 && r.width < 90 &&
+          (c.borderRadius === "9999px" || (parseFloat(c.borderRadius) > 40 && c.borderRadius !== "0px")) &&
+          d.querySelector("svg")
+        );
+      });
+      const chr = chip ? chip.getBoundingClientRect() : null;
+      const assetsLabel = [...card.querySelectorAll("p, span")].find(
+        (e) => (e.textContent || "").trim() === "Total Assets",
+      );
+      const grid = assetsLabel ? assetsLabel.closest('[class*="grid"]') : null;
+      const gridcs = grid ? getComputedStyle(grid) : null;
+      return {
+        card: { x: Math.round(cr.x), w: Math.round(cr.width), pad: cs.padding, radius: cs.borderRadius, bg: (cs.backgroundImage || "").slice(0, 60), shadow: (cs.boxShadow || "").slice(0, 60) },
+        figureFont: h2cs ? h2cs.fontSize : null,
+        chip: chr ? { w: Math.round(chr.width), x: Math.round(chr.x), right: Math.round(chr.right) } : null,
+        gridCols: gridcs ? gridcs.gridTemplateColumns : null,
+        sw: document.documentElement.scrollWidth,
+        vw: window.innerWidth,
+      };
+    });
+    expect(geo).not.toBeNull();
+    if (!geo) throw new Error("summary card census found no card");
+
+    // The superset pair: the reference's card at 390 is 432 wide (74px page
+    // overflow, sw=464, its chip at x=352 — 26px past the viewport); the
+    // clone's FITS: 358 = 390 − 2×16 (p-4), sw=390.
+    expect(geo.card.x).toBe(16);
+    expect(geo.card.w).toBe(358);
+    expect(geo.sw).toBeLessThanOrEqual(geo.vw + 1);
+
+    // The card CHROME matches the reference's byte-for-byte (the gradient,
+    // the radius, the 32px pad, the shadow) — the superset class, not a
+    // visual divergence.
+    expect(geo.card.pad).toBe("32px");
+    expect(geo.card.radius).toBe("16px");
+    expect(geo.card.bg).toContain("linear-gradient(135deg, rgb(45, 90, 74)");
+    expect(geo.card.shadow).toContain("rgba(26, 58, 46, 0.3)");
+
+    // The figure at 24px (text-2xl — superset fix #6: the reference's fixed
+    // 48px text-5xl overflows its own 390 viewport by 74px).
+    expect(geo.figureFont).toBe("24px");
+
+    // The 1-col grid (the reference's fixed 2-col overflows at 390).
+    expect(geo.gridCols).toBe("294px");
+
+    // The chip fully visible (the reference's hangs 26px offscreen).
+    expect(geo.chip!.w).toBe(64);
+    expect(geo.chip!.x).toBeGreaterThanOrEqual(16);
+    expect(geo.chip!.right).toBeLessThanOrEqual(geo.vw - 16 + 1);
+  });
+});

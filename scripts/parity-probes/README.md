@@ -1416,3 +1416,43 @@ session-78 queue's LAST unmeasured surface):
   inconsistent (25px then 12px at the third row) while the clone's are a
   consistent 25px — a 13px band drift below that point; both surfaces
   VLM-clean, documented in plan v40 F3.
+
+Session-75 additions (remediation-plan-v41 audit — the session-86/87
+suggested queue's first item: the net-worth summary card's gradient chip
+at the savings-class viewports — the unmeasured MID viewport class):
+
+- `nw-summary-v41.mjs` — the summary card's full census (card box /
+  figure / the 64×64 gradient chip / stats grid / ratio footer / header
+  chip / overlay), run at 390×844, 640×960 AND 1280×800 on BOTH sites.
+  THE MEASUREMENT: at the MID viewport (640) FULL geometry parity
+  (608×333 card, 48px figure, chip 64×64@x=528, 264×2 grid, 18px ratio);
+  at MOBILE the reference's card is 432px wide (74px page overflow,
+  sw=464, its chip 26px offscreen at x=352, its stats grid a fixed
+  2-col) while the clone's fits (358 card, 24px figure, 1-col grid) —
+  the superset pair with byte-identical card chrome.
+- `nw-yoffset-v41.mjs` — the vertical stack ABOVE the card (the mobile
+  top bar, the chipRow, the h1, the subtitle, the card's y). THE FINDER:
+  the stack matches byte-for-byte EXCEPT the header row→card gap —
+  ref 32 (`mb-8`) vs clone 24 (`mb-6`) — the v41 F1 production fix (the
+  first since v38).
+- `nw-below-v41.mjs` — the gaps BELOW the card (card→tablist: ref 32 vs
+  clone 24 — the second F1 fix; tabs 448×36 and the 144px tabs→grid gap
+  match).
+- `items-rhythm-v41.mjs` — the items-view's rhythm on /income (the
+  no-drift CONTROL): header mb-8 (32, the v20 G1 pin), filter mb-6 (the
+  reference's own 24), grid at y=234 — IDENTICAL on both sites; the
+  net-worth page was the one rhythm outlier.
+- `ref-v40.sh` / `clone-v40.sh` re-run as the 35th standing checks.
+- LESSONS: (a) an unmeasured VIEWPORT CLASS is as dangerous as an
+  unmeasured surface — the mb-6 rhythm bug survived 40 iterations of
+  desktop/mobile pins because the mid viewport was never census'd; a
+  two-viewport pin strategy leaves the BETWEEN class dark. (b) An 8px
+  y-drift is attributable in ONE probe by measuring the full vertical
+  stack (the margins isolate themselves — everything else matched
+  byte-for-byte). (c) The reference's page-level section rhythm is
+  uniformly `mb-8` — when ONE page's gap disagrees, audit the CLASS (all
+  pages' same-role gaps), not just the surface (the items-view control
+  proved the net-worth was the outlier in one run). (d) This sandbox
+  reaps background processes between tool calls — long jobs (e2e, the
+  parity server) must run inside ONE invocation (`with-server.sh`); the
+  agent-browser DAEMON and its logged-in sessions survive.

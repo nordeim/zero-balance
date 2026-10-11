@@ -217,3 +217,62 @@ test.describe("a11y gate MOBILE — the login page (logged out, 390×844)", () =
     ).toHaveLength(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v41 F4 (docs/remediation-plan-v41.md) — the sheet-open structural pins
+// extended to the REMAINING five authed routes. The v39 test pins the full
+// structure (dialog role, labelledby → Navigation, the nav landmark, the
+// five links, the axe gates) on `/` only; the sheet is a GLOBAL app-shell
+// component, but each route's page mounts its own header burger — this
+// extension pins that every route's sheet opens with the SAME structure
+// and closes on Escape. The full axe scan stays on `/` (the sheet's DOM
+// contribution is route-independent; each route's page baseline is
+// already scanned sheet-CLOSED by the v39 mobile gate above).
+// ---------------------------------------------------------------------------
+test.describe("a11y gate MOBILE — the sheet-open structure on EVERY route (v41 F4)", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  const routes: Array<[route: string, marker: string]> = [
+    ["/dashboard", "Total Income"],
+    ["/income", "Salary"],
+    ["/expenses", "Rent"],
+    ["/savings", "Emergency Fund"],
+    ["/networth", "Assets"],
+  ];
+
+  for (const [route, marker] of routes) {
+    test(`the sheet-OPEN structure on ${route}: the accessible menu + Escape close (v41 F4)`, async ({ page }) => {
+      await page.goto(route);
+      await expect(page.getByText(marker).first()).toBeVisible();
+
+      // The REAL burger click (the clone's toast viewport never blocks it).
+      await page.getByRole("button", { name: "Toggle Sidebar" }).click();
+      const sheet = page.locator("[data-state='open'][role='dialog']");
+      await expect(sheet).toBeVisible();
+      await page.waitForTimeout(1200); // the sheet-open settle
+
+      // The structural pins — the same contract as the v39 `/` test.
+      const structure = await sheet.evaluate((el) => {
+        const labelledBy = el.getAttribute("aria-labelledby");
+        const titleEl = labelledBy ? (el.querySelector(`#${CSS.escape(labelledBy)}`) || document.getElementById(labelledBy)) : null;
+        const nav = el.querySelector("nav");
+        return {
+          role: el.getAttribute("role"),
+          titleText: titleEl ? titleEl.textContent?.trim() : null,
+          navPresent: !!nav,
+          navLabel: nav ? nav.getAttribute("aria-label") : null,
+          links: [...el.querySelectorAll("nav a")].map((a) => (a.textContent || "").trim()),
+        };
+      });
+      expect(structure.role, "the sheet must be a dialog (the reference's is a plain div)").toBe("dialog");
+      expect(structure.titleText, "the labelledby must resolve to the sr-only Navigation title").toBe("Navigation");
+      expect(structure.navPresent, "the sheet must contain a nav landmark (the reference has none)").toBe(true);
+      expect(structure.navLabel).toBe("Primary");
+      expect(structure.links).toEqual(["Dashboard", "Income", "Expenses", "Savings", "Net Worth"]);
+
+      // The sheet closes on Escape (superset fix #2 — the reference's traps).
+      await page.keyboard.press("Escape");
+      await expect(sheet).not.toBeVisible();
+    });
+  }
+});

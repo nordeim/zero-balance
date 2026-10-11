@@ -29,7 +29,8 @@ and `docs/remediation-plan-v36.md`,
 and `docs/remediation-plan-v37.md`,
 and `docs/remediation-plan-v38.md`,
 and `docs/remediation-plan-v39.md`,
-and `docs/remediation-plan-v40.md`.
+and `docs/remediation-plan-v40.md`,
+and `docs/remediation-plan-v41.md`.
 
 ---
 
@@ -40,6 +41,77 @@ and `docs/remediation-plan-v40.md`.
 ---
 
 ---
+
+## Session 75 — Parity iteration v41: the net-worth summary card's viewport census + the vertical-rhythm fix — the first production-code change since v38 (2026-10-11)
+
+**Goal:** refresh the workspace (git pull — intact this session), re-run
+the baseline chain, sweep the session-86/87 queue (the net-worth
+summary card's gradient chip at the savings-class viewports + the
+a11y gate's sheet-open extension to the remaining five routes), pin
+what the measurement finds, TDD-first, docs aligned, commit + push
+via the SSH wrapper.
+
+- Workspace SURVIVED the session break: git pull fast-forwarded
+  5b0a6f3 → 009453c; the environment intact (node_modules, .env with
+  `DATABASE_URL="file:../db/custom.db"`, db/custom.db + db/e2e.db at
+  the repo root, playwright chromium). Baseline: lint ✓ · typecheck ✓
+  · 108/108 unit ✓ · build ✓ · **196/196 e2e ✓ (4.5m, the FIRST run,
+  zero flakes)**. Audit clean (the same 5 dev-only braces advisories,
+  secret scan clean, `.env` = `.env.example`). One process discovery:
+  this sandbox reaps background processes between tool calls — long
+  jobs run inside ONE invocation (`with-server.sh`); the agent-browser
+  daemon survives.
+- Standing checks all clean: mobile-nav R1–R4 (**35th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395 overflows all still live), data drift (35th —
+  reference read-only, verified before + after), the SEO pair
+  (robots/sitemap live on both), the reference's mobile sheet
+  re-measured (still the plain fixed div).
+- **THE V41 SURFACE — the summary card's viewport census, measured
+  live on BOTH sites at 390×844, 640×960 AND 1280×800**
+  (nw-summary-v41.mjs + nw-yoffset-v41.mjs + nw-below-v41.mjs):
+  - **At the MID viewport (640 — the unmeasured savings-class class):
+    FULL geometry parity** — the 608×333 card (p-8, radius 16, the
+    forest→lime gradient, the shadow), the 48px/700 figure, the
+    64×64 white/20% gradient chip at x=528 (9999px, the 32px icon),
+    the 264×2 stats grid (16px gap, 84px cells), the 18px ratio, the
+    48@x=16 header chip, the 256/0.1 overlay, the 448×36 tabs, the
+    144 tabs→grid gap, sw=vw on both.
+  - **THE PARITY GAP (the first production-code change since v38)**:
+    the net-worth page's section rhythm ran `mb-6` (24px) where the
+    reference runs `mb-8` (32px) at BOTH gaps — the header row→card
+    and the card→tablist — 8px offsets at every viewport. The
+    y-offset probe attributed the delta in ONE run (the stack
+    above/below matches byte-for-byte); the items-view control
+    (items-rhythm-v41.mjs on /income, identical both sites) proved
+    the net-worth was the ONE outlier. **Fixed: the two `mb-6` →
+    `mb-8` in net-worth-view.tsx.**
+  - **The mobile superset pair re-measured at the card level**: the
+    reference's card is 432px wide at 390 (74px overflow, sw=464, its
+    chip 26px offscreen at x=352, its grid a fixed 2-col, its figure
+    a fixed 48px); the clone's fits (358 card, 24px figure, 1-col
+    grid, chip inside, sw=390) with byte-identical chrome.
+- **F2/F3 — the two census e2e** (networth.spec.ts): the 640 census
+  (the full band census + **the two rhythm pins**: card.y −
+  chipRow.bottom === 32, tablist.y − card.bottom === 32) + the 390
+  superset census (the fits-everywhere pair). TDD: written FIRST, run
+  RED (the rhythm pin failed 24 ≠ 32), the fix applied, GREEN.
+- **F4 — the a11y sheet-open structural pins extended to the
+  remaining five routes** (a11y.spec.ts: /dashboard /income /expenses
+  /savings /networth — the v39 test covered `/` only; the same
+  dialog/labelledby/nav/five-links/Escape contract; the full axe scan
+  stays on `/` — the sheet's DOM contribution is route-independent).
+  GREEN on the first run.
+- **Four pin-sanity mutations verified to FAIL**: the reverted mb-8 →
+  the rhythm pin fails; the stripped sm:text-5xl → the 48px pin
+  fails; the fixed 2-col grid → the 1-col pin fails; the stripped
+  DialogTitle → all five route tests fail. All restored → GREEN.
+- The full chain: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **203/203 e2e ✓ (4.7m — 196 → 203)** · 35/35 smoke ✓. The 16
+  screenshots regenerated. Docs aligned (the probe README's v41
+  section, README's v41 row + the 203 counts, CLAUDE.md's entries,
+  AGENTS.md's v41 paragraph, the SKILL doc's state + Session 76 row,
+  session_89.md, the repo worklog, the workspace worklog).
 
 ## Session 74 — Parity iteration v40: the dashboard's Tab-order focus walk — the interactive stat-card superset pinned, zero production-code changes (2026-10-11)
 

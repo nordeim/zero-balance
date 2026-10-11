@@ -288,8 +288,12 @@ export function NetWorthView() {
           (radius 12, forest-medium→lime 135deg) wrapping a 24×24 white
           lucide-trending-up, then the h1+p block. Same pattern as the
           items-view chips (HEADER_CHIP_GRADIENTS); the reference renders NO
-          chip on the dashboard. */}
-      <div className="mb-6 flex items-center gap-3">
+          chip on the dashboard. v41 F1: the row's mb-8 (32px) matches the
+          reference's measured section rhythm (nw-yoffset-v41.mjs — the
+          clone's pre-v41 mb-6 rendered 24 at both viewports, the one page
+          left at the pre-v20 rhythm; the items-view pages carry mb-8 since
+          v20 G1). */}
+      <div className="mb-8 flex items-center gap-3">
         <div
           className="flex h-12 w-12 items-center justify-center rounded-xl"
           style={{ background: "linear-gradient(135deg, #2d5a4a, #8fbc3f)" }}
@@ -304,8 +308,11 @@ export function NetWorthView() {
         </div>
       </div>
 
+      {/* v41 F1: the card's mb-8 (32px) matches the reference's measured
+          card→tablist gap (nw-below-v41.mjs — 32 on the reference, 24 on
+          the clone pre-v41 at both viewports). */}
       <div
-        className="relative mb-6 overflow-hidden rounded-2xl p-8"
+        className="relative mb-8 overflow-hidden rounded-2xl p-8"
         style={{
           background: `linear-gradient(135deg, ${COLORS.forestMedium} 0%, ${COLORS.limeGreen} 100%)`,
           boxShadow: "rgba(26, 58, 46, 0.3) 0px 20px 60px",
