@@ -344,4 +344,148 @@ test.describe("donut keyboard semantics (v31 — plan G1)", () => {
     });
     expect(tipVisible).toBe(false);
   });
+
+  test("the dashboard Tab-order census + the interactive stat-card superset (v40 F1)", async ({ page }) => {
+    // Session-78 queue's LAST unmeasured surface, first measured v40 on
+    // BOTH sites (tabwalk-v36.sh + focus-census-v40.mjs +
+    // stat-card-chain-v40.mjs): the REAL-Tab walk on the dashboard is
+    // the five nav links → the Add Item header button → the three
+    // NetZero-breakdown stat-row buttons → the three interactive stat
+    // cards → the donut's g.recharts-pie tab stop → the three
+    // quick-action cards → the body wrap. The reference's cycle is the
+    // same 14-app stops PLUS its Base44 "Close badge" (platform chrome,
+    // correctly absent here — the v36 census treatment) MINUS the three
+    // stat-card stops: its 304×210 big stat cards are INERT divs (no
+    // role, no tabindex, no handler — dead UI; the clone's are
+    // div[role=button] + tabIndex=0 + Enter/Space routing — the same
+    // superset class as the kebab focus reveal #7).
+    const readStop = () =>
+      page.evaluate(() => {
+        const el = document.activeElement;
+        if (!el || el === document.body) return null;
+        const r = el.getBoundingClientRect();
+        return {
+          tag: el.tagName.toLowerCase(),
+          role: el.getAttribute("role"),
+          name: (
+            el.getAttribute("aria-label") ||
+            (el.textContent || "").trim().replace(/\s+/g, " ")
+          ).slice(0, 30),
+          tabindex: el.getAttribute("tabindex"),
+          rect: [Math.round(r.x), Math.round(r.width), Math.round(r.height)],
+        };
+      });
+
+    // Blur to the page start, then walk with REAL Tab presses (450ms
+    // settles — the v36 sheet-ring fade discipline; the page auto-scrolls
+    // with focus, so only the scroll-independent bands (x/w/h) are
+    // asserted below).
+    await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null;
+      if (el && el !== document.body) el.blur();
+    });
+    const expected: Array<{ tag: string; role: string | null; name: string; tabindex: string | null }> = [
+      { tag: "a", role: null, name: "Dashboard", tabindex: null },
+      { tag: "a", role: null, name: "Income", tabindex: null },
+      { tag: "a", role: null, name: "Expenses", tabindex: null },
+      { tag: "a", role: null, name: "Savings", tabindex: null },
+      { tag: "a", role: null, name: "Net Worth", tabindex: null },
+      { tag: "button", role: null, name: "Add Item", tabindex: null },
+      { tag: "button", role: null, name: "Total Income$5550.00", tabindex: null },
+      { tag: "button", role: null, name: "Total Savings- $1250.00", tabindex: null },
+      { tag: "button", role: null, name: "Total Expenses- $2235.00", tabindex: null },
+      { tag: "div", role: "button", name: "Total Income$5550.002 items", tabindex: "0" },
+      { tag: "div", role: "button", name: "Total Savings$1250.002 items", tabindex: "0" },
+      { tag: "div", role: "button", name: "Total Expenses$2235.003 items", tabindex: "0" },
+      { tag: "g", role: null, name: "", tabindex: "0" },
+      { tag: "button", role: null, name: "Add Income", tabindex: null },
+      { tag: "button", role: null, name: "Add Savings", tabindex: null },
+      { tag: "button", role: null, name: "Add Expense", tabindex: null },
+    ];
+    for (const want of expected) {
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(450);
+      const stop = await readStop();
+      expect(stop).not.toBeNull();
+      expect(stop!.tag).toBe(want.tag);
+      expect(stop!.role).toBe(want.role);
+      expect(stop!.name).toBe(want.name);
+      if (want.tabindex !== null) {
+        expect(stop!.tabindex).toBe(want.tabindex);
+      }
+    }
+
+    // Geometry bands measured on both sites (1280×800, doc-order census):
+    // the nav links x=20 w=215 h=32 with the 40px rail pitch; Add Item
+    // x≈1121 w≈127 h≈36; the stat-row buttons x=961 w=254; the stat
+    // cards x=288/616/944 w=304 h=210; the quick actions w=304 h=90.
+    const navPitch = await page.evaluate(() => {
+      const links = [...document.querySelectorAll("nav a")].slice(0, 5);
+      return links.map((l) => {
+        const r = l.getBoundingClientRect();
+        return [Math.round(r.x), Math.round(r.width), Math.round(r.height), Math.round(r.y)];
+      });
+    });
+    for (const [x, w, h] of navPitch) {
+      expect(x).toBe(20);
+      expect(w).toBe(215);
+      expect(h).toBe(32);
+    }
+    for (let i = 1; i < navPitch.length; i++) {
+      expect(navPitch[i][3] - navPitch[i - 1][3]).toBe(40);
+    }
+    const bands = await page.evaluate(() => {
+      const rect = (el: Element | null) => {
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return [Math.round(r.x), Math.round(r.width), Math.round(r.height)];
+      };
+      const statRows = [...document.querySelectorAll("button")].filter((b) =>
+        (b.textContent || "").includes("Total Income$5550.00"),
+      );
+      const addItem = [...document.querySelectorAll("button")].filter((b) =>
+        (b.textContent || "").trim() === "Add Item",
+      );
+      const cards = [...document.querySelectorAll('div[role="button"]')].filter((d) =>
+        (d.textContent || "").startsWith("Total"),
+      );
+      return {
+        addItem: rect(addItem[0] ?? null),
+        statRow: rect(statRows[0] ?? null),
+        card0: rect(cards[0] ?? null),
+        card1: rect(cards[1] ?? null),
+        card2: rect(cards[2] ?? null),
+      };
+    });
+    expect(bands.addItem).toEqual([1121, 127, 36]);
+    expect(bands.statRow).toEqual([961, 254, 56]);
+    expect(bands.card0).toEqual([288, 304, 210]);
+    expect(bands.card1).toEqual([616, 304, 210]);
+    expect(bands.card2).toEqual([944, 304, 210]);
+
+    // The walk wraps to the body after the last quick action (the
+    // reference's platform-badge stop does not exist here).
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(450);
+    const afterWrap = await page.evaluate(() => document.activeElement === document.body);
+    expect(afterWrap).toBe(true);
+
+    // THE SUPERSET ACTIVATION: the reference's inert stat cards do
+    // NOTHING on Enter/Space; the clone's route to the type view. Focus
+    // the cards directly (the walk's stops 10-12 already proved
+    // Tab-focusability).
+    const incomeCard = page.locator('div[role="button"]').filter({ hasText: "Total Income" });
+    await incomeCard.focus();
+    await expect(incomeCard).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/\/income$/);
+
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+    const savingsCard = page.locator('div[role="button"]').filter({ hasText: "Total Savings" });
+    await savingsCard.focus();
+    await expect(savingsCard).toBeFocused();
+    await page.keyboard.press(" ");
+    await expect(page).toHaveURL(/\/savings$/);
+  });
 });

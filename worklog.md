@@ -25,7 +25,11 @@ and `docs/remediation-plan-v32.md`,
 and `docs/remediation-plan-v33.md`,
 and `docs/remediation-plan-v34.md`,
 and `docs/remediation-plan-v35.md`,
-and `docs/remediation-plan-v36.md`.
+and `docs/remediation-plan-v36.md`,
+and `docs/remediation-plan-v37.md`,
+and `docs/remediation-plan-v38.md`,
+and `docs/remediation-plan-v39.md`,
+and `docs/remediation-plan-v40.md`.
 
 ---
 
@@ -34,6 +38,84 @@ and `docs/remediation-plan-v36.md`.
 ---
 
 ---
+
+---
+
+## Session 74 — Parity iteration v40: the dashboard's Tab-order focus walk — the interactive stat-card superset pinned, zero production-code changes (2026-10-11)
+
+**Goal:** refresh the workspace (git pull — intact this session), re-run
+the baseline chain, sweep the session-84/85 queue (the dashboard
+quick-action focus walk — the session-78 queue's LAST unmeasured
+surface), pin what the walk finds, TDD-first, docs aligned, commit +
+push via the SSH wrapper.
+
+- Workspace SURVIVED the session break: git pull fast-forwarded
+  6e75f2b → 8a7a3b4; the environment intact (node_modules, .env with
+  `DATABASE_URL="file:../db/custom.db"`, db/custom.db + db/e2e.db at
+  the repo root, playwright chromium). Baseline: lint ✓ · typecheck ✓
+  · 108/108 unit ✓ · build ✓ · **195/195 e2e ✓ (4.5m, the FIRST run,
+  zero flakes)** · 35/35 smoke ✓. Audit clean (the same 5 dev-only
+  braces advisories, secret scan clean, `.env` = `.env.example`).
+- Standing checks all clean: mobile-nav R1–R4 (**34th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395 overflows all still live), data drift (34th —
+  reference read-only, verified before + after), the SEO pair
+  (robots/sitemap live on both; the reference's capitalized app-route
+  URLs still documented).
+- **THE DASHBOARD'S TAB-ORDER FOCUS WALK (the session-78 queue's last
+  unmeasured surface) — measured live on BOTH sites and pinned**:
+  - The measurement (`tabwalk-v36.sh` + `focus-census-v40.mjs` +
+    `stat-card-chain-v40.mjs` + `donut-focused-dump-v40.mjs`): the
+    reference's cycle is 14 focusable stops — the five nav links →
+    the Add Item header button → the three NetZero-breakdown
+    stat-row buttons → the donut's `g.recharts-pie` (tabindex=0) →
+    the three quick-action cards → the Base44 "Close badge"
+    (platform chrome). The clone's is the SAME walk minus the badge
+    **plus the three interactive stat cards** (`div[role=button]`
+    tabindex=0 — stops 10–12).
+  - **THE HEADLINE FUNCTIONAL SUPERSET**: the reference's big
+    304×210 stat cards are **INERT divs** (no role, no tabindex, no
+    handler — dead UI; only the text-ancestor chain probe separates
+    them from the stat rows, which ARE real buttons on both sites).
+    The clone's are keyboard-focusable and Enter/Space-activated
+    navigation cards.
+  - The donut stop matches structurally on both sites (the pie layer
+    tabindex=0, the sector paths tabindex=-1 roving, the inert svg
+    surface — the v31 replication confirmed at the walk level; the
+    reference's g carries its label texts inside, the clone's in a
+    separate recharts-3 layer — library internals, VLM-clean).
+  - The census test (`tests/e2e/dashboard.spec.ts`, 1 new e2e): the
+    16 REAL-Tab stops with tag + role + name + tabindex + the
+    geometry bands (nav x=20 w=215 pitch 40; the stat-row buttons
+    x=961 w=254; the stat cards [288/616/944, 304×210]) + the wrap +
+    the superset activation pair (Enter on the focused Total Income
+    card → /income; Space on Total Savings → /savings). GREEN on the
+    first run.
+  - Both pin-sanity mutations verified to FAIL: (a) the stripped
+    role+tabIndex drops the stat-card stops out of the walk (the Tab
+    skips straight to the donut g); (b) the removed Enter/Space
+    handler fails the activation pin — the mutation literally
+    reproduces the reference's dead-UI behavior. Both restored →
+    GREEN. Zero production-code changes (`git diff src/` empty).
+- The VLM pair (the desktop dashboard, 1280×800): VERDICT DIFFERENT
+  with ALL THREE flags explained (the clone's Dashboard active
+  highlight = superset fix #3; the allocation-bar length = the
+  different demo data; the avatar letter = the different demo users).
+- Probe lessons: the clean focusable census must filter
+  [tabindex]=-1 AND zero-rect elements (recharts' hidden zIndex
+  layers); the reference's stat-card inertness is only visible via
+  the TEXT-ANCESTOR CHAIN; `document.querySelector('header button')`
+  matches the display:none MobileTopbar burger first — query by text
+  when the target has no semantic landmark; the tabwalk's 450ms
+  settles leave the page scrolled — assert only scroll-independent
+  bands (x/w/h); the reference's own stat-row column gaps are
+  inconsistent (25px then 12px) while the clone's are a consistent
+  25px — a 13px band drift below that point, VLM-clean.
+- The full chain re-run: **108/196/35** (195 → 196: the census test).
+  The 16 screenshots regenerated. Docs aligned: README (the 196
+  counts + the v40 row), CLAUDE.md (the census entry), AGENTS.md
+  (the v40 paragraph), the SKILL doc (Session 75 row), session_86.md,
+  the probe README (the v40 section), this worklog.
 
 ---
 

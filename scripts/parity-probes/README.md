@@ -1368,3 +1368,51 @@ suggested queue's third item: the a11y gate's MOBILE extension):
   pointer-events fix). (e) `playwright test -g "…"` with `(`/`)` in the
   test title breaks the grep regex — quote-safe patterns or run the
   whole spec.
+
+Session-74 additions (remediation-plan-v40 audit — the session-84/85
+suggested queue's first item: the dashboard quick-action focus walk, the
+session-78 queue's LAST unmeasured surface):
+
+- `focus-census-v40.mjs` — the clean DOM-order focusable census (a[href] /
+  button / input / [tabindex], zero-rect + tabindex=-1 filtered, doc
+  coordinates, no Tab-scroll artifacts). THE MEASUREMENT: the reference's
+  dashboard cycle is 14 app stops (nav 5 → Add Item → the three
+  NetZero-breakdown stat-row buttons → the donut's g.recharts-pie
+  tabindex=0 → the three quick-action cards → the Base44 "Close badge"
+  [platform chrome]) — the clone's is the SAME walk minus the badge PLUS
+  the three interactive stat cards (div[role=button] tabindex=0, stops
+  10–12; the reference's big 304×210 stat cards are INERT divs — no
+  role, no tabindex, no handler).
+- `stat-card-chain-v40.mjs` — the text-ancestor chains ("Total Income" →
+  its card-level ancestor): the inert-vs-interactive verdict. The
+  reference's chain bottoms out at a plain grid div (no role/ti); the
+  clone's at div[role=button]. The census ALONE is misleading here —
+  both sites' stat ROWS are real buttons; only this probe separates the
+  big-card surfaces.
+- `donut-focused-dump-v40.mjs` — the donut tab stop's structure (run
+  after the Nth Tab press, N=10 ref / 13 clone): g.recharts-pie
+  tabindex=0 on BOTH sites, the sector paths tabindex=-1 (the v31
+  roving), the svg surface inert on both. The reference's g carries the
+  label texts INSIDE (textContent "92.3%4.6%3.1%"); the clone's renders
+  them in a separate recharts-3 layer (g textContent "" — the visible
+  chrome is identical, VLM-clean).
+- `ref-v40.sh` / `clone-v40.sh` — the 34th standing checks (R1–R4 + the
+  census + the SEO pair + the v39 sheet-structure census).
+- `vlm-compare-v40.mjs` — the VLM pair for the desktop dashboard
+  (VERDICT DIFFERENT, all three flags explained: the clone's Dashboard
+  active highlight = superset fix #3, the allocation-bar length = the
+  different demo data, the avatar letter = the different demo users).
+- LESSONS: (a) the clean census must filter `[tabindex]="-1"` AND
+  zero-rect elements or recharts' hidden zIndex layers pollute the count
+  (the clone's svg carries ~17 tabindex=-1 groups). (b) The
+  reference's stat-card inertness is only visible via the TEXT-ANCESTOR
+  CHAIN — the focusable census shows both sites' stat rows as buttons,
+  and the tabwalk's 450ms settles can leave the page scrolled (assert
+  only scroll-independent bands: x/w/h; y drifts with the auto-scroll).
+  (c) `document.querySelector('header button')` matches the MobileTopbar
+  burger FIRST (it is display:none at desktop but still in the DOM) —
+  query by text content when the target lives outside a semantic
+  landmark. (d) The reference's own stat-row column gaps are
+  inconsistent (25px then 12px at the third row) while the clone's are a
+  consistent 25px — a 13px band drift below that point; both surfaces
+  VLM-clean, documented in plan v40 F3.
