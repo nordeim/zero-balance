@@ -273,6 +273,63 @@
   outline-offset: 2px;
 }
 
+/* v44 F1: the drill-down expansion animation (the reference's measured
+   contract — exp-vp-v44.mjs + collapse-ref-v44.mjs on the reference at
+   BOTH 390 and 1280): the bands tween height 0↔auto + opacity 0↔1 over
+   ~200ms in BOTH directions (mid-collapse the reference's band reads
+   INLINE height: 25.5455px — a per-frame JS tween writing fractional
+   heights, not a CSS transition; the end state is height:auto/opacity:1)
+   and the section band UNMOUNTS after the collapse animation. Implemented
+   via the grid 0fr↔1fr technique (the MECHANISM, not the reference's
+   per-frame JS — the observable height/opacity ramp matches: the card
+   ramps 324→346→364→387→398→405 across ~40ms samples; the band's
+   computed `transition` therefore diverges by construction and is
+   deliberately not pinned). @starting-style runs the ENTRY transition on
+   mount (the band mounts directly in the open state and animates from
+   0fr/opacity 0 — no double-render frame dance). The component unmounts
+   the band at the exit transition's end (onTransitionEnd — see
+   Collapse in dashboard-view.tsx), so the collapsed DOM returns to
+   exactly the pre-fix node tree; `visibility` leaves the a11y tree only
+   AFTER the exit completes (the delayed flip — during the animation the
+   band stays painted). The curve: the reference's sampled progress
+   (~25/52/76/90/100%) sits between linear and ease at 40ms-jitter
+   resolution — `ease` is within the sampling tolerance. */
+.zb-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 200ms ease,
+    opacity 200ms ease,
+    visibility 0s linear 200ms;
+}
+
+.zb-collapse[data-open="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 200ms ease,
+    opacity 200ms ease,
+    visibility 0s;
+}
+
+@starting-style {
+  .zb-collapse[data-open="true"] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+/* The clip row: overflow-hidden + min-height 0 are what let the grid
+   track actually collapse (a 0fr track with auto min-height would stay
+   open). */
+.zb-collapse > .zb-collapse-clip {
+  overflow: hidden;
+  min-height: 0;
+}
+
 /* Modal overlay + panel (the reference's Base44 dialog chrome). */
 .zb-modal-overlay {
   position: fixed;

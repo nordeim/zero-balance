@@ -18,6 +18,7 @@ import { useEffect, useRef } from "react";
 import {
   BarChart3Icon,
   ChevronDownIcon,
+  ChevronUpIcon,
   ChevronRightIcon,
   CircleAlertIcon,
   HeartIcon,
@@ -207,6 +208,59 @@ function buildCategoryTree(items: BudgetItem[]): CategoryNode[] {
     .sort((a, b) => b.amount - a.amount);
 }
 
+/**
+ * v44 F1: the drill-down expansion ANIMATION. The reference tweens the
+ * bands' height 0↔auto + opacity 0↔1 over ~200ms in BOTH directions and
+ * unmounts the band after the collapse animation (measured live:
+ * exp-vp-v44.mjs — the reference's card ramps 324→346→364→387→398→405
+ * across ~40ms samples on the expand and 459→429→384→359→339→324 on the
+ * collapse; band-mount-v44.mjs — mid-collapse its INLINE height reads
+ * 25.5455px, a per-frame JS tween, and the collapsed section root returns
+ * to the button alone). The clone mounted/unmounted instantly.
+ *
+ * The animation itself lives in globals.css (.zb-collapse — the grid
+ * 0fr↔1fr technique + @starting-style for the entry). This component adds
+ * the delayed unmount: the band stays mounted while the exit transition
+ * runs, then leaves the DOM at its end — the collapsed DOM is
+ * byte-identical to the pre-fix node tree (the accordion count-0 pins
+ * hold; the band never lingers in the a11y tree).
+ *
+ * State discipline: the mount flip on open uses the documented
+ * adjust-state-during-render pattern (a prev-value ref guard — the same
+ * discipline as the dialogs' lazy initializers; NO setState in effects);
+ * the unmount happens in the onTransitionEnd event handler (a React
+ * event, not an effect). An interrupted exit (re-open mid-collapse)
+ * cancels the transition — transitionend never fires for it, so the band
+ * correctly stays mounted and reverses.
+ */
+function Collapse({ open, children }: { open: boolean; children: React.ReactNode }) {
+  // Render while open OR while the exit transition runs.
+  const [render, setRender] = React.useState(open);
+  // The prev-value STATE (not a ref — react-hooks/refs forbids ref access
+  // during render): the documented adjust-state-during-render pattern.
+  const [prevOpen, setPrevOpen] = React.useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) setRender(true);
+    // Closing: keep rendering — data-open flips to false, the exit
+    // transition runs, and onTransitionEnd unmounts the band.
+  }
+  if (!render) return null;
+  return (
+    <div
+      className="zb-collapse"
+      data-open={open ? "true" : "false"}
+      onTransitionEnd={(e) => {
+        if (!open && (e.propertyName === "grid-template-rows" || e.propertyName === "opacity")) {
+          setRender(false);
+        }
+      }}
+    >
+      <div className="zb-collapse-clip">{children}</div>
+    </div>
+  );
+}
+
 /** Item-row label: notes truncated to 30 chars, else the literal "Item". */
 function itemLabel(item: BudgetItem): string {
   const notes = item.notes?.trim();
@@ -264,18 +318,28 @@ function BreakdownSection({
             {label}
           </span>
           <span className="ml-1">
-            {/* v43 F1: the chevron is STATIC — the reference's measured
-                contract (exp-rotate-v43.mjs: rotate: none, transform: none,
-                transition "all" 0s at BOTH levels, fresh post-expansion
-                queries on both sites); the clone's pre-fix v4 rotate-180
-                rendered rotate: 180deg (0.15s) — the `rotate` property,
-                NOT `transform` — while the reference's chevrons never
-                rotate. The aria-expanded stays (the v32 a11y superset). */}
-            <ChevronDownIcon
-              className="h-3.5 w-3.5"
-              style={{ color: "rgb(156, 163, 175)" }}
-              aria-hidden="true"
-            />
+            {/* v43 F1 + v44 F4: the chevron never ROTATES (the reference's
+                measured contract — exp-rotate-v43: rotate: none, transform:
+                none, transition "all" 0s at both levels) but it SWAPS
+                GLYPHS: lucide-chevron-down when collapsed,
+                lucide-chevron-up when expanded, back on re-collapse
+                (chev-glyph-v44: the flip is the ICON, not the transform —
+                a computed-style census cannot see a glyph swap; the VLM
+                flagged it, the DOM verified it). The aria-expanded stays
+                (the v32 a11y superset). */}
+            {expanded ? (
+              <ChevronUpIcon
+                className="h-3.5 w-3.5"
+                style={{ color: "rgb(156, 163, 175)" }}
+                aria-hidden="true"
+              />
+            ) : (
+              <ChevronDownIcon
+                className="h-3.5 w-3.5"
+                style={{ color: "rgb(156, 163, 175)" }}
+                aria-hidden="true"
+              />
+            )}
           </span>
         </span>
         <span className="font-semibold" style={{ color }}>
@@ -283,9 +347,11 @@ function BreakdownSection({
           {formatMoney(total)}
         </span>
       </button>
-      {expanded && (
-        <div className="overflow-hidden">
-          <div className="ml-10 mt-2 space-y-2 pb-2">
+      {/* v44 F1: the band animates (Collapse — the .zb-collapse grid
+          0fr↔1fr + opacity tween, the reference's ~200ms both-directions
+          contract). Replaces the bare conditional overflow-hidden mount. */}
+      <Collapse open={expanded}>
+        <div className="ml-10 mt-2 space-y-2 pb-2">
             {categories.map((cat) => {
               const catOpen = !!expandedCategories[cat.name];
               return (
@@ -303,23 +369,33 @@ function BreakdownSection({
                         {cat.name}
                       </span>
                       <span className="ml-1">
-                        {/* v43 F1: static like the reference (exp-rotate-v43
-                            measured rotate: none on the reference's category
-                            chevrons post-expansion). */}
-                        <ChevronDownIcon
-                          className="h-3 w-3"
-                          style={{ color: "rgb(156, 163, 175)" }}
-                          aria-hidden="true"
-                        />
+                        {/* v43 F1 + v44 F4: static rotation, SWAPPED glyph
+                            (chev-glyph-v44: chevron-down collapsed,
+                            chevron-up expanded — the same contract as the
+                            section level). */}
+                        {catOpen ? (
+                          <ChevronUpIcon
+                            className="h-3 w-3"
+                            style={{ color: "rgb(156, 163, 175)" }}
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <ChevronDownIcon
+                            className="h-3 w-3"
+                            style={{ color: "rgb(156, 163, 175)" }}
+                            aria-hidden="true"
+                          />
+                        )}
                       </span>
                     </span>
                     <span className="text-xs font-medium" style={{ color: rgb.forestDark }}>
                       {formatMoney(cat.amount)}
                     </span>
                   </button>
-                  {catOpen && (
-                    <div className="overflow-hidden">
-                      <div className="mt-1 ml-4 space-y-1">
+                  {/* v44 F1: the category band animates like the section
+                      band (the same Collapse wrapper). */}
+                  <Collapse open={catOpen}>
+                    <div className="mt-1 ml-4 space-y-1">
                         {cat.subcategories.map((sub) => (
                           <div key={sub.name}>
                             <div
@@ -360,8 +436,7 @@ function BreakdownSection({
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )}
+                    </Collapse>
                 </div>
               );
             })}
@@ -377,8 +452,7 @@ function BreakdownSection({
               </span>
             </div>
           </div>
-        </div>
-      )}
+        </Collapse>
     </div>
   );
 }

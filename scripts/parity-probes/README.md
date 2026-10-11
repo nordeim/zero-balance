@@ -1552,3 +1552,71 @@ card's hover/interaction states):
   parity holds without a fix when the reference has the same inert
   class. (e) VLM image-order attribution is unreliable — a fixed
   overlay flag must be DOM-verified before it counts.
+
+Session-79 additions (remediation-plan-v44 — the session-95/96/97
+suggested queue: the drill-down's EXPANDED-state census at the OTHER
+viewports + the donut legend's interaction):
+
+- `exp-vp-v44.mjs` — the drill-down expanded-state census at the
+  REMAINING viewports (390×844 and 1280×800, run via
+  `vp-census-v44.sh`): the chrome byte-identical at every level on BOTH
+  sites (the section 48/8px at 390 and 56/labelH-40 at 1280 — the
+  2-line WRAP on both sites, the v42 collapsed census's 56px row
+  explained: width-driven); the mobile indentation arithmetic (the inner
+  ml 40px/mt 8px — no responsive indent exists); the clone's sw 390
+  fully expanded (the superset — the reference reads 395, its own
+  overflow); the expansion-height SAMPLES at 25ms intervals — the
+  reference ramps ~200ms in both directions, the pre-fix clone jumped
+  instantly (the v44 F1 gap).
+- `legend-v44.mjs` — the donut legend census: the rows' geometry
+  (h 64/pad 12/radius 8/bg 245,248,245; the label 16px/500/forestDark;
+  the amount 16px/700 in the classification color; the pct 12px/gray;
+  the dot 16×16/r4; the icon 16×16; the gap 12; the container mt 24)
+  — byte-identical on both sites at both viewports, and the REAL hover
+  INERT on both (no interaction states exist — the queue's
+  legend-interaction item resolved). Structure-agnostic lesson: the
+  reference's textContent concatenates WITHOUT spaces, so text-matching
+  the ROW fails — match the exact-text LABEL span, then climb.
+- `collapse-ref-v44.mjs` + `band-mount-v44.mjs` — the reference's
+  collapse-direction + mount-semantics decode: the collapse ALSO
+  animates (~200ms, the height ramp + the opacity ease — computed
+  0.314 at 110ms into a collapse), the section band UNMOUNTS after the
+  collapse animation (the collapsed root = the button alone), and
+  mid-collapse the band's INLINE style reads `height: 25.5455px` — a
+  per-frame JS tween writing fractional heights, NOT a CSS transition
+  (the end state `height: auto; opacity: 1`). THE v44 F1 contract.
+- `chev-glyph-v44.mjs` — the chevron GLYPH-swap verification (the
+  standing VLM pair flagged "the chevron points UP on the reference" —
+  DOM-verified REAL): lucide-chevron-down collapsed ↔
+  lucide-chevron-up expanded at BOTH levels (section 14px, category
+  12px), rotate: none at every state. **A computed-style census CANNOT
+  see a glyph swap — read the svg's class list.** The v43 "static"
+  finding was correct-but-incomplete: the flip is the ICON, not the
+  transform.
+- `vp-census-v44.sh` / `clone-v44.sh` — the multi-viewport drivers (run
+  both probes at 390 + 1280 on a logged-in session; the clone driver
+  wraps the login + runs inside with-server.sh).
+- `vlm-compare-v44.mjs` + the /tmp/vlm44 pair — the standing VLM
+  screening (the expanded drill-down post-fix): the glyph-direction
+  flag was REAL (the F4 fix) — the VLM screening earns its keep; the
+  other flags (the icon outline-vs-solid, the bold labels) were
+  screenshot-scale misreads, DOM-refuted (the lucide classes and the
+  font-weight 500 identical).
+- The v44 F1 fix: the `Collapse` wrapper (the grid 0fr↔1fr technique +
+  `@starting-style` for the entry + the onTransitionEnd delayed
+  unmount) — see `src/components/budget/dashboard-view.tsx` + the
+  `.zb-collapse` class pair in `src/app/globals.css`.
+- LESSONS: (a) a height-curve census catches what the end-state census
+  cannot — sample DURING the transition, both directions (the pre-fix
+  clone's end states were byte-identical; only the in-flight samples
+  exposed the animation gap). (b) The grid 0fr↔1fr technique +
+  @starting-style animates height 0↔auto with NO JS frame games — and
+  the delayed unmount (onTransitionEnd) returns the collapsed DOM to
+  exactly the conditional-mount tree (the accordion count-0 pins hold).
+  (c) A computed-style census is BLIND to glyph swaps — read the svg
+  class list (rotate/transform read "none" while the icon flips). (d)
+  The VLM pair catches glyph-level flags the geometry census misses —
+  DOM-verify before counting (v43's badge was a misattribution; v44's
+  glyph flag was real). (e) The reference's textContent concatenates
+  without spaces — match exact-text leaf spans and climb, never
+  text-match container rows.

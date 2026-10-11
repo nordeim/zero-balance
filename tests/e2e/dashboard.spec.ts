@@ -987,3 +987,456 @@ test.describe("drill-down expanded-state census (v43 — plan F3/F4)", () => {
     expect(reading!.cursor).toBe("pointer");
   });
 });
+
+test.describe("drill-down viewport census + expansion animation (v44 — plan F1/F2/F3)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+  });
+
+  test("the drill-down expansion ANIMATES — height + opacity tween in both directions (v44 F1)", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 960 });
+    const reading = await page.evaluate(async () => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? (bdH.closest('div[class*="rounded-2xl"]') as HTMLElement | null) : null;
+      if (!card) return null;
+      const sec = [...card.querySelectorAll("button")].find((b) =>
+        /Total Income/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!sec) return null;
+      const collapsedH = Math.round(card.getBoundingClientRect().height);
+      // EXPAND: click + sample the card height AND the band's computed
+      // opacity every ~25ms (fresh queries each iteration — a saved DOM
+      // node goes stale across the re-render, the v43 lesson).
+      sec.click();
+      const openSamples: { h: number; op: number | null }[] = [];
+      for (let i = 0; i < 12; i++) {
+        const band = [...sec.parentElement!.children].find((c) => c !== sec) as HTMLElement | null;
+        openSamples.push({
+          h: Math.round(card.getBoundingClientRect().height),
+          op: band ? Number(getComputedStyle(band).opacity) : null,
+        });
+        await new Promise((r) => setTimeout(r, 25));
+      }
+      const secExpandedH = Math.round(card.getBoundingClientRect().height);
+      // COLLAPSE: click again + sample.
+      sec.click();
+      const closeSamples: number[] = [];
+      for (let i = 0; i < 12; i++) {
+        closeSamples.push(Math.round(card.getBoundingClientRect().height));
+        await new Promise((r) => setTimeout(r, 25));
+      }
+      const collapsedAgainH = Math.round(card.getBoundingClientRect().height);
+      await new Promise((r) => setTimeout(r, 400));
+      // After the exit animation: the band is UNMOUNTED (the section root
+      // returns to the button alone — the reference's collapsed DOM).
+      const bandCountAfter = [...sec.parentElement!.children].filter((c) => c !== sec).length;
+      return { collapsedH, openSamples, secExpandedH, closeSamples, collapsedAgainH, bandCountAfter };
+    });
+    expect(reading).not.toBeNull();
+    // The reference's measured contract (exp-vp-v44.mjs + collapse-ref-v44.mjs
+    // on the reference at BOTH 390 and 1280): the card's height ramps
+    // smoothly over ~200ms in BOTH directions (324→346→364→387→398→405
+    // across ~40ms samples on the expand; 459→429→384→359→339→324 on the
+    // collapse), the band's opacity eases 0↔1, and the section band
+    // unmounts after the collapse animation. The clone's pre-fix mount
+    // jumped instantly (324→441 at the FIRST sample — zero in-flight
+    // frames, the v44 F1 gap).
+    expect(reading!.collapsedH).toBe(324);
+    expect(reading!.secExpandedH).toBe(441);
+    // In-flight frames exist: at least one sample strictly between the
+    // endpoints on the way up AND on the way down (pre-fix: none — the
+    // height jumped at the first sample).
+    const openInFlight = reading!.openSamples.filter((s) => s.h > 324 && s.h < 441);
+    const closeInFlight = reading!.closeSamples.filter((h) => h > 324 && h < 441);
+    expect(openInFlight.length).toBeGreaterThan(0); // pre-fix: 0
+    expect(closeInFlight.length).toBeGreaterThan(0); // pre-fix: 0
+    // The band's opacity eases: at least one in-flight sample below 1 on
+    // the entry (pre-fix: the band mounts at opacity 1 — every sample 1).
+    const opInFlight = reading!.openSamples.filter((s) => s.op !== null && s.op < 1);
+    expect(opInFlight.length).toBeGreaterThan(0); // pre-fix: 0
+    // The end states + the unmount (the collapsed DOM returns to the
+    // pre-fix node tree — the accordion count-0 pins hold).
+    expect(reading!.collapsedAgainH).toBe(324);
+    expect(reading!.bandCountAfter).toBe(0);
+  });
+
+  test("the drill-down census at 390 — the mobile indentation + the fully-expanded overflow guard (v44 F2a)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const census = await page.evaluate(async () => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? (bdH.closest('div[class*="rounded-2xl"]') as HTMLElement | null) : null;
+      if (!card) return null;
+      const collapsedH = Math.round(card.getBoundingClientRect().height);
+      const sec = [...card.querySelectorAll("button")].find((b) =>
+        /Total Income/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!sec) return null;
+      const sCs = getComputedStyle(sec);
+      const section = { h: Math.round(sec.getBoundingClientRect().height), pad: sCs.padding };
+      sec.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const secExpandedH = Math.round(card.getBoundingClientRect().height);
+      // The band: the non-button sibling; the inner indented content =
+      // the deepest single-child chain from the band.
+      const band = [...sec.parentElement!.children].find((c) => c !== sec) as HTMLElement | null;
+      let inner = band;
+      while (inner && inner.children.length === 1) inner = inner.children[0] as HTMLElement;
+      const inCs = inner ? getComputedStyle(inner) : null;
+      const indent = { ml: inCs?.marginLeft ?? null, mt: inCs?.marginTop ?? null };
+      // The first category row + its expansion.
+      const cat = [...card.querySelectorAll("button")].find(
+        (b) => b.offsetParent !== null && /\$/.test(b.textContent || "") && !/Total|Net Balance/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!cat) return null;
+      const catChrome = {
+        h: Math.round(cat.getBoundingClientRect().height),
+        pad: getComputedStyle(cat).padding,
+        bg: getComputedStyle(cat).backgroundColor,
+      };
+      cat.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const fullExpandedH = Math.round(card.getBoundingClientRect().height);
+      // The sub + item rows under the opened category.
+      const subArea = [...cat.parentElement!.children].find(
+        (c) => c !== cat && c.getBoundingClientRect().height > 0,
+      ) as HTMLElement | null;
+      if (!subArea) return null;
+      const rows = [...subArea.querySelectorAll("div")].filter((d) => {
+        const cs = getComputedStyle(d);
+        return cs.display === "flex" && d.children.length >= 2 && Math.round(d.getBoundingClientRect().height) >= 16;
+      });
+      const readRow = (row: HTMLElement) => {
+        const label = [...row.querySelectorAll("span")].find((s) => {
+          const t = (s.textContent || "").trim();
+          return t.length > 1 && s.children.length === 0 && !/^\$/.test(t);
+        });
+        return {
+          h: Math.round(row.getBoundingClientRect().height),
+          pad: getComputedStyle(row).padding,
+          bg: getComputedStyle(row).backgroundColor,
+          font: getComputedStyle(row).fontSize,
+          color: getComputedStyle(row).color,
+          labelMaxW: label ? getComputedStyle(label).maxWidth : null,
+          labelTrunc: label ? getComputedStyle(label).textOverflow : null,
+        };
+      };
+      const subRow = rows.find((r) => getComputedStyle(r).backgroundColor !== "rgba(0, 0, 0, 0)");
+      const itemRow = rows.filter((r) => getComputedStyle(r).backgroundColor === "rgba(0, 0, 0, 0)").pop();
+      const footP = [...card.querySelectorAll("span")].find(
+        (e) => /categor/i.test(e.textContent || "") && e.children.length === 0,
+      );
+      const footRow = footP ? (footP.closest("div") as HTMLElement | null) : null;
+      return {
+        collapsedH,
+        secExpandedH,
+        fullExpandedH,
+        section,
+        indent,
+        cat: catChrome,
+        sub: subRow ? readRow(subRow) : null,
+        item: itemRow ? readRow(itemRow) : null,
+        foot: footRow
+          ? {
+              h: Math.round(footRow.getBoundingClientRect().height),
+              pad: getComputedStyle(footRow).padding,
+              borderTop: getComputedStyle(footRow).borderTopWidth,
+            }
+          : null,
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The reference's measured 390 contract (exp-vp-v44.mjs, both sites):
+    // the card 324→441→495 (the seed's arithmetic — the reference's own
+    // 405/459 differ by DATA: its 1 category vs the seed's 2), the section
+    // 48/8px, the inner indent ml 40px/mt 8px (the mobile indentation
+    // arithmetic matches the 640 class — no responsive indent exists), and
+    // every row's chrome byte-identical. sw stays 390 fully expanded (the
+    // superset — the reference reads 395, its own horizontal-overflow bug).
+    expect(census!.collapsedH).toBe(324);
+    expect(census!.secExpandedH).toBe(441);
+    expect(census!.fullExpandedH).toBe(495);
+    expect(census!.section).toEqual({ h: 48, pad: "8px" });
+    expect(census!.indent).toEqual({ ml: "40px", mt: "8px" });
+    expect(census!.cat).toEqual({ h: 28, pad: "6px 12px", bg: "rgb(249, 250, 251)" });
+    expect(census!.sub!.h).toBe(24);
+    expect(census!.sub!.pad).toBe("4px 8px");
+    expect(census!.sub!.bg).toBe("rgb(250, 250, 250)");
+    expect(census!.item!.h).toBe(24);
+    expect(census!.item!.pad).toBe("4px 8px");
+    expect(census!.item!.font).toBe("12px");
+    expect(census!.item!.color).toBe("rgb(156, 163, 175)");
+    expect(census!.item!.labelMaxW).toBe("120px");
+    expect(census!.item!.labelTrunc).toBe("ellipsis");
+    expect(census!.foot!.h).toBe(29);
+    expect(census!.foot!.pad).toBe("6px 12px");
+    expect(census!.foot!.borderTop).toBe("1px");
+    expect(census!.sw).toBe(390);
+  });
+
+  test("the drill-down census at 1280 — the section label's 2-line WRAP + the narrow-column chrome (v44 F2b)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    const census = await page.evaluate(async () => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? (bdH.closest('div[class*="rounded-2xl"]') as HTMLElement | null) : null;
+      if (!card) return null;
+      const cardW = Math.round(card.getBoundingClientRect().width);
+      const collapsedH = Math.round(card.getBoundingClientRect().height);
+      const sec = [...card.querySelectorAll("button")].find((b) =>
+        /Total Income/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!sec) return null;
+      const secLabel = [...sec.querySelectorAll("span")].find((s) =>
+        /Total Income/i.test(s.textContent || ""),
+      ) as HTMLElement | null;
+      const section = {
+        h: Math.round(sec.getBoundingClientRect().height),
+        pad: getComputedStyle(sec).padding,
+        labelH: secLabel ? Math.round(secLabel.getBoundingClientRect().height) : null,
+      };
+      sec.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const secExpandedH = Math.round(card.getBoundingClientRect().height);
+      const cat = [...card.querySelectorAll("button")].find(
+        (b) => b.offsetParent !== null && /\$/.test(b.textContent || "") && !/Total|Net Balance/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!cat) return null;
+      const catChrome = {
+        h: Math.round(cat.getBoundingClientRect().height),
+        pad: getComputedStyle(cat).padding,
+        bg: getComputedStyle(cat).backgroundColor,
+      };
+      cat.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const fullExpandedH = Math.round(card.getBoundingClientRect().height);
+      const footP = [...card.querySelectorAll("span")].find(
+        (e) => /categor/i.test(e.textContent || "") && e.children.length === 0,
+      );
+      const footRow = footP ? (footP.closest("div") as HTMLElement | null) : null;
+      return {
+        cardW,
+        collapsedH,
+        secExpandedH,
+        fullExpandedH,
+        section,
+        cat: catChrome,
+        foot: footRow
+          ? {
+              h: Math.round(footRow.getBoundingClientRect().height),
+              borderTop: getComputedStyle(footRow).borderTopWidth,
+            }
+          : null,
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The reference's measured 1280 contract (exp-vp-v44.mjs, both sites):
+    // the breakdown card sits in the NARROW 304px column, and its section
+    // label "Total Income" WRAPS to two lines (labelH 40, row 56 — the
+    // v42 collapsed census's 56 explained: width-driven wrap, present on
+    // BOTH sites). The expansion arithmetic 364→481→535 is the seed's
+    // (the reference's 364→445→499 differ by DATA).
+    expect(census!.cardW).toBe(304);
+    expect(census!.collapsedH).toBe(364);
+    expect(census!.secExpandedH).toBe(481);
+    expect(census!.fullExpandedH).toBe(535);
+    expect(census!.section).toEqual({ h: 56, pad: "8px", labelH: 40 });
+    expect(census!.cat).toEqual({ h: 28, pad: "6px 12px", bg: "rgb(249, 250, 251)" });
+    expect(census!.foot!.h).toBe(29);
+    expect(census!.foot!.borderTop).toBe("1px");
+    expect(census!.sw).toBe(1280);
+  });
+
+  test("the donut legend census — the geometry chrome + the INERT hover (v44 F3)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    // The legend rows (v9 pinned the content contract: value-DESC order,
+    // icons, amounts, percents, tinted bg — never the geometry). v44
+    // measures the chrome: row h/pad/radius, the label/amount/pct fonts,
+    // the dot, the gap, the container margin — byte-identical on both
+    // sites (legend-v44.mjs at 390 AND 1280).
+    const legend = page.locator("div.flex.flex-col.gap-3.mt-6");
+    await expect(legend).toBeVisible();
+    const rows = legend.locator("> div");
+    await expect(rows).toHaveCount(3);
+
+    // A REAL hover on the first row (the rows carry no mouse-following
+    // tooltip — the donut's synthetic-hover lesson does not apply). The
+    // reference's rows are inert: bg/shadow/cursor byte-identical under
+    // the pointer (legend-v44.mjs: changed:false on BOTH sites).
+    await rows.nth(0).hover();
+    await page.waitForTimeout(300);
+    const reading = await page.evaluate(() => {
+      const legend = document.querySelector("div.flex.flex-col.gap-3.mt-6");
+      const row = legend ? (legend.querySelector(":scope > div") as HTMLElement | null) : null;
+      if (!row) return null;
+      const cs = getComputedStyle(row);
+      const label = [...row.querySelectorAll("span")].find((s) =>
+        ["Need", "Want", "Savings"].includes((s.textContent || "").trim()),
+      ) as HTMLElement | null;
+      const amount = [...row.querySelectorAll("p,span")].find((s) =>
+        /^\$\d/.test((s.textContent || "").trim()),
+      ) as HTMLElement | null;
+      const pct = [...row.querySelectorAll("p,span")].find((s) =>
+        /^\d+(\.\d+)?%$/.test((s.textContent || "").trim()),
+      ) as HTMLElement | null;
+      const dot = [...row.querySelectorAll("div")].find((d) => {
+        const w = Math.round(d.getBoundingClientRect().width);
+        return !d.children.length && w > 0 && w <= 20;
+      }) as HTMLElement | null;
+      const icon = row.querySelector("svg");
+      const secondRow = legend ? (legend.querySelectorAll(":scope > div")[1] as HTMLElement | null) : null;
+      const gap = secondRow
+        ? Math.round(secondRow.getBoundingClientRect().top - row.getBoundingClientRect().bottom)
+        : null;
+      const containerCs = legend ? getComputedStyle(legend) : null;
+      return {
+        row: {
+          h: Math.round(row.getBoundingClientRect().height),
+          pad: cs.padding,
+          radius: cs.borderRadius,
+          bg: cs.backgroundColor,
+          cursor: cs.cursor,
+          shadow: cs.boxShadow,
+        },
+        label: label
+          ? {
+              font: getComputedStyle(label).fontSize,
+              weight: getComputedStyle(label).fontWeight,
+              color: getComputedStyle(label).color,
+            }
+          : null,
+        amount: amount
+          ? {
+              font: getComputedStyle(amount).fontSize,
+              weight: getComputedStyle(amount).fontWeight,
+              color: getComputedStyle(amount).color,
+            }
+          : null,
+        pct: pct ? { font: getComputedStyle(pct).fontSize, color: getComputedStyle(pct).color } : null,
+        dot: dot
+          ? {
+              w: Math.round(dot.getBoundingClientRect().width),
+              radius: getComputedStyle(dot).borderRadius,
+              bg: getComputedStyle(dot).backgroundColor,
+            }
+          : null,
+        icon: icon
+          ? {
+              w: Math.round(icon.getBoundingClientRect().width),
+              h: Math.round(icon.getBoundingClientRect().height),
+            }
+          : null,
+        gap,
+        containerMt: containerCs ? containerCs.marginTop : null,
+        containerRowGap: containerCs ? containerCs.rowGap : null,
+      };
+    });
+    expect(reading).not.toBeNull();
+    // The reference's measured legend chrome (legend-v44.mjs at 1280 — the
+    // 390 readings are identical except the row width, which is data):
+    // h 64 (24px label line + 2×12px pad + 16px dot row), pad 12, radius
+    // 8, the tinted rgb(245,248,245), cursor auto, NO shadow — under the
+    // REAL hover too (inert divs on both sites: the queue's "legend
+    // interaction" item resolved — no interaction states exist to match).
+    expect(reading!.row).toEqual({
+      h: 64,
+      pad: "12px",
+      radius: "8px",
+      bg: "rgb(245, 248, 245)",
+      cursor: "auto",
+      shadow: "none",
+    });
+    expect(reading!.label).toEqual({ font: "16px", weight: "500", color: "rgb(26, 58, 46)" });
+    expect(reading!.amount).toEqual({ font: "16px", weight: "700", color: "rgb(224, 122, 59)" });
+    expect(reading!.pct).toEqual({ font: "12px", color: "rgb(107, 114, 128)" });
+    expect(reading!.dot).toEqual({ w: 16, radius: "4px", bg: "rgb(224, 122, 59)" });
+    expect(reading!.icon).toEqual({ w: 16, h: 16 });
+    expect(reading!.gap).toBe(12);
+    expect(reading!.containerMt).toBe("24px");
+    expect(reading!.containerRowGap).toBe("12px");
+  });
+});
+
+test.describe("drill-down chevron GLYPH swap (v44 — plan F4)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+  });
+
+  test("the chevrons SWAP glyphs on expansion — chevron-down collapsed, chevron-up expanded, both levels (v44 F4)", async ({ page }) => {
+    const reading = await page.evaluate(async () => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? (bdH.closest('div[class*="rounded-2xl"]') as HTMLElement | null) : null;
+      if (!card) return null;
+      const sec = [...card.querySelectorAll("button")].find((b) =>
+        /Total Income/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!sec) return null;
+      // The glyph reader: the chevron = the LAST svg in the row; the GLYPH
+      // identity is the lucide class (the computed-style census CANNOT see
+      // a glyph swap — rotate/transform read none while the icon flips:
+      // the v44 lesson from the VLM-flag DOM verification).
+      const readGlyph = (btn: HTMLElement) => {
+        const svgs = [...btn.querySelectorAll("svg")];
+        const chev = svgs[svgs.length - 1] as SVGElement | undefined;
+        if (!chev) return null;
+        return {
+          cls: (chev.getAttribute("class") || ""),
+          rotate: getComputedStyle(chev).rotate,
+          h: Math.round(chev.getBoundingClientRect().height),
+        };
+      };
+      const secCollapsed = readGlyph(sec);
+      sec.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const secExpanded = readGlyph(sec);
+      const cat = [...card.querySelectorAll("button")].find(
+        (b) => b.offsetParent !== null && /\$/.test(b.textContent || "") && !/Total|Net Balance/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!cat) return null;
+      const catCollapsed = readGlyph(cat);
+      cat.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const catExpanded = readGlyph(cat);
+      sec.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const secRecollapsed = readGlyph(sec);
+      return { secCollapsed, secExpanded, catCollapsed, catExpanded, secRecollapsed };
+    });
+    expect(reading).not.toBeNull();
+    // The reference's measured contract (chev-glyph-v44.mjs, fresh queries
+    // at every state on BOTH levels): the chevron is a GLYPH SWAP —
+    // lucide-chevron-down when collapsed, lucide-chevron-up when expanded,
+    // back to chevron-down on re-collapse — with rotate: none at EVERY
+    // state (the v43 static-rotation finding was correct but incomplete:
+    // the flip is the ICON, not the transform. The computed-style census
+    // cannot see glyph swaps — read the svg's class).
+    expect(reading!.secCollapsed!.cls).toContain("lucide-chevron-down");
+    expect(reading!.secExpanded!.cls).toContain("lucide-chevron-up"); // pre-fix: chevron-down
+    expect(reading!.secRecollapsed!.cls).toContain("lucide-chevron-down");
+    expect(reading!.catCollapsed!.cls).toContain("lucide-chevron-down");
+    expect(reading!.catExpanded!.cls).toContain("lucide-chevron-up"); // pre-fix: chevron-down
+    // The sizes + the static rotation stay pinned (the v43 contract).
+    expect(reading!.secExpanded!.h).toBe(14);
+    expect(reading!.catExpanded!.h).toBe(12);
+    expect(reading!.secExpanded!.rotate).toBe("none");
+    expect(reading!.catExpanded!.rotate).toBe("none");
+  });
+});

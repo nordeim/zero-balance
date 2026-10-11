@@ -32,7 +32,8 @@ and `docs/remediation-plan-v39.md`,
 and `docs/remediation-plan-v40.md`,
 and `docs/remediation-plan-v41.md`,
 and `docs/remediation-plan-v42.md`,
-and `docs/remediation-plan-v43.md`.
+and `docs/remediation-plan-v43.md`,
+and `docs/remediation-plan-v44.md`.
 
 ---
 
@@ -44,6 +45,74 @@ and `docs/remediation-plan-v43.md`.
 
 ---
 
+## Session 78 — Parity iteration v44: the drill-down expansion ANIMATION + the chevron GLYPH swap + the 390/1280 census + the donut-legend census — the first production-code change since v43 (2026-10-11)
+
+**Goal:** the session-95/96/97 queue — the drill-down's EXPANDED-state
+census at the remaining viewports (390/1280), the donut legend's
+geometry/interaction states, and what the sweep finds. TDD-first, docs
+aligned, commit + push via the SSH wrapper. (The sandbox had been
+reset — a fresh clone + full environment rebuild.)
+
+- Baseline rebuilt: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **209/209 e2e ✓ (4.6m)** · 35/35 smoke ✓. Audit clean (the same 5
+  dev-only ESLint-chain advisories, the secret scan clean, .env ≡
+  .env.example, the v43 diff re-audited).
+- Standing checks all clean: mobile-nav R1–R4 (**38th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395 overflows all still live), data drift (38th —
+  reference read-only, verified before + after), the SEO pair.
+- **THE V44 SWEEP (both sites, 390×844 AND 1280×800 — exp-vp-v44.mjs +
+  legend-v44.mjs + collapse-ref-v44.mjs + band-mount-v44.mjs)**:
+  - **F1 — the drill-down expansion ANIMATES on the reference** (~200ms
+    height+opacity tween, both levels, both directions — mid-collapse
+    the band's INLINE height reads 25.5455px: a per-frame JS tween, the
+    end state height:auto/opacity:1, the section band unmounts after
+    the collapse animation) **while the clone mounted/unmounted
+    instantly** (324→441 at the first sample, zero in-flight frames).
+    Fixed: the `Collapse` wrapper — the grid 0fr↔1f technique +
+    @starting-style for the entry + the onTransitionEnd delayed
+    unmount (the collapsed DOM returns to EXACTLY the pre-fix node
+    tree — the accordion count-0 pins hold; the mount flip via the
+    adjust-state-during-render pattern with a prev-value STATE, not a
+    ref — react-hooks/refs forbids ref access during render).
+  - **F4 — the chevron GLYPH swap** (found by the standing VLM pair,
+    DOM-verified REAL — chev-glyph-v44.mjs): lucide-chevron-down
+    collapsed ↔ lucide-chevron-up expanded at BOTH levels, rotate:
+    none at every state. The v43 "static" finding was
+    correct-but-incomplete — **the flip is the ICON, not the transform:
+    a computed-style census cannot see a glyph swap; read the svg's
+    class**. Fixed: conditional glyph render at both levels.
+  - **F2 — the 390/1280 census (pin-only):** the chrome byte-identical;
+    the 1280 section label's 2-line WRAP (labelH 40, row 56 — on BOTH
+    sites: the v42 collapsed census's 56px row explained, width-driven);
+    the mobile indentation identical (the inner ml 40px/mt 8px); the
+    clone's sw 390 fully expanded (the superset — the reference reads
+    395, its own overflow).
+  - **F3 — the donut legend census (pin-only, the queue item
+    resolved):** the geometry byte-identical (h 64/pad 12/radius 8/the
+    label-amount-pct fonts/the 16×16 dot/gap 12/mt 24) and the REAL
+    hover INERT on both sites — no interaction states exist to match.
+- **The five e2e (TDD: the animation + glyph tests RED pre-fix, the
+  three census tests pinning correct chrome)**: the expansion-animation
+  pin (in-flight samples both directions + the band's opacity ease +
+  the end states + the unmount), the 390 census, the 1280 census, the
+  legend census, the glyph-swap pin. GREEN first-run after the fixes.
+- **Five pin-sanity mutations verified to FAIL**: the zeroed duration;
+  the removed @starting-style; the legend p-3→p-4 (64→72); the sub-row
+  py-1→py-2; the reverted glyph swap. All restored → GREEN.
+- The full chain: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **214/214 e2e ✓ (4.9m — 209 → 214)** · 35/35 smoke ✓. The 16
+  screenshots regenerated (the drill-down shot shows the swapped
+  chevron-up glyph). The VLM pair: the glyph flag was REAL (the F4 fix
+  — the screening earns its keep); the icon/bold flags were
+  screenshot-scale misreads, DOM-refuted.
+- Docs aligned: AGENTS.md (the v44 paragraph), CLAUDE.md (214 + the
+  v44 entry), README (the v44 row + the stale 206 testing-count fixed),
+  the SKILL doc (five count sites + the Session 79 row), the PAD (the
+  v1.1.1 revision block), the probe README (the v44 section), session_98
+  + session_99, the repo worklog (this entry), the workspace worklog.
+
+---
 ## Session 77 — Parity iteration v43: the drill-down EXPANDED-state census + the static-chevron and hover-rgb fixes — the first production-code change since v42 (2026-10-11)
 
 **Goal:** refresh the workspace (git pull — intact this session), re-run

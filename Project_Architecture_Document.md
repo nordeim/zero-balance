@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.0
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.1
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,13 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.1 (Tracked Changes)
+
+- `[AUTH]` v1.1.1 (2026-10-11) — the v44 parity iteration: the counts 108 unit / 214 e2e / 35 smoke (five new e2e: the expansion-animation pin, the 390/1280 drill-down censuses, the donut-legend census, the chevron glyph-swap pin); the drill-down expansion ANIMATION contract (the reference's ~200ms height+opacity tween in both directions — implemented via the `Collapse` wrapper: the grid 0fr↔1f technique + `@starting-style` entry + the onTransitionEnd delayed unmount in `src/components/budget/dashboard-view.tsx` + the `.zb-collapse`/`.zb-collapse-clip` class pair in `src/app/globals.css`; the collapsed DOM returns to the pre-fix node tree); the chevron GLYPH-swap contract (lucide-chevron-down ↔ chevron-up, both levels, rotate: none — a computed-style census cannot see glyph swaps, read the svg's class); the 44th remediation plan + the probe catalog through v44.
+- `[SR]` The measured-parity ledger: 44 remediation plans (`docs/remediation-plan-v1.md` … `v44.md`), 16 screenshots, the session-document chain — see `README.md`'s parity table for the per-iteration summaries.
+
+---
 
 #### Revision Block — v1.0.0 (Tracked Changes)
 
