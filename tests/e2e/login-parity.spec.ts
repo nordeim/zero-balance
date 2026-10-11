@@ -754,3 +754,59 @@ test.describe("auth submit ring + login backdrop (v25 — plan G1/G3)", () => {
     expect(body.fs).toBe("auto");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v45 — the shadow-scale regression pins (plan F4,
+// docs/remediation-plan-v45.md).
+//
+// The v45 sweep census'd every live shadow-* utility on BOTH sites: the
+// VISIBLE layers match everywhere (the `--shadow-sm` theme pin is
+// load-bearing for the small end — v4 renamed the scale: its native
+// shadow-sm = v3's "shadow"; the pin restores v3's 0 1px 2px 0 0.05).
+// The md/lg/xl/2xl values were NOT renamed (v4 kept v3's numerics) and
+// were UNPINNED — a future Tailwind upgrade changing the scale would
+// drift silently. These pins hold the login card's three shadow sites:
+// the slate submit button's REST shadow-sm, the panel's shadow-2xl, and
+// the Google button's REAL-hover shadow-sm. The assertions use the
+// toContain idiom on the visible layers — the accepted-leads convention
+// (v4's transparent composition leads paint nothing — the v10 lesson).
+test.describe("shadow-scale regression pins (v45 — plan F4)", () => {
+  test("the slate button's shadow-sm + the panel's shadow-2xl + the Google button's hover shadow-sm (v45 F4)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+
+    // The slate submit button (Sign in) — its REST shadow-sm: the theme
+    // pin's value (guards the --shadow-sm pin against removal/upgrade).
+    const slate = await page.evaluate(() => {
+      const b = document.querySelector<HTMLButtonElement>("button[type=submit]")!;
+      return getComputedStyle(b).boxShadow;
+    });
+    expect(slate).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+
+    // The login panel — shadow-2xl's visible layer (v4 kept v3's
+    // 25px 50px -12px @ 0.25; measured identical on both sites).
+    const panel = await page.evaluate(() => {
+      const p = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("backdrop-blur") && d.getBoundingClientRect().width > 300,
+      );
+      return p ? getComputedStyle(p).boxShadow : null;
+    });
+    expect(panel).not.toBeNull();
+    expect(panel).toContain("rgba(0, 0, 0, 0.25) 0px 25px 50px -12px");
+
+    // The Google button — a REAL pointer hover engages its hover:shadow-sm
+    // (the visible layer = the same theme-pinned 0 1px 2px 0 0.05; the
+    // border/bg hover states were already pinned by the v13 family).
+    const google = page.getByRole("button", { name: /Google/i });
+    await google.hover();
+    await page.waitForTimeout(400);
+    const googleHover = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("button")].find((x) =>
+        /Google/i.test((x.textContent || "").trim()),
+      )!;
+      return getComputedStyle(b).boxShadow;
+    });
+    expect(googleHover).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+    expect(googleHover).not.toBe("none");
+  });
+});

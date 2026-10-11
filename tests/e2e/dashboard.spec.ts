@@ -1440,3 +1440,100 @@ test.describe("drill-down chevron GLYPH swap (v44 — plan F4)", () => {
     expect(reading!.catExpanded!.rotate).toBe("none");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v45 — the category-level band animation + the quick-action hover shadow
+// (plan F3, docs/remediation-plan-v45.md).
+//
+// The v44 F1 pin covers the SECTION-level Collapse; the NESTED
+// (category-level) band shares the component but was unpinned. Measured
+// live on the clone (the driver eval): the card ramps
+// 441→453→463→479→484→491→493→495 on the category expand and
+// 495→491→483→464→457→448→445→442→441 on the collapse — in-flight frames
+// both directions, ~200ms (the reference's category-level contract is the
+// v44 measurement: "the category level the same").
+//
+// Plus the quick-action card's hover:shadow-lg pin (the shadow-scale
+// regression net — v4 kept v3's lg numerics; an upgrade that changes the
+// scale must fail this). Measured on BOTH sites: the visible layers
+// rgba(0,0,0,0.1) 0px 10px 15px -3px + rgba(0,0,0,0.1) 0px 4px 6px -4px,
+// rest shadow none, the lead layers the accepted v10 class.
+test.describe("category-level animation + quick-action hover shadow (v45 — plan F3)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+  });
+
+  test("the category band ANIMATES — in-flight frames both directions at the nested level (v45 F3a)", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 960 });
+    const reading = await page.evaluate(async () => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? (bdH.closest('div[class*="rounded-2xl"]') as HTMLElement | null) : null;
+      if (!card) return null;
+      const sec = [...card.querySelectorAll("button")].find((b) =>
+        /Total Income/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!sec) return null;
+      // Expand the section and settle (the v44 F1 arithmetic: 324 → 441).
+      sec.click();
+      await new Promise((r) => setTimeout(r, 600));
+      const sectionExpandedH = Math.round(card.getBoundingClientRect().height);
+      // The FIRST category row inside the expanded band (Salary).
+      const catBtn = [...card.querySelectorAll("button")].find(
+        (b) => /Salary/.test(b.textContent || "") && b !== sec,
+      ) as HTMLElement | null;
+      if (!catBtn) return { sectionExpandedH, catFound: false as const, catExpandedH: 0, openSamples: [] as number[], closeSamples: [] as number[], collapsedAgainH: 0 };
+      // EXPAND the category: sample every ~25ms (fresh queries each
+      // iteration — the v43 stale-node lesson).
+      catBtn.click();
+      const openSamples: number[] = [];
+      for (let i = 0; i < 12; i++) {
+        openSamples.push(Math.round(card.getBoundingClientRect().height));
+        await new Promise((r) => setTimeout(r, 25));
+      }
+      const catExpandedH = Math.round(card.getBoundingClientRect().height);
+      // COLLAPSE the category: sample again.
+      catBtn.click();
+      const closeSamples: number[] = [];
+      for (let i = 0; i < 12; i++) {
+        closeSamples.push(Math.round(card.getBoundingClientRect().height));
+        await new Promise((r) => setTimeout(r, 25));
+      }
+      const collapsedAgainH = Math.round(card.getBoundingClientRect().height);
+      return { sectionExpandedH, catExpandedH, openSamples, closeSamples, collapsedAgainH };
+    });
+    expect(reading).not.toBeNull();
+    // The v44 arithmetic at 640: the section band 324→441, the category
+    // band 441→495 (the seed's two subcategories under Salary).
+    expect(reading!.sectionExpandedH).toBe(441);
+    expect(reading!.catExpandedH).toBe(495);
+    // In-flight frames at the NESTED level: at least one sample strictly
+    // between the endpoints on the way up AND on the way down.
+    const openInFlight = reading!.openSamples.filter((h) => h > 441 && h < 495);
+    const closeInFlight = reading!.closeSamples.filter((h) => h > 441 && h < 495);
+    expect(openInFlight.length).toBeGreaterThan(0);
+    expect(closeInFlight.length).toBeGreaterThan(0);
+    // The end states (the collapse returns to the section-expanded height).
+    expect(reading!.collapsedAgainH).toBe(441);
+  });
+
+  test("the quick-action card's hover:shadow-lg — the visible layers (v45 F3b)", async ({ page }) => {
+    const qa = page.getByRole("button", { name: /^Add Income$/ });
+    await expect(qa).toBeVisible();
+    const rest = await qa.evaluate((el) => getComputedStyle(el).boxShadow);
+    expect(rest).toBe("none");
+    // A REAL pointer hover (the hover-v43 idiom): shadow-lg engages — the
+    // visible layers byte-identical to the reference's v3 shadow-lg (the
+    // quick-action button carries no inline boxShadow, so the hover is
+    // LIVE on both sites).
+    await qa.hover();
+    await page.waitForTimeout(400);
+    const hovered = await qa.evaluate((el) => getComputedStyle(el).boxShadow);
+    expect(hovered).toContain("rgba(0, 0, 0, 0.1) 0px 10px 15px -3px");
+    expect(hovered).toContain("rgba(0, 0, 0, 0.1) 0px 4px 6px -4px");
+  });
+});

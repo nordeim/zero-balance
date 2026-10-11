@@ -476,3 +476,191 @@ async function restoreRent(page: import("@playwright/test").Page) {
   await expect(editDialog).toBeHidden();
   await expect(page.getByText("3 items · $2235.00")).toBeVisible();
 }
+
+// ---------------------------------------------------------------------------
+// v45 — the line-item row census + the REAL-hover shadow (plan F2,
+// docs/remediation-plan-v45.md).
+//
+// Measured live on BOTH sites (calc-row-v45.mjs + the tag/hover driver
+// steps; the reference's measurements required its RENT calculator — the
+// only one of its four expense cards with line items, "Contents
+// Insurance"): the dialog panel 768 wide at 1280 / 608 at 640 (w-full
+// max-w-3xl inside the p-4 overlay); the row 720/560 wide, pad 16,
+// radius 12, border 1px rgb(229,231,227), boxShadow none at rest, bg
+// white, transition all 0.15s (v4's default 150ms = v3's — matching);
+// the rest action pair opacity 0 / 32px buttons. Under a REAL pointer
+// hover the row's hover:shadow-md engages on BOTH sites with the
+// IDENTICAL visible layers and the action pair reveals (opacity 1).
+// The hover-shadow assertions use the toContain idiom on the VISIBLE
+// layers — the accepted-leads convention (v4's transparent composition
+// leads paint nothing — the v10 lesson, restated at
+// login-parity.spec.ts:671): a future Tailwind upgrade that changes the
+// shadow-md numerics must fail these pins.
+test.describe("line-item row census + REAL hover (v45 — plan F2)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+  });
+
+  test("the row census + the hover shadow-md + the action reveal at 1280 (v45 F2a)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await lineDialog.getByLabel("Item Name *").fill("Contents Insurance");
+    await lineDialog.getByLabel("Amount *").fill("25");
+    await lineDialog.getByRole("button", { name: "Save Item" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Contents Insurance")).toBeVisible();
+    await page.waitForTimeout(300);
+
+    const census = await page.evaluate(() => {
+      const panel = [...document.querySelectorAll('[role="dialog"]')].pop() as HTMLElement;
+      if (!panel) return null;
+      const h4 = [...panel.querySelectorAll("h4")].find(
+        (h) => (h.textContent || "").trim() === "Contents Insurance",
+      );
+      if (!h4) return null;
+      let row: HTMLElement = h4 as HTMLElement;
+      while (row && row !== panel) {
+        const cs = getComputedStyle(row);
+        if (parseFloat(cs.borderTopWidth) > 0 && cs.backgroundColor === "rgb(255, 255, 255)" && cs.padding === "16px") break;
+        row = row.parentElement!;
+      }
+      if (!row || row === panel) return null;
+      const cs = getComputedStyle(row);
+      const actions = [...row.querySelectorAll("div")].find(
+        (d) =>
+          getComputedStyle(d).display === "flex" &&
+          getComputedStyle(d).opacity === "0" &&
+          d.querySelectorAll("button").length >= 1,
+      );
+      return {
+        panelW: Math.round(panel.getBoundingClientRect().width),
+        row: {
+          w: Math.round(row.getBoundingClientRect().width),
+          pad: cs.padding,
+          radius: cs.borderRadius,
+          border: `${cs.borderTopWidth} ${cs.borderTopStyle} ${cs.borderTopColor}`,
+          boxShadow: cs.boxShadow,
+          bg: cs.backgroundColor,
+          transition: cs.transitionProperty,
+          transitionDur: cs.transitionDuration,
+        },
+        actions: actions
+          ? {
+              opacity: getComputedStyle(actions).opacity,
+              btnW: Math.round(actions.querySelector("button")!.getBoundingClientRect().width),
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    expect(census!.panelW).toBe(768);
+    expect(census!.row.w).toBe(720);
+    expect(census!.row.pad).toBe("16px");
+    expect(census!.row.radius).toBe("12px");
+    expect(census!.row.border).toBe("1px solid rgb(229, 231, 227)");
+    expect(census!.row.boxShadow).toBe("none");
+    expect(census!.row.bg).toBe("rgb(255, 255, 255)");
+    expect(census!.row.transition).toBe("all");
+    expect(census!.row.transitionDur).toBe("0.15s");
+    expect(census!.actions!.opacity).toBe("0");
+    expect(census!.actions!.btnW).toBe(32);
+
+    // A REAL pointer hover: shadow-md engages (the row carries NO inline
+    // boxShadow — unlike the item cards, the hover is LIVE) with the
+    // reference's VISIBLE layers, and the action pair reveals.
+    const rowLoc = dialog
+      .getByRole("heading", { name: "Contents Insurance" })
+      .locator("xpath=ancestor::div[contains(@class, 'p-4')][1]");
+    await rowLoc.hover();
+    await page.waitForTimeout(400);
+    const hovered = await page.evaluate(() => {
+      const panel = [...document.querySelectorAll('[role="dialog"]')].pop() as HTMLElement;
+      const h4 = [...panel.querySelectorAll("h4")].find(
+        (h) => (h.textContent || "").trim() === "Contents Insurance",
+      );
+      let row: HTMLElement = h4 as HTMLElement;
+      while (row && row !== panel) {
+        const cs = getComputedStyle(row);
+        if (parseFloat(cs.borderTopWidth) > 0 && cs.backgroundColor === "rgb(255, 255, 255)" && cs.padding === "16px") break;
+        row = row.parentElement!;
+      }
+      const actions = [...row.querySelectorAll("div")].find(
+        (d) =>
+          getComputedStyle(d).display === "flex" &&
+          getComputedStyle(d).transitionProperty.includes("opacity") &&
+          d.querySelectorAll("button").length >= 1,
+      );
+      return {
+        boxShadow: getComputedStyle(row).boxShadow,
+        actionOpacity: actions ? getComputedStyle(actions).opacity : null,
+      };
+    });
+    expect(hovered.boxShadow).toContain("rgba(0, 0, 0, 0.1) 0px 4px 6px -1px");
+    expect(hovered.boxShadow).toContain("rgba(0, 0, 0, 0.1) 0px 2px 4px -2px");
+    expect(hovered.actionOpacity).toBe("1");
+
+    // --- cleanup (the fixture-restore discipline).
+    await dialog.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await dialog.getByText("Based on 0 items").waitFor();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await restoreRent(page);
+  });
+
+  test("the calculator dialog at 640 — the panel + row width (v45 F2b)", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 960 });
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await lineDialog.getByLabel("Item Name *").fill("Contents Insurance");
+    await lineDialog.getByLabel("Amount *").fill("25");
+    await lineDialog.getByRole("button", { name: "Save Item" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Contents Insurance")).toBeVisible();
+    await page.waitForTimeout(300);
+
+    const census = await page.evaluate(() => {
+      const panel = [...document.querySelectorAll('[role="dialog"]')].pop() as HTMLElement;
+      if (!panel) return null;
+      const h4 = [...panel.querySelectorAll("h4")].find(
+        (h) => (h.textContent || "").trim() === "Contents Insurance",
+      );
+      if (!h4) return null;
+      let row: HTMLElement = h4 as HTMLElement;
+      while (row && row !== panel) {
+        const cs = getComputedStyle(row);
+        if (parseFloat(cs.borderTopWidth) > 0 && cs.backgroundColor === "rgb(255, 255, 255)" && cs.padding === "16px") break;
+        row = row.parentElement!;
+      }
+      return {
+        panelW: Math.round(panel.getBoundingClientRect().width),
+        rowW: Math.round(row.getBoundingClientRect().width),
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The reference's measured 640 contract (calc-row-v45 at 640):
+    // panel 608 (640 − the 2×16 overlay padding), row 560, sw 640.
+    expect(census!.panelW).toBe(608);
+    expect(census!.rowW).toBe(560);
+    expect(census!.sw).toBe(640);
+
+    // --- cleanup.
+    await dialog.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await dialog.getByText("Based on 0 items").waitFor();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await restoreRent(page);
+  });
+});

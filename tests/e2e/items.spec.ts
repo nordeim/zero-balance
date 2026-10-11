@@ -891,3 +891,201 @@ test.describe("budget-item card delete failure (v18 G1)", () => {
     await page.unrouteAll({ behavior: "ignoreErrors" });
   });
 });
+
+// ---------------------------------------------------------------------------
+// v45 — the item-card grid census at 1280 (plan F1,
+// docs/remediation-plan-v45.md).
+//
+// Measured live on BOTH sites (items-card-v45.mjs, drivers ref-v45.sh +
+// clone-v45.sh): the grid 960 wide (the rail 256 + the content column
+// 1024 − the p-8 64 — the SAME arithmetic on both sites), 3 columns ×
+// 309.328px, gap 16; the card 309 wide / pad 20 / radius 12 / border 1px
+// rgb(229,231,227) / the rest shadow rgba(0,0,0,0.04) 0px 2px 8px 0px
+// (computed 4-value — Chrome normalizes the 3-value inline to the SAME
+// string the reference computes) / transition all 0.2s; the title row
+// gap 8 / dot 8×8 / title 16px-600; the income kebab 36×36 opacity 0;
+// the expense action row top 12 / right 12 / gap 8 / btn h 32 / padX 12
+// / fontSize 12. THE CARD'S REAL HOVER IS INERT ON BOTH SITES (the
+// inline boxShadow beats the hover:shadow-lg utility — the v29
+// inline-beats-class family) while the expense action row REVEALS
+// (opacity 0→1) and its buttons carry shadow-md's VISIBLE layers at
+// rest (the shadow-scale regression pin — v4 kept v3's numerics for md;
+// a Tailwind upgrade that changes the scale must fail this test).
+test.describe("item-card grid census at 1280 (v45 — plan F1)", () => {
+  test("the income card grid + chrome + the INERT hover (v45 F1a)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/income");
+    await expect(page.getByText("Salary").first()).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      const readCard = (c: HTMLElement) => {
+        const cs = getComputedStyle(c);
+        return {
+          w: Math.round(c.getBoundingClientRect().width),
+          pad: cs.padding,
+          radius: cs.borderRadius,
+          border: `${cs.borderTopWidth} ${cs.borderTopStyle} ${cs.borderTopColor}`,
+          boxShadow: cs.boxShadow,
+          bg: cs.backgroundColor,
+          cursor: cs.cursor,
+          transition: cs.transitionProperty,
+          transitionDur: cs.transitionDuration,
+        };
+      };
+      const gcs = getComputedStyle(grid);
+      const dot = [...card.querySelectorAll("div,span")].find((d) => {
+        const cs = getComputedStyle(d);
+        const r = d.getBoundingClientRect();
+        return !d.children.length && r.width > 0 && r.width <= 12 && cs.backgroundColor !== "rgba(0, 0, 0, 0)";
+      });
+      const title = [...card.querySelectorAll("h1,h2,h3,h4")][0] as HTMLElement | undefined;
+      const kebab = [...card.querySelectorAll("button")].find(
+        (b) => !(b.textContent || "").trim() && b.querySelectorAll("svg").length === 1,
+      );
+      return {
+        grid: {
+          w: Math.round(grid.getBoundingClientRect().width),
+          gap: gcs.gap,
+          childCount: grid.children.length,
+        },
+        card: readCard(card),
+        titleRow: title
+          ? {
+              gap: getComputedStyle(title.parentElement!).gap,
+              dotW: dot ? Math.round(dot.getBoundingClientRect().width) : null,
+              dotBg: dot ? getComputedStyle(dot).backgroundColor : null,
+              font: getComputedStyle(title).fontSize,
+              weight: getComputedStyle(title).fontWeight,
+            }
+          : null,
+        kebab: kebab
+          ? {
+              w: Math.round(kebab.getBoundingClientRect().width),
+              h: Math.round(kebab.getBoundingClientRect().height),
+              opacity: getComputedStyle(kebab).opacity,
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    expect(census!.grid.w).toBe(960);
+    expect(census!.grid.gap).toBe("16px");
+    expect(census!.grid.childCount).toBe(2); // Salary + Freelance
+    expect(census!.card.w).toBe(309);
+    expect(census!.card.pad).toBe("20px");
+    expect(census!.card.radius).toBe("12px");
+    expect(census!.card.border).toBe("1px solid rgb(229, 231, 227)");
+    expect(census!.card.boxShadow).toBe("rgba(0, 0, 0, 0.04) 0px 2px 8px 0px");
+    expect(census!.card.bg).toBe("rgb(255, 255, 255)");
+    expect(census!.card.cursor).toBe("pointer");
+    expect(census!.card.transition).toBe("all");
+    expect(census!.card.transitionDur).toBe("0.2s");
+    expect(census!.titleRow!.gap).toBe("8px");
+    expect(census!.titleRow!.dotW).toBe(8);
+    expect(census!.titleRow!.dotBg).toBe("rgb(143, 188, 63)");
+    expect(census!.titleRow!.font).toBe("16px");
+    expect(census!.titleRow!.weight).toBe("600");
+    expect(census!.kebab!.w).toBe(36);
+    expect(census!.kebab!.h).toBe(36);
+    expect(census!.kebab!.opacity).toBe("0");
+
+    // A REAL pointer hover leaves the card's shadow INERT (the inline
+    // boxShadow beats hover:shadow-lg on BOTH sites — the v29 family).
+    const cardLoc = page.locator('div[class*="grid-cols-3"] > div').first();
+    await cardLoc.hover();
+    await page.waitForTimeout(400);
+    const hovered = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      const card = grid!.children[0] as HTMLElement;
+      return { boxShadow: getComputedStyle(card).boxShadow, translate: getComputedStyle(card).translate };
+    });
+    expect(hovered.boxShadow).toBe("rgba(0, 0, 0, 0.04) 0px 2px 8px 0px");
+    expect(hovered.translate).toBe("none");
+  });
+
+  test("the expense card action row + the hover reveal + the shadow-md regression pin (v45 F1b)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByText("Rent").first()).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      const actionRow = [...card.querySelectorAll("div")].find((d) => {
+        const cs = getComputedStyle(d);
+        return cs.position === "absolute" && cs.opacity === "0" && d.children.length > 0;
+      });
+      const actionBtn = actionRow ? (actionRow.querySelector("button") as HTMLElement) : null;
+      return {
+        grid: {
+          w: Math.round(grid.getBoundingClientRect().width),
+          gap: getComputedStyle(grid).gap,
+          childCount: grid.children.length,
+        },
+        cardW: Math.round(card.getBoundingClientRect().width),
+        cardShadow: getComputedStyle(card).boxShadow,
+        actionRow: actionRow
+          ? {
+              top: getComputedStyle(actionRow).top,
+              right: getComputedStyle(actionRow).right,
+              gap: getComputedStyle(actionRow).gap,
+              btnH: Math.round(actionRow.querySelector("button")!.getBoundingClientRect().height),
+              btnPadX: getComputedStyle(actionRow.querySelector("button")!).paddingLeft,
+              fontSize: getComputedStyle(actionRow.querySelector("button")!).fontSize,
+            }
+          : null,
+        // The action buttons' REST shadow-md (v45 F4-family): the
+        // VISIBLE layers — the accepted-leads convention (v10 lesson).
+        actionBtnShadow: actionBtn ? getComputedStyle(actionBtn).boxShadow : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    expect(census!.grid.w).toBe(960);
+    expect(census!.grid.gap).toBe("16px");
+    expect(census!.grid.childCount).toBe(3); // Rent + Groceries + Entertainment
+    expect(census!.cardW).toBe(309);
+    expect(census!.cardShadow).toBe("rgba(0, 0, 0, 0.04) 0px 2px 8px 0px");
+    expect(census!.actionRow!.top).toBe("12px");
+    expect(census!.actionRow!.right).toBe("12px");
+    expect(census!.actionRow!.gap).toBe("8px");
+    expect(census!.actionRow!.btnH).toBe(32);
+    expect(census!.actionRow!.btnPadX).toBe("12px");
+    expect(census!.actionRow!.fontSize).toBe("12px");
+    // shadow-md's visible layers at rest (identical on both sites; the
+    // lead-layer count diverges by construction — the accepted class).
+    expect(census!.actionBtnShadow).toContain("rgba(0, 0, 0, 0.1) 0px 4px 6px -1px");
+    expect(census!.actionBtnShadow).toContain("rgba(0, 0, 0, 0.1) 0px 2px 4px -2px");
+
+    // A REAL hover: the card's shadow stays INERT (the inline beats the
+    // utility — both sites) while the action row REVEALS (opacity 1).
+    const cardLoc = page.locator('div[class*="grid-cols-3"] > div').first();
+    await cardLoc.hover();
+    await page.waitForTimeout(400);
+    const hovered = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      const card = grid!.children[0] as HTMLElement;
+      const actionRow = [...card.querySelectorAll("div")].find((d) => {
+        const cs = getComputedStyle(d);
+        return cs.position === "absolute" && d.children.length > 0 && d.querySelectorAll("button").length >= 1;
+      });
+      return {
+        boxShadow: getComputedStyle(card).boxShadow,
+        actionOpacity: actionRow ? getComputedStyle(actionRow).opacity : null,
+      };
+    });
+    expect(hovered.boxShadow).toBe("rgba(0, 0, 0, 0.04) 0px 2px 8px 0px");
+    expect(hovered.actionOpacity).toBe("1");
+  });
+});

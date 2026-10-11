@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.1
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.2
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,11 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.2 (Tracked Changes)
+
+- `[AUTH]` v1.1.2 (2026-10-11) — the v45 parity iteration (PIN-ONLY — no production-code change): the counts 108 unit / 221 e2e / 35 smoke (seven new pins: the items-card grid census at 1280 income + expenses, the calculator row census + REAL-hover shadow-md, the calculator 640 dialog, the category-level animation, the quick-action hover shadow-lg, the login shadow-scale regression pins); the SHADOW-SCALE SWEEP finding (every live `shadow-*` utility's VISIBLE layers match on both sites — the `--shadow-sm` theme pin is load-bearing for the small end since v4 RENAMED the scale; the md/lg/xl/2xl numerics were kept by v4 and are now pinned as the regression net; the LEAD-layer count diverges by construction — v4's 5-slot composition vs v3's 3-slot, invisible, the accepted v10/v25 class); the items-view card grid contract at 1280 (the 960 = rail 256 + content 1024 − p-8 64 arithmetic on both sites, the card's REAL hover INERT via the inline-beats-utility mechanism); the calculator row's LIVE hover (no inline shadow — the shadow-md visible layers + the action reveal); the 45th remediation plan + the probe catalog through v45.
+- `[SR]` The measured-parity ledger: 45 remediation plans (`docs/remediation-plan-v1.md` … `v45.md`), 16 screenshots, the session-document chain — see `README.md`'s parity table for the per-iteration summaries.
 
 #### Revision Block — v1.1.1 (Tracked Changes)
 

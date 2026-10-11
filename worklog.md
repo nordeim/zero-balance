@@ -33,7 +33,8 @@ and `docs/remediation-plan-v40.md`,
 and `docs/remediation-plan-v41.md`,
 and `docs/remediation-plan-v42.md`,
 and `docs/remediation-plan-v43.md`,
-and `docs/remediation-plan-v44.md`.
+and `docs/remediation-plan-v44.md`,
+and `docs/remediation-plan-v45.md`.
 
 ---
 
@@ -45,6 +46,90 @@ and `docs/remediation-plan-v44.md`.
 
 ---
 
+## Session 79 — Parity iteration v45: the shadow-scale sweep + the items-view card grid census + the calculator row hover — a PIN-ONLY iteration (2026-10-11)
+
+**Goal:** the session-99/100 queue — the items-view card grid at 1280,
+the calculator line-item row's hover, the category-level animation
+pin. TDD-first, docs aligned, commit + push via the SSH wrapper. (The
+workspace SURVIVED the session break: git pull fast-forwarded
+31b275d → e327b57, the environment intact.)
+
+- Baseline: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **214/214 e2e ✓ (4.9m, the FIRST run)** · 35/35 smoke ✓. Audit clean
+  (the same 5 dev-only ESLint-chain advisories, the secret scan clean,
+  the tree clean, the v44 diff re-audited).
+- Standing checks all clean: mobile-nav R1–R4 (**39th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, 395 overflows all still live), data drift (39th —
+  reference read-only, verified before + after), the SEO pair.
+- **THE V45 SWEEP (both sites — items-card-v45.mjs + calc-row-v45.mjs +
+  the REAL-hover driver steps + vlm-compare-v45.mjs)**:
+  - **THE SHADOW-SCALE DISCOVERY:** a SYSTEMIC v3↔v4 divergence in the
+    computed box-shadow composition — every live `shadow-*` utility's
+    VISIBLE layers match on BOTH sites (the `--shadow-sm` theme pin is
+    load-bearing for the small end: v4 RENAMED the scale, its native
+    shadow-sm = v3's "shadow"; the pin restores `0 1px 2px 0
+    rgb(0 0 0 / 0.05)` — measured matching) while the LEAD layers
+    diverge by construction (v4's 5-slot composition emits 4 transparent
+    leads vs v3's 2 — invisible, the accepted v10/v25 class). The
+    md/lg/xl/2xl numerics were NOT renamed and were UNPINNED — v45
+    pins the md/lg/sm/2xl sites as the regression net (a future
+    Tailwind upgrade that changes the scale numerics fails the suite).
+    Surveyed: the calculator row's hover (md), the action buttons' rest
+    (md), the quick-action card's hover (lg), the login panel (2xl),
+    the details sheet (2xl), the Google button's hover (sm), the slate
+    buttons (sm), the dialog inputs (sm), the white pills (sm), the
+    mobile sheet (lg), the login logo (lg/xl), the .zb-modal-panel
+    (explicit — visible ✓) + the inert-by-construction family (the
+    item/net-worth cards' inline boxShadow beats hover:shadow-lg on
+    BOTH sites — the v29 family).
+  - **The items-view card census at 1280: BYTE-IDENTICAL** — the grid
+    960 (the rail 256 + the content column 1024 − the p-8 64 — the
+    SAME arithmetic on both sites), 3 cols × 309.328, gap 16; the card
+    309/pad 20/radius 12/border/`rgba(0, 0, 0, 0.04) 0px 2px 8px 0px`
+    (Chrome normalizes the 3-value inline and the reference's to the
+    SAME string)/transition all 0.2s; the title row gap 8/dot 8×8/
+    16-600; the income kebab 36×36 opacity 0; the expense action row
+    top 12/right 12/gap 8/btn 32/padX 12/12px; the card's REAL hover
+    INERT on BOTH sites while the action row REVEALS. Heights 230 vs
+    200 = DATA (the notes rows).
+  - **The calculator row census + REAL hover: BYTE-IDENTICAL** — the
+    panel 768@1280/608@640, the row 720/560, pad 16/radius 12/border/
+    rest-shadow none/transition all 0.15s; the action pair opacity 0/
+    32px; under a REAL hover the shadow-md visible layers + the action
+    reveal on both sites. (The reference's RENT calculator is the only
+    one of its four expense cards with line items; the clone's row
+    API-created + restored — the calculator rule sets the parent to the
+    line-items SUM, so the restore PATCHes the parent back.)
+  - **The category-level band animation works** (the v44 Collapse at
+    the nested level): 441→453→…→495 + the reverse — in-flight frames
+    both directions, now pinned.
+- **The seven e2e (TDD — pin-only, all GREEN against the unchanged
+  build; the F2 pair needed its describe-level beforeEach, the one
+  test-layer fix; the build's typecheck caught a TS union in the F3a
+  evaluate's early return)**: F1a/F1b the items-card grid census +
+  the REAL-hover inert + the action reveal + the action buttons' rest
+  shadow-md; F2a/F2b the calculator row census + the hover shadow-md +
+  the 640 dialog; F3a the category-level animation + F3b the
+  quick-action hover shadow-lg; F4 the login shadow-scale regression
+  pins (slate sm + panel 2xl + Google hover sm).
+- **Five pin-sanity mutations verified to FAIL**: the card inline
+  0.04→0.08; the grid gap-4→gap-6; the row hover:shadow-md removed;
+  the quick-action hover:shadow-lg removed; the slate shadow-sm
+  removed. All restored → GREEN.
+- The full chain: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **221/221 e2e ✓ (5.2m — 214 → 221)** · 35/35 smoke ✓. The 16
+  screenshots regenerated. The VLM pair (the /income items-view at
+  1280): **IDENTICAL, zero flags — the first fully-clean screening
+  since the pair began.**
+- Docs aligned: AGENTS.md (the v45 paragraph), CLAUDE.md (221 + four
+  v45 insertions), README (the v45 row + the counts), the SKILL doc
+  (the Session 80 row + the state line + the command + the three-tier
+  row), the PAD (the v1.1.2 revision block), the probe README (the
+  v45 section — six lessons), session_101 + session_102, the repo
+  worklog (this entry), the workspace worklog.
+
+---
 ## Session 78 — Parity iteration v44: the drill-down expansion ANIMATION + the chevron GLYPH swap + the 390/1280 census + the donut-legend census — the first production-code change since v43 (2026-10-11)
 
 **Goal:** the session-95/96/97 queue — the drill-down's EXPANDED-state

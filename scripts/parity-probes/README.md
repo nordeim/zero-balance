@@ -1620,3 +1620,48 @@ viewports + the donut legend's interaction):
   glyph flag was real). (e) The reference's textContent concatenates
   without spaces — match exact-text leaf spans and climb, never
   text-match container rows.
+
+## v45 — the shadow-scale sweep + the items-view card grid + the calculator row hover (session-100/101)
+
+- `items-card-v45.mjs` — the items-view CARD census (the grid located by
+  its grid-cols-3 class, the card chrome, the title row, the kebab, the
+  hover-revealed action row; tags the first card for the driver's REAL
+  hover step).
+- `calc-row-v45.mjs` — the calculator LINE-ITEM ROW census (the row
+  located via its h4 climb to the p-4 bordered block; the rest action
+  pair; a synthetic-event hover — which does NOT engage CSS :hover, see
+  the lessons).
+- `ref-v45.sh` / `clone-v45.sh` — the drivers (login → the /income +
+  /expenses censuses at 1280 → the REAL `agent-browser hover` steps →
+  the calculator: the reference's RENT card — the ONLY one of its four
+  expense cards with line items — the clone's API-created row + the
+  delete + PATCH restore).
+- `vlm-compare-v45.mjs` + the /tmp/vlm45 pair — the standing VLM
+  screening (the /income items-view at 1280): **IDENTICAL, zero flags —
+  the first fully-clean screening since the pair began.**
+- THE V45 DISCOVERY — the shadow-scale sweep: every live `shadow-*`
+  utility's VISIBLE layers match on both sites, but the LEAD layers
+  diverge by construction (v4's 5-slot composition emits 4 transparent
+  leads vs v3's 2 — e.g. the calculator row's hover: the reference reads
+  4 layers, the clone 6, the same 2 visible). The accepted v10/v25
+  class, now census'd across the full scale (sm/md/lg/xl/2xl) and PINNED
+  as the regression net (a future Tailwind upgrade that changes the
+  scale numerics fails the suite).
+- LESSONS: (a) a REAL `.hover()` (Playwright's locator.hover() or
+  `agent-browser hover`) is the ONLY way to engage CSS `:hover` — a
+  synthetic `dispatchEvent(new MouseEvent('mouseover'))` fires the
+  listeners but never sets the pseudo-class (the first calc-row draft
+  read "inert" for BOTH sites on a live hover). (b) The reference's RENT
+  calculator is the only one of its four expense cards with line items —
+  probe the card with data, not the first one. (c) The calculator rule
+  sets the parent's amount to the line-items SUM — a probe that creates
+  + deletes a row must PATCH the parent back (deleting alone recalcs to
+  0; the seed's 1850 does not come back). (d) Chrome normalizes a
+  3-value inline box-shadow to the 4-value computed form — the clone's
+  `rgba(0,0,0,0.04) 0px 2px 8px` and the reference's inline compute the
+  IDENTICAL string. (e) The reference's dialog is an
+  overlay-wrapping-panel while the clone's is a Radix [role=dialog]
+  portal — a shared probe needs both finders (the v44 sheet lesson,
+  generalized). (f) `next build` typechecks the spec files too — an
+  evaluate's early return with a narrower object shape fails the build,
+  not the test run.
