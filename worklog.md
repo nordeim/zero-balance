@@ -31,7 +31,8 @@ and `docs/remediation-plan-v38.md`,
 and `docs/remediation-plan-v39.md`,
 and `docs/remediation-plan-v40.md`,
 and `docs/remediation-plan-v41.md`,
-and `docs/remediation-plan-v42.md`.
+and `docs/remediation-plan-v42.md`,
+and `docs/remediation-plan-v43.md`.
 
 ---
 
@@ -42,6 +43,80 @@ and `docs/remediation-plan-v42.md`.
 ---
 
 ---
+
+## Session 77 — Parity iteration v43: the drill-down EXPANDED-state census + the static-chevron and hover-rgb fixes — the first production-code change since v42 (2026-10-11)
+
+**Goal:** refresh the workspace (git pull — intact this session), re-run
+the baseline chain, sweep the session-92/93 queue (the drill-down
+EXPANDED-state census + the summary card's hover/interaction states),
+pin what the measurement finds, TDD-first, docs aligned (including the
+D-series doc nits from the core-doc review), commit + push via the SSH
+wrapper.
+
+- Workspace SURVIVED the session break: git pull fast-forwarded
+  288cfea → d55299f; the environment intact. Baseline: lint ✓ ·
+  typecheck ✓ · 108/108 unit ✓ · build ✓ · **206/206 e2e ✓ (4.7m, the
+  FIRST run, zero flakes)** · 35/35 smoke ✓. Audit clean (the same 5
+  dev-only braces advisories, the secret scan clean, .env =
+  .env.example, the v42 src diff re-audited).
+- Standing checks all clean: mobile-nav R1–R4 (**37th** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker, sheet-trap,
+  no-landmark, and 395 overflows all still live), data drift (37th —
+  reference read-only, verified before + after), the SEO pair.
+- **THE V43 SURFACE — the drill-down's expanded bands measured live on
+  BOTH sites at 640×960 (exp-census-v43.mjs + exp-detail-v43.mjs +
+  exp-rotate-v43.mjs + hover-v43.mjs)**:
+  - The per-row chrome BYTE-IDENTICAL at every level (the section
+    48/8px/-8px/8px radius/14px chevron, the category 28/6-12px/inline
+    rgb(249,250,251)/6×6 dot, the sub 24/4-8px/rgb(250,250,250)/4×4 dot
+    at 0.6, the item 24/4-8px/12px/rgb(156,163,175)/2×2 dot at 0.4/120px
+    truncate, the footer 29/6-12px/border-t); the arithmetic
+    324 → 441 → 495 (the +36 vs the reference = DATA: 2 categories
+    vs 1); sw 640 fully expanded.
+  - **THE PARITY GAPS (the first production-code change since v42)**:
+    (F1) the chevrons ROTATE on the clone (v4 `rotate: 180deg`, 0.15s)
+    and are STATIC on the reference (rotate: none, transition "all" 0s
+    at both levels — **Tailwind v4's rotate-* emits the `rotate`
+    PROPERTY, not `transform`; the transform: none readings on both
+    sites were meaningless — the v4 property trap**); (F2) the
+    section-row hover renders **lab(98.2596 -0.247031 -0.706708)** (the
+    v4 named palette, LIVE: the section button carries no inline bg)
+    where the reference computes rgb(249, 250, 251). Fixed: both
+    chevrons stripped (aria-expanded kept — the v32 superset) +
+    `hover:bg-[#f9fafb]`.
+  - The category rows' hover INERT on both sites (the inline bg
+    overrides — v29, DOM-identical). **The queue's summary-card item
+    RESOLVED: the net-worth gradient card is STATIC on both** (the same
+    gradient/shadow/cursor under a REAL hover — no interaction states
+    exist to match).
+- **F3/F4 — the three census e2e** (dashboard.spec.ts): the expanded
+  band census (the per-row chrome + the arithmetic 324/441/495 + sw
+  640) + the STATIC-chevron pin (rotate: none at both levels, fresh
+  post-expansion queries) + the hover rgb pin (a REAL .hover() — the
+  exact-name locator disambiguated from the Total Income stat card).
+  TDD: written FIRST, run RED (F1 at "180deg" ≠ "none"; F2 at lab ≠
+  rgb), the fixes applied, GREEN on the first run.
+- **Three pin-sanity mutations verified to FAIL**: the restored
+  rotate-180 → the rotate pin fails; the reverted hover hex → the rgb
+  pin fails; the sub-row py-1 → py-2 → the census pin fails (503 ≠
+  495). All restored → GREEN.
+- The full chain: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **209/209 e2e ✓ (4.8m — 206 → 209)** · 35/35 smoke ✓. The 16
+  screenshots regenerated. The VLM pair clean (all flags in the known
+  classes — the reference's own Base44 badge was MISATTRIBUTED to the
+  clone by the VLM, DOM-verified before it counted).
+- **The D-series doc alignment (the core-doc review's seven nits)**:
+  AGENTS.md's "Six"→"Seven" superset count + its v40/v41/v42/v43
+  paragraph order normalized newest-last; the SKILL doc's :3333 →
+  :3100 port + four stale 87/34/30 count sites; README's "21 handlers
+  (13 files)" → "23 (15)" + the v36/v37 session labels reconciled to
+  the SKILL doc's table; the PAD's v1.1.0 revision block (the counts,
+  the 23/15 surface, the four-state login, the SEO routes, the
+  item-details sheet, the a11y gate, the verification lib, the seven
+  supersets). Docs aligned (the probe README's v43 section, README's
+  v43 row + the 209 counts, CLAUDE.md's entry, AGENTS.md's v43
+  paragraph, the SKILL doc's state + Session 78 row, session_95.md,
+  session_96.md, the repo worklog, the workspace worklog).
 
 ## Session 76 — Parity iteration v42: the mid-viewport census of the five routes + the breakdown card's single-divider fix — the first production-code change since v41 (2026-10-11)
 

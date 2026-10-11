@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.0.0
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.0
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -13,6 +13,11 @@
 - `[AUTH]` v1.0.0 — the ZeroBalance application built on the repo scaffolding: all 7 routes, 21 API handlers across 13 route files, the Prisma schema, the three-tier test suite, and the Tailwind v4 trap mitigations. ORBITAL-era specs/scripts replaced.
 - `[SR]` Both reference mobile-navigation bugs fixed and pinned by e2e (toast click-block, sheet-stays-open).
 - `[SR]` zustand v5 derived-selector re-render loop (React #185) found on production build and fixed with `useShallow`.
+
+#### Revision Block — v1.1.0 (Tracked Changes)
+
+- `[AUTH]` v1.1.0 (2026-10-11) — the parity-remediation era's alignment pass: the counts 108 unit / 209 e2e / 35 smoke (the v1.0.0 numbers were 87/34/30); the API surface 23 handlers across 15 route files (auth x6 incl. verify-email + resend, budget-items x2, line-items x2, assets x2, liabilities x2, health); the login card's FOUR states (idle/error/confirmation/forgot — the register flow's verify-email gate added in v21); the SEO routes (`src/app/robots.ts` + `src/app/sitemap.ts` MetadataRoute files, `NEXT_PUBLIC_SITE_URL`-driven); the Budget Item Details sheet (v28 — the card-body-click bottom sheet); the axe-core a11y gate (v38/39 — the two-gate structural + provenance contract, desktop AND mobile, the sheet-open structural pins on all six routes); the email-verification lib (`src/lib/verification.ts` + `User.verificationCode`); the seven superset fixes (mobile hamburger/sheet-close/active-highlight/no-overflow/mobile figure fit/kebab keyboard reveal); the test-suite structure (9 unit files / 22 e2e spec files / the 35-step smoke with verify-email); the parity-probe catalog (`scripts/parity-probes/` — 43+ files through v43) and the TDD census-pin discipline (every production change measured live on BOTH sites, pinned RED-first, mutation-sanity-verified).
+- `[SR]` The measured-parity ledger: 43 remediation plans (`docs/remediation-plan-v1.md` … `v43.md`), 16 screenshots, the session-document chain — see `README.md`'s parity table for the per-iteration summaries.
 
 ---
 

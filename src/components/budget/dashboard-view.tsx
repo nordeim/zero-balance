@@ -40,7 +40,7 @@ import {
   TYPE_COLORS,
   rgb,
 } from "@/lib/constants";
-import { cn, hexToRgba } from "@/lib/utils";
+import { hexToRgba } from "@/lib/utils";
 import type { BudgetItem, Classification, ItemType } from "@/lib/types";
 
 const CLASSIFICATION_COLORS: Record<Classification, string> = {
@@ -240,11 +240,18 @@ function BreakdownSection({
   const prefix = label === "Total Income" ? "" : "- ";
   return (
     <div>
+      {/* v43 F2: the hover bg as an arbitrary hex — the v4 named palette
+          (hover:bg-gray-50) computes lab(98.2596 -0.247031 -0.706708),
+          the reference's engaged v3 gray-50 computes rgb(249, 250, 251)
+          (hover-v43.mjs: a REAL pointer hover on both sites; the section
+          button carries no inline bg, so the hover is LIVE here — unlike
+          the category rows whose inline bg makes their hover inert on
+          BOTH sites, v29). */}
       <button
         type="button"
         aria-expanded={expanded}
         onClick={onToggle}
-        className="flex w-full -mx-2 cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50"
+        className="flex w-full -mx-2 cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-[#f9fafb]"
       >
         <span className="flex items-center gap-2">
           <span
@@ -257,8 +264,15 @@ function BreakdownSection({
             {label}
           </span>
           <span className="ml-1">
+            {/* v43 F1: the chevron is STATIC — the reference's measured
+                contract (exp-rotate-v43.mjs: rotate: none, transform: none,
+                transition "all" 0s at BOTH levels, fresh post-expansion
+                queries on both sites); the clone's pre-fix v4 rotate-180
+                rendered rotate: 180deg (0.15s) — the `rotate` property,
+                NOT `transform` — while the reference's chevrons never
+                rotate. The aria-expanded stays (the v32 a11y superset). */}
             <ChevronDownIcon
-              className={cn("h-3.5 w-3.5 transition-transform", expanded && "rotate-180")}
+              className="h-3.5 w-3.5"
               style={{ color: "rgb(156, 163, 175)" }}
               aria-hidden="true"
             />
@@ -289,8 +303,11 @@ function BreakdownSection({
                         {cat.name}
                       </span>
                       <span className="ml-1">
+                        {/* v43 F1: static like the reference (exp-rotate-v43
+                            measured rotate: none on the reference's category
+                            chevrons post-expansion). */}
                         <ChevronDownIcon
-                          className={cn("h-3 w-3 transition-transform", catOpen && "rotate-180")}
+                          className="h-3 w-3"
                           style={{ color: "rgb(156, 163, 175)" }}
                           aria-hidden="true"
                         />

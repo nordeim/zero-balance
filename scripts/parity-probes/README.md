@@ -1499,3 +1499,56 @@ routes — the v41 lesson applied to the remaining route set):
   chrome) is exactly where asymmetric reference design hides. (d) VLM
   screening flags stay in the known classes (superset pins + seed data)
   — the divider fix itself drew no flag, the heights now matching.
+
+Session-77 additions (remediation-plan-v43 audit — the session-92/93
+suggested queue: the drill-down EXPANDED-state census + the summary
+card's hover/interaction states):
+
+- `exp-census-v43.mjs` — the drill-down expanded-state census (both
+  sites, 640×960): expands the Total Income section + its first
+  category, reads every band's chrome (the section/category/sub/item
+  rows + the footer) and the card's expansion heights. The chrome is
+  BYTE-IDENTICAL at every level (section 48/8px/-8px/8px radius;
+  category 28/"6px 12px"/inline rgb(249,250,251)/6×6 dot; sub
+  24/"4px 8px"/rgb(250,250,250)/4×4 dot at 0.6; item 24/"4px
+  8px"/12px/rgb(156,163,175)/2×2 dot at 0.4/120px truncate; footer
+  29/border-t); the heights differ only by DATA (the seed's 2 categories
+  vs the reference's 1 → +36).
+- `exp-detail-v43.mjs` — the label-span fonts + the fresh-query chevron
+  (the saved node goes STALE on React re-render — computed styles of
+  detached nodes read ""/none; always re-query after the click).
+- `exp-rotate-v43.mjs` — THE definitive rotation probe: reads the CSS
+  `rotate` property. Tailwind v4's rotate-* utilities emit the modern
+  `rotate` property, NOT `transform` — a `transform: none` reading on
+  BOTH sites is MEANINGLESS (the v4 property trap). FINDINGS: the
+  reference's chevrons are STATIC at BOTH levels (rotate: none,
+  transform: none, transition "all" 0s); the clone's pre-fix
+  rotate-180 rendered rotate: 180deg (0.15s). The v43 F1 production fix
+  (the two chevrons stripped of rotate-180 + transition-transform).
+- `hover-v43.mjs` — the REAL-pointer hover census: the section row's
+  engaged hover (the reference rgb(249,250,251) vs the clone's pre-fix
+  lab(98.2596 -0.247031 -0.706708) — the v4 named-palette trap, LIVE on
+  this surface; the v43 F2 fix hover:bg-[#f9fafb]); the category rows'
+  hover inert on BOTH (the inline bg overrides — v29); the net-worth
+  summary card STATIC on both (the queue item resolved: same gradient,
+  same shadow rgba(26,58,46,0.3) 0 20 60, cursor auto — no interaction
+  states exist to match).
+- `vlm-compare-v43.mjs` + the /tmp/vlm43 pair — the standing VLM
+  screening (the EXPANDED drill-down post-fix): all three flags in the
+  known classes (the Dashboard-highlight superset #3, the avatar letter
+  data, and the reference's own Base44 dev badge misattributed to the
+  clone — DOM-verified: the fixed z-999999 div lives on the REFERENCE).
+- `ref-v40.sh` / `clone-v40.sh` re-run as the 37th standing checks.
+- LESSONS: (a) read the CSS `rotate` PROPERTY for v4 rotation states —
+  `transform` never shows Tailwind v4's rotate-* (the mirror image of
+  the shadow/space-y traps: v4 maps familiar class names to NEW
+  properties). (b) A saved DOM node goes stale across a React
+  re-render — computed styles of detached nodes return empty/none;
+  re-query after every state change. (c) The named-palette lab() trap
+  lives in HOVER states too — hover:bg-gray-50 computes lab() in v4;
+  the arbitrary-hex fix (hover:bg-[#f9fafb]) works because the hover
+  selector carries no inline-style override. (d) The "inert hover" class
+  (inline bg beating the hover class) is DOM-identical on both sites —
+  parity holds without a fix when the reference has the same inert
+  class. (e) VLM image-order attribution is unreliable — a fixed
+  overlay flag must be DOM-verified before it counts.

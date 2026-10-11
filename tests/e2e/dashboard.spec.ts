@@ -719,3 +719,271 @@ test.describe("mid-viewport band census (v42 — plan F2/F3)", () => {
     }
   });
 });
+
+// v43 (remediation-plan-v43.md) — the drill-down EXPANDED-state census:
+// the v42 session pinned the collapsed bands; the expanded
+// categories/subcategories/items bands were never measured. Measured on
+// BOTH sites at 640x960 (exp-census-v43.mjs + exp-detail-v43.mjs +
+// exp-rotate-v43.mjs + hover-v43.mjs): the per-row chrome is
+// byte-identical at every level; TWO parity gaps found — the chevrons
+// ROTATE on the clone (Tailwind v4 emits the modern CSS `rotate`
+// property, NOT `transform` — the transform: none reading on both sites
+// was meaningless, the v4 property trap) while the reference's are
+// static, and the section-row hover renders lab() (the v4 named-palette
+// trap, live: the section button carries no inline bg) where the
+// reference computes rgb(249, 250, 251). The category rows'
+// hover:bg-gray-100 is inert on BOTH sites (the inline bg overrides —
+// v29's finding, DOM-identical).
+test.describe("drill-down expanded-state census (v43 — plan F3/F4)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 960 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+  });
+
+  test("the expanded band census at 640 — the section/category/sub/item/footer chrome + the expansion heights (v43 F3)", async ({ page }) => {
+    const census = await page.evaluate(async () => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? bdH.closest('div[class*="rounded-2xl"]') : null;
+      if (!card) return null;
+      const collapsedH = Math.round(card.getBoundingClientRect().height);
+      // Expand the Total Income section.
+      const sec = [...card.querySelectorAll("button")].find((b) =>
+        /Total Income/i.test(b.textContent || ""),
+      );
+      if (!sec) return null;
+      const sCs = getComputedStyle(sec);
+      const section = {
+        h: Math.round(sec.getBoundingClientRect().height),
+        pad: sCs.padding,
+        ml: sCs.marginLeft,
+        radius: sCs.borderRadius,
+        cursor: sCs.cursor,
+      };
+      sec.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const secExpandedH = Math.round(card.getBoundingClientRect().height);
+      // The first category row (Salary).
+      const cat = [...card.querySelectorAll("button")].find(
+        (b) => b.offsetParent !== null && /\$/.test(b.textContent || "") && !/Total|Net Balance/i.test(b.textContent || ""),
+      );
+      if (!cat) return null;
+      const cCs = getComputedStyle(cat);
+      const cDot = [...cat.querySelectorAll("span")].find((s) => {
+        const r = s.getBoundingClientRect();
+        return r.width > 0 && r.width <= 8 && getComputedStyle(s).borderRadius === "9999px";
+      });
+      const catLabel = [...cat.querySelectorAll("span")].find((s) => {
+        const t = (s.textContent || "").trim();
+        return t.length > 1 && s.children.length === 0 && !/^\$/.test(t);
+      });
+      const category = {
+        h: Math.round(cat.getBoundingClientRect().height),
+        pad: cCs.padding,
+        radius: cCs.borderRadius,
+        bg: cCs.backgroundColor,
+        dotW: cDot ? Math.round(cDot.getBoundingClientRect().width) : null,
+        labelFont: catLabel ? getComputedStyle(catLabel).fontSize : null,
+        labelWeight: catLabel ? getComputedStyle(catLabel).fontWeight : null,
+        labelColor: catLabel ? getComputedStyle(catLabel).color : null,
+      };
+      cat.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const fullExpandedH = Math.round(card.getBoundingClientRect().height);
+      // The sub + item rows under the opened category.
+      const subArea = [...cat.parentElement!.children].find(
+        (c) => c !== cat && c.getBoundingClientRect().height > 0,
+      );
+      if (!subArea) return null;
+      const rows = [...subArea.querySelectorAll("div")].filter((d) => {
+        const cs = getComputedStyle(d);
+        return cs.display === "flex" && d.children.length >= 2 && Math.round(d.getBoundingClientRect().height) >= 16;
+      });
+      const subRow = rows[0] as HTMLElement | undefined;
+      const itemRow = rows[rows.length - 1] as HTMLElement | undefined;
+      const subLabel = subRow
+        ? [...subRow.querySelectorAll("span")].find((s) => {
+            const t = (s.textContent || "").trim();
+            return t.length > 1 && s.children.length === 0 && !/^\$/.test(t);
+          })
+        : null;
+      const itemLabel = itemRow
+        ? [...itemRow.querySelectorAll("span")].find((s) => {
+            const t = (s.textContent || "").trim();
+            return t.length > 1 && s.children.length === 0 && !/^\$/.test(t);
+          })
+        : null;
+      const sub = subRow
+        ? {
+            h: Math.round(subRow.getBoundingClientRect().height),
+            pad: getComputedStyle(subRow).padding,
+            bg: getComputedStyle(subRow).backgroundColor,
+            labelFont: subLabel ? getComputedStyle(subLabel).fontSize : null,
+            labelWeight: subLabel ? getComputedStyle(subLabel).fontWeight : null,
+            labelColor: subLabel ? getComputedStyle(subLabel).color : null,
+          }
+        : null;
+      const item = itemRow
+        ? {
+            h: Math.round(itemRow.getBoundingClientRect().height),
+            pad: getComputedStyle(itemRow).padding,
+            color: getComputedStyle(itemRow).color,
+            font: getComputedStyle(itemRow).fontSize,
+            labelMaxW: itemLabel ? getComputedStyle(itemLabel).maxWidth : null,
+            labelTrunc: itemLabel ? getComputedStyle(itemLabel).textOverflow : null,
+          }
+        : null;
+      // The footer row ("2 categories").
+      const footP = [...card.querySelectorAll("span")].find(
+        (e) => /categor/i.test(e.textContent || "") && e.children.length === 0,
+      );
+      const footRow = footP ? (footP.closest("div") as HTMLElement | null) : null;
+      const footer = footRow
+        ? {
+            h: Math.round(footRow.getBoundingClientRect().height),
+            pad: getComputedStyle(footRow).padding,
+            borderTop: getComputedStyle(footRow).borderTopWidth,
+            font: getComputedStyle(footP!).fontSize,
+            weight: getComputedStyle(footP!).fontWeight,
+          }
+        : null;
+      return {
+        collapsedH,
+        secExpandedH,
+        fullExpandedH,
+        section,
+        category,
+        sub,
+        item,
+        footer,
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The card's expansion arithmetic (the seed's: 2 income categories,
+    // the first with 1 sub + 1 item — deterministic for db/custom.db).
+    expect(census!.collapsedH).toBe(324); // the v42 single-divider card
+    expect(census!.secExpandedH).toBe(441);
+    expect(census!.fullExpandedH).toBe(495);
+    // The per-row chrome (byte-identical on BOTH sites — exp-census-v43).
+    expect(census!.section).toEqual({ h: 48, pad: "8px", ml: "-8px", radius: "8px", cursor: "pointer" });
+    expect(census!.category!.h).toBe(28);
+    expect(census!.category!.pad).toBe("6px 12px");
+    expect(census!.category!.radius).toBe("8px");
+    expect(census!.category!.bg).toBe("rgb(249, 250, 251)"); // the inline bg (inert hover — v29)
+    expect(census!.category!.dotW).toBe(6);
+    expect(census!.category!.labelFont).toBe("12px");
+    expect(census!.category!.labelWeight).toBe("500");
+    expect(census!.category!.labelColor).toBe("rgb(26, 58, 46)");
+    expect(census!.sub!.h).toBe(24);
+    expect(census!.sub!.pad).toBe("4px 8px");
+    expect(census!.sub!.bg).toBe("rgb(250, 250, 250)");
+    expect(census!.sub!.labelFont).toBe("12px");
+    expect(census!.sub!.labelWeight).toBe("400");
+    expect(census!.sub!.labelColor).toBe("rgb(107, 114, 128)");
+    expect(census!.item!.h).toBe(24);
+    expect(census!.item!.pad).toBe("4px 8px");
+    expect(census!.item!.font).toBe("12px");
+    expect(census!.item!.color).toBe("rgb(156, 163, 175)");
+    expect(census!.item!.labelMaxW).toBe("120px");
+    expect(census!.item!.labelTrunc).toBe("ellipsis");
+    expect(census!.footer!.h).toBe(29);
+    expect(census!.footer!.pad).toBe("6px 12px");
+    expect(census!.footer!.borderTop).toBe("1px");
+    expect(census!.footer!.font).toBe("12px");
+    expect(census!.footer!.weight).toBe("600");
+    // No overflow even fully expanded.
+    expect(census!.sw).toBe(640);
+  });
+
+  test("the drill-down chevrons stay STATIC on expansion — rotate: none at both levels (v43 F1)", async ({ page }) => {
+    const reading = await page.evaluate(async () => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? bdH.closest('div[class*="rounded-2xl"]') : null;
+      if (!card) return null;
+      const sec = [...card.querySelectorAll("button")].find((b) =>
+        /Total Income/i.test(b.textContent || ""),
+      );
+      if (!sec) return null;
+      const readChev = (row: HTMLElement) => {
+        const svgs = [...row.querySelectorAll("svg")];
+        const chev = svgs[svgs.length - 1] as SVGElement | undefined;
+        if (!chev) return null;
+        const cs = getComputedStyle(chev);
+        return {
+          rotate: cs.rotate,
+          transform: cs.transform,
+          w: Math.round(chev.getBoundingClientRect().width),
+          transitionProperty: cs.transitionProperty,
+          color: cs.color,
+        };
+      };
+      const secBefore = readChev(sec);
+      sec.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const secAfter = readChev(sec);
+      const cat = [...card.querySelectorAll("button")].find(
+        (b) => b.offsetParent !== null && /\$/.test(b.textContent || "") && !/Total|Net Balance/i.test(b.textContent || ""),
+      );
+      if (!cat) return null;
+      cat.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const catAfter = readChev(cat);
+      return { secBefore, secAfter, catAfter };
+    });
+    expect(reading).not.toBeNull();
+    // The reference's measured contract (exp-rotate-v43.mjs, fresh
+    // post-expansion queries on BOTH levels): rotate: none, transform:
+    // none, transition "all" 0s — the chevrons NEVER rotate. The clone's
+    // pre-fix v4 `rotate-180` read "180deg" here (the `rotate` property,
+    // NOT `transform` — the v4 property trap: transform reads "none"
+    // even while rotating).
+    expect(reading!.secBefore!.rotate).toBe("none");
+    expect(reading!.secAfter!.rotate).toBe("none"); // pre-fix: "180deg"
+    expect(reading!.catAfter!.rotate).toBe("none"); // pre-fix: "180deg"
+    expect(reading!.secAfter!.transform).toBe("none");
+    // The chevrons' sizes stay pinned (14px section, 12px category).
+    expect(reading!.secAfter!.w).toBe(14);
+    expect(reading!.catAfter!.w).toBe(12);
+    expect(reading!.secAfter!.color).toBe("rgb(156, 163, 175)");
+  });
+
+  test("the section-row hover computes the reference's rgb(249,250,251), not lab (v43 F2)", async ({ page }) => {
+    // A REAL hover (the drill-down rows carry no mouse-following tooltip —
+    // the donut's synthetic-hover lesson does not apply here). The exact
+    // name disambiguates from the Total Income STAT CARD (role=button,
+    // name "Total Income $5550.00 2 items").
+    const sec = page.getByRole("button", { name: "Total Income $5550.00", exact: true });
+    await sec.hover();
+    await page.waitForTimeout(300);
+    const reading = await page.evaluate(() => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? bdH.closest('div[class*="rounded-2xl"]') : null;
+      const secEl = card
+        ? ([...card.querySelectorAll("button")].find((b) => /Total Income/i.test(b.textContent || "")) as HTMLElement | null)
+        : null;
+      if (!secEl) return null;
+      const cs = getComputedStyle(secEl);
+      return { bg: cs.backgroundColor, cursor: cs.cursor };
+    });
+    expect(reading).not.toBeNull();
+    // The reference's engaged hover computes v3 gray-50 as plain rgb. The
+    // clone's pre-fix v4 named palette computed
+    // lab(98.2596 -0.247031 -0.706708) — the named-palette trap, LIVE on
+    // this surface (the section button carries no inline bg).
+    expect(reading!.bg).toBe("rgb(249, 250, 251)"); // pre-fix: lab(...)
+    expect(reading!.cursor).toBe("pointer");
+  });
+});
