@@ -909,3 +909,81 @@ test.describe("dialog input focus composite (v47 — plan F1)", () => {
     await expect(dialog).toBeHidden();
   });
 });
+
+test.describe("dialog input focus composite at MOBILE 390 (v48 — plan F2)", () => {
+  test("the amount input's rest + focus composition holds at 390 — the mobile content width 310", async ({ page }) => {
+    // The v47 F1's mobile follow-up (the session-108 queue #4), measured
+    // live on BOTH sites (v48): the SAME visible layers as the desktop
+    // composite — the reference 3-layer v3 construction vs the clone's
+    // 5-slot v4 construction, both carrying the shadow-sm visible layer
+    // at rest and the 1px #0a0a0a ring + the persisting shadow-sm layer
+    // under REAL focus. The input WIDTH is 310 on BOTH sites at 390
+    // (the mobile dialog's content width), and the border color is
+    // UNCHANGED under focus on both sites (the ring does the work).
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByRole("button", { name: "Add Income" }).click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const rest = await page.evaluate(() => {
+      const input = document.querySelector<HTMLInputElement>('[role="dialog"] input');
+      if (!input) return null;
+      const cs = getComputedStyle(input);
+      const layerCount = (cs.boxShadow.match(/px, /g) || []).length + 1;
+      return {
+        w: Math.round(input.getBoundingClientRect().width),
+        h: cs.height,
+        radius: cs.borderRadius,
+        pad: cs.padding,
+        border: `${cs.borderWidth} ${cs.borderColor}`,
+        bg: cs.backgroundColor,
+        shadow: cs.boxShadow,
+        layerCount,
+        outlineStyle: cs.outlineStyle,
+      };
+    });
+    expect(rest).not.toBeNull();
+    // The mobile chrome (measured identical on both sites, live at 390).
+    expect(rest!.w).toBe(310);
+    expect(rest!.h).toBe("36px");
+    expect(rest!.radius).toBe("6px");
+    expect(rest!.pad).toBe("4px 12px");
+    expect(rest!.border).toBe("1px rgb(229, 229, 229)");
+    expect(rest!.bg).toBe("rgba(0, 0, 0, 0)");
+    // The rest shadow: the shadow-sm VISIBLE layer + the 5-slot count.
+    expect(rest!.shadow).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+    expect(rest!.layerCount).toBe(5);
+    expect(rest!.outlineStyle).toBe("none");
+
+    // REAL focus with the visible heuristic (the v35 idiom).
+    const focused = await page.evaluate(() => {
+      const input = document.querySelector<HTMLInputElement>('[role="dialog"] input');
+      if (!input) return null;
+      (input as HTMLElement).focus({ focusVisible: true } as unknown as FocusOptions);
+      const cs = getComputedStyle(input);
+      const layerCount = (cs.boxShadow.match(/px, /g) || []).length + 1;
+      return {
+        fv: input.matches(":focus-visible"),
+        shadow: cs.boxShadow,
+        layerCount,
+        borderColor: cs.borderColor,
+        outlineStyle: cs.outlineStyle,
+      };
+    });
+    expect(focused).not.toBeNull();
+    expect(focused!.fv).toBe(true);
+    // THE RING + the persisting rest shadow (the composed state).
+    expect(focused!.shadow).toContain("rgb(10, 10, 10) 0px 0px 0px 1px");
+    expect(focused!.shadow).toContain("rgba(0, 0, 0, 0.05) 0px 1px 2px 0px");
+    // The border UNCHANGED under focus; the outline invisible family.
+    expect(focused!.borderColor).toBe("rgb(229, 229, 229)");
+    expect(focused!.layerCount).toBe(5);
+    expect(focused!.outlineStyle).toBe("none");
+
+    // Close (the Radix superset: Escape works).
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  });
+});

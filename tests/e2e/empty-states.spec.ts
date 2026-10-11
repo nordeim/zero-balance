@@ -201,3 +201,109 @@ test.describe("empty states + content column (v6)", () => {
     expect(await columnWidth()).toBe(960);
   });
 });
+
+test.describe("empty-state full census (v48 — plan F3)", () => {
+  test("the filter-to-zero empty block is byte-parity: the full chrome + the Add button's bare shadow", async ({ page }) => {
+    // The session-108 queue #3, measured live on BOTH sites (v48) at
+    // 390x844 via the frequency filter-to-zero (the reference's Salary
+    // is monthly — One-time yields zero; the e2e uses the v6 G12 search
+    // idiom, the same empty block, read-only). The block: the bare
+    // `py-16 text-center` container 358x328 / the 64px icon at opacity
+    // 0.2, rgb(10,10,10), mb 16 / the H3 20px-600-forest mb 8 / the P
+    // 16px gray mb 24 / the Add button h 36 with the 135deg gradient +
+    // v3's BARE shadow (`0 1px 3px 0px` + `0 1px 2px -1px`, both
+    // 0.1-alpha — the .zb-btn-add v11 G2a family).
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    await page.getByPlaceholder("Search income items...").fill("zzzz-no-match");
+    await expect(page.getByText("No income items yet")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const h = [...document.querySelectorAll("main h3")].find((x) =>
+        /No income items yet/.test(x.textContent || ""),
+      );
+      if (!h) return null;
+      const block = h.parentElement as HTMLElement;
+      const bs = getComputedStyle(block);
+      const br = block.getBoundingClientRect();
+      const svg = block.querySelector("svg");
+      const scs = svg ? getComputedStyle(svg) : null;
+      const hs = getComputedStyle(h);
+      const p = block.querySelector("p");
+      const ps = p ? getComputedStyle(p) : null;
+      const btn = [...block.querySelectorAll("button")].find((b) =>
+        /Add Income/.test(b.textContent || ""),
+      );
+      const bcs = btn ? getComputedStyle(btn) : null;
+      const btnR = btn ? btn.getBoundingClientRect() : null;
+      return {
+        container: {
+          cls: block.className,
+          pad: bs.padding,
+          align: bs.textAlign,
+          w: Math.round(br.width),
+          h: Math.round(br.height),
+          borderW: bs.borderTopWidth,
+          bg: bs.backgroundColor,
+        },
+        icon: scs
+          ? {
+              w: Math.round(svg!.getBoundingClientRect().width),
+              h: Math.round(svg!.getBoundingClientRect().height),
+              opacity: scs.opacity,
+              color: scs.color,
+              mb: scs.marginBottom,
+            }
+          : null,
+        title: { fs: hs.fontSize, fw: hs.fontWeight, color: hs.color, mb: hs.marginBottom },
+        p: ps ? { fs: ps.fontSize, color: ps.color, mb: ps.marginBottom } : null,
+        btn: bcs
+          ? {
+              h: Math.round(btnR!.height),
+              w: Math.round(btnR!.width),
+              bg: bcs.backgroundImage,
+              pad: bcs.padding,
+              radius: bcs.borderRadius,
+              fw: bcs.fontWeight,
+              shadow: bcs.boxShadow,
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The bare container: py-16 text-center, transparent, no border.
+    expect(census!.container.cls).toBe("py-16 text-center");
+    expect(census!.container.pad).toBe("64px 0px");
+    expect(census!.container.align).toBe("center");
+    expect(census!.container.w).toBe(358);
+    expect(census!.container.h).toBe(328);
+    expect(census!.container.borderW).toBe("0px");
+    expect(census!.container.bg).toBe("rgba(0, 0, 0, 0)");
+    // The icon: 64px, opacity 0.2, near-black, mb-4 (16px).
+    expect(census!.icon!.w).toBe(64);
+    expect(census!.icon!.h).toBe(64);
+    expect(census!.icon!.opacity).toBe("0.2");
+    expect(census!.icon!.color).toBe("rgb(10, 10, 10)");
+    expect(census!.icon!.mb).toBe("16px");
+    // The H3: text-xl (20) / font-semibold (600) / forest / mb-2 (8px).
+    expect(census!.title.fs).toBe("20px");
+    expect(census!.title.fw).toBe("600");
+    expect(census!.title.color).toBe("rgb(26, 58, 46)");
+    expect(census!.title.mb).toBe("8px");
+    // The P: text-base (16) / gray / mb-6 (24px).
+    expect(census!.p!.fs).toBe("16px");
+    expect(census!.p!.color).toBe("rgb(107, 114, 128)");
+    expect(census!.p!.mb).toBe("24px");
+    // The Add button: h 36 / the 135deg gradient / pad 8px 16px /
+    // radius 6 / fw 500 / v3's BARE shadow (the v11 G2a family).
+    expect(census!.btn!.h).toBe(36);
+    expect(census!.btn!.w).toBe(147);
+    expect(census!.btn!.bg).toContain("linear-gradient(135deg");
+    expect(census!.btn!.pad).toBe("8px 16px");
+    expect(census!.btn!.radius).toBe("6px");
+    expect(census!.btn!.fw).toBe("500");
+    expect(census!.btn!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(census!.btn!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+  });
+});

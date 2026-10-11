@@ -36,7 +36,8 @@ and `docs/remediation-plan-v43.md`,
 and `docs/remediation-plan-v44.md`,
 and `docs/remediation-plan-v45.md`,
 and `docs/remediation-plan-v46.md`,
-and `docs/remediation-plan-v47.md`.
+and `docs/remediation-plan-v47.md`,
+and `docs/remediation-plan-v48.md`.
 
 ---
 
@@ -45,6 +46,82 @@ and `docs/remediation-plan-v47.md`.
 ---
 
 ---
+
+---
+
+## Session 82 — Parity iteration v48: the item-details sheet's shadow-2xl + the dialog-input focus composite at 390 + the empty-state full census — a PIN-ONLY iteration (2026-10-12)
+
+**Goal:** the session-108 queue's first candidate (the details
+panel's shadow — the regression net's seventh site) + the queue's
+fourth (the dialog input's focus composite at 390 — the v47 F1's
+mobile follow-up) + the queue's third (the empty-state census via
+filter-to-zero). TDD-first, docs aligned, commit + push via the SSH
+wrapper. (The workspace was RESET this session: git clone 3f00e47 →
+npm install → db:push → db:seed; the playwright chromium-1243 build
+fetched pre-emptively — the v46 lesson.)
+
+- Baseline: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **226/226 e2e ✓ (5.3m)** · 35/35 smoke ✓. Audit clean (the same 5
+  dev-only ESLint-chain advisories, --omit=dev = 0; the secret scan
+  clean; .env ≡ .env.example; the v47 diff = tests/probes/docs only).
+- Standing checks all clean: mobile-nav R1–R4 (**42nd** — Tailwind v4
+  pins hold, both sites; the reference's toast-blocker measured via
+  elementFromPoint at the burger's center, the sheet-trap via the
+  live nav — the sheet + overlay still open on /income after the
+  nav), data drift (42nd — reference read-only before + after: "1
+  items · $25,000" networth / "1 items · $5,000.00" income, the
+  frequency filter reset verified), the SEO pair (both sites).
+- **THE v48 SWEEP (three surfaces, both sites — ref-v48.sh +
+  clone-v48.sh, READ-ONLY on the reference)**:
+  - **The item-details sheet's shadow-2xl (the net's SEVENTH site):
+    every VISIBLE layer matches — PIN-ONLY.** The reference's panel
+    (card-body click → details): 512×680 (the 85vh cap at 800) /
+    radius 16 / 2 transparent leads + the v3 2xl layer
+    `rgba(0,0,0,0.25) 0px 25px 50px -12px`; the overlay
+    rgba(26,58,46,0.5) + the 36×36 close. The clone's panel (the
+    Radix Content): 512×680 / 4 transparent leads + **the SAME 2xl
+    visible layer** (v4's 5-slot, the accepted class) + the same
+    overlay (the v7 G6 forest scrim, re-verified) + the same close
+    button.
+  - **The dialog-input focus composite at 390 (the v47 F1's mobile
+    follow-up): the input w 310 on BOTH sites** with the same
+    visible layers at rest and under REAL focus (the shadow-sm layer
+    + the 1px ring + the persisting rest layer, the border
+    unchanged) — the focus family is viewport-independent on both
+    sites. PIN-ONLY.
+  - **The empty-state full census (filter-to-zero): BYTE-PARITY.**
+    The reference's /income frequency filter → One-time (its Salary
+    is monthly — the read-only zero path; the filter reset verified
+    by the after-census): the bare `py-16 text-center` 358×328
+    block / the 64px icon at opacity 0.2, rgb(10,10,10), mb 16 / the
+    H3 20-600-forest mb 8 / the P 16-gray mb 24 / the Add button h
+    36, w 147, the 135deg gradient + the v3 BARE shadow pair. The
+    clone: identical on every dimension. PIN-ONLY.
+  - The queue's toast item RESOLVED as superset-only: the
+    reference's toast never fired on the empty-form saves (measured
+    twice — /income and /networth); its toasts are rare-path only
+    (the v10/v33 notes); a reference toast census needs a REAL data
+    mutation, against the v46 read-only discipline. Deferred.
+- TDD: **3/3 pins GREEN immediately** (the first F1 draft's
+  close-button finder missed the sr-only "Close" accessible name —
+  fixed to the accessible-name idiom). S1 four mutations, each with
+  the standalone REBUILD (the v47 lesson): (a) the panel's
+  shadow-2xl removed → F1 fails; (b) the input's ring-1 removed →
+  F2 fails (and v47's F1 — the shared class); (c) the icon mb-4→mb-2
+  → F3 fails (h 328→320); (d) the .zb-btn-add shadow removed → F3
+  fails. All restored — `git status src/` empty.
+- Full chain: lint ✓ · typecheck ✓ · 108 unit ✓ · build ✓ ·
+  **229/229 e2e ✓ (5.3m — 226→229)** · 35/35 smoke ✓. The VLM pair
+  on /savings at 1280: 4 flags, all DOM-verified as data classes
+  (the richer seed's 2-card grid + the Recurring/payment-method rows
+  + the avatar initial; the badge chrome byte-identical — the
+  reference's need chip = the clone's CLASSIFICATION_BADGES need
+  entry exactly). No chrome gaps.
+- The 16 screenshots regenerated; the docs aligned (AGENTS/CLAUDE/
+  README/SKILL Session 83 row + the 229 state/PAD v1.1.5/the probe
+  README's v48 section/session_110 + session_111/the repo worklog
+  Session 82 + the ledger list). Three new e2e, 226 to 229,
+  108/229/35 green.
 
 ---
 

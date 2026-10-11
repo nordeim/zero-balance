@@ -1765,3 +1765,48 @@ viewports + the donut legend's interaction):
   reference's single-card data never shows this; the wrap is the
   byte-identical flex-wrap behavior, not a chrome gap (VLM flags need
   the DOM verification — the v43 lesson, third application).
+
+## v48 — the item-details shadow-2xl + the dialog-input 390 composite + the empty-state census (session-108/109 queue #1 + #4 + #3)
+
+- `ref-v48.sh` — the reference-side driver (READ-ONLY: the card-click
+  + details census + close; the dialog-open + input-focus + cancel;
+  the frequency filter-to-zero + the reset-verified restore — no
+  Delete clicks anywhere, the v46 incident rule).
+- `clone-v48.sh` — the clone-side driver (the same three surfaces via
+  with-server on :3200; the search filter-to-zero is the e2e idiom —
+  the live probe used the reference's frequency-Select route).
+- `standing-checks-v48.sh` — the 42nd standing check, clone side
+  (R1–R4 + the SEO pair, one script).
+- `vlm-compare-v48.mjs` + the /tmp/vlm48 pair — the standing VLM
+  screening (the /savings view at 1280 — the fresh DESKTOP surface):
+  4 flags, all DOM-verified as data classes (the richer seed's 2-card
+  grid, the Recurring + payment-method rows, the avatar initial; the
+  badge chrome byte-identical — the reference's need chip
+  rgb(254,242,242)/rgb(185,28,28) = the clone's need map exactly).
+- THE v48 FINDING — everything at parity on the VISIBLE layers, the
+  FOURTH pin-only iteration (v45-family): the details panel's
+  shadow-2xl (the net's seventh site — `rgba(0,0,0,0.25) 0px 25px 50px
+  -12px` on both sites, the reference's 3-slot vs the clone's 5-slot);
+  the dialog input's focus composite at 390 (the input w 310 on BOTH
+  sites — the mobile content width; the same rest + focus visible
+  layers, the family viewport-independent); the empty-state block at
+  BYTE-PARITY (the whole 358×328 census incl. the Add button's v3
+  bare-shadow pair).
+- LESSONS: (a) **the reference's toast is RARE-PATH only** —
+  empty-form saves never toast (measured live twice this session, on
+  /income and /networth); the clone's toasts are the documented
+  superset UX (the v10 note). A toast census needs a REAL save (data
+  mutation) — defer to a queue where mutation is sanctioned. (b) The
+  reference's frequency Select carries non-matching options
+  (One-time/Weekly/… vs its monthly items) — the read-only
+  filter-to-zero trigger for empty-state probes (reset verified by
+  the after-census). (c) The reference's empty-state Add button
+  carries the GRADIENT + v3 BARE-shadow family (NOT the --shadow-sm
+  navbar pin) — the two shadow scales coexist by surface; a naive
+  "all shadow-sm" sweep would mis-pin. (d) The clone's details close
+  button is found by its accessible name "Close" (the sr-only span) —
+  an empty-text finder misses it (the first F1 draft's TypeError). (e)
+  The VLM's badge-color flag on /savings decomposes into the
+  classification VALUE difference (need=red vs savings=green) — the
+  CHIP chrome is identical per value; DOM-verify the color map before
+  counting a badge flag (the v43 lesson, fourth application).

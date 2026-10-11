@@ -287,3 +287,86 @@ test.describe("budget item details sheet (v28 — plan G3)", () => {
     await expect(dialog).toBeHidden();
   });
 });
+
+test.describe("item-details shadow-2xl census (v48 — plan F1)", () => {
+  test("the details panel carries the reference's v3 shadow-2xl visible layer (the net's seventh site)", async ({ page }) => {
+    // Session-108 queue #1, measured live on BOTH sites (v48): the
+    // reference's details panel composes 2 transparent leads + the v3
+    // shadow-2xl layer `rgba(0,0,0,0.25) 0px 25px 50px -12px`; the
+    // clone's shadow-2xl composes 4 transparent leads + the SAME
+    // visible layer (v4's 5-slot construction — the accepted
+    // v10/v25/v45 lead-divergence class, this time at the 2xl end on
+    // the details surface). The panel: w 512 (max-w-lg) / h 680 (the
+    // 85vh cap at an 800 viewport) / radius 16 (md:rounded-2xl) / bg
+    // white. The overlay: the v7 G6 forest scrim rgba(26,58,46,0.5) +
+    // z 50 + blur(8px) — re-verified live in the same sweep. The close
+    // button: the v9 36x36 in-header X family, re-verified.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+    const card = page.locator("div.rounded-xl").filter({ hasText: "Salary" }).first();
+    await card.locator("h4").click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+
+    const census = await dialog.evaluate((el) => {
+      const panel = el as HTMLElement;
+      const ps = getComputedStyle(panel);
+      const layerCount = (ps.boxShadow.match(/px, /g) || []).length + 1;
+      const overlay = [...panel.parentElement!.children].find(
+        (c) => c !== panel && /inset-0/.test(c.className),
+      ) as HTMLElement | null;
+      const os = overlay ? getComputedStyle(overlay) : null;
+      // The in-header X (the v9 family): its accessible name is "Close"
+      // via the sr-only span (the v28 keyboard test's initial-focus idiom).
+      const closeBtn = [...panel.querySelectorAll("button")].find(
+        (b) => (b.textContent || "").trim() === "Close",
+      );
+      const cb = closeBtn ? getComputedStyle(closeBtn) : null;
+      const r = panel.getBoundingClientRect();
+      return {
+        w: Math.round(r.width),
+        h: Math.round(r.height),
+        radius: ps.borderRadius,
+        maxW: ps.maxWidth,
+        bg: ps.backgroundColor,
+        shadow: ps.boxShadow,
+        layerCount,
+        overlay: os
+          ? { bg: os.backgroundColor, z: os.zIndex, blur: os.backdropFilter }
+          : null,
+        closeBtn: cb
+          ? {
+              w: Math.round(closeBtn!.getBoundingClientRect().width),
+              h: Math.round(closeBtn!.getBoundingClientRect().height),
+              radius: cb.borderRadius,
+              bg: cb.backgroundColor,
+              borderW: cb.borderWidth,
+            }
+          : null,
+      };
+    });
+
+    // The panel geometry (measured identical on both sites at 1280x800).
+    expect(census.w).toBe(512);
+    expect(census.h).toBe(680); // the 85vh cap
+    expect(census.radius).toBe("16px");
+    expect(census.maxW).toBe("512px");
+    expect(census.bg).toBe("rgb(255, 255, 255)");
+    // THE SHADOW: the v3 2xl VISIBLE layer + the v4 5-slot count.
+    expect(census.shadow).toContain("rgba(0, 0, 0, 0.25) 0px 25px 50px -12px");
+    expect(census.layerCount).toBe(5);
+    // The overlay: the forest scrim, z 50, blur(8px).
+    expect(census.overlay!.bg).toBe("rgba(26, 58, 46, 0.5)");
+    expect(census.overlay!.z).toBe("50");
+    expect(census.overlay!.blur).toContain("blur(8px)");
+    // The close button: the 36x36 transparent X.
+    expect(census.closeBtn!.w).toBe(36);
+    expect(census.closeBtn!.h).toBe(36);
+    expect(census.closeBtn!.radius).toBe("6px");
+    expect(census.closeBtn!.bg).toBe("rgba(0, 0, 0, 0)");
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  });
+});
