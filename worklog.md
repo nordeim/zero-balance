@@ -42,7 +42,8 @@ and `docs/remediation-plan-v49.md`,
 and `docs/remediation-plan-v50.md`,
 and `docs/remediation-plan-v51.md`,
 and `docs/remediation-plan-v52.md`,
-and `docs/remediation-plan-v53.md`.
+and `docs/remediation-plan-v53.md`,
+and `docs/remediation-plan-v54.md`.
 
 ---
 
@@ -51,6 +52,82 @@ and `docs/remediation-plan-v53.md`.
 ---
 
 ---
+
+---
+
+## Session 88 — Parity iteration v54: the savings goal-card's badge-row + footer internals at 390 (PIN-ONLY — the third consecutive pin-only iteration) + the footer-locator/blockification probe lessons (2026-10-12)
+
+**Goal:** the session-125 v54 queue's first read-only member — the
+savings view's GOAL-CARD INTERNALS census at 390 (the badge chip row
++ the date/payment footer, the internals BEYOND the v51 F3 chrome
+pin) + the queue's standing-check suggestion (a fresh VLM pair on
+the /networth tablist). TDD-first, docs aligned, push via the SSH
+wrapper. The workspace re-cloned at 664cfd7; the environment rebuilt
+(npm install + .env from .env.example + db:push/db:seed + `npx
+playwright install chromium` — the fresh-clone lacked the
+per-version headless-shell-1243 binary; the first e2e run failed
+21-wide on browserType.launch before the install).
+
+**The v54 sweep** (`ref-v54.sh` + `clone-v54.sh`, READ-ONLY on the
+reference): the goal-card internals at 390 — **BYTE-PARITY on every
+chrome axis, PIN-ONLY**. The header row flex/gap 8/mb 4/center; the
+dot 8×8/9999/rgb(59,126,161) (the savings TYPE accent on BOTH sites
+— the reference colors its dot by TYPE, not classification; its
+need-classified goal still carries the teal savings dot); the badge
+row flex/wrap/gap 8/mb 12; every chip h 22/radius 6/pad 2px 10px/
+12/600 with the 12×12 icons at mr 4 (the "monthly" chip w 78 and the
+"active" chip w 63 on BOTH sites — the byte-parity width proof);
+the footer flex/space-between/12/rgb(107,114,128)/h 16 + the date
+span flex/gap 4/12 with the 12×12 calendar icon. The chip count
+(3 vs 4 — the Recurring chip), the row height (22 vs 52), the
+payment span, and the card height (200 vs 230) are the documented
+DATA classes.
+
+**The pin + the mutations.** F1 (`tests/e2e/items.spec.ts`, the new
+"savings goal-card internals census at 390 (v54 — plan F1)"
+describe): the first run FAILED — the badge-row finder required the
+chips' computed display "inline-flex" but flex items are BLOCKIFIED
+(the CSS spec: inline-flex → flex as a flex container's child) — the
+finder fixed to accept "flex", GREEN. FIVE pin-sanity mutations
+verified to FAIL then restored (the badge row gap-2→gap-4 [8→16];
+the chip px-2.5→px-1.5 [pad 2px 10px→2px 6px]; the chip text-xs→
+text-sm [h 22→26]; the footer text-xs→text-sm; the date span
+gap-1→gap-2 [4→8]) — each with the standalone REBUILD as a SEPARATE
+command (the v53 lesson).
+
+**The standing checks (48th) + the VLM pair.** The reference's four
+bugs ALL live (the toast-blocker, the sheet-trap via overlayCount 1,
+the no-landmark, the 464 /networth overflow); the clone's mobile
+navigation menu VERIFIED WORKING (R1 burger hit-test true + the
+5-link sheet, R2 the Income nav closes AND navigates, R3 nav
+landmark, R4 zero overflow at 390 on all five views); the data
+census intact; the SEO pair live on both. The VLM pair on the
+/networth tablist (the v53 F1 surface) AND the savings goal card
+(the F1 surface): every flag DOM-verified (the active tab bg
+byte-identical rgb(220,252,231) — a perception artifact; the Add
+button's full "Add Asset" on both sites, scrollW 134 = clientW 134
+— a small-text misread; the trend icon = the documented 464-overflow
+width class; the rest = the seed-data/platform classes) — the pair
+CLEAN per the v43 rule.
+
+**The probe lessons (the v54 additions).** (1) A generic
+justify-between + svg footer finder matches the card's HEADER row
+first (the header also carries justify-between + the kebab svg; the
+fs-16/h-48 reading is the tell-tale) — the footer locator is "the
+LAST justify-between direct child WITHOUT an h4". (2) The chips'
+inline-flex SOURCE class computes to "flex" as blockified flex
+items. (3) The fresh-clone environment needs `npx playwright
+install chromium` (the per-version headless-shell binary). (4) The
+reference session EXPIRES between long eval gaps — re-login before
+any follow-up census.
+
+**The chain.** lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+248 e2e (141 + 108, two ordered chunks, both exit 0, zero failures)
+· 35/35 smoke ✓. The 16 screenshots regenerated — ZERO byte-diffs
+(the pin-only invariant). The docs aligned (AGENTS/CLAUDE/README/
+SKILL Session 89 row + the 248 state/PAD v1.1.11/the probe README's
+v54 section/session_128 + session_129/this worklog + the ledger
+list). Commit + push to main via the SSH wrapper.
 
 ---
 

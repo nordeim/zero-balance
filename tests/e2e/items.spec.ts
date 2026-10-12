@@ -1611,3 +1611,217 @@ test.describe("expenses view mobile census at 390 (v52 — plan F3)", () => {
     expect(census!.docSW).toBe(390);
   });
 });
+
+// v54 F1 (docs/remediation-plan-v54.md): the savings goal-card's
+// INTERNALS at 390 — the badge chip row + the date/payment footer —
+// the internals BEYOND the v51 F3 chrome pin, measured live on BOTH
+// sites at byte-parity (READ-ONLY on the reference). The chip COUNT
+// (the reference's 3 vs the seed's 4 — the Recurring chip) and the
+// row HEIGHT (22 vs 52, the wrap) are DATA classes — never pinned;
+// the chip + footer CHROME axes are byte-identical (the "monthly"
+// chip's w 78 on BOTH sites is the strongest width-parity signal).
+test.describe("savings goal-card internals census at 390 (v54 — plan F1)", () => {
+  test("the badge row + the chips + the footer (v54 F1)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The goal card: the Emergency Fund h4's rounded-xl ancestor in
+      // the grid (the v51 F3 walk).
+      const h4 = [...document.querySelectorAll("h4")].find((x) =>
+        /Emergency Fund/i.test((x.textContent || "").trim()),
+      );
+      if (!h4) return null;
+      let card: HTMLElement | null =
+        (h4.closest("div.rounded-xl") as HTMLElement | null) ?? h4.parentElement;
+      for (let i = 0; card && i < 5; i++) {
+        const cs = getComputedStyle(card!.parentElement!);
+        if (cs.display === "grid") break;
+        card = card!.parentElement as HTMLElement;
+      }
+      if (!card) return null;
+      // The header row (the dot + h4 line): the h4's direct parent.
+      const hdrRow = h4.parentElement as HTMLElement;
+      const hcs = getComputedStyle(hdrRow);
+      const dot = [...hdrRow.querySelectorAll("div")].find(
+        (d) => d.getBoundingClientRect().width < 12,
+      ) as HTMLElement | null;
+      // The badge row: the flex-wrap chip row (the chips are inline-flex
+      // SOURCE classes but compute to "flex" — flex items are blockified
+      // per the CSS spec; the probe's OR-clause lesson).
+      const badgeRow = [...card.querySelectorAll("div")].find((d) => {
+        const cs = getComputedStyle(d);
+        return (
+          cs.display === "flex" &&
+          cs.flexWrap === "wrap" &&
+          d.children.length >= 2 &&
+          [...d.children].every(
+            (c) => getComputedStyle(c as HTMLElement).display === "flex",
+          )
+        );
+      }) as HTMLElement | null;
+      if (!badgeRow) return null;
+      const brcs = getComputedStyle(badgeRow);
+      const chipGrab = (el: Element) => {
+        const cs = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        const icon = el.querySelector("svg");
+        return {
+          text: (el.textContent || "").trim(),
+          w: Math.round(r.width),
+          h: Math.round(r.height),
+          radius: cs.borderRadius,
+          pad: cs.padding,
+          fs: cs.fontSize,
+          fw: cs.fontWeight,
+          icon: icon
+            ? {
+                w: Math.round(icon.getBoundingClientRect().width),
+                h: Math.round(icon.getBoundingClientRect().height),
+                mr: getComputedStyle(icon).marginRight,
+              }
+            : null,
+        };
+      };
+      const chips = [...badgeRow.children].map(chipGrab);
+      // The footer: the LAST justify-between direct child WITHOUT an
+      // h4 (the header row also carries justify-between — the v54
+      // probe-debug lesson).
+      const footer = [...card.children]
+        .filter((d) => {
+          const cs = getComputedStyle(d as HTMLElement);
+          return (
+            cs.display === "flex" &&
+            cs.justifyContent === "space-between" &&
+            !d.querySelector("h4")
+          );
+        })
+        .pop() as HTMLElement | undefined;
+      if (!footer) return null;
+      const fcs = getComputedStyle(footer);
+      const dateSpan = footer.children[0] as HTMLElement;
+      const dscs = getComputedStyle(dateSpan);
+      const dateIcon = dateSpan.querySelector("svg");
+      return {
+        hdrRow: {
+          display: hcs.display,
+          gap: hcs.gap,
+          mb: hcs.marginBottom,
+          alignItems: hcs.alignItems,
+        },
+        dot: dot
+          ? {
+              w: Math.round(dot.getBoundingClientRect().width),
+              h: Math.round(dot.getBoundingClientRect().height),
+              radius: getComputedStyle(dot).borderRadius,
+              bg: getComputedStyle(dot).backgroundColor,
+            }
+          : null,
+        badgeRow: {
+          display: brcs.display,
+          gap: brcs.gap,
+          wrap: brcs.flexWrap,
+          mb: brcs.marginBottom,
+          n: badgeRow.children.length,
+        },
+        firstChip: chips[0] ?? null,
+        monthlyChip: chips.find((c) => c.text === "monthly") ?? null,
+        activeChip: chips.find((c) => c.text === "active") ?? null,
+        footer: {
+          display: fcs.display,
+          justify: fcs.justifyContent,
+          fs: fcs.fontSize,
+          color: fcs.color,
+          h: Math.round(footer.getBoundingClientRect().height),
+        },
+        dateSpan: {
+          display: dscs.display,
+          gap: dscs.gap,
+          fs: dscs.fontSize,
+          color: dscs.color,
+          icon: dateIcon
+            ? {
+                w: Math.round(dateIcon.getBoundingClientRect().width),
+                h: Math.round(dateIcon.getBoundingClientRect().height),
+                color: getComputedStyle(dateIcon).color,
+              }
+            : null,
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The header row (the dot + h4 line).
+    expect(census!.hdrRow).toEqual({
+      display: "flex",
+      gap: "8px",
+      mb: "4px",
+      alignItems: "center",
+    });
+    // The dot: 8x8, the savings teal accent.
+    expect(census!.dot).toEqual({
+      w: 8,
+      h: 8,
+      radius: "9999px",
+      bg: "rgb(59, 126, 161)",
+    });
+    // The badge row: flex / wrap / gap 8 / mb 12 (the chip COUNT is a
+    // data class — the reference's 3 vs the seed's 4).
+    expect(census!.badgeRow).toEqual({
+      display: "flex",
+      gap: "8px",
+      wrap: "wrap",
+      mb: "12px",
+      n: 4,
+    });
+    // The FIRST chip (the classification chip, icon-bearing):
+    // h 22 / radius 6 / pad 2px 10px / 12/600 / the 12x12 icon mr 4.
+    expect(census!.firstChip!.h).toBe(22);
+    expect(census!.firstChip!.radius).toBe("6px");
+    expect(census!.firstChip!.pad).toBe("2px 10px");
+    expect(census!.firstChip!.fs).toBe("12px");
+    expect(census!.firstChip!.fw).toBe("600");
+    expect(census!.firstChip!.icon).toEqual({ w: 12, h: 12, mr: "4px" });
+    // The MONTHLY chip: w 78 on BOTH sites (the byte-parity width
+    // proof — the same text at the same chrome) / NO icon.
+    expect(census!.monthlyChip).toMatchObject({
+      w: 78,
+      h: 22,
+      radius: "6px",
+      pad: "2px 10px",
+      fs: "12px",
+      fw: "600",
+      icon: null,
+    });
+    // The ACTIVE chip: w 63 on BOTH sites / NO icon.
+    expect(census!.activeChip).toMatchObject({
+      w: 63,
+      h: 22,
+      radius: "6px",
+      pad: "2px 10px",
+      fs: "12px",
+      fw: "600",
+      icon: null,
+    });
+    // The footer row: 12/rgb(107,114,128)/h 16.
+    expect(census!.footer).toEqual({
+      display: "flex",
+      justify: "space-between",
+      fs: "12px",
+      color: "rgb(107, 114, 128)",
+      h: 16,
+    });
+    // The date span: flex gap 4 + the 12x12 calendar icon at gray.
+    expect(census!.dateSpan).toEqual({
+      display: "flex",
+      gap: "4px",
+      fs: "12px",
+      color: "rgb(107, 114, 128)",
+      icon: { w: 12, h: 12, color: "rgb(107, 114, 128)" },
+    });
+    // The clone's superset no-overflow contract at 390.
+    expect(census!.docSW).toBe(390);
+  });
+});

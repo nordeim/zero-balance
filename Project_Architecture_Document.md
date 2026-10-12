@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.10
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.11
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,10 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.11 (Tracked Changes)
+
+- `[UI]` v1.1.11 (2026-10-12) — the v54 parity iteration (PIN-ONLY — the third consecutive pin-only iteration, no production-code change): the counts 108 unit / 248 e2e / 35 smoke; the SAVINGS GOAL-CARD's badge-row + footer internals pin at 390 (byte-parity on every chrome axis — the header row flex/gap 8/mb 4, the dot 8×8/rgb(59,126,161) [the savings TYPE accent on both sites; the reference colors by TYPE, not classification], the badge row flex/wrap/gap 8/mb 12, every chip h 22/radius 6/pad 2px 10px/12/600 with the 12×12 icons at mr 4 [the monthly chip w 78 and the active chip w 63 on BOTH sites — the byte-parity width proof], the footer flex/space-between/12/rgb(107,114,128)/h 16 + the date span flex/gap 4 with the 12×12 calendar icon; the chip count/row height/payment span are the documented data classes); the v54 probe lessons (the justify-between footer finder's header-row false match — the locator is "the LAST justify-between direct child WITHOUT an h4"; the chips' inline-flex source class computes to "flex" as blockified flex items; the fresh-clone environment needs `npx playwright install chromium` — the per-version headless-shell binary); the 54th remediation plan + the probe catalog through v54.
 
 #### Revision Block — v1.1.10 (Tracked Changes)
 

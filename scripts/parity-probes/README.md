@@ -2109,3 +2109,48 @@ viewports + the donut legend's interaction):
   5. `pkill -f agent-browser` inside a bash -c whose command string
      contains "agent-browser" kills the PARENT script (the -f match
      hits the command line) — use fresh session names instead.
+
+## v54 — the savings goal-card's badge-row + footer internals census (session-128)
+
+The first iteration of the session-125 v54 queue: the savings view's
+GOAL-CARD INTERNALS at 390 — the badge chip row + the date/payment
+footer — the internals BEYOND the v51 F3 chrome pin. Drivers:
+`ref-v54.sh` (READ-ONLY on the reference) + `clone-v54.sh` + the VLM
+pair `vlm-shots-v54.sh` + `clone-vlmshots-v54.sh` +
+`vlm-compare-v54.mjs`.
+
+**Result: byte-parity on every chrome axis — PIN-ONLY (the third
+consecutive pin-only iteration).** The reference's own Emergency Fund
+goal (need-classified, 3 chips, no payment method) vs the clone's dev
+seed's Emergency Fund (savings-classified, 4 chips incl. Recurring,
+Bank Account payment) — the chip COUNT, the row HEIGHT (22 vs 52, the
+wrap), and the payment span are DATA classes; the chip + footer CHROME
+is byte-identical, with the "monthly" chip measuring w 78 and the
+"active" chip w 63 on BOTH sites (the same text at the same chrome
+renders the same width — the strongest byte-parity signal a census can
+produce).
+
+The v54 lessons:
+
+1. **A generic justify-between + svg footer finder matches the card's
+   HEADER row first** — the header row (`flex items-start
+   justify-between mb-3`) also carries justify-between and its own
+   kebab svg. The first census run read the header's 16px/48px
+   geometry as the "footer" and the empty kebab button as the
+   "payment span" (the fs-16/h-48 signature is the tell-tale of the
+   wrong row). The correct locator: **the LAST justify-between direct
+   child WITHOUT an h4**.
+2. **The chips' `inline-flex` SOURCE class computes to "flex"** — the
+   chips are children of the flex badge row, and flex items are
+   blockified per the CSS spec (`inline-flex` → `flex`). A census
+   finder checking `display === "inline-flex"` finds nothing; accept
+   "flex" (the probe's OR-clause existed for exactly this reason).
+3. **The fresh-clone environment needs `npx playwright install
+   chromium`** — the headless-shell binary is per-Playwright-version
+   (1243 this session; the cache carried 1200/1248 from other
+   Playwright installs). The first a11y run failed 21-wide on
+   `browserType.launch: Executable doesn't exist` before the install.
+4. **The reference session EXPIRES between long eval gaps** — the
+   mid-verification census landed on the login page ("Welcome to
+   ZeroBudge" + docSW 390 at a logged-in route is the signature);
+   re-login via the same eval before any follow-up census.
