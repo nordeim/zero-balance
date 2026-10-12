@@ -40,7 +40,8 @@ and `docs/remediation-plan-v47.md`,
 and `docs/remediation-plan-v48.md`,
 and `docs/remediation-plan-v49.md`,
 and `docs/remediation-plan-v50.md`,
-and `docs/remediation-plan-v51.md`.
+and `docs/remediation-plan-v51.md`,
+and `docs/remediation-plan-v52.md`.
 
 ---
 
@@ -51,6 +52,74 @@ and `docs/remediation-plan-v51.md`.
 ---
 
 ---
+
+## Session 86 — Parity iteration v52: the details sheet's missing subcategory line (THE FIX — the fourth production-code change since v46) + the /income and /expenses 390 pins + the details-sheet internals pin + the standing script's burger-selector probe-infra fix (2026-10-12)
+
+**Goal:** the session-121 v52 queue's read-only members — the
+/expenses and /income mobile censuses at 390 (the item-card family
+beyond the v51 savings pin) + the item-details 390 reflow (the v28
+geometry pins walked the panel chrome only, never the summary's
+content sequence). TDD-first, docs aligned, commit + push via the
+SSH wrapper. (The workspace survived — a `git pull` fast-forward to
+e71d357.)
+
+**What was done:** the baseline chain GREEN (108 unit / 241 e2e /
+35 smoke — clean on the FIRST run, no flakes — the v51 state
+confirmed); the 46th standing checks (the reference's first run hit
+a base44 COLD START — the re-run clean: all four bugs live, the
+superset preserved; the clone side's R1 read sheetLinks:0 —
+INVESTIGATED: the script's `button[aria-label="Open menu"]` is the
+REFERENCE's DOM idiom, the clone's sr-only-named burger never
+matched it and the `|| true` masked the failure; the mobile nav
+itself verified WORKING via the eval flow — the sheet opens 5
+links, the nav closes + navigates, the Escape closes; the stale
+selector became the P1 scripts/ fix); the trap-log scan CLEAN (the
+two -mb- back buttons both inside their converted containers); the
+v52 probe pair found ONE REAL GAP — the details sheet's summary was
+missing the SUBCATEGORY P (the reference renders FIVE summary
+elements: the chip row, the H3 name, the P.text-lg 18/400/gray
+subcategory — Rent "Apartment" / Salary "Main Job" — the amount;
+the clone rendered four; the field was always on the model, the
+card renders it, the edit dialog edits it, the details view never
+wired it) + the /income and /expenses 390 censuses at BYTE-PARITY;
+the remediation plan v52 written + validated; the TDD cycle (the
+F1 RED run, the one-insert fix, GREEN — plus the chain-gate catch:
+the new census code's `h1.closest()` null-safety, TS18047/TS2345
+at `next build`'s tsc — the third application of the v51 lesson);
+the five mutations verified biting (the P removed [the RED];
+the chip's gradient; the filter's p-6->p-4 [BOTH F2+F3]; the
+details header's py-4->py-2; the H1's text-3xl->text-2xl [BOTH]);
+the P1 fix applied + re-verified (R1 "burger clicked" + sheetLinks
+5); the full chain 245/245 e2e (clean first run) + 35/35 smoke;
+the VLM pair on the /expenses view at 390 (4 flags, all the
+documented seed-data/platform classes); the 16 screenshots
+regenerated (ONE byte-diff: 16-item-details.png — the fix's visual
+effect); the docs aligned (AGENTS/CLAUDE/README/PAD v1.1.9/SKILL
+Session 87 + the 245 state/the probe README's v52 section/
+session_122 + session_123/this worklog + the ledger list). Commit
++ push to main via the SSH wrapper.
+
+**Artifacts:** `docs/remediation-plan-v52.md` (the plan), the
+one-insert fix in `src/components/budget/item-details-dialog.tsx`
+(+17 lines), four new e2e (item-details.spec.ts: the F1 subcategory
+census + the F4 internals census; items.spec.ts: the F2 income +
+F3 expenses 390 censuses — 241 to 245), the P1 fix in
+`scripts/parity-probes/clone-stand47.sh`, the v52 probe pair +
+the VLM script in `scripts/parity-probes/`, the regenerated
+screenshot set (16), `docs/session_122.md` + `docs/session_123.md`,
+the docs alignment (AGENTS/CLAUDE/README/PAD/SKILL/probe README).
+Full chain: lint + typecheck + 108 unit + build + 245/245 e2e +
+35/35 smoke — all green.
+
+**Probe lessons:** the reference session EXPIRES between long eval
+gaps (re-login via the eval); the viewport state does NOT survive a
+session restart (re-apply 390 before any mobile census — the
+"215.5px" desktop false reading); the reference's details sheet has
+NO [role=dialog] (the no-landmark family — find it via the
+`fixed inset-0 z-50` overlay); the summary is a TWO-LEVEL title
+structure (the H3 + the subcategory P — walk the full subtree);
+rounded-full computes 9999px on v3 vs 3.35544e+07px on v4 — pin the
+CLASS, not the computed value.
 
 ## Session 85 — Parity iteration v51: the verify-email mode container's missing `.zb-auth-mode` conversion (THE FIX — the third production-code change since v46, completing the v50 F1's CLAIMED-but-never-applied third site) + four 390 pin surfaces (2026-10-12)
 

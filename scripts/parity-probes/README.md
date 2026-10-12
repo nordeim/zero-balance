@@ -1971,3 +1971,60 @@ viewports + the donut legend's interaction):
   clone's 2 richer-seed cards with the 4-chip badge rows; the chrome
   byte-pinned by the F3 test) — the v48 precedent's second
   application.
+
+## v52 — the details sheet's subcategory + the /income and /expenses mobile censuses (session-121/122)
+
+- `ref-v52.sh` + `clone-v52.sh` — the v52 surface drivers: the
+  /income view at 390 (the header row's mobile reflow + the filter
+  card + the item-card grid), the /expenses view at 390 (the same
+  family + the 4-child filter grid), and the item-details sheet's
+  internals at 390 (opened via the read-only card-body click).
+- THE v52 FINDING — ONE REAL GAP (the fourth production-code change
+  since v46): the details sheet's summary was missing the SUBCATEGORY
+  P. The reference renders FIVE summary elements (the chip row → the
+  H3 name → the P.text-lg subcategory 18/400/rgb(107,114,128) → the
+  amount) — Rent → "Apartment", Salary → "Main Job" — while the clone
+  rendered four (the H3 → the amount directly). The field was always
+  on the clone's model (the card renders it, the edit dialog edits
+  it); the details view simply never wired it. The one-insert fix
+  lands between the H3 and the amount.
+- The /income and /expenses 390 censuses: BYTE-PARITY on every
+  visible axis (the header row 358×112 flex-col/gap 16/mb 32; the
+  48×48 gradient chip; the H1 30/700; the per-type-gradient Add
+  buttons 147/155×36; the filter card 358/radius 16/pad 24; the inner
+  grid 1-col 308/gap 16 with the 3- and 4-child variants; the search
+  308×36/pad 4 12 4 40; the item grid + the first card's chrome;
+  docSW 390).
+- The details sheet's internals: byte-parity (the sticky header h 69,
+  the title 18/700, the 36×36 close, the body space-y-6 p-6, the chip
+  row gap 8/mb 12, the classification block radius 12/pad 16, the
+  fact rows gap 12/pad 8 0, the meta footer grid-cols-2) — plus the
+  accepted 4-vs-2 shadow-lead divergence (the 2xl layer's visible
+  pair byte-identical).
+- `vlm-compare-v52.mjs` + the /tmp/vlm52 pair — the standing VLM
+  screening (the /expenses view at 390 — THE F3 SURFACE): the VLM
+  flagged 4 diffs (the header count/total; the card contents; the
+  Base44 FAB [mislabeled as the clone's — the FAB is the reference's
+  own platform chrome]; the layout length) — ALL DOM-verified as the
+  documented seed-data/platform classes (the v47/v48 precedents).
+- P1 — the standing script's burger selector: `clone-stand47.sh`'s R1
+  step clicked `button[aria-label="Open menu"]` — the REFERENCE's DOM
+  idiom; the clone's burger carries no aria-label (its accessible
+  name rides the sr-only "Toggle Sidebar" span) so the click failed
+  SILENTLY (`|| true` masked it) and R1 read sheetLinks:0 — a false
+  red on a working surface. The fixed text-walk eval reads
+  sheetLinks:5 (the 46th standing check re-verified with it).
+- Probe lessons: (a) the reference session EXPIRES between long eval
+  gaps — re-login via the same eval before any follow-up census. (b)
+  `agent-browser set viewport` state does NOT survive a session
+  restart — re-apply the 390 viewport before any mobile census after
+  a re-login (a post-restart census read the desktop 4-col filter
+  grid at "215.5px" tracks — the false reading). (c) The reference's
+  details sheet carries NO [role=dialog] (the no-landmark family) —
+  find it via the `fixed inset-0 z-50` overlay class census instead.
+  (d) The reference's summary is a TWO-LEVEL title structure (the H3
+  name + the P subcategory) — walk the FULL subtree; a leaf-only
+  census misses the siblings between the levels. (e) The rounded-full
+  computed radius diverges v3 (9999px) vs v4 (3.35544e+07px) — both
+  fully-round pills clamped at h/2; pin the CLASS, not the computed
+  value.

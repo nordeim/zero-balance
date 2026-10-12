@@ -370,3 +370,251 @@ test.describe("item-details shadow-2xl census (v48 — plan F1)", () => {
     await expect(dialog).toBeHidden();
   });
 });
+
+// v52 F1 (docs/remediation-plan-v52.md): the summary's FIFTH element —
+// the subcategory P. Measured live on the reference this session (the
+// Rent sheet on /expenses + the Salary sheet on /income, both via the
+// card-body click at 390): the summary renders chip row → H3 (name,
+// text-2xl font-bold mb-2, 24/700/forest) → the SUBCATEGORY P
+// (`text-lg`, 18/400/rgb(107,114,128) — Rent → "Apartment", Salary →
+// "Main Job") → the amount P (text-4xl font-bold mt-4). The clone
+// rendered the H3 → the amount directly (the field was never wired
+// into the details view — the card and the edit dialog both render
+// it). The one-insert fix lands between the H3 and the amount.
+
+test.describe("details summary subcategory census (v52 — plan F1)", () => {
+  test("the summary renders the subcategory P between the H3 and the amount", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/income");
+    const salary = page.locator("div.rounded-xl").filter({ hasText: "Salary" }).first();
+    await expect(salary).toBeVisible();
+    await salary.locator("h4").click();
+
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(300);
+
+    // The subcategory P: visible, the seeded "Main Job", the
+    // reference's chrome (text-lg, 18/400/rgb(107,114,128)).
+    const sub = dialog.locator("p.text-lg");
+    await expect(sub).toBeVisible();
+    await expect(sub).toHaveText("Main Job");
+    const subInfo = await sub.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { fs: cs.fontSize, fw: cs.fontWeight, color: cs.color };
+    });
+    expect(subInfo.fs).toBe("18px");
+    expect(subInfo.fw).toBe("400");
+    expect(subInfo.color).toBe("rgb(107, 114, 128)");
+
+    // The DOM sequence: the H3 name → the subcategory P → the amount.
+    const seq = await dialog.evaluate((el) => {
+      const h3 = el.querySelector("h3");
+      const subP = [...el.querySelectorAll("p")].find(
+        (p) => (p.textContent || "").trim() === "Main Job",
+      );
+      const amount = [...el.querySelectorAll("p")].find((p) =>
+        /^\$[\d,]/.test((p.textContent || "").trim()),
+      );
+      if (!h3 || !subP || !amount) return { h3: !!h3, subP: !!subP, amount: !!amount };
+      const all = [...el.querySelectorAll("h3, p")];
+      return {
+        h3Idx: all.indexOf(h3),
+        subIdx: all.indexOf(subP),
+        amountIdx: all.indexOf(amount),
+      };
+    });
+    expect(seq.h3Idx).toBeDefined();
+    expect(seq.subIdx).toBeGreaterThan(seq.h3Idx!);
+    expect(seq.amountIdx).toBeGreaterThan(seq.subIdx!);
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  });
+});
+
+// v52 F4 (docs/remediation-plan-v52.md): the details sheet's INTERNALS
+// at 390 — the census beyond the v28/v48 panel pins (those walked the
+// panel chrome + the bottom-sheet geometry; the internals were never
+// pinned). Every value below was measured live on BOTH sites this
+// session (byte-identical unless noted).
+
+test.describe("details sheet internals census (v52 — plan F4)", () => {
+  test("the panel internals carry the reference's chrome at 390", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/expenses");
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await expect(rent).toBeVisible();
+    await rent.locator("h4").click();
+
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await dialog.evaluate((el) => {
+      const ps = getComputedStyle(el);
+      const r = el.getBoundingClientRect();
+      // the sticky header (the first child) + the body (the p-6 stack)
+      const header = [...el.children].find(
+        (c) => /sticky/.test((c.className || "").toString()),
+      ) as HTMLElement | null;
+      const hcs = header ? getComputedStyle(header) : null;
+      const body = [...el.children].find((c) =>
+        /space-y-6/.test((c.className || "").toString()),
+      ) as HTMLElement | null;
+      const bcs = body ? getComputedStyle(body) : null;
+      // the title + the close button live in the header
+      const title = header?.querySelector("h2, h3");
+      const closeBtn = header ? [...header.querySelectorAll("button")].pop() : null;
+      // the summary block (the body's first child)
+      const summary = body?.firstElementChild as HTMLElement | null;
+      const chipRow = summary?.firstElementChild as HTMLElement | null;
+      const chip = chipRow?.querySelector("span, div");
+      // the classification block (the rounded-xl p-4 tinted tile)
+      const clsBlock = [...(body?.querySelectorAll("div") || [])].find(
+        (d) => /rounded-xl/.test((d.className || "").toString()) && /p-4/.test((d.className || "").toString()),
+      ) as HTMLElement | null;
+      // the facts container (space-y-4) + its first row
+      const facts = [...(body?.children || [])].find(
+        (c) => /space-y-4/.test((c.className || "").toString()),
+      ) as HTMLElement | null;
+      const factRow = facts?.querySelector("div.flex");
+      // the meta footer (border-t)
+      const footer = [...(body?.children || [])].find(
+        (c) => /border-t/.test((c.className || "").toString()),
+      ) as HTMLElement | null;
+      const fLabel = footer?.querySelector("p");
+      return {
+        panel: {
+          x: Math.round(r.x),
+          w: Math.round(r.width),
+          radius: ps.borderRadius,
+          maxH: ps.maxHeight,
+          bg: ps.backgroundColor,
+          overflowY: ps.overflowY,
+          shadow: ps.boxShadow,
+        },
+        header: hcs
+          ? {
+              h: Math.round(header!.getBoundingClientRect().height),
+              pad: hcs.padding,
+              pos: hcs.position,
+              top: hcs.top,
+              borderB: hcs.borderBottom,
+              bg: hcs.backgroundColor,
+            }
+          : null,
+        title: title
+          ? {
+              fs: getComputedStyle(title).fontSize,
+              fw: getComputedStyle(title).fontWeight,
+              color: getComputedStyle(title).color,
+            }
+          : null,
+        closeBtn: closeBtn
+          ? {
+              w: Math.round(closeBtn.getBoundingClientRect().width),
+              h: Math.round(closeBtn.getBoundingClientRect().height),
+            }
+          : null,
+        body: bcs ? { cls: (body!.className || "").toString(), pad: bcs.padding } : null,
+        chipRow: chipRow
+          ? {
+              gap: getComputedStyle(chipRow).gap,
+              mb: getComputedStyle(chipRow).marginBottom,
+              justify: getComputedStyle(chipRow).justifyContent,
+            }
+          : null,
+        chip: chip
+          ? {
+              fs: getComputedStyle(chip).fontSize,
+              fw: getComputedStyle(chip).fontWeight,
+              color: getComputedStyle(chip).color,
+              cls: (chip.className || "").toString(),
+              pad: getComputedStyle(chip).padding,
+            }
+          : null,
+        clsBlock: clsBlock
+          ? {
+              radius: getComputedStyle(clsBlock).borderRadius,
+              pad: getComputedStyle(clsBlock).padding,
+            }
+          : null,
+        factRow: factRow
+          ? {
+              cls: (factRow.className || "").toString().slice(0, 40),
+              gap: getComputedStyle(factRow).gap,
+              pad: getComputedStyle(factRow).padding,
+            }
+          : null,
+        footer: footer
+          ? {
+              cls: (footer.className || "").toString().slice(0, 30),
+              pt: getComputedStyle(footer).paddingTop,
+              borderT: getComputedStyle(footer).borderTopWidth,
+              labelFs: fLabel ? getComputedStyle(fLabel).fontSize : null,
+              labelColor: fLabel ? getComputedStyle(fLabel).color : null,
+            }
+          : null,
+      };
+    });
+
+    // The panel: the 390 bottom-sheet chrome (v48's mobile re-measure).
+    expect(census.panel!.x).toBe(0);
+    expect(census.panel!.w).toBe(390);
+    expect(census.panel!.radius).toBe("24px 24px 0px 0px");
+    expect(census.panel!.maxH).toBe("717.4px");
+    expect(census.panel!.bg).toBe("rgb(255, 255, 255)");
+    expect(census.panel!.overflowY).toBe("auto");
+    expect(census.panel!.shadow).toContain("rgba(0, 0, 0, 0.25) 0px 25px 50px -12px");
+
+    // The sticky header: h 69 (py-4 16 + the 18px title line + border).
+    expect(census.header!.h).toBe(69);
+    expect(census.header!.pad).toBe("16px 24px");
+    expect(census.header!.pos).toBe("sticky");
+    expect(census.header!.top).toBe("0px");
+    expect(census.header!.borderB).toBe("1px solid rgb(229, 231, 227)");
+    expect(census.header!.bg).toBe("rgb(255, 255, 255)");
+
+    // The title + the close (the v9 36x36 X family).
+    expect(census.title!.fs).toBe("18px");
+    expect(census.title!.fw).toBe("700");
+    expect(census.title!.color).toBe("rgb(26, 58, 46)");
+    expect(census.closeBtn!.w).toBe(36);
+    expect(census.closeBtn!.h).toBe(36);
+
+    // The body: space-y-6 p-6.
+    expect(census.body!.cls).toContain("space-y-6");
+    expect(census.body!.pad).toBe("24px");
+
+    // The summary's chip row: centered, gap 8 (gap-2), mb 12 (mb-3).
+    expect(census.chipRow!.gap).toBe("8px");
+    expect(census.chipRow!.mb).toBe("12px");
+    expect(census.chipRow!.justify).toBe("center");
+    // The chips: 12/500 in the expense orange, rounded-full, px-3 py-1.
+    expect(census.chip!.fs).toBe("12px");
+    expect(census.chip!.fw).toBe("500");
+    expect(census.chip!.color).toBe("rgb(224, 122, 59)");
+    // rounded-full: the v3 reference computes 9999px, the v4 clone
+    // 3.35544e+07px — both fully-round pills (the class is the contract).
+    expect(census.chip!.cls).toContain("rounded-full");
+    expect(census.chip!.pad).toBe("4px 12px");
+
+    // The classification block: rounded-xl p-4 (the tinted tile).
+    expect(census.clsBlock!.radius).toBe("12px");
+    expect(census.clsBlock!.pad).toBe("16px");
+
+    // The fact rows: flex gap-3 (12px) py-2 (8px 0px).
+    expect(census.factRow!.gap).toBe("12px");
+    expect(census.factRow!.pad).toBe("8px 0px");
+
+    // The meta footer: border-t, pt 16, the labels 12/gray.
+    expect(census.footer!.pt).toBe("16px");
+    expect(census.footer!.borderT).toBe("1px");
+    expect(census.footer!.labelFs).toBe("12px");
+    expect(census.footer!.labelColor).toBe("rgb(107, 114, 128)");
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  });
+});

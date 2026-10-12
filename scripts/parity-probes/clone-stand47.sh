@@ -27,7 +27,13 @@ agent-browser open "$BASE/" >/dev/null 2>&1
 sleep 3
 
 echo "=== R1: direct burger hit (native click at center — the toast viewport must NOT block) ==="
-agent-browser click 'button[aria-label="Open menu"]' >/dev/null 2>&1 || true
+# v52 P1 (docs/remediation-plan-v52.md): the old selector
+# `button[aria-label="Open menu"]` was the REFERENCE's DOM idiom — the
+# clone's burger carries NO aria-label (its accessible name rides the
+# sr-only span "Toggle Sidebar", the v7 idiom), so the click failed
+# SILENTLY (|| true masked it) and R1 read sheetLinks:0 — a false red
+# on a working surface. The text-walk eval is the verified flow.
+agent-browser eval "(() => { const b = [...document.querySelectorAll('button')].find(b => (b.textContent||'').includes('Toggle Sidebar')); if (b) { b.click(); return 'burger clicked'; } return 'no burger'; })()" 2>/dev/null | tail -1
 sleep 1
 R1=$(agent-browser eval "(() => { const links = [...document.querySelectorAll('a')].filter(a => a.offsetParent !== null && ['Dashboard','Income','Expenses','Savings','Net Worth'].includes(a.textContent.trim())); return JSON.stringify({ sheetLinks: links.length }); })()" 2>/dev/null | tail -1)
 echo "R1: $R1"

@@ -1257,3 +1257,357 @@ test.describe("savings view mobile census at 390 (v51 — plan F3)", () => {
     expect(census!.docSW).toBe(390);
   });
 });
+
+// v52 F2/F3 (docs/remediation-plan-v52.md): the /income and /expenses
+// views' MOBILE census at 390 — the header row's reflow (the chip + the
+// H1 + the sub + the Add button stacking under the v20 G1 row), the
+// filter card's 1-column grid (the search + the select triggers at the
+// 52px rhythm), the item grid, and the first card's chrome. Every value
+// below was measured live on BOTH sites this session (byte-identical
+// unless noted — the card HEIGHT and the count/amount texts are the
+// richer seed's documented data class, never pinned).
+
+test.describe("income view mobile census at 390 (v52 — plan F2)", () => {
+  test("the header row + filter card + item grid chrome (v52 F2)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Salary" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const h1 = [...document.querySelectorAll("h1")].find(
+        (x) => (x.textContent || "").trim() === "Income",
+      );
+      if (!h1) return null;
+      // the header row: walk up to the flex row carrying the Add button
+      let headRow: HTMLElement | null = h1.closest("div.flex") || h1.parentElement;
+      if (!headRow) return null;
+      for (let i = 0; i < 4 && headRow.parentElement; i++) {
+        if (headRow.querySelector("button")) break;
+        headRow = headRow.parentElement as HTMLElement;
+      }
+      const hrs = headRow!.getBoundingClientRect();
+      const csR = getComputedStyle(headRow!);
+      const chip = headRow!.querySelector("div.rounded-xl") as HTMLElement | null;
+      const addBtn = [...headRow!.querySelectorAll("button")].pop() as HTMLElement | null;
+      const sub = [...headRow!.querySelectorAll("p")].find((p) =>
+        /items/.test(p.textContent || ""),
+      );
+      // the filter card: the next rounded sibling with an input
+      let filter: HTMLElement | null = null;
+      let el: HTMLElement | null = headRow!.nextElementSibling as HTMLElement | null;
+      while (el && !filter) {
+        if (/rounded/.test(el.className || "") && el.querySelector("input")) filter = el;
+        el = el.nextElementSibling as HTMLElement | null;
+      }
+      const fcs = filter ? getComputedStyle(filter) : null;
+      const inner = filter ? (filter.querySelector("div.grid") as HTMLElement | null) : null;
+      const ics = inner ? getComputedStyle(inner) : null;
+      const search = filter ? (filter.querySelector("input") as HTMLInputElement | null) : null;
+      // the first item card: the Salary H4's rounded-xl ancestor in a grid
+      const h4 = [...document.querySelectorAll("h4")].find((x) =>
+        /Salary/i.test((x.textContent || "").trim()),
+      );
+      let card: HTMLElement | null = h4
+        ? ((h4.closest("div.rounded-xl") as HTMLElement | null) ?? h4.parentElement)
+        : null;
+      for (let i = 0; card && i < 5; i++) {
+        const cs = getComputedStyle(card!.parentElement!);
+        if (cs.display === "grid") break;
+        card = card!.parentElement as HTMLElement;
+      }
+      const grid = card ? (card.parentElement as HTMLElement | null) : null;
+      const gcs = grid ? getComputedStyle(grid!) : null;
+      const ccs = card ? getComputedStyle(card) : null;
+      const amount = card
+        ? [...card.querySelectorAll("p, span, div")].find(
+            (p) =>
+              /^[-+]?\$?[\d,]+/.test((p.textContent || "").trim()) &&
+              p.children.length <= 1,
+          )
+        : null;
+      return {
+        headRow: {
+          w: Math.round(hrs.width),
+          h: Math.round(hrs.height),
+          display: csR.display,
+          direction: csR.flexDirection,
+          gap: csR.gap,
+          mb: csR.marginBottom,
+          alignItems: csR.alignItems,
+        },
+        chip: chip
+          ? {
+              w: Math.round(chip.getBoundingClientRect().width),
+              h: Math.round(chip.getBoundingClientRect().height),
+              radius: getComputedStyle(chip).borderRadius,
+              bg: (getComputedStyle(chip).backgroundImage ||
+                getComputedStyle(chip).backgroundColor),
+            }
+          : null,
+        h1: {
+          fs: getComputedStyle(h1).fontSize,
+          fw: getComputedStyle(h1).fontWeight,
+          color: getComputedStyle(h1).color,
+        },
+        sub: sub
+          ? {
+              fs: getComputedStyle(sub).fontSize,
+              fw: getComputedStyle(sub).fontWeight,
+              color: getComputedStyle(sub).color,
+            }
+          : null,
+        addBtn: addBtn
+          ? {
+              w: Math.round(addBtn.getBoundingClientRect().width),
+              h: Math.round(addBtn.getBoundingClientRect().height),
+              radius: getComputedStyle(addBtn).borderRadius,
+              bg: (getComputedStyle(addBtn).backgroundImage ||
+                getComputedStyle(addBtn).backgroundColor),
+              color: getComputedStyle(addBtn).color,
+              fs: getComputedStyle(addBtn).fontSize,
+              fw: getComputedStyle(addBtn).fontWeight,
+              pad: getComputedStyle(addBtn).padding,
+            }
+          : null,
+        filterCard: filter
+          ? {
+              w: Math.round(filter.getBoundingClientRect().width),
+              radius: fcs!.borderRadius,
+              pad: fcs!.padding,
+              bg: fcs!.backgroundColor,
+              border: fcs!.border,
+              mb: fcs!.marginBottom,
+            }
+          : null,
+        filterInner: inner
+          ? {
+              cols: ics!.gridTemplateColumns,
+              gap: ics!.gap,
+              children: inner.children.length,
+              kidYs: [...inner.children].map(
+                (c) => Math.round(c.getBoundingClientRect().y),
+              ),
+            }
+          : null,
+        search: search
+          ? {
+              w: Math.round(search.getBoundingClientRect().width),
+              h: Math.round(search.getBoundingClientRect().height),
+              pad: getComputedStyle(search).padding,
+            }
+          : null,
+        itemGrid: gcs
+          ? { display: gcs.display, cols: gcs.gridTemplateColumns, gap: gcs.gap }
+          : null,
+        firstCard: card
+          ? {
+              w: Math.round(card.getBoundingClientRect().width),
+              radius: ccs!.borderRadius,
+              pad: ccs!.padding,
+              border: ccs!.border,
+              bg: ccs!.backgroundColor,
+              shadow: ccs!.boxShadow,
+            }
+          : null,
+        h4: h4
+          ? {
+              fs: getComputedStyle(h4).fontSize,
+              fw: getComputedStyle(h4).fontWeight,
+              color: getComputedStyle(h4).color,
+            }
+          : null,
+        amount: amount
+          ? {
+              fs: getComputedStyle(amount).fontSize,
+              fw: getComputedStyle(amount).fontWeight,
+              color: getComputedStyle(amount).color,
+            }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The header row: the mobile reflow (flex-col, gap 16, mb 32).
+    expect(census!.headRow).toEqual({
+      w: 358,
+      h: 112,
+      display: "flex",
+      direction: "column",
+      gap: "16px",
+      mb: "32px",
+      alignItems: "flex-start",
+    });
+    // The gradient chip: 48x48, radius 12, the lime gradient.
+    expect(census!.chip!.w).toBe(48);
+    expect(census!.chip!.h).toBe(48);
+    expect(census!.chip!.radius).toBe("12px");
+    expect(census!.chip!.bg).toBe(
+      "linear-gradient(135deg, rgb(143, 188, 63), rgb(184, 216, 126))",
+    );
+    // The H1 + the count sub.
+    expect(census!.h1).toEqual({ fs: "30px", fw: "700", color: "rgb(26, 58, 46)" });
+    expect(census!.sub).toEqual({ fs: "16px", fw: "400", color: "rgb(107, 114, 128)" });
+    // The Add button: 147x36, radius 6, the lime gradient, 14/500.
+    expect(census!.addBtn!.w).toBe(147);
+    expect(census!.addBtn!.h).toBe(36);
+    expect(census!.addBtn!.radius).toBe("6px");
+    expect(census!.addBtn!.bg).toBe(
+      "linear-gradient(135deg, rgb(143, 188, 63), rgb(184, 216, 126))",
+    );
+    expect(census!.addBtn!.color).toBe("rgb(255, 255, 255)");
+    expect(census!.addBtn!.fs).toBe("14px");
+    expect(census!.addBtn!.fw).toBe("500");
+    expect(census!.addBtn!.pad).toBe("8px 16px");
+    // The filter card + its 1-column grid (3 children at the 52px rhythm).
+    expect(census!.filterCard!.w).toBe(358);
+    expect(census!.filterCard!.radius).toBe("16px");
+    expect(census!.filterCard!.pad).toBe("24px");
+    expect(census!.filterCard!.bg).toBe("rgb(255, 255, 255)");
+    expect(census!.filterCard!.mb).toBe("24px");
+    expect(census!.filterInner!.cols).toBe("308px");
+    expect(census!.filterInner!.gap).toBe("16px");
+    expect(census!.filterInner!.children).toBe(3);
+    expect(census!.filterInner!.kidYs).toEqual([246, 298, 350]);
+    // The search: 308x36, the pl-10 pad.
+    expect(census!.search!.w).toBe(308);
+    expect(census!.search!.h).toBe(36);
+    expect(census!.search!.pad).toBe("4px 12px 4px 40px");
+    // The item grid: 1 column, gap 16.
+    expect(census!.itemGrid!.display).toBe("grid");
+    expect(census!.itemGrid!.cols).toBe("358px");
+    expect(census!.itemGrid!.gap).toBe("16px");
+    // The first card's chrome (the height is data — never pinned).
+    expect(census!.firstCard!.w).toBe(358);
+    expect(census!.firstCard!.radius).toBe("12px");
+    expect(census!.firstCard!.pad).toBe("20px");
+    expect(census!.firstCard!.bg).toBe("rgb(255, 255, 255)");
+    expect(census!.firstCard!.shadow).toBe("rgba(0, 0, 0, 0.04) 0px 2px 8px 0px");
+    // The card's leaves.
+    expect(census!.h4).toEqual({ fs: "16px", fw: "600", color: "rgb(26, 58, 46)" });
+    expect(census!.amount).toEqual({ fs: "16px", fw: "400", color: "rgb(10, 10, 10)" });
+    // The clone's superset no-overflow contract at 390.
+    expect(census!.docSW).toBe(390);
+  });
+});
+
+test.describe("expenses view mobile census at 390 (v52 — plan F3)", () => {
+  test("the header row + the 4-child filter grid + the first card (v52 F3)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const h1 = [...document.querySelectorAll("h1")].find(
+        (x) => (x.textContent || "").trim() === "Expenses",
+      );
+      if (!h1) return null;
+      let headRow: HTMLElement | null = h1.closest("div.flex") || h1.parentElement;
+      if (!headRow) return null;
+      for (let i = 0; i < 4 && headRow.parentElement; i++) {
+        if (headRow.querySelector("button")) break;
+        headRow = headRow.parentElement as HTMLElement;
+      }
+      const addBtn = [...headRow!.querySelectorAll("button")].pop() as HTMLElement | null;
+      const sub = [...headRow!.querySelectorAll("p")].find((p) =>
+        /items/.test(p.textContent || ""),
+      );
+      let filter: HTMLElement | null = null;
+      let el: HTMLElement | null = headRow!.nextElementSibling as HTMLElement | null;
+      while (el && !filter) {
+        if (/rounded/.test(el.className || "") && el.querySelector("input")) filter = el;
+        el = el.nextElementSibling as HTMLElement | null;
+      }
+      const inner = filter ? (filter.querySelector("div.grid") as HTMLElement | null) : null;
+      const ics = inner ? getComputedStyle(inner) : null;
+      const triggers = filter
+        ? filter.querySelectorAll("button[role=combobox], select").length
+        : 0;
+      const h4 = [...document.querySelectorAll("h4")].find((x) =>
+        /Rent/i.test((x.textContent || "").trim()),
+      );
+      let card: HTMLElement | null = h4
+        ? ((h4.closest("div.rounded-xl") as HTMLElement | null) ?? h4.parentElement)
+        : null;
+      for (let i = 0; card && i < 5; i++) {
+        const cs = getComputedStyle(card!.parentElement!);
+        if (cs.display === "grid") break;
+        card = card!.parentElement as HTMLElement;
+      }
+      const ccs = card ? getComputedStyle(card) : null;
+      return {
+        h1: {
+          fs: getComputedStyle(h1).fontSize,
+          fw: getComputedStyle(h1).fontWeight,
+          color: getComputedStyle(h1).color,
+        },
+        sub: sub
+          ? {
+              fs: getComputedStyle(sub).fontSize,
+              fw: getComputedStyle(sub).fontWeight,
+              color: getComputedStyle(sub).color,
+            }
+          : null,
+        addBtn: addBtn
+          ? {
+              w: Math.round(addBtn.getBoundingClientRect().width),
+              h: Math.round(addBtn.getBoundingClientRect().height),
+              bg: (getComputedStyle(addBtn).backgroundImage ||
+                getComputedStyle(addBtn).backgroundColor),
+            }
+          : null,
+        filterCard: filter
+          ? {
+              w: Math.round(filter.getBoundingClientRect().width),
+              radius: getComputedStyle(filter).borderRadius,
+              pad: getComputedStyle(filter).padding,
+            }
+          : null,
+        filterInner: ics
+          ? {
+              cols: ics.gridTemplateColumns,
+              gap: ics.gap,
+              children: inner!.children.length,
+              triggers,
+            }
+          : null,
+        firstCard: card
+          ? {
+              w: Math.round(card.getBoundingClientRect().width),
+              radius: ccs!.borderRadius,
+              pad: ccs!.padding,
+              bg: ccs!.backgroundColor,
+              shadow: ccs!.boxShadow,
+            }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The H1 + the count sub.
+    expect(census!.h1).toEqual({ fs: "30px", fw: "700", color: "rgb(26, 58, 46)" });
+    expect(census!.sub).toEqual({ fs: "16px", fw: "400", color: "rgb(107, 114, 128)" });
+    // The Add button: 155x36, the orange gradient.
+    expect(census!.addBtn!.w).toBe(155);
+    expect(census!.addBtn!.h).toBe(36);
+    expect(census!.addBtn!.bg).toBe(
+      "linear-gradient(135deg, rgb(224, 122, 59), rgb(245, 169, 98))",
+    );
+    // The filter card + the 4-child grid (the payment-method family).
+    expect(census!.filterCard!.w).toBe(358);
+    expect(census!.filterCard!.radius).toBe("16px");
+    expect(census!.filterCard!.pad).toBe("24px");
+    expect(census!.filterInner!.cols).toBe("308px");
+    expect(census!.filterInner!.gap).toBe("16px");
+    expect(census!.filterInner!.children).toBe(4);
+    expect(census!.filterInner!.triggers).toBe(3);
+    // The first card's chrome.
+    expect(census!.firstCard!.w).toBe(358);
+    expect(census!.firstCard!.radius).toBe("12px");
+    expect(census!.firstCard!.pad).toBe("20px");
+    expect(census!.firstCard!.shadow).toBe("rgba(0, 0, 0, 0.04) 0px 2px 8px 0px");
+    // The clone's superset no-overflow contract at 390.
+    expect(census!.docSW).toBe(390);
+  });
+});

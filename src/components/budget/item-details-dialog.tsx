@@ -173,6 +173,23 @@ export function ItemDetailsDialog() {
               <h3 className="mb-2 text-2xl font-bold" style={{ color: COLORS.forestDark }}>
                 {item.category}
               </h3>
+              {/* v52 F1 (docs/remediation-plan-v52.md): the summary's
+                  FIFTH element — the reference renders the item's
+                  SUBCATEGORY as a P.text-lg (18/400/rgb(107,114,128))
+                  between the H3 name and the amount P (measured live on
+                  the reference: Rent → "Apartment", Salary → "Main Job").
+                  The field was always on the model — the card renders it
+                  (item-card.tsx) and the edit dialog edits it — but the
+                  details view skipped it. Conditional on the non-empty
+                  value (the dialog's own optional-field idiom, e.g.
+                  paymentMethod): every reference item carries a
+                  subcategory, so both forms produce identical DOM on
+                  real data. */}
+              {item.subcategory ? (
+                <p className="text-lg" style={{ color: rgb.gray }}>
+                  {item.subcategory}
+                </p>
+              ) : null}
               <p className="mt-4 text-4xl font-bold" style={{ color: typeColor }}>
                 {formatMoney(item.amount)}
               </p>
