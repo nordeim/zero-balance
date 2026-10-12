@@ -1307,3 +1307,126 @@ test.describe("net worth tablist chrome census (v50 — plan F2)", () => {
     expect(census!.inactive!.icon).toEqual({ w: 16, h: 16, color: "rgb(115, 115, 115)" });
   });
 });
+
+// ---------------------------------------------------------------------------
+// v53 — plan F1 (docs/remediation-plan-v53.md): the tablist's MOBILE census
+// at 390. The v50 F2 pinned this family at the 640 mid viewport only (the
+// list 448 / the triggers 220); the v41 F2/F3 + the v47 net-worth card
+// censuses walked the page's other mobile surfaces. The v53 pin locks the
+// mobile tablist chrome measured live on the reference at 390x844
+// (ref-v53.sh — byte-identical on every axis except the width family):
+//   the list: w 358 (the in-bounds content column) / h 36 / grid
+//             "175px 175px" / bg #f5f5f5 / radius 8 / pad 4 / x 16
+//   the active trigger: 175x28 / radius 6 / 14px/500 / #14532d on
+//             #dcfce7 / the shadow-sm VISIBLE pair / the 16x16 icon at
+//             #14532d
+//   the inactive trigger: 175x28 / radius 6 / 14px/500 / #737373 /
+//             transparent / no shadow / the 16x16 icon at #737373
+//   docSW 390 (the superset invariant — the reference reads 464, its own
+//   documented overflow bug: its list renders 432 wide inside the
+//   464-overflow page, overhanging the 390 viewport; the same documented
+//   divergence class as the v47 net-worth card mobile census).
+// ---------------------------------------------------------------------------
+test.describe("net worth tablist mobile census (v53 — plan F1)", () => {
+  test("the tablist's full chrome at 390 matches the reference (byte-parity)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByRole("tab", { name: /Assets/i })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const triggers = [...document.querySelectorAll('button[role="tab"]')];
+      const active = triggers.find((t) => t.getAttribute("aria-selected") === "true");
+      const inactive = triggers.find((t) => t.getAttribute("aria-selected") === "false");
+      const list = document.querySelector('[role="tablist"]') as HTMLElement | null;
+      if (!active || !inactive || !list) return null;
+      const grab = (t: HTMLElement) => {
+        const cs = getComputedStyle(t);
+        const r = t.getBoundingClientRect();
+        const icon = t.querySelector("svg");
+        return {
+          w: Math.round(r.width),
+          h: Math.round(r.height),
+          radius: cs.borderRadius,
+          fs: cs.fontSize,
+          fw: cs.fontWeight,
+          color: cs.color,
+          bg: cs.backgroundColor,
+          shadow: cs.boxShadow,
+          pad: cs.padding,
+          icon: icon
+            ? {
+                w: Math.round(icon.getBoundingClientRect().width),
+                h: Math.round(icon.getBoundingClientRect().height),
+                color: getComputedStyle(icon).color,
+              }
+            : null,
+        };
+      };
+      const lcs = getComputedStyle(list);
+      const lr = list.getBoundingClientRect();
+      return {
+        list: {
+          w: Math.round(lr.width),
+          h: Math.round(lr.height),
+          x: Math.round(lr.x),
+          display: lcs.display,
+          gridCols: lcs.gridTemplateColumns,
+          bg: lcs.backgroundColor,
+          radius: lcs.borderRadius,
+          pad: lcs.padding,
+          maxW: lcs.maxWidth,
+        },
+        active: grab(active as HTMLElement),
+        inactive: grab(inactive as HTMLElement),
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The list: the in-bounds mobile column (the reference's own list is
+    // 432 wide inside its 464-overflow page — its documented bug; every
+    // non-width axis byte-identical).
+    expect(census!.list).toEqual({
+      w: 358,
+      h: 36,
+      x: 16,
+      display: "grid",
+      gridCols: "175px 175px",
+      bg: "rgb(245, 245, 245)",
+      radius: "8px",
+      pad: "4px",
+      maxW: "448px",
+    });
+    // The ACTIVE trigger (Assets): the green pair + the shadow emission.
+    expect(census!.active).toMatchObject({
+      w: 175,
+      h: 28,
+      radius: "6px",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(20, 83, 45)",
+      bg: "rgb(220, 252, 231)",
+      pad: "4px 12px",
+    });
+    // The shadow: the shadow-sm VISIBLE pair (the accepted
+    // lead-divergence class — transparent layers never render).
+    expect(census!.active!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(census!.active!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+    expect(census!.active!.icon).toEqual({ w: 16, h: 16, color: "rgb(20, 83, 45)" });
+    // The INACTIVE trigger (Liabilities): the muted pair.
+    expect(census!.inactive).toMatchObject({
+      w: 175,
+      h: 28,
+      radius: "6px",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(115, 115, 115)",
+      bg: "rgba(0, 0, 0, 0)",
+      shadow: "none",
+      pad: "4px 12px",
+    });
+    expect(census!.inactive!.icon).toEqual({ w: 16, h: 16, color: "rgb(115, 115, 115)" });
+    // The superset invariant: the clone's /networth page stays in-bounds
+    // at 390 (the reference overflows to 464 — its documented bug).
+    expect(census!.docSW).toBe(390);
+  });
+});

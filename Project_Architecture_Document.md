@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.3
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.10
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,10 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.10 (Tracked Changes)
+
+- `[UI]` v1.1.10 (2026-10-12) — the v53 parity iteration (PIN-ONLY — the second consecutive pin-only iteration, no production-code change): the counts 108 unit / 247 e2e / 35 smoke; the /networth view's TABLIST pin at 390 (byte-parity on every chrome axis — the list h 36/grid/#f5f5f5/radius 8/pad 4/maxW 448, the active 175×28 green pair + the shadow-sm VISIBLE pair, the inactive #737373 pair, the 16×16 currentColor icons; the WIDTH family rides the reference's own documented 464-overflow bug — its list 432 overhangs the 390 viewport where the clone's superset fix keeps the page in-bounds at 358/pageSW 390, the v47 divergence class); the CALCULATOR DIALOG's pin at 390 (the v45 add-then-restoreRent flow: the panel 358 @ x 16/radius 16/maxW 768/maxH 717.4/white/overflow hidden/flex + the 2xl VISIBLE layer + the centering invariant; the header h 101/pad 16 24; the chip 32×40 + the close 29×36 — the identical flex-shrink squish on both sites; the total card 310/#fff7f5/radius 12/pad 16; the row 310/pad 16/border-t; the Add Item button 110×32/12/500/gradient; docSW 390 — the panel h 413 with 1 row on both sites is data-dependent, never pinned); the execution lessons (the orphaned :3100 webServer reuse trap after a timed-out run — a stale db handle poisons the next run's data assertions; every calculator add/delete e2e ends with restoreRent; the rebuild and the test run as separate commands; the eval string's closing `()`); the 53rd remediation plan + the probe catalog through v53.
 
 #### Revision Block — v1.1.9 (Tracked Changes)
 

@@ -2028,3 +2028,84 @@ viewports + the donut legend's interaction):
   computed radius diverges v3 (9999px) vs v4 (3.35544e+07px) — both
   fully-round pills clamped at h/2; pin the CLASS, not the computed
   value.
+
+## v53 — the /networth tablist + the calculator dialog mobile censuses (session-124/125)
+
+- `ref-v53.sh` + `clone-v53.sh` + `clone-v53b.sh` — the v53 surface
+  drivers (the session-124 queue's read-only members): the /networth
+  view's TABLIST at 390 (the list + the active/inactive trigger pair
+  + the 16px currentColor icons — the v50 pin walked this family at
+  640 only) and the CALCULATOR DIALOG at 390 (the panel + the header
+  + the chip + the close + the total card + the line-item rows + the
+  Add button — the v45/v49 pins walked the family at 640 only;
+  clone-v53b is the with-row follow-up: add one line item → census →
+  delete → close, on the clone's OWN db).
+- THE v53 FINDING — NO PRODUCTION GAP: both surfaces are already at
+  byte-parity. The deliverable is the pin pair (F1 networth.spec.ts,
+  F2 calculator.spec.ts) + the probe scripts + the docs.
+- The TABLIST at 390: byte-parity on every chrome axis — the list
+  h 36/grid/#f5f5f5/radius 8/pad 4/maxW 448, the active trigger the
+  green pair (#14532d on #dcfce7, the shadow-sm VISIBLE pair), the
+  inactive the #737373 pair, the 16×16 currentColor icons at mr 8.
+  The WIDTH family diverges BY CONSTRUCTION: the reference's list is
+  432 wide with fractional 211.8px tracks (its /networth page
+  overflows to 464 — the documented bug; the list overhangs the 390
+  viewport) where the clone's superset fix keeps the page in-bounds
+  (the list 358, 175px tracks, pageSW 390) — the same documented
+  divergence class as the v47 net-worth-card mobile census.
+- The CALCULATOR at 390 (with 1 row): byte-parity on every axis —
+  the panel 358 @ x 16/radius 16/maxW 768/maxH 717.4 (85vh)/white/
+  overflow hidden/flex + the 2xl VISIBLE layer + the CENTERING
+  invariant; the header h 101/pad 16 24/border-b; the chip 32×40 and
+  the close 29×36 — the IDENTICAL flex-shrink squish at 390 on BOTH
+  sites (the 40×40 chip and the 36×36 close squeeze under the
+  header's flex row — byte-shared behavior, pin the squished values);
+  the total card 310/#fff7f5/radius 12/pad 16; the row 310/pad 16/
+  white/border-t/radius 12; the Add Item button 110×32/12px/500/the
+  orange gradient/white; docSW 390. The panel h measured 413 on BOTH
+  sites with 1 row — data-dependent, never pinned (the empty state
+  reads 555 on the clone; the reference's empty state is unmeasurable
+  — emptying its calculator needs WRITES, the deferred class).
+- `vlm-shots-v53.sh` + `vlm-compare-v53.mjs` + the /tmp/vlm53 pair —
+  the standing VLM screening (the calculator dialog at 390 — THE F2
+  SURFACE): the VLM flagged 5 diffs — the close button "boxed X" (the
+  probe's synthetic-click focus artifact: the clone's outline:auto
+  1px renders only under :focus-visible — the keyboard a11y superset;
+  the reference's close is never focused on open and its
+  outline-style is none, its own a11y regression; NO ring in real
+  mouse flows — the committed 08-calculator.png proves it), the total
+  $25.00-vs-$0.00 + the "Based on 1 item"-vs-0 + the row-vs-empty-
+  state (the reference's own data class — its Rent carries a
+  "Contents Insurance" row; the clone's dev seed carries none), and
+  the Base44 FAB (the reference's own platform chrome) — ALL
+  DOM-verified, the pair CLEAN per the v43 rule.
+- THE v53 EXECUTION LESSONS (the big ones):
+  1. **The orphaned :3100 webServer** — a timed-out/killed playwright
+     run leaves its `bun .next/standalone/server.js` child ALIVE on
+     :3100; the next run REUSES it (`reuseExistingServer: true`) with
+     a db handle that went stale under the next global-setup's
+     delete-and-re-seed of db/e2e.db — every data-driven assertion
+     then times out at the 10s expect gate (the 45-failure cascade).
+     The discipline: `ss -tlnp | grep ":3100 "` + kill the pid BEFORE
+     every full-chain run, and again after any killed run.
+  2. **restoreRent after every calculator add/delete e2e** — the
+     line-item mutations recalculate the parent item's amount
+     SERVER-SIDE (the calculator rule); a test that adds + deletes a
+     row without `restoreRent(page)` leaves Rent ≠ 1850 and poisons
+     every later spec's dashboard arithmetic (+$2065.00). The v45 F2b
+     test has always done this; a new test must copy the whole
+     cleanup, not just the delete.
+  3. **The rebuild and the test run as SEPARATE commands** — the
+     combined `npm run build … && npx playwright test …` one-liner
+     RACED the .next/standalone swap twice this session (two mutation
+     runs read "1 passed" against a not-yet-swapped build). When a
+     mutation unexpectedly does not bite, probe the SERVED build
+     directly (the live-computed-style check) before doubting the
+     pin.
+  4. **The eval string's closing `()`** — an un-invoked async
+     function expression (`})"` instead of `})()"`) submits NOTHING:
+     the login silently no-ops and every downstream census reads "no
+     card". Grep the driver for `})()"` before running it.
+  5. `pkill -f agent-browser` inside a bash -c whose command string
+     contains "agent-browser" kills the PARENT script (the -f match
+     hits the command line) — use fresh session names instead.

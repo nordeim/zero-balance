@@ -746,3 +746,222 @@ test.describe("calculator panel chrome census at 640 (v49 — plan F3)", () => {
     await expect(dialog).toBeHidden();
   });
 });
+
+// ---------------------------------------------------------------------------
+// v53 — plan F2 (docs/remediation-plan-v53.md): the calculator dialog's
+// MOBILE census at 390 (the session-124 queue's calculator dialog 390
+// reflow). The v45 F2b + v49 F3 pins walked this family at 640 only (the
+// panel 608 / the row 560). The v53 pin locks the mobile chrome measured
+// live on the reference at 390x844 (ref-v53.sh + clone-v53b.sh — the
+// with-row state, byte-identical on every axis):
+//   the panel: w 358 (390 − the 2×16 overlay pad) / radius 16 / maxW
+//             768 / maxH 717.4 (the 85vh cap) / white / overflow hidden
+//             / flex + the 2xl VISIBLE layer
+//   the header: h 101 / pad 16px 24px / border-b — the flex row at 390
+//             SQUISHES the chip to 32x40 and the close to 29x36 on BOTH
+//             sites (the identical flex-shrink behavior)
+//   the total card: 310 wide (358 − the 2×24 p-6) / #fff7f5 / radius 12
+//             / pad 16
+//   the row: 310 / pad 16 / white / border-t / radius 12
+//   the Add Item button: 110x32 / 12px/500 / the orange gradient / white
+//   docSW 390 (the overlay constrains the page on both sites)
+// The panel h (413 with 1 row on BOTH sites) is data-dependent — never
+// pinned; the CENTERING invariant (y = round((844 − h) / 2)) instead.
+// ---------------------------------------------------------------------------
+test.describe("calculator dialog mobile census (v53 — plan F2)", () => {
+  test("the calculator's full chrome at 390 matches the reference (byte-parity)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await lineDialog.getByLabel("Item Name *").fill("Contents Insurance");
+    await lineDialog.getByLabel("Amount *").fill("25");
+    await lineDialog.getByRole("button", { name: "Save Item" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Contents Insurance")).toBeVisible();
+    await page.waitForTimeout(300);
+
+    const census = await page.evaluate(() => {
+      const panels = [...document.querySelectorAll('[role="dialog"]')];
+      const panel = panels
+        .filter((p) => (p.textContent || "").includes("Total Calculated"))
+        .pop() as HTMLElement | undefined;
+      if (!panel) return null;
+      const hdr = [...panel.querySelectorAll("div")].find(
+        (d) => getComputedStyle(d).borderBottomWidth !== "0px",
+      );
+      const h2 = panel.querySelector("h2");
+      const closeBtn = [...panel.querySelectorAll("button")].filter(
+        (b) => !b.textContent.trim(),
+      )[0] as HTMLElement | undefined;
+      const chip = panel.querySelector("div.rounded-xl, [class*=rounded-xl]") as HTMLElement | null;
+      const total = [...panel.querySelectorAll("div")].find(
+        (d) =>
+          (d.textContent || "").includes("Total Calculated") &&
+          getComputedStyle(d).backgroundColor !== "rgba(0, 0, 0, 0)" &&
+          d !== panel,
+      ) as HTMLElement | undefined;
+      const h4 = [...panel.querySelectorAll("h4")].find(
+        (h) => (h.textContent || "").trim() === "Contents Insurance",
+      );
+      let row: HTMLElement | null = h4 ? (h4 as HTMLElement) : null;
+      while (row && row !== panel) {
+        const rcs = getComputedStyle(row);
+        if (
+          parseFloat(rcs.borderTopWidth) > 0 &&
+          rcs.backgroundColor === "rgb(255, 255, 255)" &&
+          rcs.padding === "16px"
+        )
+          break;
+        row = row.parentElement;
+      }
+      const addBtn = [...panel.querySelectorAll("button")].find((b) =>
+        /^Add Item$/.test((b.textContent || "").trim()),
+      ) as HTMLElement | undefined;
+      const pr = panel.getBoundingClientRect();
+      const pcs = getComputedStyle(panel);
+      return {
+        panel: {
+          w: Math.round(pr.width),
+          x: Math.round(pr.x),
+          y: Math.round(pr.y),
+          h: Math.round(pr.height),
+          radius: pcs.borderRadius,
+          maxW: pcs.maxWidth,
+          maxH: pcs.maxHeight,
+          bg: pcs.backgroundColor,
+          overflow: pcs.overflow,
+          display: pcs.display,
+          shadow: pcs.boxShadow,
+        },
+        header: hdr
+          ? {
+              h: Math.round(hdr.getBoundingClientRect().height),
+              pad: getComputedStyle(hdr).padding,
+              borderB: getComputedStyle(hdr).borderBottom,
+            }
+          : null,
+        h2: h2
+          ? {
+              fs: getComputedStyle(h2).fontSize,
+              fw: getComputedStyle(h2).fontWeight,
+              color: getComputedStyle(h2).color,
+            }
+          : null,
+        chip: chip
+          ? {
+              w: Math.round(chip.getBoundingClientRect().width),
+              h: Math.round(chip.getBoundingClientRect().height),
+              radius: getComputedStyle(chip).borderRadius,
+              bg: getComputedStyle(chip).backgroundImage,
+            }
+          : null,
+        close: closeBtn
+          ? {
+              w: Math.round(closeBtn.getBoundingClientRect().width),
+              h: Math.round(closeBtn.getBoundingClientRect().height),
+            }
+          : null,
+        totalCard: total
+          ? {
+              w: Math.round(total.getBoundingClientRect().width),
+              bg: getComputedStyle(total).backgroundColor,
+              radius: getComputedStyle(total).borderRadius,
+              pad: getComputedStyle(total).padding,
+            }
+          : null,
+        row:
+          row && row !== panel
+            ? {
+                w: Math.round(row.getBoundingClientRect().width),
+                pad: getComputedStyle(row).padding,
+                bg: getComputedStyle(row).backgroundColor,
+                borderT: getComputedStyle(row).borderTop,
+                radius: getComputedStyle(row).borderRadius,
+              }
+            : null,
+        addBtn: addBtn
+          ? {
+              w: Math.round(addBtn.getBoundingClientRect().width),
+              h: Math.round(addBtn.getBoundingClientRect().height),
+              fs: getComputedStyle(addBtn).fontSize,
+              fw: getComputedStyle(addBtn).fontWeight,
+              bg: getComputedStyle(addBtn).backgroundImage,
+              color: getComputedStyle(addBtn).color,
+            }
+          : null,
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The panel: the 390 − 2×16 overlay-pad arithmetic, the 85vh cap.
+    expect(census!.panel!.w).toBe(358);
+    expect(census!.panel!.x).toBe(16);
+    expect(census!.panel!.radius).toBe("16px");
+    expect(census!.panel!.maxW).toBe("768px");
+    expect(census!.panel!.maxH).toBe("717.4px");
+    expect(census!.panel!.bg).toBe("rgb(255, 255, 255)");
+    expect(census!.panel!.overflow).toBe("hidden");
+    expect(census!.panel!.display).toBe("flex");
+    // The 2xl VISIBLE layer (the accepted lead-divergence class).
+    expect(census!.panel!.shadow).toContain("rgba(0, 0, 0, 0.25) 0px 25px 50px -12px");
+    // The CENTERING invariant (both sites center the panel; the h itself
+    // is data-dependent — never pinned).
+    expect(census!.panel!.y).toBe(Math.round((844 - census!.panel!.h) / 2));
+    // The header: the flex row squishes the chip + the close identically
+    // on both sites.
+    expect(census!.header!.h).toBe(101);
+    expect(census!.header!.pad).toBe("16px 24px");
+    expect(census!.header!.borderB).toBe("1px solid rgb(229, 231, 227)");
+    expect(census!.h2).toEqual({ fs: "18px", fw: "700", color: "rgb(26, 58, 46)" });
+    expect(census!.chip).toEqual({
+      w: 32,
+      h: 40,
+      radius: "12px",
+      bg: "linear-gradient(135deg, rgb(224, 122, 59), rgb(245, 169, 98))",
+    });
+    expect(census!.close).toEqual({ w: 29, h: 36 });
+    // The total card: the 358 − 2×24 arithmetic, the orange tint.
+    expect(census!.totalCard).toEqual({
+      w: 310,
+      bg: "rgb(255, 247, 245)",
+      radius: "12px",
+      pad: "16px",
+    });
+    // The line-item row family.
+    expect(census!.row).toEqual({
+      w: 310,
+      pad: "16px",
+      bg: "rgb(255, 255, 255)",
+      borderT: "1px solid rgb(229, 231, 227)",
+      radius: "12px",
+    });
+    // The Add Item button.
+    expect(census!.addBtn!.w).toBe(110);
+    expect(census!.addBtn!.h).toBe(32);
+    expect(census!.addBtn!.fs).toBe("12px");
+    expect(census!.addBtn!.fw).toBe("500");
+    expect(census!.addBtn!.bg).toContain("linear-gradient(135deg, rgb(224, 122, 59), rgb(245, 169, 98))");
+    expect(census!.addBtn!.color).toBe("rgb(255, 255, 255)");
+    // The overlay constrains the page on both sites.
+    expect(census!.sw).toBe(390);
+
+    // --- cleanup (the v45 F2b discipline): delete the row AND restore the
+    // Rent amount — the line-item mutations recalculate the parent's amount
+    // server-side (the calculator rule), so the add/delete cycle leaves
+    // Rent recalculated; restoreRent re-edits it to $1,850 so every later
+    // spec's dashboard arithmetic (+$2065.00) holds.
+    await dialog.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(dialog.getByText("Contents Insurance")).toBeHidden();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await restoreRent(page);
+  });
+});

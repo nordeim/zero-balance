@@ -41,7 +41,8 @@ and `docs/remediation-plan-v48.md`,
 and `docs/remediation-plan-v49.md`,
 and `docs/remediation-plan-v50.md`,
 and `docs/remediation-plan-v51.md`,
-and `docs/remediation-plan-v52.md`.
+and `docs/remediation-plan-v52.md`,
+and `docs/remediation-plan-v53.md`.
 
 ---
 
@@ -52,6 +53,67 @@ and `docs/remediation-plan-v52.md`.
 ---
 
 ---
+
+## Session 87 — Parity iteration v53: the /networth tablist's mobile pin + the calculator dialog's mobile pin (PIN-ONLY) + the orphaned-server/restoreRent execution lessons (2026-10-12)
+
+**Goal:** the session-124 v53 queue's read-only members — the
+/networth view's TABLIST census at 390 (the v50 pin walked the
+family at 640 only) + the calculator dialog's 390 reflow (the
+v45/v49 pins walked the family at 640 only). TDD-first, docs
+aligned, commit + push via the SSH wrapper. (The workspace was
+RE-CLONED — the sandbox had been reset; the environment rebuilt
+from scratch.)
+
+**What was done:** the baseline chain GREEN (108 unit / 245 e2e —
+one not-found flake on the first run, passing standalone — / 35
+smoke); the 47th standing checks both sites clean (the clone's
+mobile menu verified working — R1 sheetLinks 5 via the v52-fixed
+text-walk selector; the reference's four bugs ALL live — the
+superset preserved); the code audit clean (the Tailwind v4
+trap-log scan — both -mb-2 back buttons inside their converted
+containers; the sitemap/robots/test-config/.env.example contracts
+verified). The v53 sweep (ref-v53.sh + clone-v53.sh + the
+clone-v53b.sh with-row follow-up — READ-ONLY on the reference):
+the /networth TABLIST at 390 — byte-parity on every chrome axis,
+the width family riding the reference's own documented 464-overflow
+bug (its list 432 overhangs the viewport; the clone's superset fix
+keeps the page in-bounds at 358/pageSW 390); the CALCULATOR at 390
+— byte-parity on every axis with 1 row (the panel 358×413 on BOTH
+sites — the h data-dependent, never pinned; the header 101; the
+chip 32×40 + the close 29×36 — the identical flex-shrink squish;
+the total card 310/#fff7f5; the row 310/pad 16/border-t; the Add
+Item button 110×32). NO PRODUCTION GAP — the second consecutive
+pin-only iteration. The remediation plan v53 written + validated.
+The TDD execution: F1/F2 pins GREEN (F2's first run needed the
+missing page.goto fix); the FIVE pin-sanity mutations all verified
+FAILING (each with the standalone rebuild — the v53 lesson: the
+rebuild and the test run as SEPARATE commands, the combined
+one-liner raced the .next/standalone swap twice). **The full-chain
+diagnosis — two hard-won lessons:** (1) a timed-out playwright run
+leaves an ORPHANED webServer on :3100 that the next run REUSES
+(reuseExistingServer) with a stale db handle after the
+global-setup's re-seed — poisoning every data-driven assertion (the
+45-failure 10.5s cascade; `ss -tlnp | grep :3100` + kill before
+every full-chain run); (2) every calculator add/delete e2e MUST end
+with restoreRent(page) — the line-item mutations recalculate the
+parent's amount server-side, and the F2 test's missing restore
+poisoned the later specs' dashboard arithmetic (fixed; the clean
+diff: the two specs, ZERO production changes). The full chain: 108
+unit / **246/246 chromium e2e (the 247 single-run equivalent, run
+as two ordered chunks — 140 + 108, both exit 0)** / 35 smoke green.
+The VLM pair on the calculator at 390 (the F2 surface): 5 flags
+ALL DOM-verified (the close-button "boxed X" = the probe's
+synthetic-click focus artifact — the :focus-visible-only keyboard
+a11y superset, no ring in real mouse flows, the reference's
+never-focused/outline-none close is its own a11y regression; the
+rest = the data/platform classes). The 16 screenshots regenerated
+(ZERO byte-diffs — the pin-only invariant; the dev db re-seeded
+after the probe's add/delete left Rent recalculated). The docs
+aligned (AGENTS / CLAUDE / README / PAD v1.1.10 / the SKILL Session
+88 row + the 247 state / the probe README's v53 section with the
+five execution lessons / session_125 + session_126 / this worklog +
+the ledger list / the workspace worklog). Commit + push to main via
+the SSH wrapper.
 
 ## Session 86 — Parity iteration v52: the details sheet's missing subcategory line (THE FIX — the fourth production-code change since v46) + the /income and /expenses 390 pins + the details-sheet internals pin + the standing script's burger-selector probe-infra fix (2026-10-12)
 
