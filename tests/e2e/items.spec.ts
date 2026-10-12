@@ -1089,3 +1089,171 @@ test.describe("item-card grid census at 1280 (v45 — plan F1)", () => {
     expect(hovered.actionOpacity).toBe("1");
   });
 });
+
+// v51 F3 (docs/remediation-plan-v51.md): the savings view's MOBILE
+// census at 390 — the goal card's chrome + the view chrome, measured
+// live on BOTH sites at byte-parity (READ-ONLY on the reference). The
+// card HEIGHT is a data class (the richer seed's 4-chip badge row wraps
+// to 52px where the reference's 3 chips fit one 22px row) — never
+// pinned; the chrome axes are byte-identical.
+test.describe("savings view mobile census at 390 (v51 — plan F3)", () => {
+  test("the goal card's chrome + the view chrome (v51 F3)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The goal card: the first rounded-xl card below the filter card.
+      const cards = [...document.querySelectorAll("div.rounded-xl")].filter(
+        (d) => {
+          const cs = getComputedStyle(d);
+          const r = d.getBoundingClientRect();
+          return (
+            r.width > 300 &&
+            r.width < 380 &&
+            r.height > 100 &&
+            r.height < 400 &&
+            cs.backgroundColor === "rgb(255, 255, 255)" &&
+            d.querySelector("p, span")
+          );
+        },
+      ) as HTMLElement[];
+      const goal = cards.find((c) => c.querySelector("h4")) ?? null;
+      if (!goal) return null;
+      const csC = getComputedStyle(goal);
+      const rC = goal.getBoundingClientRect();
+      const h4 = goal.querySelector("h4") as HTMLElement;
+      const sub = [...goal.querySelectorAll("p")].find((p) =>
+        /^[A-Za-z]/.test((p.textContent || "").trim()),
+      ) as HTMLElement | undefined;
+      const amount = [...goal.querySelectorAll("p")].find((p) =>
+        /^[\$]?[0-9]/.test((p.textContent || "").trim()),
+      ) as HTMLElement | undefined;
+      const dot = [...goal.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        return Math.abs(r.width - 8) < 1 && Math.abs(r.height - 8) < 1;
+      }) as HTMLElement | undefined;
+      const grid = goal.parentElement as HTMLElement;
+      const csG = getComputedStyle(grid);
+      // The view chrome: the H1 page title, the count sub, the filter
+      // card, the search input.
+      const h1 = [...document.querySelectorAll("h1")].find(
+        (h) => (h.textContent || "").trim() === "Savings",
+      ) as HTMLElement | undefined;
+      const subP = [...document.querySelectorAll("p")].find((p) =>
+        (p.textContent || "").includes("items ·"),
+      ) as HTMLElement | undefined;
+      const search = document.querySelector(
+        'input[placeholder*="Search" i]',
+      ) as HTMLInputElement | null;
+      let filterCard = search as HTMLElement | null;
+      while (
+        filterCard &&
+        filterCard.parentElement &&
+        !getComputedStyle(filterCard).borderRadius.includes("16")
+      )
+        filterCard = filterCard.parentElement as HTMLElement | null;
+      return {
+        card: {
+          w: Math.round(rC.width),
+          radius: csC.borderRadius,
+          pad: csC.padding,
+          border: csC.borderTopColor,
+          bg: csC.backgroundColor,
+          shadow: csC.boxShadow,
+        },
+        title: {
+          fs: getComputedStyle(h4).fontSize,
+          fw: getComputedStyle(h4).fontWeight,
+          color: getComputedStyle(h4).color,
+        },
+        sub: sub
+          ? {
+              fs: getComputedStyle(sub).fontSize,
+              color: getComputedStyle(sub).color,
+            }
+          : null,
+        amount: amount
+          ? {
+              fs: getComputedStyle(amount).fontSize,
+              fw: getComputedStyle(amount).fontWeight,
+              color: getComputedStyle(amount).color,
+            }
+          : null,
+        dot: dot
+          ? {
+              bg: getComputedStyle(dot).backgroundColor,
+              radius: getComputedStyle(dot).borderRadius,
+            }
+          : null,
+        grid: {
+          display: csG.display,
+          cols: csG.gridTemplateColumns,
+          gap: csG.gap,
+        },
+        h1: h1
+          ? {
+              fs: getComputedStyle(h1).fontSize,
+              fw: getComputedStyle(h1).fontWeight,
+              color: getComputedStyle(h1).color,
+            }
+          : null,
+        viewSub: subP
+          ? {
+              fs: getComputedStyle(subP).fontSize,
+              color: getComputedStyle(subP).color,
+            }
+          : null,
+        filterCard: filterCard
+          ? {
+              w: Math.round(filterCard.getBoundingClientRect().width),
+              radius: getComputedStyle(filterCard).borderRadius,
+              pad: getComputedStyle(filterCard).padding,
+              bg: getComputedStyle(filterCard).backgroundColor,
+            }
+          : null,
+        search: search
+          ? {
+              w: Math.round(search.getBoundingClientRect().width),
+              h: Math.round(search.getBoundingClientRect().height),
+            }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The goal card: radius 12 / pad 20 / the border / white / the
+    // reference's own inline shadow family (v28 G3's hover pin shares
+    // the string).
+    expect(census!.card).toEqual({
+      w: 358,
+      radius: "12px",
+      pad: "20px",
+      border: "rgb(229, 231, 227)",
+      bg: "rgb(255, 255, 255)",
+      shadow: "rgba(0, 0, 0, 0.04) 0px 2px 8px 0px",
+    });
+    // The H4 16/600 forestDark; the subtitle 14/400 gray; the amount
+    // 24/700 in the savings blue rgb(59,126,161).
+    expect(census!.title).toEqual({ fs: "16px", fw: "600", color: "rgb(26, 58, 46)" });
+    expect(census!.sub).toEqual({ fs: "14px", color: "rgb(107, 114, 128)" });
+    expect(census!.amount).toEqual({ fs: "24px", fw: "700", color: "rgb(59, 126, 161)" });
+    // The 8×8 accent dot in the savings blue, fully rounded.
+    expect(census!.dot).toEqual({ bg: "rgb(59, 126, 161)", radius: "9999px" });
+    // The card grid: 1 column, 16px gap (the seed's 2 cards stack).
+    expect(census!.grid).toEqual({ display: "grid", cols: "358px", gap: "16px" });
+    // The view chrome: the H1 30/700 forestDark; the sub 16 gray; the
+    // filter card 358 / radius 16 / pad 24 / white; the search 308×36.
+    expect(census!.h1).toEqual({ fs: "30px", fw: "700", color: "rgb(26, 58, 46)" });
+    expect(census!.viewSub).toEqual({ fs: "16px", color: "rgb(107, 114, 128)" });
+    expect(census!.filterCard).toEqual({
+      w: 358,
+      radius: "16px",
+      pad: "24px",
+      bg: "rgb(255, 255, 255)",
+    });
+    expect(census!.search).toEqual({ w: 308, h: 36 });
+    // The clone's superset no-overflow contract at 390.
+    expect(census!.docSW).toBe(390);
+  });
+});

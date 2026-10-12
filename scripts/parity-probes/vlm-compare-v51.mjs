@@ -1,0 +1,50 @@
+// vlm-compare-v51.mjs — the standing VLM pairwise (v51: the SAVINGS
+// view at 390x844 mobile — THE F3 SURFACE: the goal-card family, a
+// data-divergent surface — the clone's richer seed renders 2 goal
+// cards with 4-badge rows where the reference's single card carries 3
+// badges; the card chrome is byte-identical per the v51 pins). The
+// only expected differences are platform chrome (the reference's "Edit
+// with Base44" FAB) + the seed-data classes (the v48 precedent). Every
+// flagged diff must be DOM-verified before it counts — the v43
+// misattribution lesson.
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "node:fs";
+
+const b64 = (p) => fs.readFileSync(p).toString("base64");
+
+async function compare(zai, label, refPath, clonePath) {
+  const res = await zai.chat.completions.createVision({
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `You are comparing two screenshots of the same budget-planner web app's SAVINGS page (390x844 mobile viewport) — image 1 is the REFERENCE site, image 2 is the CLONE. Both show a "Savings" page: a mobile top bar with a hamburger and the ZeroBalance brand, a "Savings" heading with an items-count subtitle and an "Add Savings" button, a white filter card (search + category/frequency selects), and white goal cards with a title, an amount, and colored badge chips. Report: (1) VERDICT: IDENTICAL or DIFFERENT, (2) a list of any visual differences you can spot (card chrome, colors, fonts, spacing, badges, layout), however small. Be precise and concise.`,
+          },
+          { type: "image_url", image_url: { url: `data:image/png;base64,${b64(refPath)}` } },
+          { type: "image_url", image_url: { url: `data:image/png;base64,${b64(clonePath)}` } },
+        ],
+      },
+    ],
+    thinking: { type: "disabled" },
+  });
+  const text = res.choices[0]?.message?.content || "NO RESPONSE";
+  console.log(`\n===== ${label} =====`);
+  console.log(text);
+}
+
+async function main() {
+  const zai = await ZAI.create();
+  await compare(
+    zai,
+    "PAIR: savings view 390x844 (ref vs clone, v51 F3 surface)",
+    "/tmp/vlm51/ref-savings.png",
+    "/tmp/vlm51/clone-savings.png",
+  );
+}
+
+main().catch((e) => {
+  console.error("VLM compare failed:", e.message);
+  process.exit(1);
+});

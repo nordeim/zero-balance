@@ -334,3 +334,89 @@ test.describe("register verify-email gate at MOBILE (v23 — plan G2)", () => {
     expect(chrome.h2!.color).toBe("rgb(15, 23, 42)");
   });
 });
+
+// v51 F1 (docs/remediation-plan-v51.md): the verify-mode PANEL census —
+// the v50 F1's third site, claimed but never applied (the comment at
+// login-card.tsx:605-607 landed, the line-608 class swap did not). The
+// verify branch's mode container still read `space-y-4` where the v50
+// plan converted it to `.zb-auth-mode`: the back button's own `-mb-2`
+// OVERRIDES v4's zero-specificity `:where(& > :not(:last-child))`
+// margin-block-end — the centered inner stack OVERLAPS the button by
+// 8px (netGap -8) and the panel is 16px short (492 vs the v3-stacking
+// 508; the wrapper 540 vs 556; the y 152 vs 144). The fix restores the
+// reference's v3 arithmetic (the collapsed 16 + (-8) = the 8px NET gap
+// — the same contract the v50 F1 pinned for sign-up 422/470 and forgot
+// 310/358; the reference measurement inherited from the v21 live
+// session's structural census of the same idiom).
+test.describe("verify-mode panel census (v51 — plan F1)", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("the verify state's panel + junction carry the v3 stacking arithmetic", async ({ page }) => {
+    // A FIXED-LENGTH email (21 chars): the "We've sent a 6-digit code
+    // to {email}" block wraps per the email's length — a longer email
+    // adds a wrapped line (+20px) and the panel height is
+    // email-length-dependent. The fixed email keeps the absolute pins
+    // deterministic (the global-setup re-seeds db/e2e.db fresh every
+    // run, so the address is reusable).
+    await registerFreshAccount(page, "v51-panel@example.com");
+
+    const geo = await page.evaluate(() => {
+      const wrapper = [...document.querySelectorAll("div")].find((d) =>
+        (d.className || "").toString().includes("max-w-md"),
+      );
+      const panel = wrapper?.firstElementChild as HTMLElement | undefined;
+      if (!wrapper || !panel) return { err: "no panel" };
+      const content = [...panel.children].find((c) =>
+        (c.className || "").toString().includes("p-8"),
+      ) as HTMLElement | undefined;
+      const back = content
+        ? ([...content.querySelectorAll("button, a")].find((b) =>
+            /back/i.test(b.textContent || ""),
+          ) as HTMLElement | undefined)
+        : undefined;
+      if (!content || !back) return { err: "no junction" };
+      const modeContainer = back.parentElement as HTMLElement;
+      const innerStack = ([...modeContainer.children].find(
+        (c) => c !== back,
+      ) as HTMLElement | undefined)!;
+      const rW = wrapper.getBoundingClientRect();
+      const rP = panel.getBoundingClientRect();
+      const rB = back.getBoundingClientRect();
+      const rI = innerStack.getBoundingClientRect();
+      return {
+        modeCls: modeContainer.className.toString().slice(0, 24),
+        wrapperH: Math.round(rW.height),
+        panelW: Math.round(rP.width),
+        panelH: Math.round(rP.height),
+        panelY: Math.round(rP.y),
+        btnH: Math.round(rB.height),
+        btnMB: getComputedStyle(back).marginBottom,
+        btnBottom: Math.round(rB.bottom),
+        innerTop: Math.round(rI.top),
+        netGap: Math.round(rI.top - rB.bottom),
+      };
+    });
+
+    expect(geo.err).toBeUndefined();
+    // The mode container carries the v50 F1's scoped restore (the v3
+    // margin-top-on-following-sibling semantics — NOT v4's space-y).
+    expect(geo.modeCls).toBe("zb-auth-mode");
+    // The v3-stacking panel: 492 + 16 = 508; the wrapper 540 + 16 = 556
+    // (the panel + the v49 spacer's 48); the y 152 - 8 = 144 (the
+    // centering arithmetic follows the height).
+    expect(geo.panelW).toBe(358);
+    expect(geo.panelH).toBe(508);
+    expect(geo.wrapperH).toBe(556);
+    expect(geo.panelY).toBe(144);
+    // The junction: the button h 20 with its own -8 bottom margin, the
+    // inner stack's top 8px BELOW the button's bottom (the collapsed
+    // 16 + (-8) = the 8px net gap — never the -8 overlap). The
+    // button's bottom = the panel y 144 + the content pad 32 + the h 20
+    // = 196; the inner top = 196 + 8 = 204.
+    expect(geo.btnH).toBe(20);
+    expect(geo.btnMB).toBe("-8px");
+    expect(geo.netGap).toBe(8);
+    expect(geo.btnBottom).toBe(196);
+    expect(geo.innerTop).toBe(204);
+  });
+});

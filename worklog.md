@@ -39,7 +39,8 @@ and `docs/remediation-plan-v46.md`,
 and `docs/remediation-plan-v47.md`,
 and `docs/remediation-plan-v48.md`,
 and `docs/remediation-plan-v49.md`,
-and `docs/remediation-plan-v50.md`.
+and `docs/remediation-plan-v50.md`,
+and `docs/remediation-plan-v51.md`.
 
 ---
 
@@ -48,6 +49,71 @@ and `docs/remediation-plan-v50.md`.
 ---
 
 ---
+
+---
+
+## Session 85 — Parity iteration v51: the verify-email mode container's missing `.zb-auth-mode` conversion (THE FIX — the third production-code change since v46, completing the v50 F1's CLAIMED-but-never-applied third site) + four 390 pin surfaces (2026-10-12)
+
+**Goal:** the session-118 v51 queue's read-only members (the savings
+goal-card mobile census, the hero stats-card row's 390 reflow) + two
+sibling sweep surfaces (the Budget Guidelines card at 390, the
+quick-actions row at 390) — one of which resolved the deferred
+verify-email queue item WITHOUT a reference write. TDD-first, docs
+aligned, commit + push via the SSH wrapper. (The workspace survived
+— a `git pull` fast-forward to 7a7f912.)
+
+**What was done:** the baseline chain GREEN (108 unit / 236 e2e /
+35 smoke — the v50 state confirmed); the 45th standing checks ALL
+CLEAN (the reference's four bugs live — the superset preserved; the
+data census read-only and intact; the SEO pair live on both); the
+v51 probe pair (ref-v51.sh + clone-v51.sh, READ-ONLY on the
+reference) measured FOUR pin-only surfaces at byte-parity (the
+stats row: the three 210-tall cards @ 949/1183/1417 on both sites,
+the full-page vertical rhythm identical; the savings view: the
+goal card's chrome + the H1/filter/search — the card HEIGHT a data
+class, the richer seed's 4-chip badge wrap; the Budget Guidelines
+card: the BLOCK tiles stack + the byte-identical tinted pairs; the
+quick-actions row: the three 90-tall cards @ 2751/2865/2979, the
+40×40 circle, the trailing plus's class string read from the
+reference's own DOM). A systematic Tailwind v4 trap-log audit (the
+space-y × mt/mb-utility scan) then found THE REAL GAP: **the v50
+F1's third-site conversion was CLAIMED but NEVER APPLIED** — the
+v50 plan/commit/docs all stated the verify-email branch's container
+was converted; the v50 diff landed the describing comment at
+login-card.tsx:605-607 but NOT the line-608 class swap. Measured
+via a fresh CLONE-side registration: the verify panel 16px short
+(492 vs 508), the junction netGap −8 (the centered inner stack
+overlapping the back button by 8px — the same v4 space-y × -mb-2
+override). The remediation plan v51 written + validated; the TDD
+cycle: RED CONFIRMED (the modeCls assertion fails on `space-y-4`)
+→ the one-class fix (`zb-auth-mode`, no zb-sm6 — the verify
+container carries no sm tier) → the first GREEN measured 528 not
+508 (THE EMAIL-LENGTH FINDING: the "We've sent a 6-digit code to
+{email}" block wraps per the address's length — the pin switched
+to a fixed 21-char email) → GREEN (the panel 508 / the wrapper 556
+/ the y 144 / the junction netGap 8). The F2/F4/F5 + F3 pins
+written pin-only (one finder fix: the quick-action circle is a
+SPAN in the clone, a DIV on the reference; one chain-gate catch:
+Playwright does NOT typecheck — the TS2774 `querySelector &&`
+check bit at `next build`, not at runtime). FIVE mutations verified
+to FAIL (the zb-auth-mode removed [the RED run]; the stat card's
+rounded-2xl→rounded-xl; the goal card's shadow removed; the Needs
+tile's bg removed; the circle's w-10→w-8) — each with the standalone
+REBUILD. The full chain: lint + typecheck + 108 unit + build +
+**241/241 e2e (5.6m — the not-found flake family on the first two
+runs, both 7/7 standalone, clean on the third)** + 35/35 smoke.
+The VLM pair on the /savings view at 390: 3 flags, all the
+documented seed-data classes (the v48 precedent's second
+application). The 16 screenshots regenerated; the docs aligned
+(AGENTS / CLAUDE / README / PAD v1.1.8 / the SKILL Session 86 row /
+the probe README's v51 section / session_119 + session_120 / this
+worklog + the ledger list). Commit + push to main via the SSH
+wrapper.
+
+**Outcome:** 108 unit / **241 e2e** / 35 smoke — all green; ONE
+production fix (the third since v46) + four pin surfaces; the
+doc-vs-code mismatch closed (the code now matches what the v50 docs
+already claimed).
 
 ---
 

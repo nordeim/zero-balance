@@ -1916,3 +1916,58 @@ viewports + the donut legend's interaction):
   / the button 294@x 48 IDENTICAL on both sites; the shadow-depth
   flag is the accepted lead-divergence class) — the v43
   misattribution lesson's fifth application.
+
+- `ref-v51.sh` + `clone-v51.sh` — the v51 surface drivers: the
+  dashboard's STATS ROW at 390 (the three StatCards' grid/rhythm/
+  chrome/internals), the SAVINGS view at 390 (the goal-card census +
+  the view chrome), the BUDGET GUIDELINES card at 390 (the card + the
+  tiles container + the three tinted tiles), and the follow-up
+  censuses (the goal card's internals, the quick-actions row, the
+  unsliced guidelines shadow — run as inline with-server evals).
+- THE v51 FINDING — ONE REAL GAP (the third production-code change
+  since v46) + four pin-only surfaces: (1) the v50 F1's THIRD-site
+  conversion was CLAIMED but NEVER APPLIED — the v50 plan (§F1), the
+  commit message, and all five docs stated "the verify-email branch's
+  same-idiom container converted," the v50 diff landed the describing
+  comment at login-card.tsx:605-607, but the line-608 class swap
+  itself never shipped: the verify branch still read `space-y-4`.
+  Measured via a fresh CLONE-side registration (the reference stays
+  read-only): the verify panel 492 (16px short), the junction netGap
+  −8 (the centered inner stack overlapping the back button by 8px).
+  The fix: the one-class swap (`zb-auth-mode`, no `zb-sm6` — the
+  verify container carries no sm tier). (2–5) The stats row, the
+  savings view, the Budget Guidelines card, and the quick-actions row
+  at 390: ALL byte-parity (the full-page vertical rhythm identical —
+  the stats cards @ 949/1183/1417 and the quick-actions @
+  2751/2865/2979 on BOTH sites; the savings card height is a data
+  class — the richer seed's 4-chip badge wrap, never pinned).
+- LESSONS: (a) **The verify panel's height is EMAIL-LENGTH-DEPENDENT**
+  — the "We've sent a 6-digit code to {email}" block wraps per the
+  address's length (a 38-char address wraps one extra line, +20px:
+  the first GREEN attempt measured 528, not 508) — pin with a FIXED
+  21-char email (the global-setup re-seeds db/e2e.db every run, so
+  the address is reusable). (b) **Playwright does NOT typecheck** —
+  the `c.querySelector &&` TS2774 always-defined check runs green at
+  runtime but fails `next build`'s tsc (a new spec file needs a build
+  before the chain gate, not just a test run). (c) **The with-server
+  heredoc kills its server at the end** — every follow-up eval needs
+  a fresh invocation (the mid-flow "Network error"). (d) The sign-up
+  form carries THREE inputs (email + password + Confirm Password) —
+  a probe that fills only the first two never submits (native
+  validation blocks it silently). (e) The savings page carries a
+  hidden desktop-sidebar H2 brand — an `h1, h2` finder hits the
+  hidden 18px H2 first (the probe artifact; the VISIBLE top-bar brand
+  is the 20px H1, both sites). (f) The reference's quick-action card
+  internals are readable from its own DOM (the button's class string
+  `p-6 rounded-2xl text-left transition-all …` + the wrapper div +
+  the 40×40 circle + the trailing plus's `ml-auto opacity-50
+  group-hover:opacity-100 transition-opacity` — the class-attribute
+  census, not a computed-style guess).
+- `vlm-compare-v51.mjs` + the /tmp/vlm51 pair — the standing VLM
+  screening (the /savings view at 390 — THE F3 SURFACE): the VLM
+  flagged 3 diffs (the count subtitle / the card contents / the
+  extra-card layout length) — ALL DOM-verified as the documented
+  seed-data classes (the reference's 1 Emergency Fund card vs the
+  clone's 2 richer-seed cards with the 4-chip badge rows; the chrome
+  byte-pinned by the F3 test) — the v48 precedent's second
+  application.

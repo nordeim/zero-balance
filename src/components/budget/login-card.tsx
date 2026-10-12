@@ -605,7 +605,13 @@ export function LoginCard() {
                     // scoped .zb-auth-mode restore; the -mb-2 back button
                     // STACKS with the heading's mt instead of overriding v4's
                     // zero-specificity margin-block-end).
-                    <div className="space-y-4">
+                    // v51 F1 (docs/remediation-plan-v51.md): the class swap
+                    // the v50 plan specified but never applied — the comment
+                    // above landed in v50, this zb-auth-mode did not (the
+                    // panel was 16px short, the junction overlapped by 8px).
+                    // No zb-sm6: the reference's verify container carries no
+                    // sm tier (the v21-measured structure).
+                    <div className="zb-auth-mode">
                       <button
                         type="button"
                         className="-mb-2 flex items-center gap-2 text-sm font-medium text-[#64748b] transition-colors hover:text-[#334155]"

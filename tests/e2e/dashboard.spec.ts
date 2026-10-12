@@ -1910,3 +1910,427 @@ test.describe("dashboard hero mobile reflow census (v50 — plan F3)", () => {
     expect(census!.docSW).toBe(390);
   });
 });
+
+// v51 (docs/remediation-plan-v51.md): the dashboard's remaining MOBILE
+// surfaces at 390 — the stats row (F2), the Budget Guidelines card
+// (F4), and the quick-actions row (F5), all measured live on BOTH
+// sites at byte-parity (READ-ONLY on the reference). The widths ride
+// the documented overflow family (the reference's 363 cards on its own
+// 395 docSW; the clone's 358 fitting docSW 390); the heights and the
+// vertical rhythm are byte-identical.
+test.describe("mobile surface census at 390 (v51 — plan F2/F4/F5)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+  });
+
+  test("the stats row — the three cards' grid, rhythm and full chrome (v51 F2)", async ({ page }) => {
+    const census = await page.evaluate(() => {
+      const h3 = [...document.querySelectorAll("h3")].find(
+        (x) => (x.textContent || "").trim() === "Total Income",
+      );
+      if (!h3) return null;
+      let card = h3 as HTMLElement;
+      while (card && card.parentElement) {
+        const p = card.parentElement;
+        const statCards = [...p.children].filter((c) =>
+          [...c.querySelectorAll("h3")].some((h) =>
+            /^(Total Income|Total Savings|Total Expenses)$/.test(
+              (h.textContent || "").trim(),
+            ),
+          ),
+        );
+        if (statCards.length >= 2) break;
+        card = p as HTMLElement;
+      }
+      const grid = card.parentElement as HTMLElement;
+      const csG = getComputedStyle(grid);
+      const first = ([...grid.children].find((c) =>
+        [...c.querySelectorAll("h3")].some(
+          (h) => (h.textContent || "").trim() === "Total Income",
+        ),
+      ) as HTMLElement)!;
+      const csC = getComputedStyle(first);
+      const rC = first.getBoundingClientRect();
+      const circle = [...first.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        return Math.abs(r.width - 48) < 1 && Math.abs(r.height - 48) < 1;
+      }) as HTMLElement | undefined;
+      const icon = first.querySelector("svg") as SVGSVGElement | null;
+      const amount = [...first.querySelectorAll("p")].find((p) =>
+        /^[-+]?[\$]?[0-9]/.test((p.textContent || "").trim()),
+      ) as HTMLElement | undefined;
+      const countRow = [...first.querySelectorAll("div")].find(
+        (d) =>
+          (d.textContent || "").includes("item") &&
+          d.children.length > 0 &&
+          getComputedStyle(d).display === "flex",
+      ) as HTMLElement | undefined;
+      const trend = [...first.querySelectorAll("svg")].pop() as
+        | SVGSVGElement
+        | undefined;
+      return {
+        grid: {
+          display: csG.display,
+          cols: csG.gridTemplateColumns,
+          gap: csG.gap,
+          children: grid.children.length,
+        },
+        cards: [...grid.children].map((c) => {
+          const r = c.getBoundingClientRect();
+          return { w: Math.round(r.width), h: Math.round(r.height), y: Math.round(r.y) };
+        }),
+        card: {
+          w: Math.round(rC.width),
+          h: Math.round(rC.height),
+          radius: csC.borderRadius,
+          pad: csC.padding,
+          border: csC.borderTopColor,
+          bg: csC.backgroundColor,
+          shadow: csC.boxShadow,
+        },
+        circle: circle
+          ? {
+              w: Math.round(circle.getBoundingClientRect().width),
+              radius: getComputedStyle(circle).borderRadius,
+              bg: getComputedStyle(circle).backgroundColor,
+            }
+          : null,
+        icon: icon
+          ? {
+              w: Math.round(icon.getBoundingClientRect().width),
+              color: getComputedStyle(icon).color,
+            }
+          : null,
+        title: {
+          fs: getComputedStyle(h3).fontSize,
+          fw: getComputedStyle(h3).fontWeight,
+          color: getComputedStyle(h3).color,
+          mb: getComputedStyle(h3).marginBottom,
+        },
+        amount: amount
+          ? {
+              fs: getComputedStyle(amount).fontSize,
+              fw: getComputedStyle(amount).fontWeight,
+              color: getComputedStyle(amount).color,
+              mb: getComputedStyle(amount).marginBottom,
+            }
+          : null,
+        countRow: countRow
+          ? {
+              fs: getComputedStyle(countRow).fontSize,
+              gap: getComputedStyle(countRow).gap,
+              color: getComputedStyle(countRow).color,
+            }
+          : null,
+        trend: trend
+          ? { w: Math.round(trend.getBoundingClientRect().width) }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The grid: 1 column, 24px gap, three cards.
+    expect(census!.grid).toEqual({
+      display: "grid",
+      cols: "358px",
+      gap: "24px",
+      children: 3,
+    });
+    // The 24px rhythm: 949 + 210 + 24 = 1183 + 210 + 24 = 1417 — the
+    // y positions byte-identical on both sites (the reference's cards
+    // at 949/1183/1417 with its own 363-wide cards on the 395 docSW).
+    expect(census!.cards).toEqual([
+      { w: 358, h: 210, y: 949 },
+      { w: 358, h: 210, y: 1183 },
+      { w: 358, h: 210, y: 1417 },
+    ]);
+    // The card chrome: radius 16 / pad 24 / the border / white / the
+    // reference's own inline shadow family.
+    expect(census!.card).toEqual({
+      w: 358,
+      h: 210,
+      radius: "16px",
+      pad: "24px",
+      border: "rgb(229, 231, 227)",
+      bg: "rgb(255, 255, 255)",
+      shadow: "rgba(0, 0, 0, 0.06) 0px 4px 20px 0px",
+    });
+    // The 48px icon circle (radius 12, the income lime tint).
+    expect(census!.circle).toEqual({
+      w: 48,
+      radius: "12px",
+      bg: "rgba(143, 188, 63, 0.125)",
+    });
+    expect(census!.icon).toEqual({ w: 24, color: "rgb(143, 188, 63)" });
+    // The title 14/500 gray mb-4; the amount 30/700 forestDark mb-4;
+    // the count row 14px / gap 8px (the count TEXT is seed data).
+    expect(census!.title).toEqual({
+      fs: "14px",
+      fw: "500",
+      color: "rgb(107, 114, 128)",
+      mb: "4px",
+    });
+    expect(census!.amount).toEqual({
+      fs: "30px",
+      fw: "700",
+      color: "rgb(26, 58, 46)",
+      mb: "16px",
+    });
+    expect(census!.countRow).toEqual({
+      fs: "14px",
+      gap: "8px",
+      color: "rgb(10, 10, 10)",
+    });
+    expect(census!.trend).toEqual({ w: 16 });
+  });
+
+  test("the Budget Guidelines card — the card, the block tiles stack, the three tinted tiles (v51 F4)", async ({ page }) => {
+    const census = await page.evaluate(() => {
+      const heading = [...document.querySelectorAll("h1, h2, h3, div")].find(
+        (x) => (x.textContent || "").trim() === "Budget Guidelines",
+      ) as HTMLElement | undefined;
+      if (!heading) return null;
+      let card = heading as HTMLElement;
+      while (
+        card &&
+        card.parentElement &&
+        !(
+          getComputedStyle(card).boxShadow !== "none" &&
+          getComputedStyle(card).borderRadius &&
+          card.querySelector("span, p")
+        )
+      )
+        card = card.parentElement as HTMLElement;
+      const csC = getComputedStyle(card);
+      const rC = card.getBoundingClientRect();
+      const tiles = [...card.querySelectorAll("div")].filter((d) => {
+        const cs = getComputedStyle(d);
+        const r = d.getBoundingClientRect();
+        return (
+          cs.borderRadius === "8px" &&
+          r.height > 60 &&
+          r.height < 200 &&
+          d.querySelector("span, p") &&
+          cs.backgroundColor !== "rgba(0, 0, 0, 0)"
+        );
+      }) as HTMLElement[];
+      const grid = tiles.length
+        ? (tiles[0]!.parentElement as HTMLElement)
+        : null;
+      return {
+        card: {
+          w: Math.round(rC.width),
+          h: Math.round(rC.height),
+          radius: csC.borderRadius,
+          border: csC.borderTopColor,
+          bg: csC.backgroundColor,
+          shadow: csC.boxShadow,
+        },
+        grid: grid
+          ? {
+              display: getComputedStyle(grid).display,
+              children: grid.children.length,
+            }
+          : null,
+        tiles: tiles.slice(0, 3).map((t) => {
+          const cs = getComputedStyle(t);
+          const r = t.getBoundingClientRect();
+          const label = t.querySelector("span") as HTMLElement;
+          const pct = [...t.querySelectorAll("span")].pop() as HTMLElement;
+          const desc = t.querySelector("p") as HTMLElement;
+          return {
+            w: Math.round(r.width),
+            h: Math.round(r.height),
+            radius: cs.borderRadius,
+            pad: cs.padding,
+            bg: cs.backgroundColor,
+            border: cs.borderTopColor,
+            label: {
+              text: label.textContent!.trim().slice(0, 12),
+              fs: getComputedStyle(label).fontSize,
+              fw: getComputedStyle(label).fontWeight,
+              color: getComputedStyle(label).color,
+            },
+            pct: {
+              text: pct.textContent!.trim().slice(0, 8),
+              fs: getComputedStyle(pct).fontSize,
+              color: getComputedStyle(pct).color,
+            },
+            desc: {
+              fs: getComputedStyle(desc).fontSize,
+              color: getComputedStyle(desc).color,
+            },
+          };
+        }),
+      };
+    });
+    expect(census).not.toBeNull();
+    // The card: 358×380, radius 12, the shadow's VISIBLE pair byte-
+    // identical (the clone's 4 transparent leads vs the reference's 2 —
+    // the accepted lead-divergence class, v10/v25/v45/v49/v50).
+    expect(census!.card).toEqual({
+      w: 358,
+      h: 380,
+      radius: "12px",
+      border: "rgb(229, 231, 227)",
+      bg: "rgb(255, 255, 255)",
+      shadow:
+        "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+    });
+    // The tiles stack: display BLOCK (the space-y-3 stack, not a grid).
+    expect(census!.grid).toEqual({ display: "block", children: 3 });
+    // The three tiles: radius 8 / pad 16 / h 94, 94, 78 — the two-line
+    // descs on Needs/Wants, the one-line on Savings.
+    const [needs, wants, savings] = census!.tiles;
+    expect(needs).toEqual({
+      w: 308,
+      h: 94,
+      radius: "8px",
+      pad: "16px",
+      bg: "rgb(255, 247, 245)",
+      border: "rgb(252, 221, 213)",
+      label: { text: "Needs", fs: "16px", fw: "500", color: "rgb(224, 122, 59)" },
+      pct: { text: "~50%", fs: "14px", color: "rgb(224, 122, 59)" },
+      desc: { fs: "12px", color: "rgb(107, 114, 128)" },
+    });
+    expect(wants).toEqual({
+      w: 308,
+      h: 94,
+      radius: "8px",
+      pad: "16px",
+      bg: "rgb(240, 247, 251)",
+      border: "rgb(212, 233, 245)",
+      label: { text: "Wants", fs: "16px", fw: "500", color: "rgb(59, 126, 161)" },
+      pct: { text: "~30%", fs: "14px", color: "rgb(59, 126, 161)" },
+      desc: { fs: "12px", color: "rgb(107, 114, 128)" },
+    });
+    expect(savings).toEqual({
+      w: 308,
+      h: 78,
+      radius: "8px",
+      pad: "16px",
+      bg: "rgb(245, 249, 240)",
+      border: "rgb(223, 236, 208)",
+      label: { text: "Savings", fs: "16px", fw: "500", color: "rgb(143, 188, 63)" },
+      pct: { text: "~20%", fs: "14px", color: "rgb(143, 188, 63)" },
+      desc: { fs: "12px", color: "rgb(107, 114, 128)" },
+    });
+  });
+
+  test("the quick-actions row — the three cards' grid, rhythm and full chrome (v51 F5)", async ({ page }) => {
+    const census = await page.evaluate(() => {
+      const btn = [...document.querySelectorAll("button")].find((b) =>
+        (b.textContent || "").trim().startsWith("Add Income"),
+      ) as HTMLElement | undefined;
+      if (!btn) return null;
+      const grid = btn.parentElement as HTMLElement;
+      const csG = getComputedStyle(grid);
+      const csC = getComputedStyle(btn);
+      const rC = btn.getBoundingClientRect();
+      // The circle is a SPAN in the clone (a DIV on the reference —
+      // tag-agnostic, identical computed chrome).
+      const circle = [...btn.querySelectorAll("span, div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        return Math.abs(r.width - 40) < 1 && Math.abs(r.height - 40) < 1;
+      }) as HTMLElement | undefined;
+      const icon = btn.querySelector("svg") as SVGSVGElement | null;
+      const label = [...btn.querySelectorAll("span, div")].find(
+        (k) =>
+          k.children.length === 0 && (k.textContent || "").trim() === "Add Income",
+      ) as HTMLElement | undefined;
+      const plus = [...btn.querySelectorAll("svg")].pop() as
+        | SVGSVGElement
+        | undefined;
+      return {
+        grid: {
+          display: csG.display,
+          cols: csG.gridTemplateColumns,
+          gap: csG.gap,
+          children: grid.children.length,
+          mt: csG.marginTop,
+        },
+        cards: [...grid.children].map((c) => {
+          const r = c.getBoundingClientRect();
+          return { w: Math.round(r.width), h: Math.round(r.height), y: Math.round(r.y) };
+        }),
+        card: {
+          w: Math.round(rC.width),
+          h: Math.round(rC.height),
+          radius: csC.borderRadius,
+          pad: csC.padding,
+          border: csC.borderTopColor,
+          bg: csC.backgroundColor,
+          shadow: csC.boxShadow,
+        },
+        circle: circle
+          ? {
+              w: Math.round(circle.getBoundingClientRect().width),
+              radius: getComputedStyle(circle).borderRadius,
+              bg: getComputedStyle(circle).backgroundColor,
+            }
+          : null,
+        icon: icon
+          ? {
+              w: Math.round(icon.getBoundingClientRect().width),
+              color: getComputedStyle(icon).color,
+            }
+          : null,
+        label: label
+          ? {
+              fs: getComputedStyle(label).fontSize,
+              fw: getComputedStyle(label).fontWeight,
+              color: getComputedStyle(label).color,
+            }
+          : null,
+        plus: plus
+          ? {
+              w: Math.round(plus.getBoundingClientRect().width),
+              opacity: getComputedStyle(plus).opacity,
+              color: getComputedStyle(plus).color,
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The grid: 1 column, 24px gap, three cards, the mt-8 section gap.
+    expect(census!.grid).toEqual({
+      display: "grid",
+      cols: "358px",
+      gap: "24px",
+      children: 3,
+      mt: "32px",
+    });
+    // The 114px rhythm: 2751 + 90 + 24 = 2865 + 90 + 24 = 2979 — the
+    // full-page vertical rhythm byte-identical through the whole
+    // dashboard on both sites.
+    expect(census!.cards).toEqual([
+      { w: 358, h: 90, y: 2751 },
+      { w: 358, h: 90, y: 2865 },
+      { w: 358, h: 90, y: 2979 },
+    ]);
+    // The card chrome: radius 16 / pad 24 / the border / white / NO
+    // shadow at rest (the hover adds shadow-lg — the transition family).
+    expect(census!.card).toEqual({
+      w: 358,
+      h: 90,
+      radius: "16px",
+      pad: "24px",
+      border: "rgb(229, 231, 227)",
+      bg: "rgb(255, 255, 255)",
+      shadow: "none",
+    });
+    // The 40px icon circle (radius 12, the income lime tint).
+    expect(census!.circle).toEqual({
+      w: 40,
+      radius: "12px",
+      bg: "rgba(143, 188, 63, 0.125)",
+    });
+    expect(census!.icon).toEqual({ w: 20, color: "rgb(143, 188, 63)" });
+    // The label 16/500 forestDark; the trailing plus 16×16 at 50%
+    // opacity in the accent color (the reference's own ml-auto
+    // opacity-50 group-hover:opacity-100 idiom).
+    expect(census!.label).toEqual({ fs: "16px", fw: "500", color: "rgb(26, 58, 46)" });
+    expect(census!.plus).toEqual({ w: 16, opacity: "0.5", color: "rgb(143, 188, 63)" });
+  });
+});
