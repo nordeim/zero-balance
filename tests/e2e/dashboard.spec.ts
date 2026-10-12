@@ -1655,3 +1655,258 @@ test.describe("donut legend mobile reflow census (v49 — plan F2)", () => {
     expect(census!.sw).toBe(390);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v50 — plan F3 (docs/remediation-plan-v50.md): the dashboard HERO's mobile
+// reflow at 390. The v42 F2 pinned the hero grid at 640 (goalCard 316,
+// breakdownCard 324@y=569, hero 664); the v50 pin locks the 390 reflow —
+// measured live on the reference (ref-v50.sh — byte-identical on every
+// visible axis):
+//   the hero grid: 1 column / gap 24 / 2 children
+//   the goal card: 358×316@y 253 / radius 16 / pad 32 / the 135deg forest
+//     gradient / the shadow rgba(26,58,46,0.3) 0px 20px 60px
+//   the breakdown card: 358×324 @ y 593 (the 24px rhythm: 253+316+24)
+//   the internals: the icon circle 48×48 rgba(143,188,63,0.2) + the 24px
+//     target icon at rgb(143,188,63); the H3 18/700/white/lh 28; the
+//     sublabel 14/rgba(255,255,255,0.6); the allocation row (the label
+//     14/rgba(255,255,255,0.8) + the pct 18/600/white); the track
+//     12px/rgba(255,255,255,0.1)/9999px; the fill's 90deg orange status
+//     gradient at 9999px; the balance box radius 12/pad 24/
+//     rgba(255,255,255,0.05)/blur(10px); the label 14/0.6; the figure
+//     30/700/white; the chip row: the flex gap-8 center + the span
+//     16/600 rgb(245,169,98) + the svg color rgb(245,169,98) — both
+//     sites' 20px svg squishes identically under the row's flex-shrink
+//     (a shared data-pressure artifact, byte-identical).
+// The reference's own card w 363 rides its 395 docSW overflow (the
+// documented superset-fix-#4 family — the clone's 358 fits, docSW 390).
+// ---------------------------------------------------------------------------
+test.describe("dashboard hero mobile reflow census (v50 — plan F3)", () => {
+  test("the hero's 390 reflow — the grid, the cards, the goal card's full internals", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "NET ZERO GOAL" })).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate(() => {
+      const h3 = [...document.querySelectorAll("h3")].find(
+        (h) => (h.textContent || "").trim() === "NET ZERO GOAL",
+      );
+      if (!h3) return null;
+      // walk up to the card: the radius-16 shadowed forest panel
+      let card = h3.parentElement as HTMLElement | null;
+      for (let i = 0; i < 12 && card; i++) {
+        const cs = getComputedStyle(card);
+        const r = card.getBoundingClientRect();
+        if (r.width > 300 && r.width < 400 && r.height > 250 && cs.borderRadius !== "0px" && cs.boxShadow !== "none") break;
+        card = card.parentElement as HTMLElement | null;
+      }
+      if (!card) return null;
+      const csCard = getComputedStyle(card);
+      const rCard = card.getBoundingClientRect();
+      const grid = (card.parentElement as HTMLElement).parentElement!;
+      const csG = getComputedStyle(grid);
+      const cards = [...grid.children].map((c) => {
+        const r = c.getBoundingClientRect();
+        return { w: Math.round(r.width), h: Math.round(r.height), y: Math.round(r.y) };
+      });
+      // internals
+      const ic = [...card.querySelectorAll("div")].find((d) => {
+        const cs = getComputedStyle(d);
+        const r = d.getBoundingClientRect();
+        return cs.borderRadius === "9999px" && r.width > 40 && r.width < 60;
+      });
+      const icSvg = ic ? ic.querySelector("svg") : null;
+      const sub = [...card.querySelectorAll("p")].find((p) => /Income\s*=\s*Savings/i.test(p.textContent || ""));
+      const alloc = [...card.querySelectorAll("span, p")].find(
+        (s) => /allocation/i.test((s.textContent || "").trim()) && s.getBoundingClientRect().width < 160,
+      );
+      const pct = [...card.querySelectorAll("span, p")].find((s) =>
+        /^[0-9.]+%$/.test((s.textContent || "").trim()),
+      );
+      const track = [...card.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        const cs = getComputedStyle(d);
+        return r.height >= 10 && r.height <= 16 && cs.borderRadius === "9999px" && r.width > 200;
+      });
+      const fillEl = track && track.firstElementChild ? (track.firstElementChild as HTMLElement) : null;
+      const balBox = [...card.querySelectorAll("div")].find((d) => {
+        const cs = getComputedStyle(d);
+        const r = d.getBoundingClientRect();
+        return cs.borderRadius === "12px" && r.width > 200;
+      });
+      const balLabel = balBox
+        ? [...balBox.querySelectorAll("p")].find((p) => /balance/i.test(p.textContent || ""))
+        : null;
+      const fig = balBox
+        ? [...balBox.querySelectorAll("p, div, span")]
+            .filter((x) => /^[-+]?\$[0-9]/.test((x.textContent || "").trim()))
+            .pop()
+        : null;
+      // the chip: the flex row with the trending icon + the status span
+      const chipBox = balBox
+        ? [...balBox.children].find((c) => /Under Budget|Over Budget|Net Zero/i.test(c.textContent || ""))
+        : null;
+      const chipSvg = chipBox ? chipBox.querySelector("svg") : null;
+      const chipSpan = chipBox
+        ? [...(chipBox as HTMLElement).children].find((c) => c.tagName === "SPAN")
+        : null;
+      return {
+        grid: {
+          display: csG.display,
+          cols: csG.gridTemplateColumns,
+          gap: csG.gap,
+          w: Math.round(grid.getBoundingClientRect().width),
+          children: grid.children.length,
+        },
+        goalCard: {
+          w: Math.round(rCard.width),
+          h: Math.round(rCard.height),
+          y: Math.round(rCard.y),
+          radius: csCard.borderRadius,
+          pad: csCard.padding,
+          bg: csCard.backgroundImage,
+          shadow: csCard.boxShadow,
+        },
+        cards,
+        iconCircle: ic
+          ? {
+              w: Math.round(ic.getBoundingClientRect().width),
+              h: Math.round(ic.getBoundingClientRect().height),
+              bg: getComputedStyle(ic).backgroundColor,
+              svg: icSvg
+                ? {
+                    w: Math.round(icSvg.getBoundingClientRect().width),
+                    color: getComputedStyle(icSvg).color,
+                  }
+                : null,
+            }
+          : null,
+        h3: {
+          fs: getComputedStyle(h3).fontSize,
+          fw: getComputedStyle(h3).fontWeight,
+          color: getComputedStyle(h3).color,
+          lh: getComputedStyle(h3).lineHeight,
+        },
+        sublabel: sub
+          ? { fs: getComputedStyle(sub).fontSize, color: getComputedStyle(sub).color }
+          : null,
+        allocLabel: alloc
+          ? { fs: getComputedStyle(alloc).fontSize, color: getComputedStyle(alloc).color }
+          : null,
+        pct: pct
+          ? {
+              fs: getComputedStyle(pct).fontSize,
+              fw: getComputedStyle(pct).fontWeight,
+              color: getComputedStyle(pct).color,
+            }
+          : null,
+        track: track
+          ? {
+              w: Math.round(track.getBoundingClientRect().width),
+              h: Math.round(track.getBoundingClientRect().height),
+              bg: getComputedStyle(track).backgroundColor,
+              radius: getComputedStyle(track).borderRadius,
+            }
+          : null,
+        fill: fillEl
+          ? {
+              bg: getComputedStyle(fillEl).backgroundImage,
+              radius: getComputedStyle(fillEl).borderRadius,
+            }
+          : null,
+        balBox: balBox
+          ? {
+              w: Math.round(balBox.getBoundingClientRect().width),
+              h: Math.round(balBox.getBoundingClientRect().height),
+              radius: getComputedStyle(balBox).borderRadius,
+              pad: getComputedStyle(balBox).padding,
+              bg: getComputedStyle(balBox).backgroundColor,
+              blur: getComputedStyle(balBox).backdropFilter,
+            }
+          : null,
+        balLabel: balLabel
+          ? { fs: getComputedStyle(balLabel).fontSize, color: getComputedStyle(balLabel).color }
+          : null,
+        figure: fig
+          ? {
+              fs: getComputedStyle(fig).fontSize,
+              fw: getComputedStyle(fig).fontWeight,
+              color: getComputedStyle(fig).color,
+            }
+          : null,
+        chip: chipBox
+          ? {
+              display: getComputedStyle(chipBox).display,
+              gap: getComputedStyle(chipBox).gap,
+              svgColor: chipSvg ? getComputedStyle(chipSvg).color : null,
+              span: chipSpan
+                ? {
+                    text: (chipSpan.textContent || "").trim(),
+                    fs: getComputedStyle(chipSpan).fontSize,
+                    fw: getComputedStyle(chipSpan).fontWeight,
+                    color: getComputedStyle(chipSpan).color,
+                  }
+                : null,
+            }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The hero grid: 1 column, the 24px gap, 2 children.
+    expect(census!.grid.display).toBe("grid");
+    expect(census!.grid.cols).toBe("358px");
+    expect(census!.grid.gap).toBe("24px");
+    expect(census!.grid.children).toBe(2);
+    // The goal card: the reference's 316-tall forest panel (the
+    // reference's 363 rides its own 395 overflow — the clone's 358 fits).
+    expect(census!.goalCard.w).toBe(358);
+    expect(census!.goalCard.h).toBe(316);
+    expect(census!.goalCard.y).toBe(253);
+    expect(census!.goalCard.radius).toBe("16px");
+    expect(census!.goalCard.pad).toBe("32px");
+    expect(census!.goalCard.bg).toContain("linear-gradient(135deg, rgb(26, 58, 46)");
+    expect(census!.goalCard.shadow).toBe("rgba(26, 58, 46, 0.3) 0px 20px 60px 0px");
+    // The 24px rhythm: the breakdown card at y 593 (253 + 316 + 24).
+    expect(census!.cards).toEqual([
+      { w: 358, h: 316, y: 253 },
+      { w: 358, h: 324, y: 593 },
+    ]);
+    // The internals.
+    expect(census!.iconCircle!.w).toBe(48);
+    expect(census!.iconCircle!.h).toBe(48);
+    expect(census!.iconCircle!.bg).toBe("rgba(143, 188, 63, 0.2)");
+    expect(census!.iconCircle!.svg).toEqual({ w: 24, color: "rgb(143, 188, 63)" });
+    expect(census!.h3).toEqual({ fs: "18px", fw: "700", color: "rgb(255, 255, 255)", lh: "28px" });
+    expect(census!.sublabel).toEqual({ fs: "14px", color: "rgba(255, 255, 255, 0.6)" });
+    expect(census!.allocLabel).toEqual({ fs: "14px", color: "rgba(255, 255, 255, 0.8)" });
+    expect(census!.pct).toEqual({ fs: "18px", fw: "600", color: "rgb(255, 255, 255)" });
+    expect(census!.track!.h).toBe(12);
+    expect(census!.track!.bg).toBe("rgba(255, 255, 255, 0.1)");
+    expect(census!.track!.radius).toBe("9999px");
+    // The fill: the under-budget orange 90deg status gradient (the seed's
+    // state — data-dependent, the gradient family is not).
+    expect(census!.fill!.bg).toContain("linear-gradient(90deg, rgb(224, 122, 59)");
+    expect(census!.fill!.radius).toBe("9999px");
+    expect(census!.balBox!.radius).toBe("12px");
+    expect(census!.balBox!.pad).toBe("24px");
+    expect(census!.balBox!.bg).toBe("rgba(255, 255, 255, 0.05)");
+    expect(census!.balBox!.blur).toBe("blur(10px)");
+    expect(census!.balLabel).toEqual({ fs: "14px", color: "rgba(255, 255, 255, 0.6)" });
+    expect(census!.figure).toEqual({ fs: "30px", fw: "700", color: "rgb(255, 255, 255)" });
+    // The chip: the flex gap-8 row with the orange pair (the reference's
+    // svg squishes identically — flex-shrink under the row's width
+    // pressure, a byte-shared artifact).
+    expect(census!.chip!.display).toBe("flex");
+    expect(census!.chip!.gap).toBe("8px");
+    expect(census!.chip!.svgColor).toBe("rgb(245, 169, 98)");
+    expect(census!.chip!.span).toEqual({
+      text: "Under Budget",
+      fs: "16px",
+      fw: "600",
+      color: "rgb(245, 169, 98)",
+    });
+    // The clone's superset no-overflow contract at 390.
+    expect(census!.docSW).toBe(390);
+  });
+});

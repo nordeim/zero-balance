@@ -914,3 +914,202 @@ test.describe("login panel mobile census (v49 — plan F1)", () => {
     expect(at640!.panelY).toBe(at640!.centeredY);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v50 — plan F1 (docs/remediation-plan-v50.md): the auth-MODE panels' 16px
+// shortfall. The reference's sign-up/forgot containers run v3-era space-y
+// semantics (margin-top on `> * + *`), so the back button's OWN `-mb-2`
+// (-8px) STACKS with the heading's mt 16 (collapsed net gap 8px). The
+// clone's v4 space-y emits zero-specificity margin-block-end on
+// `:not(:last-child)` — the `-mb-2` utility OVERRIDES the container gap
+// (the heading overlaps the button by 8px, the panel 16px short at every
+// viewport). The fix: the scoped `.zb-auth-mode` restore (the v9 G3 /
+// v24 G2 SPACE-Y V3 SEMANTICS family's third member) + the forgot
+// container's sm tier (the reference's `space-y-4 sm:space-y-6` — 24px
+// at >=640). Measured live on the reference at 390x844 (ref-v50.sh):
+//   sign-up:  the wrapper 470 / the panel 422 / y 187 (the centered stack)
+//   forgot:   the wrapper 358 / the panel 310 / y 243
+//   the junction: the button (h 20) -> the heading at +28 (net gap 8),
+//   the heading -> the form +16 (the form heights IDENTICAL: 286 / 126).
+// ---------------------------------------------------------------------------
+test.describe("auth-mode panel census (v50 — plan F1)", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("the sign-up panel renders the reference's 422 stack (the v4 space-y × -mb-2 fix)", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Need an account? Sign up" }).click();
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const wrapper = [...document.querySelectorAll("div")].find((d) =>
+        (d.className || "").toString().includes("max-w-md"),
+      );
+      if (!wrapper) return null;
+      const panel = wrapper.firstElementChild as HTMLElement;
+      const pr = panel.getBoundingClientRect();
+      const wr = wrapper.getBoundingClientRect();
+      // the mode stack: the back button + the heading + the form
+      const content = [...panel.querySelectorAll("div")].find(
+        (d) => parseFloat(getComputedStyle(d).paddingTop) > 0 && d.querySelector("form"),
+      );
+      // the mode stack: the container whose DIRECT children are the back
+      // button + the heading (h2) + the form — walk down the single-child
+      // chain from the content block (an ancestor-match finder would
+      // return the content div itself).
+      const stack = (() => {
+        if (!content) return null;
+        let node: Element | null = content;
+        for (let i = 0; i < 6 && node; i++) {
+          const btn = [...node.children].find((c) => c.tagName === "BUTTON" && /back/i.test(c.textContent || ""));
+          const form = [...node.children].find((c) => c.tagName === "FORM");
+          // the heading child: a direct h2 (sign-up) or a wrapping div
+          // carrying the h2 (forgot: h2 + the description p).
+          const heading = [...node.children].find((c) =>
+            c.tagName === "H2" || (c.querySelector && c.querySelector("h2")),
+          );
+          if (btn && form && heading) return node as HTMLElement;
+          node = node.firstElementChild;
+        }
+        return null;
+      })();
+      const kids = stack ? [...stack.children].map((c) => {
+        const el = c as HTMLElement;
+        const cs = getComputedStyle(el);
+        return {
+          tag: el.tagName,
+          h: Math.round(el.getBoundingClientRect().height),
+          y: Math.round(el.getBoundingClientRect().y - (stack as HTMLElement).getBoundingClientRect().y),
+          mt: cs.marginTop,
+          mb: cs.marginBottom,
+        };
+      }) : [];
+      return {
+        wrapperH: Math.round(wr.height),
+        panel: { w: Math.round(pr.width), h: Math.round(pr.height), y: Math.round(pr.y) },
+        stackH: stack ? Math.round(stack.getBoundingClientRect().height) : null,
+        kids,
+      };
+    });
+    expect(census).not.toBeNull();
+    // THE v50 F1 FIX: the panel is 422 (NOT the pre-fix 406 — the v4
+    // space-y margin-block-end override left it 16px short), the wrapper
+    // 470 (422 + the spacer's mt 32 + h 16), the panel y 187 (the
+    // reference's centered stack).
+    expect(census!.wrapperH).toBe(470);
+    expect(census!.panel.h).toBe(422);
+    expect(census!.panel.w).toBe(358);
+    expect(census!.panel.y).toBe(187);
+    // The junction contract: the button h 20 (y 0), the heading at y 28
+    // (the net gap 8 — the -mb-2 stacked with the v3-style mt, NOT the
+    // pre-fix overlap at y 12), the form at heading.y + 28 + 16.
+    expect(census!.kids).toHaveLength(3);
+    expect(census!.kids[0]).toMatchObject({ tag: "BUTTON", h: 20, y: 0, mb: "-8px" });
+    expect(census!.kids[1]).toMatchObject({ tag: "H2", h: 28, y: 28 });
+    expect(census!.kids[2]).toMatchObject({ tag: "FORM", y: 72 });
+  });
+
+  test("the forgot panel renders the reference's 310 stack + the sm:space-y-6 tier at 640", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Forgot password?" }).click();
+    await expect(page.getByRole("heading", { name: "Reset your password" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const wrapper = [...document.querySelectorAll("div")].find((d) =>
+        (d.className || "").toString().includes("max-w-md"),
+      );
+      if (!wrapper) return null;
+      const panel = wrapper.firstElementChild as HTMLElement;
+      const pr = panel.getBoundingClientRect();
+      const wr = wrapper.getBoundingClientRect();
+      const content = [...panel.querySelectorAll("div")].find(
+        (d) => parseFloat(getComputedStyle(d).paddingTop) > 0 && d.querySelector("form"),
+      );
+      // the mode stack: the container whose DIRECT children are the back
+      // button + the heading (h2) + the form — walk down the single-child
+      // chain from the content block (an ancestor-match finder would
+      // return the content div itself).
+      const stack = (() => {
+        if (!content) return null;
+        let node: Element | null = content;
+        for (let i = 0; i < 6 && node; i++) {
+          const btn = [...node.children].find((c) => c.tagName === "BUTTON" && /back/i.test(c.textContent || ""));
+          const form = [...node.children].find((c) => c.tagName === "FORM");
+          // the heading child: a direct h2 (sign-up) or a wrapping div
+          // carrying the h2 (forgot: h2 + the description p).
+          const heading = [...node.children].find((c) =>
+            c.tagName === "H2" || (c.querySelector && c.querySelector("h2")),
+          );
+          if (btn && form && heading) return node as HTMLElement;
+          node = node.firstElementChild;
+        }
+        return null;
+      })();
+      const kids = stack ? [...stack.children].map((c) => {
+        const el = c as HTMLElement;
+        return {
+          tag: el.tagName,
+          h: Math.round(el.getBoundingClientRect().height),
+          y: Math.round(el.getBoundingClientRect().y - (stack as HTMLElement).getBoundingClientRect().y),
+          mt: getComputedStyle(el).marginTop,
+        };
+      }) : [];
+      return {
+        wrapperH: Math.round(wr.height),
+        panel: { w: Math.round(pr.width), h: Math.round(pr.height), y: Math.round(pr.y) },
+        kids,
+      };
+    });
+    expect(census).not.toBeNull();
+    // THE v50 F1 FIX: the forgot panel is 310 (NOT the pre-fix 294),
+    // the wrapper 358, the panel y 243.
+    expect(census!.wrapperH).toBe(358);
+    expect(census!.panel.h).toBe(310);
+    expect(census!.panel.w).toBe(358);
+    expect(census!.panel.y).toBe(243);
+    expect(census!.kids).toHaveLength(3);
+    // The heading block (h2 + the description p) h 76 at y 28 (the net
+    // gap 8); the form at y 120 (28 + 76 + 16).
+    expect(census!.kids[1]).toMatchObject({ h: 76, y: 28 });
+    expect(census!.kids[2]).toMatchObject({ tag: "FORM", y: 120 });
+
+    // The sm tier (the reference's `space-y-4 sm:space-y-6`): at 640 the
+    // heading block's margin-top is 24px (NOT the sign-up's 16).
+    await page.setViewportSize({ width: 640, height: 960 });
+    await page.waitForTimeout(300);
+    const at640 = await page.evaluate(() => {
+      const wrapper = [...document.querySelectorAll("div")].find((d) =>
+        (d.className || "").toString().includes("max-w-md"),
+      );
+      if (!wrapper) return null;
+      const panel = wrapper.firstElementChild as HTMLElement;
+      const content = [...panel.querySelectorAll("div")].find(
+        (d) => parseFloat(getComputedStyle(d).paddingTop) > 0 && d.querySelector("form"),
+      );
+      // the mode stack: the container whose DIRECT children are the back
+      // button + the heading (h2) + the form — walk down the single-child
+      // chain from the content block (an ancestor-match finder would
+      // return the content div itself).
+      const stack = (() => {
+        if (!content) return null;
+        let node: Element | null = content;
+        for (let i = 0; i < 6 && node; i++) {
+          const btn = [...node.children].find((c) => c.tagName === "BUTTON" && /back/i.test(c.textContent || ""));
+          const form = [...node.children].find((c) => c.tagName === "FORM");
+          // the heading child: a direct h2 (sign-up) or a wrapping div
+          // carrying the h2 (forgot: h2 + the description p).
+          const heading = [...node.children].find((c) =>
+            c.tagName === "H2" || (c.querySelector && c.querySelector("h2")),
+          );
+          if (btn && form && heading) return node as HTMLElement;
+          node = node.firstElementChild;
+        }
+        return null;
+      })();
+      if (!stack) return null;
+      const heading = stack.children[1] as HTMLElement;
+      return { headingMt: getComputedStyle(heading).marginTop };
+    });
+    expect(at640).not.toBeNull();
+    expect(at640!.headingMt).toBe("24px");
+  });
+});

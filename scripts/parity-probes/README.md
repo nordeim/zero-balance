@@ -1864,3 +1864,55 @@ viewports + the donut legend's interaction):
   empty-texted; the sheet's content is a sibling). (e) The calculator
   panel's absolute height is data-dependent — pin the CENTERING
   invariant (y == round((vh − h)/2)) + the chrome, never the height.
+
+- `ref-v50.sh` + `clone-v50.sh` — the v50 surface drivers: the auth
+  states' FULL 390 census (the sign-in baseline + the sign-up and
+  forgot client-state swaps — the v49 precedent), the networth
+  tablist's chrome at 640, the dashboard hero's mobile reflow at 390
+  (the goal-card walk + the internals + the chip census).
+- THE v50 FINDING — ONE REAL DRIFT (the second production-code change
+  since v46) + two pin-only surfaces: (1) the clone's sign-up and
+  forgot panels were 16px SHORT at every viewport (406 vs 422 / 294 vs
+  310) — the v4 space-y × `-mb-2` override: the reference's v3 build
+  STACKS the back button's own -mb-2 with the heading's mt (the
+  collapsed 16 + (-8) = the 8px net gap) while v4's zero-specificity
+  `:where(& > :not(:last-child))` margin-block-end lets the utility
+  OVERRIDE the container gap (the heading overlapped the button by 8px
+  AND the container lost 16px — the form heights were IDENTICAL,
+  isolating the drift to the one junction). The fix: the scoped
+  `.zb-auth-mode` restore (the container DROPS the space-y class —
+  no zeroing rule: a 0-2-0 `> :not(:last-child)` zero beats the
+  0-1-0 -mb-2 utility and kills the collapse — the first attempt's
+  measured 430) + the forgot's `.zb-sm6` sm tier (the reference's own
+  DOM class `space-y-4 sm:space-y-6` — 24px at >=640). (2) The
+  networth tablist at 640: byte-parity (the full reference shadow
+  string re-measured UNSLICED: 2 transparent leads + the shadow-sm
+  VISIBLE pair; the clone: 4 leads + the pair — the accepted
+  lead-divergence class, the visible layers byte-identical). (3) The
+  dashboard hero at 390: byte-parity (the goal card, the internals,
+  the chip — both sites' 20px svgs squish IDENTICALLY to 12px under
+  the chip row's flex-shrink, a byte-shared width-pressure artifact).
+- LESSONS: (a) **A stale agent-browser session hangs the next open** —
+  a killed run leaves the `.config`/`.engine` pair in
+  ~/.agent-browser and the next `agent-browser open` on that session
+  name waits forever (the first clone-v50 run hung 600s): `pkill -f
+  agent-browser` + a session-file sweep (`rm -f
+  ~/.agent-browser/<session>.*`) before every probe run. (b) **A
+  rebuild swaps `.next/standalone` UNDER a running parity server** —
+  page loads die with the browser's own "This page couldn't load"
+  interstitial (not an app error): reboot the :3200 server after
+  every build. (c) The smoke script's step-0 `pkill -f
+  standalone/server.js` kills the parity server too — reboot after
+  smoke. (d) **Slice-bounded censuses lie about multi-layer
+  shadows** — the v49 tablist probe sliced the reference's shadow at
+  50 chars (2 of 4 layers); re-measure the FULL string before pinning
+  layer counts. (e) The reference's `sm:space-y-6` tier is readable
+  from its own DOM class list — a viewport-tier divergence visible
+  without a second live measurement.
+- `vlm-compare-v50.mjs` + the /tmp/vlm50 pair — the standing VLM
+  screening (the login SIGN-UP state at 390 — THE FIXED SURFACE): the
+  VLM flagged 4 diffs (card position / button width / spacing /
+  shadow depth) — ALL DOM-verified as noise (the panel y 187 / h 422
+  / the button 294@x 48 IDENTICAL on both sites; the shadow-depth
+  flag is the accepted lead-divergence class) — the v43
+  misattribution lesson's fifth application.

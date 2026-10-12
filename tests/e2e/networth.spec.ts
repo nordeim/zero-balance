@@ -1193,3 +1193,117 @@ test.describe("net-worth card mobile census (v47 — plan F2)", () => {
     expect(census.facts!.gap).toBe(16);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v50 — plan F2 (docs/remediation-plan-v50.md): the tablist's CHROME census
+// at the 640 mid viewport. The v14 G2 pinned the tab icons' 16px
+// currentColor family and the EXISTING 1280 test pins the 448 grid + the
+// green active pair; the v41 F2/F3 pinned the summary card at 640. The
+// v50 pin locks the mid-viewport tablist chrome measured live on the
+// reference at 640x960 (ref-v50.sh — byte-identical on every axis):
+//   the list: w 448 / h 36 / grid "220px 220px" / bg #f5f5f5 / radius 8
+//             / pad 4 / x 16
+//   the active trigger: 220x28 / radius 6 / 14px/500 / #14532d on
+//             #dcfce7 / a 2-slot all-transparent shadow / the 16x16
+//             icon at currentColor #14532d
+//   the inactive trigger: 220x28 / radius 6 / 14px/500 / #737373 /
+//             transparent / no shadow / the 16x16 icon at #737373
+// ---------------------------------------------------------------------------
+test.describe("net worth tablist chrome census (v50 — plan F2)", () => {
+  test("the tablist's full chrome at 640 matches the reference (byte-parity)", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 960 });
+    await page.goto("/networth");
+    await expect(page.getByRole("tab", { name: /Assets/i })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const triggers = [...document.querySelectorAll('button[role="tab"]')];
+      const active = triggers.find((t) => t.getAttribute("aria-selected") === "true");
+      const inactive = triggers.find((t) => t.getAttribute("aria-selected") === "false");
+      const list = document.querySelector('[role="tablist"]') as HTMLElement | null;
+      if (!active || !inactive || !list) return null;
+      const grab = (t: HTMLElement) => {
+        const cs = getComputedStyle(t);
+        const r = t.getBoundingClientRect();
+        const icon = t.querySelector("svg");
+        return {
+          w: Math.round(r.width),
+          h: Math.round(r.height),
+          radius: cs.borderRadius,
+          fs: cs.fontSize,
+          fw: cs.fontWeight,
+          color: cs.color,
+          bg: cs.backgroundColor,
+          shadow: cs.boxShadow,
+          icon: icon
+            ? {
+                w: Math.round(icon.getBoundingClientRect().width),
+                h: Math.round(icon.getBoundingClientRect().height),
+                color: getComputedStyle(icon).color,
+              }
+            : null,
+        };
+      };
+      const lcs = getComputedStyle(list);
+      const lr = list.getBoundingClientRect();
+      return {
+        list: {
+          w: Math.round(lr.width),
+          h: Math.round(lr.height),
+          display: lcs.display,
+          gridCols: lcs.gridTemplateColumns,
+          bg: lcs.backgroundColor,
+          radius: lcs.borderRadius,
+          pad: lcs.padding,
+          x: Math.round(lr.x),
+        },
+        active: grab(active as HTMLElement),
+        inactive: grab(inactive as HTMLElement),
+      };
+    });
+    expect(census).not.toBeNull();
+    // The list: the reference's grid w-full max-w-md grid-cols-2 at the
+    // 640 mid viewport (the 608 content minus... the max-w-md cap 448).
+    expect(census!.list).toEqual({
+      w: 448,
+      h: 36,
+      display: "grid",
+      gridCols: "220px 220px",
+      bg: "rgb(245, 245, 245)",
+      radius: "8px",
+      pad: "4px",
+      x: 16,
+    });
+    // The ACTIVE trigger (Assets): the green pair + the
+    // data-[state=active]:shadow emission.
+    expect(census!.active).toMatchObject({
+      w: 220,
+      h: 28,
+      radius: "6px",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(20, 83, 45)",
+      bg: "rgb(220, 252, 231)",
+    });
+    // The shadow: the shadow-sm VISIBLE pair byte-identical on both
+    // sites (the full reference string: 2 transparent leads + the two
+    // visible layers; the clone emits 4 transparent leads — the
+    // documented accepted lead-divergence class, v10/v25/v45/v49:
+    // transparent layers never render). Pin the visible layers.
+    expect(census!.active!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(census!.active!.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+    expect(census!.active!.icon).toEqual({ w: 16, h: 16, color: "rgb(20, 83, 45)" });
+    // The INACTIVE trigger (Liabilities): the muted pair, transparent,
+    // shadow none.
+    expect(census!.inactive).toMatchObject({
+      w: 220,
+      h: 28,
+      radius: "6px",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(115, 115, 115)",
+      bg: "rgba(0, 0, 0, 0)",
+      shadow: "none",
+    });
+    expect(census!.inactive!.icon).toEqual({ w: 16, h: 16, color: "rgb(115, 115, 115)" });
+  });
+});

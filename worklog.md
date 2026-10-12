@@ -38,7 +38,8 @@ and `docs/remediation-plan-v45.md`,
 and `docs/remediation-plan-v46.md`,
 and `docs/remediation-plan-v47.md`,
 and `docs/remediation-plan-v48.md`,
-and `docs/remediation-plan-v49.md`.
+and `docs/remediation-plan-v49.md`,
+and `docs/remediation-plan-v50.md`.
 
 ---
 
@@ -49,6 +50,97 @@ and `docs/remediation-plan-v49.md`.
 ---
 
 ---
+
+## Session 84 — Parity iteration v50: the auth states' panel heights (THE FIX — the second production-code change since v46) + the networth tablist's 640 chrome + the dashboard hero's 390 reflow (2026-10-12)
+
+**Goal:** the session-115 v50 queue's three candidates (the auth
+states' full 390 census — the surface that found ONE REAL DRIFT; the
+networth tablist's chrome at 640; the dashboard hero's mobile
+reflow at 390). TDD-first, docs aligned, commit + push via the SSH
+wrapper. (The workspace was RESET — a fresh clone at 3f0202e; the
+environment rebuilt: npm install, .env from .env.example, db:push +
+db:seed, `npx playwright install chromium` — the fresh-sandbox
+chromium download.)
+
+- Baseline: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+  **232/232 e2e ✓ (5.4m)** · 35/35 smoke ✓. Audit clean (the same 5
+  dev-only advisories, --omit=dev = 0; the secret scan clean; .env ≡
+  .env.example).
+- Standing checks all clean: mobile-nav R1–R4 (**44th** — Tailwind v4
+  pins hold, both sites; the reference's sheet-trap re-verified with
+  the PRECISE overlay census — the z-50 rgba(0,0,0,0.8) 390×844 scrim
+  still open on /income after the nav click; the heuristic
+  text-keyed detector read false again, the known artifact), data
+  drift (44th — read-only, "1 items · $25,000" / "1 items ·
+  $5000.00"), the SEO pair (both sites).
+- **THE v50 SWEEP (three surfaces, both sites — ref-v50.sh +
+  clone-v50.sh, READ-ONLY on the reference)**:
+  - **The auth states at 390: ONE REAL DRIFT — THE FIX (the second
+    production-code change since v46).** The sign-in state
+    byte-identical (the v49 F1 contract holds: 730/682/57). The
+    sign-up: the reference 470/422/187 vs the clone 454/406/195; the
+    forgot: 358/310/243 vs 342/294/251 — the panels 16px SHORT at
+    every viewport. The drift isolated to ONE junction (the form
+    heights IDENTICAL): the reference's v3 space-y STACKS the back
+    button's own -mb-2 with the heading's mt (the collapsed 16 +
+    (-8) = the 8px net gap) while v4's zero-specificity margin-block-
+    end lets the utility OVERRIDE the gap (the pre-fix heading
+    overlapped the button by 8px). The forgot container's `sm:space-
+    y-6` (24px at >=640) missing from the clone. The fix: the scoped
+    `.zb-auth-mode` restore (the SPACE-Y V3 SEMANTICS family's third
+    member — v9 G3 / v24 G2) with the container DROPPING the space-y
+    class entirely (the first attempt's `> :not(:last-child)` zero at
+    0-2-0 beat the -mb-2 utility at 0-1-0 and killed the 8px collapse
+    — the measured 430, caught by the pin) + the `.zb-sm6` modifier +
+    the verify-email branch's same-idiom container converted.
+  - **The networth tablist at 640: BYTE-PARITY — PIN.** The list
+    448/36/grid 220px 220px/#f5f5f5/8px/4px; the trigger pair's full
+    chrome; the active green pair + the shadow-sm VISIBLE pair (the
+    FULL reference string re-measured unsliced: 2 transparent leads +
+    the pair; the clone: 4 leads + the pair — the accepted
+    lead-divergence class); the 16×16 currentColor icons.
+  - **The dashboard hero at 390: BYTE-PARITY — PIN.** The grid
+    1-col/gap 24; the goal card 358×316@y 253 + the breakdown
+    324@593 (the reference's 363 rides its own 395 overflow); the
+    full internals; the chip pair — both sites' 20px svgs squish
+    IDENTICALLY under the row's flex-shrink (a byte-shared
+    width-pressure artifact).
+- TDD: F1 written RED first (both tests failed against the pre-fix
+  build) → the fix → **GREEN** (422/470/187 + 310/358/243 + the 640
+  sm tier 24px). F2 + F3 pin-only (GREEN immediately; the F2 shadow
+  assertion corrected from the sliced probe's 2-layer assumption to
+  the unsliced 4-layer truth with the visible pair pinned). **Four
+  new e2e, 232 → 236.**
+- The mutation sanity (five, each with the standalone REBUILD): the
+  zb-auth-mode removed (both F1 tests fail — the TDD RED); the -mb-2
+  removed (the wrapper 478 = +8); the zb-sm6 removed (the 640
+  sub-check: mt 24→16); the active-tab bg removed (F2); the hero
+  track's h-3→h-2 (F3). All restored — the diff: globals.css +28 /
+  login-card.tsx ±14.
+- Full chain GREEN: lint · typecheck · 108 unit · build · **236/236
+  e2e (5.4m — one flaky not-found metadata test on the first run,
+  clean on the re-run)** · 35 smoke. The VLM pair on the login
+  SIGN-UP state at 390 (THE FIXED SURFACE): the 4 flagged diffs ALL
+  DOM-verified as noise (the panel y 187 / h 422 / the button
+  294@x 48 IDENTICAL — the v43 misattribution lesson's fifth
+  application). The 16 screenshots regenerated (7 byte-diffs). The
+  docs aligned (AGENTS/CLAUDE/README/SKILL Session 85 row + the 236
+  state/PAD v1.1.7/the probe README's v50 section/session_116 +
+  session_117/the repo worklog Session 83→84 + the ledger list).
+- Probe lessons: a stale agent-browser session hangs the next open
+  (pkill + a session-file sweep before every run); a rebuild swaps
+  .next/standalone under a running parity server (reboot after every
+  build; the smoke script's pkill kills it too); slice-bounded
+  censuses lie about multi-layer shadows (re-measure unsliced); the
+  reference's sm: tiers are readable from its own DOM class list; a
+  specificity collision inside a fix is caught by the pin (the
+  RED→GREEN loop is the guard, the mutation series the proof).
+
+**v51 queue suggestions:** the verify-email state's full panel
+census (needs a reference registration — a write; only under an
+explicit waiver), the forgot CONFIRMATION state's 390 census, the
+hero's stat-card row reflow at 390, the savings view's goal-card
+mobile census.
 
 ## Session 83 — Parity iteration v49: the login panel's mobile-only &nbsp; spacer (THE FIX — the first production-code change since v46) + the donut legend's mobile reflow + the calculator dialog's 640 chrome (2026-10-12)
 

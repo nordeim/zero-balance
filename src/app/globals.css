@@ -47,6 +47,34 @@
   .space-y-1\.5 > * + * {
     margin-block-start: 0.375rem; /* 6px — v3's space-y-1.5 */
   }
+  /* v50 F1 (docs/remediation-plan-v50.md): the auth card's non-signin
+     MODE containers (signup / forgot / verify) — the reference's
+     `space-y-4 [sm:space-y-6]` under v3's margin-top-on-following-
+     sibling semantics. The back button carries the reference's OWN
+     `-mb-2` (-8px); under v4's zero-specificity
+     `:where(& > :not(:last-child))` margin-block-end the utility
+     OVERRIDES the container gap (the heading overlaps the button by
+     8px, the panel 16px short at every viewport — the sign-up 406 vs
+     the reference's 422, the forgot 294 vs 310) where the reference's
+     v3 build STACKS them (the collapsed 16 + (-8) = the 8px net gap).
+     The trap-log rule 4 family. NOTE: unlike the v9 G3 / v24 G2
+     restores (which keep the space-y-* class and neutralize v4's
+     margin-block-end), this container DROPS the space-y class
+     entirely — v4's emission never matches, so NO margin-block-end
+     zeroing (a `> :not(:last-child)` zero at 0-2-0 specificity would
+     beat the button's own -mb-2 utility at 0-1-0 and kill the 8px
+     collapse — the first fix attempt's measured 430). The block
+     container's sibling margins collapse: the button's -8 + the
+     heading's mt 16 = the net 8px gap. The forgot container's sm tier
+     (the reference's `sm:space-y-6`) rides the zb-sm6 modifier. */
+  .zb-auth-mode > * + * {
+    margin-block-start: 1rem; /* 16px — v3's space-y-4 */
+  }
+  @media (min-width: 640px) {
+    .zb-auth-mode.zb-sm6 > * + * {
+      margin-block-start: 1.5rem; /* 24px — the reference's sm:space-y-6 */
+    }
+  }
 }
 
 /* ============================================================================

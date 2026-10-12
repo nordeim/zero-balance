@@ -600,6 +600,11 @@ export function LoginCard() {
                     // reference's exact countdown text in 14px #b91c1c.
                     // The dev-code box is the HONEST no-mail delivery (the
                     // v12 forgot-password precedent).
+                    // v50 F1: the verify branch's mode container — the
+                    // reference's space-y-4 under v3 stacking semantics (the
+                    // scoped .zb-auth-mode restore; the -mb-2 back button
+                    // STACKS with the heading's mt instead of overriding v4's
+                    // zero-specificity margin-block-end).
                     <div className="space-y-4">
                       <button
                         type="button"
@@ -690,7 +695,14 @@ export function LoginCard() {
                       </button>
                     </div>
                   ) : (
-                  <div className="space-y-4">
+                  // v50 F1: the shared signup/forgot mode container — the
+                  // reference's `space-y-4 sm:space-y-6` (forgot only) under
+                  // v3 stacking semantics (the scoped .zb-auth-mode restore
+                  // + the .zb-sm6 modifier for the forgot's 24px gaps at
+                  // >=640). The -mb-2 back button STACKS with the heading's
+                  // mt (the collapsed 16 + (-8) = the 8px net gap — the
+                  // reference's panel heights 422/310 at 390).
+                  <div className={`zb-auth-mode${mode === "forgot" ? " zb-sm6" : ""}`}>
                     <button
                       type="button"
                       className="-mb-2 flex items-center gap-2 text-sm font-medium text-[#64748b] transition-colors hover:text-[#334155]"
