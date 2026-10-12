@@ -6,12 +6,13 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboardIcon,
   PanelLeftIcon,
-  PiggyBankIcon,
   ReceiptIcon,
   TargetIcon,
-  TrendingUpIcon,
   WalletIcon,
 } from "lucide-react";
+// v55 F1: the reference's OLD piggy-bank + trending-up glyphs
+// (lucide-react 0.525 redesigned both).
+import { PiggyBankIcon, TrendingUpIcon } from "@/components/ui/legacy-icons";
 import { Dialog, DialogContent, SheetContent, DialogTitle } from "@/components/ui/dialog";
 import { useBudgetStore } from "./store";
 import { cn } from "@/lib/utils";

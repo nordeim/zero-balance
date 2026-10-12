@@ -20,9 +20,11 @@ import {
   EllipsisVerticalIcon,
   HeartIcon,
   PenIcon,
-  PiggyBankIcon,
   RepeatIcon,
 } from "lucide-react";
+// v55 F1: the reference's OLD piggy-bank glyph (lucide-react 0.525
+// redesigned it — the legacy-icons module carries the measured paths).
+import { PiggyBankIcon } from "@/components/ui/legacy-icons";
 import {
   DropdownMenu,
   DropdownMenuContent,

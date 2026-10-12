@@ -6,7 +6,10 @@
 // preset type; editing loads the item's values.
 
 import * as React from "react";
-import { CircleAlertIcon, CreditCardIcon, HeartIcon, Loader2Icon, PiggyBankIcon, SaveIcon, Trash2Icon } from "lucide-react";
+import { CircleAlertIcon, CreditCardIcon, HeartIcon, Loader2Icon, SaveIcon, Trash2Icon } from "lucide-react";
+// v55 F1: the reference's OLD piggy-bank glyph (lucide-react 0.525
+// redesigned it).
+import { PiggyBankIcon } from "@/components/ui/legacy-icons";
 import { Dialog, DialogCloseButton, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,7 +65,12 @@ const CLASSIFICATION_ICONS = {
   need: CircleAlertIcon,
   want: HeartIcon,
   savings: PiggyBankIcon,
-} as const satisfies Record<Classification, typeof CircleAlertIcon>;
+// v55 F1: the map mixes lucide icons with the legacy piggy-bank (a plain
+// function component) — the generic ComponentType covers both.
+} as const satisfies Record<
+  Classification,
+  React.ComponentType<{ className?: string }>
+>;
 
 const EMPTY_FORM = (type: ItemType): BudgetItemFormData => ({
   type,

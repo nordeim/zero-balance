@@ -16,8 +16,10 @@ import {
   EllipsisVerticalIcon,
   PlusIcon,
   PercentIcon,
-  TrendingUpIcon,
 } from "lucide-react";
+// v55 F1: the reference's OLD trending-up glyph (lucide-react 0.525
+// redesigned it).
+import { TrendingUpIcon } from "@/components/ui/legacy-icons";
 import {
   DropdownMenu,
   DropdownMenuContent,

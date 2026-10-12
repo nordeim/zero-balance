@@ -7,12 +7,14 @@
 
 import * as React from "react";
 import {
-  PiggyBankIcon,
   PlusIcon,
   ReceiptIcon,
-  SearchIcon,
   WalletIcon,
 } from "lucide-react";
+// v55 F1: the reference's OLD piggy-bank + search glyphs (lucide-react
+// 0.525 redesigned both — the legacy-icons module carries the measured
+// shapes).
+import { PiggyBankIcon, SearchIcon } from "@/components/ui/legacy-icons";
 import { Input } from "@/components/ui/input";
 import {
   Select,

@@ -43,7 +43,8 @@ and `docs/remediation-plan-v50.md`,
 and `docs/remediation-plan-v51.md`,
 and `docs/remediation-plan-v52.md`,
 and `docs/remediation-plan-v53.md`,
-and `docs/remediation-plan-v54.md`.
+and `docs/remediation-plan-v54.md`,
+and `docs/remediation-plan-v55.md`.
 
 ---
 
@@ -52,6 +53,70 @@ and `docs/remediation-plan-v54.md`.
 ---
 
 ---
+
+---
+
+## Session 89 — Parity iteration v55: the ICON-GLYPH swap (the piggy-bank / trending-up / search / mail legacy glyphs — THE FIX, the fifth production-code change since v46) + the full-glyph-audit probe family (2026-10-13)
+
+**Goal:** the session-128 v55 queue's goal-card classification-icon
+glyph census (the v44 glyph-swap family's badge-row application),
+extended to a FULL icon-glyph audit — which found FOUR drifted
+glyphs and delivered the first production-code change since the v52
+fix. TDD-first, the 49th standing checks, the VLM pair, the docs
+aligned, push via the SSH wrapper. (The workspace re-cloned at
+78a1966; the environment rebuilt — npm install + .env from
+.env.example + db:push/db:seed + `npx playwright install chromium`.)
+
+**The v55 sweep** (the six-probe family, READ-ONLY on the reference):
+`ref-v55.sh` + `clone-v55.sh` measured the goal-card's icon glyphs
+at 390 + the /expenses same-glyph control — the heart, the
+circle-alert, and the calendar glyphs byte-identical, but the
+PIGGY-BANK differs (the reference's OLD 3-path body vs
+lucide-react 0.525's redesign). `piggy-sweep-v55.sh` swept the
+reference's every piggy svg (six surfaces — the nav rail, the
+quick-action, the stat row, the donut legend, the hero, the chip —
+all the OLD glyph). `glyph-audit-v55.sh` + `glyph-diff-v55.mjs`
+ran the FULL audit: 24 shared lucide glyphs — 19 byte-identical,
+4 DRIFTED (piggy-bank, trending-up [two POLYLINES], search [4.3
+vs 4.34], mail [a1.94 1.94 vs a2 2]), 1 clone-only (repeat).
+`glyph-exact-v55.sh` captured the exact reference markup — the
+byte source for the fix.
+
+**The fix + the pin.** `src/components/ui/legacy-icons.tsx` (four
+components rendering the reference's EXACT svg: the base attrs +
+the path/polyline/rect/circle children byte-identical, the `lucide
+lucide-<name>` class prefix kept — the e2e pins select
+svg.lucide-* — and aria-hidden mirroring lucide's own no-a11y-prop
+rule) + the eight import swaps (item-card / items-view /
+dashboard-view / item-details-dialog / budget-item-dialog /
+sidebar / net-worth-view / login-card). The spec written FIRST:
+`tests/e2e/glyph-parity.spec.ts` RED (5 failed — the four glyph
+families + networth; the heart + circle-alert controls passed),
+GREEN post-fix (7 passed). SIX pin-sanity mutations verified to
+FAIL then restored (the piggy body path; the trending polyline
+points; the search handle 4.3→4.34; the mail flap a1.94→a2; ONE
+usage-site revert) — each with the standalone REBUILD as a
+SEPARATE command.
+
+**The standing checks (49th) + the VLM pair.** The reference's four
+bugs ALL live; the clone's mobile navigation menu VERIFIED WORKING
+(R1–R4, the SEO pair 200 on both). The VLM pair (the calculator
+dialog's with-row — the v53 F2 surface + the goal card post-swap):
+every flag DOM-verified (the X-close 29×36 transparent
+byte-identical — an artifact; the amounts 24/700 on both — a
+digits-count misread; the calculator's state difference + the
+goal-card flags = the documented seed-data classes) — the pair
+CLEAN per the v43 rule.
+
+**The chain.** lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ ·
+254 e2e (122 + 133, two ordered chunks, both exit 0, zero failures
+— +6: the glyph-parity suite) · 35/35 smoke ✓. The 16 screenshots
+regenerated — 14 byte-diffs (the production-change invariant, the
+first non-pin-only regeneration since v49). The docs aligned
+(AGENTS/CLAUDE/README/SKILL Session 90 row + the 254 state/PAD
+v1.1.12/the probe README's v55 section/session_131 +
+session_132/this worklog + the ledger list). Commit + push to main
+via the SSH wrapper.
 
 ---
 

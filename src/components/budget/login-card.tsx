@@ -10,7 +10,10 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeftIcon, Loader2Icon, LockIcon, MailIcon, ShieldCheckIcon } from "lucide-react";
+import { ArrowLeftIcon, Loader2Icon, LockIcon, ShieldCheckIcon } from "lucide-react";
+// v55 F1: the reference's OLD mail glyph (lucide-react 0.525 redesigned
+// the envelope flap).
+import { MailIcon } from "@/components/ui/legacy-icons";
 import { useToast } from "@/components/ui/toast";
 import { messageOf, useBudgetStore } from "./store";
 

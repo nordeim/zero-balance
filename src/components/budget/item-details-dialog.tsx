@@ -9,10 +9,12 @@ import {
   DollarSignIcon,
   FileTextIcon,
   HeartIcon,
-  PiggyBankIcon,
   RefreshCwIcon,
   TagIcon,
 } from "lucide-react";
+// v55 F1: the reference's OLD piggy-bank glyph (lucide-react 0.525
+// redesigned it).
+import { PiggyBankIcon } from "@/components/ui/legacy-icons";
 import { DialogPortal, DialogTitle, DialogCloseButton } from "@/components/ui/dialog";
 import { useBudgetStore } from "./store";
 import { COLORS, TYPE_COLORS, rgb } from "@/lib/constants";

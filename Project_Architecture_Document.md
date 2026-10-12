@@ -1,12 +1,16 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.11
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.12
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
 **Companion Document:** README.md (user-facing); AGENTS.md / CLAUDE.md (agent operating rules)
-**Last Updated:** 2026-10-07
+**Last Updated:** 2026-10-13
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.12 (Tracked Changes)
+
+- `[UI]` v1.1.12 (2026-10-13) — the v55 parity iteration (THE FIX — the fifth production-code change since v46, breaking the v53/v54 pin-only streak): the counts 108 unit / 254 e2e / 35 smoke; the ICON-GLYPH swap — a new module `src/components/ui/legacy-icons.tsx` (PiggyBankIcon / TrendingUpIcon / SearchIcon / MailIcon) rendering the reference's OLD lucide glyphs (lucide-react 0.525 redesigned four shapes since the reference's lucide version — the v44 chevron-swap class; the full audit: 24 lucide glyphs across the five views + the login page, 19 byte-identical, 4 drifted: piggy-bank, trending-up [two POLYLINES, not paths], search [handle 4.3, not 4.34], mail [flap a1.94 1.94, not a2 2]) with the `lucide lucide-<name>` class prefix kept (the e2e pins select svg.lucide-*; the class is part of the reference's DOM) and aria-hidden mirroring lucide's own no-a11y-prop rule; the eight import swaps (item-card / items-view / dashboard-view / item-details-dialog / budget-item-dialog / sidebar / net-worth-view / login-card) — the reference renders the piggy's OLD glyph on EVERY surface (piggy-sweep-v55.sh: the nav rail, the stat rows, the donut legend, the quick actions, the hero, the chips); the new `tests/e2e/glyph-parity.spec.ts` (+6, the shape-data census: the goal card's piggy/calendar/repeat at 390, every dashboard + networth piggy + trending, the search handle, the login mail + lock, the /expenses heart + circle-alert same-glyph control); six pin-sanity mutations verified (the body path, the polyline points, the search handle, the mail flap, a usage-site revert); the v55 probe family (ref-v55.sh + clone-v55.sh + piggy-sweep-v55.sh + glyph-audit-v55.sh + glyph-exact-v55.sh + glyph-diff-v55.mjs + the VLM trio) + the probe lessons (a path-only glyph census reads zero paths on circle-alert — walk every shape tag, read `points` for polylines; the glyph audit's login can race the page mount — retry + explicit auth check; agent-browser eval output is a JSON-encoded string); the 55th remediation plan + the probe catalog through v55.
 
 #### Revision Block — v1.1.11 (Tracked Changes)
 

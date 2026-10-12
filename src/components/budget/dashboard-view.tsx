@@ -22,14 +22,15 @@ import {
   ChevronRightIcon,
   CircleAlertIcon,
   HeartIcon,
-  PiggyBankIcon,
   PlusIcon,
   ReceiptIcon,
   TargetIcon,
   TrendingDownIcon,
-  TrendingUpIcon,
   WalletIcon,
 } from "lucide-react";
+// v55 F1: the reference's OLD piggy-bank + trending-up glyphs
+// (lucide-react 0.525 redesigned both).
+import { PiggyBankIcon, TrendingUpIcon } from "@/components/ui/legacy-icons";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useBudgetStore } from "./store";
 import { computeTotals, goalStatus, goalStatusLabel, spendingBreakdown } from "@/lib/dashboard";

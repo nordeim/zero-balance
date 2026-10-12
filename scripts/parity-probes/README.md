@@ -2154,3 +2154,67 @@ The v54 lessons:
    mid-verification census landed on the login page ("Welcome to
    ZeroBudge" + docSW 390 at a logged-in route is the signature);
    re-login via the same eval before any follow-up census.
+
+## v55 — the goal-card icon-glyph census + the FULL glyph audit + the legacy-icon swap (session-131)
+
+The session-128 v55 queue's read-only member (the goal-card's
+classification-icon glyph census — the v44 glyph-swap family's
+badge-row application), extended to a FULL icon-glyph audit that found
+the fifth production-code change since v46. The drivers:
+
+- `ref-v55.sh` + `clone-v55.sh` — the goal-card glyph census at 390
+  (the classification chip's icon svg: class/viewBox/stroke
+  family/shape children/12×12/mr 4/the chip color) + the
+  `/expenses` same-glyph CONTROL census (every card's classification
+  chip matched by text — the reference's Investments/Netflix/Rent vs
+  the clone's Entertainment/Groceries/Rent).
+- `piggy-sweep-v55.sh` — the reference's EVERY piggy-bank svg across
+  the five views (the scope sweep that found all six surfaces: the
+  nav rail link, the quick-action tile, the stat row, the donut
+  legend, the savings hero, the classification chip — all carrying
+  the OLD 3-path glyph).
+- `glyph-audit-v55.sh` — the FULL per-view lucide glyph dictionary
+  (every `svg[class*=lucide-]` on the five views + the login page;
+  the name → shape-dump map, one entry per glyph). Accepts
+  BASE/SESSION/SIDE args (the ref side logs in with the reference
+  credentials, the clone side with the demo seed's).
+- `glyph-exact-v55.sh` — the exact-svg-markup capture (the
+  outerHTML of the four drifted glyphs — the byte source for
+  `src/components/ui/legacy-icons.tsx`).
+- `glyph-diff-v55.mjs` — the dictionary diff (IDENTICAL / DRIFTED /
+  ONE-SIDE-ONLY per glyph, the shapes normalized by segment sort).
+- The VLM trio: `vlm-shots-v55.sh` + `clone-vlmshots-v55.sh` +
+  `vlm-compare-v55.mjs` (the calculator dialog's with-row state —
+  the v53 F2 surface — + the savings goal card post-swap) +
+  `vlm-arbit-v55.sh` (the DOM arbitration of the VLM's flags).
+
+The verdict: 24 shared glyphs — 19 byte-identical, 4 DRIFTED
+(piggy-bank, trending-up, search, mail — lucide-react 0.525
+redesigned them since the reference's lucide version), 1 clone-only
+(repeat — the Recurring superset badge). The fix:
+`src/components/ui/legacy-icons.tsx` + the eight import swaps, pinned
+by `tests/e2e/glyph-parity.spec.ts` (the shape-data census).
+
+**The v55 probe lessons:**
+
+1. **A path-only glyph census reads ZERO paths on circle-alert** —
+   the lucide glyphs render `<circle>` (circle-alert's ring),
+   `<rect>` (the calendar's box, the mail's envelope), and
+   `<polyline>` (the reference's trending-up) children, not just
+   paths. The shape dump must walk EVERY shape tag
+   (path/circle/rect/line/polyline/polygon) and read `points` (not
+   x1/y1, which polylines don't carry) for polyline/polygon.
+2. **The glyph audit's login can RACE the page mount** — "no
+   inputs" is the RETRY signal (a fresh profile's /login can still
+   be mounting at 3s), NOT auth state; and the auth state needs an
+   explicit post-login check before the census loop (the first
+   sweep censused the LOGIN PAGE six times — every view's
+   dictionary was mail+lock because the unauthenticated visits all
+   redirect to /login).
+3. **agent-browser eval output is a JSON-encoded string** — the
+   eval's return value arrives quoted and escaped; unwrap it
+   (twice if doubly-encoded) before parsing dictionaries.
+4. **The reference's calculator X-close finder differs per site** —
+   the reference's dialog layer matches `fixed inset-0` + "Total
+   Calculated", the clone's is a Radix `[role=dialog]` containing
+   it; the VLM arbitration probe takes the site into account.
