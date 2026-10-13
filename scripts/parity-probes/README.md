@@ -2286,3 +2286,45 @@ v56 deliverable is the hero-card DESKTOP 1280 census pin.
    (`rgba(255,255,255,0.1)`); always re-read the line post-sed
    before rebuilding, and prefer line-addressed class-token
    mutations over full-attribute patterns.
+
+## v57 — the items-view desktop 1280 VLM pair + the item-card footer/badge census + the G7 flake fix (session-134/136)
+
+The session-134 v57 queue's own standing-check suggestion — a fresh VLM
+pair on the ITEMS view's desktop 1280 state (the v56 pair covered the
+dashboard + networth; the items views remained). The pair CLEAN (every
+flag DOM-arbitrated to the documented data classes); the v57 deliverable
+is the item-card footer + badge-row census pin (+2 e2e) and the
+not-found G7 flake fix (test-only).
+
+- `vlm-shots-v57.sh` + `clone-vlmshots-v57.sh` +
+  `vlm-compare-v57.mjs` — the desktop 1280x800 VLM pair: PAIR 1 the
+  income view (the v55 search-glyph surface + the item-card grid),
+  PAIR 2 the expenses view. Every flag data-class (the avatar, the
+  seed data, the payment chips, the badge wrap).
+- `vlm-arbit-v57.sh` — the DOM arbitration + the reference-side
+  census (the grid template 309.328px ×3 / 16px gap / 960 wide; the
+  footer chrome byte-identical; the card chrome byte-identical) on
+  both views.
+- `badge-census-ref-v57.sh` + `badge-census-clone-v57.sh` — the
+  badge-row chrome census (flex/wrap/8px/mb 12px; every badge
+  flex/center/6px/2px 10px/12px/600/h 22/12×12 icons — byte-identical
+  on both sites; the Recurring superset chip's wrap is the data class).
+- `ref-standing-v51.sh` + `standing-checks-v51.sh` — the 51st standing
+  checks (the mobile-nav R1–R4 + the data census + the SEO pair, both
+  sides).
+
+### v57 probe lessons
+
+1. The badge-row finder walks the card's DIRECT children (the row is
+   a direct child of the card, class flex flex-wrap gap-2 mb-3 — a
+   nested querySelectorAll filter can miss it or match the wrong row).
+2. The clone-side with-server heredoc must be QUOTED (<<'EOF') when
+   the inner script references a $-expanded census variable — an
+   unquoted heredoc re-parses the JS's double quotes through the
+   inner bash and strips them (badge-census-clone-v57.sh's census
+   lines came back empty; the debug variant
+   badge-census-clone-v57-debug.sh carries the fix).
+3. The reference's expenses items carry NO payment methods — its
+   expense-card footers render one child (the date alone) while its
+   income card carries two (the date + "Bank Account"): the
+   conditional render is the parity contract, not a drift.

@@ -45,7 +45,8 @@ and `docs/remediation-plan-v52.md`,
 and `docs/remediation-plan-v53.md`,
 and `docs/remediation-plan-v54.md`,
 and `docs/remediation-plan-v55.md`,
-and `docs/remediation-plan-v56.md`.
+and `docs/remediation-plan-v56.md`,
+and `docs/remediation-plan-v57.md`.
 
 ---
 
@@ -54,6 +55,87 @@ and `docs/remediation-plan-v56.md`.
 ---
 
 ---
+
+---
+
+## Session 91 — Parity iteration v57: the items-view desktop 1280 VLM standing pair + the item-card footer/badge-row census (PIN-ONLY + one TEST-ONLY flake fix) (2026-10-13)
+
+**Goal:** the session-134 v57 queue's own standing-check suggestion —
+a fresh VLM pair on the ITEMS view's desktop 1280 state (the v56 pair
+covered the dashboard + networth) — plus the 51st standing checks.
+The sweep found NO production gap, so the v57 deliverable is the PIN:
+the item-card footer + badge-row census (+2 e2e -> 257) and one
+TEST-ONLY flake fix (the not-found G7 "Go Home" race). (The workspace
+re-cloned TWICE this session — the sandbox reset mid-conversation;
+the environment rebuilt both times.)
+
+**The baseline chain.** lint + typecheck + 108/108 unit + build +
+255 e2e (115 + 141, two ordered chunks) + 35/35 smoke — all green.
+
+**The 51st standing checks.** The reference side: the four bugs ALL
+live (the toast-blocker, the sheet-trap via overlayCount 1, the
+no-landmark, the 464 /networth overflow), the data census intact
+("1 items · $25,000" / "1 items · $5000.00"), the SEO pair live. The
+clone side: R1 the burger hit-test true + the sheet opens, R2 the
+Income nav closes AND navigates, R3 the nav landmark, R4 zero
+overflow at 390 on all five views — **the mobile navigation menu
+VERIFIED WORKING (the 51st time)**.
+
+**The v57 sweep** (the probe family, READ-ONLY on the reference):
+the desktop 1280x800 VLM pair on the income + expenses views — every
+flag DOM-arbitrated to the documented data classes: the avatar (the
+user-identity class), the seed data, the payment-method chips
+(DATA-CONDITIONAL — the footer row's chrome byte-identical on both
+sites [flex justify-between 12px rgb(107,114,128) h 16; each span
+flex gap 4px with the 12×12 gray icon]; the reference's own income
+card renders the SAME two-child structure [the date + "Bank Account"]
+while its expense items carry no payment methods), the badge wrap
+(the row's chrome byte-identical [flex wrap 8px mb 12px; every badge
+flex center / 6px / 2px 10px / 12px/600 / h 22]; the clone's
+Recurring superset badge wraps the row to h 52 = 22+8+22). The grid
+census: the 960px 3-column grid + the 16px gap + the card chrome
+(309 / 20px / 12px / 1px solid rgb(229,231,227) / white) — the v45
+F1a pin's own values.
+
+**The pin.** The "items card footer + badge census at 1280 (v57 —
+plan F1)" describe in `tests/e2e/items.spec.ts` (+2): F1a the
+/income card's footer two-children conditional render (the date span
++ the PayPal chip) + the badge chrome; F1b the /expenses grid census
+(960/3 children/16px gap/3-col template) + the wrapped 4-badge row
+(h 52). THREE pin-sanity mutations verified to FAIL then restored
+(the footer text-xs->text-sm, the badge-row gap-2->gap-4, the badge
+px-2.5->px-2 — each with the standalone REBUILD as a SEPARATE
+command).
+
+**The flake fix (TEST-ONLY).** The full-chain re-run surfaced the
+not-found G7 "Go Home" flake (three chunk-run failures in one
+session); the root-cause probe (`--repeat-each=8` on an idle
+machine) proved it a genuine ~1-in-8 race — the file-wide logged-out
+opt-out applied to a test asserting an AUTHENTICATED surface (the
+"Budget Dashboard" heading lives only in the ~50-180ms window
+between the page boot and the RequireSession /login redirect). The
+fix: the test moves into its own describe carrying a describe-scoped
+storageState override (`tests/e2e/.auth/user.json`). Verified:
+`--repeat-each=10` -> 21/21, the full spec 7/7, the whole chunk 2
+green (143).
+
+**The full chain (final).** lint + typecheck + 108/108 unit + build +
+**257 e2e (115 + 143, two ordered chunks, zero failures)** + 35/35
+smoke. The 16 screenshots regenerated ALL BYTE-IDENTICAL (the
+pin-only invariant; `git diff src/` empty).
+
+**The probe lessons.** (1) the badge-row finder walks the card's
+DIRECT children (the row is a direct child, not nested); (2) the
+clone-side with-server heredoc must be QUOTED (<<'EOF') when it
+carries a $-expanded census variable; (3) the reference's expenses
+items carry no payment methods — the conditional footer is the
+parity contract, not a drift.
+
+**The docs.** AGENTS/CLAUDE/README (the 257 counts + the v57
+entries), the SKILL Session 92 row + the state line, the PAD
+v1.1.14 block, the probe README's v57 section, session_137.md (the
+formal log), the ledger list + this Session 91 entry. Ship: the
+Conventional Commit + the SSH-wrapper push to main.
 
 ---
 

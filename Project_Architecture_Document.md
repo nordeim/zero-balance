@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.13
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.14
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,10 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.14 (Tracked Changes)
+
+- `[UI]` v1.1.14 (2026-10-13) — the v57 parity iteration (PIN-ONLY — no production-code change; the pin-only line's continuation, plus ONE test-only fix): the counts 108 unit / 257 e2e / 35 smoke; the items-view desktop 1280 VLM standing pair (the income + expenses views — the session-134 v57 queue's own suggestion; every flag DOM-arbitrated to the documented data classes: the avatar, the seed data, the payment-method chips [DATA-CONDITIONAL — the footer row's chrome byte-identical on both sites; the reference's own income card renders the same two-child structure while its expense items carry no payment methods], the badge wrap [the row's chrome byte-identical; the clone's Recurring superset badge wraps the row to h 52]); the new item-card footer + badge-row census pins in tests/e2e/items.spec.ts (+2 → 257: F1a the /income card's footer two-children conditional render + the badge chrome; F1b the /expenses grid census + the wrapped 4-badge row) with three pin-sanity mutations; the not-found G7 flake fix (TEST-ONLY: the "Go Home" test's describe-scoped storageState override — the logged-out opt-out raced the /login redirect's ~50-180ms transient dashboard render, a genuine ~1-in-8 failure); the v57 probe family (the VLM trio + the arbitration + the badge-census pair + the 51st standing checks) + the probe lessons (the badge-row finder walks the card's DIRECT children; the clone-side with-server heredoc quoting); the 57th remediation plan + the probe catalog through v57.
 
 #### Revision Block — v1.1.13 (Tracked Changes)
 

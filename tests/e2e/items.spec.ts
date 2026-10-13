@@ -1825,3 +1825,256 @@ test.describe("savings goal-card internals census at 390 (v54 — plan F1)", () 
     expect(census!.docSW).toBe(390);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v57 — plan F1: the items-card FOOTER + BADGE-ROW census at desktop 1280.
+// The session-134 v57 queue's own standing-check suggestion (the items
+// view's 1280 state — the v56 pair covered the dashboard + networth). The
+// v57 VLM pair (income + expenses) came back CLEAN after DOM arbitration:
+// the footer chrome and the badge-row chrome are byte-identical on both
+// sites — only the DATA differs (the payment-method chips are conditional
+// renders; the clone's Recurring superset badge wraps the row). This pin
+// locks the measured chrome.
+// ---------------------------------------------------------------------------
+
+test.describe("items card footer + badge census at 1280 (v57 — plan F1)", () => {
+  test("the income card's footer row + badge chrome (v57 F1a)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/income");
+    await expect(page.getByText("Freelance").first()).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      const cardCs = getComputedStyle(card);
+      // The badge row: the DIRECT child with the flex-wrap class.
+      const badgeRow = [...card.children].find(
+        (c) => typeof c.className === "string" && /flex-wrap/.test(c.className),
+      ) as HTMLElement | undefined;
+      // The footer row: the LAST direct child (the date + payment row).
+      const footer = card.children[card.children.length - 1] as HTMLElement;
+      const fcs = getComputedStyle(footer);
+      const spanGrab = (el: Element) => {
+        const cs = getComputedStyle(el);
+        const icon = el.querySelector("svg");
+        return {
+          display: cs.display,
+          gap: cs.gap,
+          fs: cs.fontSize,
+          color: cs.color,
+          text: (el.textContent || "").trim().slice(0, 24),
+          icon: icon
+            ? {
+                w: Math.round(icon.getBoundingClientRect().width),
+                h: Math.round(icon.getBoundingClientRect().height),
+                color: getComputedStyle(icon).color,
+              }
+            : null,
+        };
+      };
+      const badgeGrab = (el: Element) => {
+        const cs = getComputedStyle(el);
+        const icon = el.querySelector("svg");
+        return {
+          text: (el.textContent || "").trim().slice(0, 16),
+          display: cs.display,
+          alignItems: cs.alignItems,
+          radius: cs.borderRadius,
+          pad: cs.padding,
+          fs: cs.fontSize,
+          fw: cs.fontWeight,
+          h: Math.round(el.getBoundingClientRect().height),
+          iconW: icon ? Math.round(icon.getBoundingClientRect().width) : null,
+        };
+      };
+      const bcs = badgeRow ? getComputedStyle(badgeRow) : null;
+      return {
+        card: {
+          w: Math.round(card.getBoundingClientRect().width),
+          pad: cardCs.padding,
+          radius: cardCs.borderRadius,
+        },
+        footer: {
+          display: fcs.display,
+          alignItems: fcs.alignItems,
+          justify: fcs.justifyContent,
+          fs: fcs.fontSize,
+          color: fcs.color,
+          h: Math.round(footer.getBoundingClientRect().height),
+          childCount: footer.children.length,
+          children: [...footer.children].map(spanGrab),
+        },
+        badgeRow: bcs
+          ? {
+              display: bcs.display,
+              wrap: bcs.flexWrap,
+              gap: bcs.gap,
+              mb: bcs.marginBottom,
+              h: Math.round(badgeRow!.getBoundingClientRect().height),
+              badgeCount: badgeRow!.children.length,
+              texts: [...badgeRow!.children].map((b) => (b.textContent || "").trim()),
+            }
+          : null,
+        badges: badgeRow ? [...badgeRow.children].map(badgeGrab) : null,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The footer row's chrome — measured byte-identical on BOTH sites
+    // (the reference: flex justify-between 12px rgb(107,114,128) h 16).
+    expect(census!.footer).toMatchObject({
+      display: "flex",
+      alignItems: "center",
+      justify: "space-between",
+      fs: "12px",
+      color: "rgb(107, 114, 128)",
+      h: 16,
+    });
+    // The two-children conditional render: the date span + the
+    // payment-method span (the Freelance card carries PayPal — the
+    // reference's own income card renders the same two-child structure
+    // with its "Bank Account" chip).
+    expect(census!.footer.childCount).toBe(2);
+    expect(census!.footer.children[0]).toMatchObject({
+      display: "flex",
+      gap: "4px",
+      fs: "12px",
+      color: "rgb(107, 114, 128)",
+      icon: { w: 12, h: 12, color: "rgb(107, 114, 128)" },
+    });
+    expect(census!.footer.children[1]).toMatchObject({
+      display: "flex",
+      gap: "4px",
+      fs: "12px",
+      text: "PayPal",
+      icon: { w: 12, h: 12 },
+    });
+
+    // The badge row's chrome — measured byte-identical on BOTH sites
+    // (flex wrap, 8px gap, 12px bottom margin).
+    expect(census!.badgeRow).toEqual({
+      display: "flex",
+      wrap: "wrap",
+      gap: "8px",
+      mb: "12px",
+      h: 22,
+      badgeCount: 3,
+      texts: ["want", "monthly", "active"],
+    });
+    // Every badge's own chrome (the reference's: flex center, 6px radius,
+    // 2px 10px pad, 12px/600, h 22 — the classification COLORS are locked
+    // by badge-colors.spec.ts; this pin locks the GEOMETRY).
+    for (const b of census!.badges!) {
+      expect(b).toMatchObject({
+        display: "flex",
+        alignItems: "center",
+        radius: "6px",
+        pad: "2px 10px",
+        fs: "12px",
+        fw: "600",
+        h: 22,
+      });
+    }
+    expect(census!.badges![0].iconW).toBe(12);
+
+    // The card chrome control (the v45 F1a pin's own values — unchanged).
+    expect(census!.card).toEqual({ w: 309, pad: "20px", radius: "12px" });
+  });
+
+  test("the expenses grid + the first card's footer + the wrapped badge row (v57 F1b)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByText("Entertainment").first()).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const gcs = getComputedStyle(grid);
+      const card = grid.children[0] as HTMLElement;
+      const cardCs = getComputedStyle(card);
+      const badgeRow = [...card.children].find(
+        (c) => typeof c.className === "string" && /flex-wrap/.test(c.className),
+      ) as HTMLElement | undefined;
+      const footer = card.children[card.children.length - 1] as HTMLElement;
+      const fcs = getComputedStyle(footer);
+      const bcs = badgeRow ? getComputedStyle(badgeRow) : null;
+      return {
+        grid: {
+          w: Math.round(grid.getBoundingClientRect().width),
+          gap: gcs.gap,
+          childCount: grid.children.length,
+          template: gcs.gridTemplateColumns,
+        },
+        card: {
+          w: Math.round(card.getBoundingClientRect().width),
+          pad: cardCs.padding,
+          radius: cardCs.borderRadius,
+        },
+        footer: {
+          display: fcs.display,
+          justify: fcs.justifyContent,
+          fs: fcs.fontSize,
+          color: fcs.color,
+          h: Math.round(footer.getBoundingClientRect().height),
+          childCount: footer.children.length,
+          paymentText: footer.children[1]
+            ? (footer.children[1].textContent || "").trim().slice(0, 24)
+            : null,
+        },
+        badgeRow: bcs
+          ? {
+              display: bcs.display,
+              wrap: bcs.flexWrap,
+              gap: bcs.gap,
+              h: Math.round(badgeRow!.getBoundingClientRect().height),
+              badgeCount: badgeRow!.children.length,
+              texts: [...badgeRow!.children].map((b) => (b.textContent || "").trim()),
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The grid: the reference's own 3-col template (960 wide, 16px gap —
+    // each column ~=309.33px) with the e2e seed's 3 expense cards.
+    expect(census!.grid.w).toBe(960);
+    expect(census!.grid.gap).toBe("16px");
+    expect(census!.grid.childCount).toBe(3);
+    expect(census!.grid.template).toMatch(/^309\.\d+px 309\.\d+px 309\.\d+px$/);
+
+    // The first card (Entertainment — the date-DESC order): the same
+    // chrome as the income card (the v45 control).
+    expect(census!.card).toEqual({ w: 309, pad: "20px", radius: "12px" });
+
+    // The footer: the same chrome + the payment chip (every e2e expense
+    // carries a payment method — the reference's own items do not, the
+    // documented data class; the conditional render is the point).
+    expect(census!.footer).toMatchObject({
+      display: "flex",
+      justify: "space-between",
+      fs: "12px",
+      color: "rgb(107, 114, 128)",
+      h: 16,
+      childCount: 2,
+    });
+    expect(census!.footer.paymentText).toMatch(/^(Bank Transfer|Credit Card)$/);
+
+    // The wrapped badge row: the clone's Recurring superset badge makes
+    // 4 badges — the row WRAPS to h 52 (the measured two-line layout:
+    // 22 + 8 gap + 22; the reference's 3-badge rows stay h 22 — the
+    // wrap is the data class, the row chrome is identical).
+    expect(census!.badgeRow).toEqual({
+      display: "flex",
+      wrap: "wrap",
+      gap: "8px",
+      h: 52,
+      badgeCount: 4,
+      texts: ["want", "monthly", "Recurring", "active"],
+    });
+  });
+});

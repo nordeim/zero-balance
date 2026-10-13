@@ -10,7 +10,9 @@ import { expect, test } from "@playwright/test";
 // "Nonexistent Page Xyz | ZeroBudget" and its head carries the reference
 // description, OG/Twitter cards, canonical, manifest and apple meta.
 // This file OPTS OUT of the shared storageState (head assertions are
-// session-independent; the 404 renders logged-out too).
+// session-independent; the 404 renders logged-out too) — EXCEPT the
+// Go Home test, which asserts the authenticated dashboard and carries
+// its own describe-scoped storageState (the v57 flake fix).
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
@@ -53,11 +55,24 @@ test.describe("custom not-found page (v7 — plan G7)", () => {
     expect(styles.wash).toBe("rgb(248, 250, 252)");
   });
 
-  test("Go Home navigates to the dashboard", async ({ page }) => {
-    await page.goto("/nonexistent-page-xyz");
-    await page.getByRole("link", { name: /Go Home/i }).click();
-    await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole("heading", { name: "Budget Dashboard" })).toBeVisible();
+  // v57 flake fix: this one test asserts an AUTHENTICATED surface (the
+  // dashboard heading), but the file-wide opt-out ran it logged-out —
+  // the heading only exists in the ~50-180ms window between the boot
+  // and the RequireSession /login redirect (a genuine 1-in-8 race even
+  // in isolation; load only shifts the odds — three chunk-run failures
+  // in one session). A describe-scoped storageState override beats the
+  // file-level opt-out: the test now runs with the demo session (the
+  // same AUTH_STATE the chromium project uses), the heading is
+  // deterministic, and the 404 page itself renders identically for a
+  // logged-in user (the not-found route is static).
+  test.describe("Go Home (authenticated — the v57 flake fix)", () => {
+    test.use({ storageState: "tests/e2e/.auth/user.json" });
+    test("Go Home navigates to the dashboard", async ({ page }) => {
+      await page.goto("/nonexistent-page-xyz");
+      await page.getByRole("link", { name: /Go Home/i }).click();
+      await expect(page).toHaveURL(/\/$/);
+      await expect(page.getByRole("heading", { name: "Budget Dashboard" })).toBeVisible();
+    });
   });
 
   // v25 G2: the reference's Go Home button carries `focus:outline-none
