@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.14
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.15
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,10 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.15 (Tracked Changes)
+
+- `[UI]` v1.1.15 (2026-10-13) — the v58 parity iteration (PIN-ONLY — no production-code change; the eighth iteration since v46, the pin-only line's continuation): the counts 108 unit / 258 e2e / 35 smoke; the savings-view desktop 1280 VLM standing pair (the session-137 v58 queue's own first suggestion — the items family's remaining view; every flag DOM-arbitrated to the documented data classes: the seed data, the payment-method chips [DATA-CONDITIONAL — the footer row's chrome byte-identical on both sites; the reference's own savings item carries no paymentMethod so its footer renders the one-child date-only form, the clone's render the same two-child structure the reference's own income card renders — the v57 conditional-footer contract measured on the third view], the badge family [the row's chrome byte-identical; the reference's savings item is classified "need" (red) while the clone's are "savings" (green) — the classification VALUE is the data class, the color maps stay locked by badge-colors.spec.ts; the clone's Recurring superset badge wraps the row to h 52], the grid [960/16px/3-col ≈309.33 — the v45 F1a pin's own values]); the new savings goal-card census pin in tests/e2e/items.spec.ts (+1 → 258: the /savings grid + the Investments card's two-children footer [the date span + the "Brokerage" chip] + the wrapped 4-badge row [h 52, savings/monthly/Recurring/active] + every badge's geometry) with three pin-sanity mutations (the footer text-xs→text-sm; the badge-row gap-2→gap-4; the classification badge py-0.5→py-1 — the fresh VERTICAL-pad axis proving the wrap arithmetic 22+8+22); the v58 probe family (the VLM trio + the savings-census pair + the 52nd standing checks) + the probe lessons (a comment apostrophe inside a single-quoted shell census variable terminates the quote — bash -n before every run; the e2e-chunk filter's file alternation must match the full filename stem); the 58th remediation plan + the probe catalog through v58.
 
 #### Revision Block — v1.1.14 (Tracked Changes)
 

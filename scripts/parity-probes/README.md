@@ -2328,3 +2328,47 @@ not-found G7 flake fix (test-only).
    expense-card footers render one child (the date alone) while its
    income card carries two (the date + "Bank Account"): the
    conditional render is the parity contract, not a drift.
+
+## v58 — the savings-view desktop 1280 VLM pair + the savings goal-card census (session-137)
+
+The session-137 v58 queue's own first suggestion — the items family's
+remaining view (the v57 pair covered income + expenses; the savings
+goal-card's 1280 state was unpinned at the pair viewport, its internals
+pinned at 390 only [v54 F1]). The pair came back CLEAN after DOM
+arbitration (every flag a documented data class — the seed data, the
+conditional payment footer, the classification VALUE + the badge count)
+— the v58 deliverable is the PIN (`tests/e2e/items.spec.ts`, +1 → 258).
+
+- `vlm-shots-v58.sh` + `clone-vlmshots-v58.sh` +
+  `vlm-compare-v58.mjs` — the savings view's desktop 1280x800 VLM pair
+  (the reference's login-retry loop + the clone's with-server boot).
+- `savings-census-ref-v58.sh` + `savings-census-clone-v58.sh` — the
+  DOM arbitration + the full census (the grid template + the card
+  chrome + the footer's two-children conditional render + the badge
+  row + every badge's geometry), both sides — the clone script
+  carries the P1.2 quoted-heredoc fix by construction (the census
+  variable is EXPORTED, the with-server heredoc is QUOTED).
+- `ref-standing-v52.sh` + `standing-checks-v52.sh` — the 52nd standing
+  checks (the mobile-nav R1–R4 + the data census + the SEO pair, both
+  sides).
+
+### v58 probe lessons
+
+1. A comment apostrophe inside a single-quoted shell census variable
+   terminates the quote — `bash -n` before every run
+   (savings-census-ref-v58.sh's first run failed with "DIRECT:
+   command not found" from the comment `the card's DIRECT child`).
+2. The reference's savings item is classified NEED (the red family:
+   bg rgb(254,242,242) + the 1px rgb(254,202,202) border) while the
+   clone's are SAVINGS (green) — the classification VALUE is the data
+   class; the color maps stay locked by badge-colors.spec.ts. Its
+   savings footer renders the ONE-child date-only form (its item
+   carries no paymentMethod) — the v57 conditional-footer contract
+   measured on the third view.
+3. The e2e-chunk filter regex lesson (a test-infra trap, not a probe):
+   the Playwright file-filter alternation must match the FULL filename
+   stem — an `auth\.spec` stem plus the shared `\.spec\.ts` suffix
+   outside the group double-matches (`auth.spec.spec.ts`) and silently
+   drops auth.spec.ts / calculator-error.spec.ts / networth-error.spec
+   .ts from the run; stems-only alternations (`badge` for
+   badge-colors) fail the same way on the suffix side.

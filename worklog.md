@@ -46,7 +46,8 @@ and `docs/remediation-plan-v53.md`,
 and `docs/remediation-plan-v54.md`,
 and `docs/remediation-plan-v55.md`,
 and `docs/remediation-plan-v56.md`,
-and `docs/remediation-plan-v57.md`.
+and `docs/remediation-plan-v57.md`,
+and `docs/remediation-plan-v58.md`.
 
 ---
 
@@ -55,6 +56,91 @@ and `docs/remediation-plan-v57.md`.
 ---
 
 ---
+
+---
+
+## Session 92 — Parity iteration v58: the savings-view desktop 1280 VLM standing pair + the savings goal-card's footer/badge census (PIN-ONLY — the fourth consecutive pin-only iteration) (2026-10-13)
+
+**Goal:** the session-137 v58 queue's own first suggestion — the
+SAVINGS view's desktop 1280 pair (the items family's remaining view;
+the v57 pair covered income + expenses) — plus the 52nd standing
+checks. The sweep found NO production gap, so the v58 deliverable is
+the PIN: the savings goal-card's footer + badge census (+1 e2e ->
+258). (The workspace re-cloned once this session — the sandbox had
+reset again; the environment rebuilt from scratch.)
+
+**The baseline chain.** lint + typecheck + 108/108 unit + build +
+257 e2e (104 + 138 + 14, three ordered chunks this session — the
+chunk-regex lesson: the Playwright file-filter alternation must match
+the FULL filename stem, an `auth\.spec` stem plus the shared
+`\.spec\.ts` suffix double-matches and silently drops three spec
+files) + 35/35 smoke — all green.
+
+**The 52nd standing checks.** The reference side: the four bugs ALL
+live (the toast-blocker, the sheet-trap via overlayCount 1, the
+no-landmark, the 464 /networth overflow), the data census intact
+("1 items · $25,000" / "1 items · $5000.00"), the SEO pair live. The
+clone side: R1 the burger hit-test true + the sheet opens, R2 the
+Income nav closes AND navigates, R3 the nav landmark, R4 zero
+overflow at 390 on all five views — **the mobile navigation menu
+VERIFIED WORKING (the 52nd time)**.
+
+**The v58 sweep** (the probe family, READ-ONLY on the reference):
+the desktop 1280x800 VLM pair on the savings view — every flag
+DOM-arbitrated to the documented data classes: the seed data (the
+reference's own 1-item savings view ["1 items · $1000.00",
+"Emergency Fund" $1000] vs the clone's dev seed ["2 items ·
+$1250.00", Investments + Emergency Fund]); the savings card's footer
+content (DATA-CONDITIONAL — the footer row's chrome byte-identical
+on both sites [flex justify-between 12px rgb(107,114,128) h 16; each
+span flex gap 4px with the 12×12 gray icon]; the reference's own
+savings item carries NO paymentMethod so its footer renders the
+ONE-child date-only form, the clone's render the SAME two-child
+structure the reference's own income card renders [the date +
+"Brokerage"] — the v57 conditional-footer contract measured on the
+third view); the badge family (DATA-CONDITIONAL — the row's chrome
+byte-identical [flex wrap 8px mb 12px; every badge flex center /
+6px / 2px 10px / 12px/600 / h 22 / the 12×12 icons]; the reference's
+savings item is classified "need" [the red family] while the clone's
+are "savings" [the green family] — the classification VALUE is the
+data class, the color maps stay locked by badge-colors.spec.ts; the
+monthly purple-50 + active slate-50 badges byte-identical both
+sides; the clone's Recurring superset badge wraps the row to h 52 =
+22+8+22). The grid census: the 960px 3-column grid + the 16px gap +
+the card chrome (309 / 20px / 12px / 1px solid rgb(229,231,227) /
+white) — the v45 F1a pin's own values.
+
+**The pin.** The "the savings goal-card census at 1280 (v58 — plan
+F1)" describe in `tests/e2e/items.spec.ts` (+1): the /savings grid
+(960/2 children/16px gap/3-col template) + the Investments card's
+two-children conditional footer (the date span + the "Brokerage"
+chip) + the wrapped 4-badge row (h 52, [savings, monthly,
+Recurring, active]) + every badge's geometry. GREEN on the first
+run (the pin-only iteration's own expectation). THREE pin-sanity
+mutations verified to FAIL then restored (the footer text-xs->
+text-sm, the badge-row gap-2->gap-4, the classification badge
+py-0.5->py-1 — the fresh VERTICAL-pad axis proving the wrap
+arithmetic 22+8+22 — each with the standalone REBUILD as a SEPARATE
+command; each also bit the v57/v54 footer+badge pins, the correct
+shared-line signature).
+
+**The full chain (final).** lint + typecheck + 108/108 unit + build +
+**258 e2e (78 + 38 + 144, three ordered chunks, zero failures)** +
+35/35 smoke. The 16 screenshots regenerated ALL BYTE-IDENTICAL (the
+pin-only invariant; `git diff src/` empty).
+
+**The probe lessons.** (1) a comment apostrophe inside a
+single-quoted shell census variable terminates the quote (bash -n
+before every run); (2) the reference's savings item is classified
+NEED — the classification VALUE is the data class, the color maps
+stay locked by badge-colors.spec.ts; (3) the e2e-chunk filter's
+file alternation must match the full filename stem.
+
+**The docs.** AGENTS/CLAUDE/README (the 258 counts + the v58
+entries), the SKILL Session 93 row + the state line, the PAD
+v1.1.15 block, the probe README's v58 section, session_139.md (the
+formal log), the ledger list + this Session 92 entry. Ship: the
+Conventional Commit + the SSH-wrapper push to main.
 
 ---
 
