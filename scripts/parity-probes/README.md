@@ -2218,3 +2218,71 @@ by `tests/e2e/glyph-parity.spec.ts` (the shape-data census).
    the reference's dialog layer matches `fixed inset-0` + "Total
    Calculated", the clone's is a Radix `[role=dialog]` containing
    it; the VLM arbitration probe takes the site into account.
+
+## v56 — the desktop 1280 VLM pair + the glyph-swap hold re-audit + the hero-desk census (session-134)
+
+The session-131 v56 queue's own standing-check suggestion — a fresh
+VLM pair on the v55 F1 surfaces' desktop 1280 state — extended with
+the full glyph re-audit (does the v55 swap still hold?) and the 50th
+standing checks. PIN-ONLY iteration: no production-code change, the
+v56 deliverable is the hero-card DESKTOP 1280 census pin.
+
+- `glyph-audit-v56.sh` — the full per-view lucide glyph dictionary
+  re-census (both sites; the v55 audit's shape dump with the
+  polyline/rect-rx capture fix applied). Verdict: 24 shared glyph
+  names, 0 DIFFS among the shared set — the v55 legacy-icon swap
+  HOLDS byte-identical; no new drift.
+- `vlm-shots-v56.sh` + `clone-vlmshots-v56.sh` +
+  `vlm-compare-v56.mjs` — the desktop 1280x800 VLM pair: PAIR 1 the
+  dashboard (the stat rows + donut + legend post-swap), PAIR 2 the
+  networth view (the trending-up hero/summary). PAIR 2 VERDICT
+  IDENTICAL; PAIR 1 flagged 4.
+- `vlm-arbit-v56.sh` + `clone-arbit-v56.sh` — the PAIR 1 flags'
+  DOM arbitration (the v43 rule): the nav highlight = the
+  documented root-URL active-nav gap (the reference shows no
+  highlight at `/` — computed transparent/none/zinc-700/400 — while
+  the clone highlights; the NON-ROOT control at /networth renders
+  the byte-identical 135deg forest-gradient active style on BOTH
+  sites); the progress bar = the track byte-identical 568x12
+  rgba(255,255,255,0.1) on both sites with the fill's width =
+  pct x 568 per each site's own data (the reference 173 = 30.5% x
+  568; the clone 357 = 62.8% x 568); the avatar the user-identity
+  class; the FAB the Base44 platform chrome. The pair CLEAN.
+- `hero-desk-v56.sh` — the hero-card census at 1280x800 on both
+  sites (the v56 pin's measurement source, byte-identical): the
+  hero grid `304px 304px 304px` + 24px gap + the [632x364, 304x364]
+  children at y 136; the goal card 632x316/radius 16/pad 32/135deg
+  forest gradient + the 26-58-46/0.3 shadow; the 568x12 track; the
+  fill's 90deg orange status gradient + radius 9999px; the 48px
+  stat tiles' 24x24 svgs.
+- `standing-checks-v50.sh` + `ref-standing-v50.sh` — the 50th
+  standing checks (the v49 scripts with fresh session names): the
+  reference's four bugs all live, the clone's mobile nav verified
+  working (R1 burger hit + sheet, R2 close-on-nav, R3 landmark, R4
+  zero overflow at 390 on all five views), the data census intact,
+  the SEO pair live.
+
+### v56 probe lessons
+
+1. **Branch the glyph census's shape dump per tag** — the v55
+   audit's generic fallback read polylines via x1/y1 (empty) and
+   dropped the rects' rx; glyph-audit-v56.sh branches
+   path/circle/rect(rx)/polyline(points)/polygon(points) per tag
+   (the v55 lesson applied at the source).
+2. **The reference has no `<nav>` landmark** (its own documented
+   bug) — nav probes must scan ALL anchors
+   (`document.querySelectorAll("a")`), not nav-scoped selectors;
+   a nav-scoped probe reads "no link" on every view.
+3. **Split long clone-side shot scripts into per-view
+   invocations** — the combined login+2-shots script can exceed the
+   240s Bash timeout when the agent-browser daemon was reset
+   between steps (the with-server boot + the fresh session open
+   serialize); login+shot, then the second shot, runs in well
+   under half.
+4. **The sed mutation discipline: match the SOURCE's exact
+   formatting** — a mutation pattern written from a display
+   rendering (spaces in `rgba(255, 255, 255, 0.1)`) can silently
+   no-op against the source's own spacing
+   (`rgba(255,255,255,0.1)`); always re-read the line post-sed
+   before rebuilding, and prefer line-addressed class-token
+   mutations over full-attribute patterns.

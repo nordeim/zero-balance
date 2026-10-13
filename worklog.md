@@ -44,7 +44,8 @@ and `docs/remediation-plan-v51.md`,
 and `docs/remediation-plan-v52.md`,
 and `docs/remediation-plan-v53.md`,
 and `docs/remediation-plan-v54.md`,
-and `docs/remediation-plan-v55.md`.
+and `docs/remediation-plan-v55.md`,
+and `docs/remediation-plan-v56.md`.
 
 ---
 
@@ -53,6 +54,73 @@ and `docs/remediation-plan-v55.md`.
 ---
 
 ---
+
+---
+
+## Session 90 — Parity iteration v56: the 1280 desktop VLM standing pair + the glyph-swap HOLD re-audit (PIN-ONLY — no production-code change, the return to pin-only after the v55 fix) (2026-10-13)
+
+**Goal:** the session-131 v56 queue's own standing-check suggestion —
+a fresh VLM pair on the v55 F1 surfaces' desktop 1280 state —
+extended with the full glyph re-audit (does the v55 swap still
+hold?) and the 50th standing checks. The sweep found NO production
+gap, so the v56 deliverable is the PIN: the hero-card DESKTOP 1280
+census (+1 e2e -> 255). (The workspace re-cloned at 818f553; the
+environment rebuilt — npm install + .env from .env.example +
+db:push/db:seed + `npx playwright install chromium`.)
+
+**The v56 sweep** (the ten-probe family, READ-ONLY on the
+reference): `glyph-audit-v56.sh` re-audited the full per-view lucide
+glyph dictionary on BOTH sites (the v55 audit with the
+polyline/rect-rx capture fix) — **24 shared glyph names, 0 DIFFS
+among the shared set: the v55 legacy-icon swap HOLDS byte-identical;
+no new drift** (1 one-side-only: repeat, the Recurring superset
+badge). `vlm-shots-v56.sh` + `clone-vlmshots-v56.sh` +
+`vlm-compare-v56.mjs` ran the desktop 1280x800 pair (the session-131
+queue item): PAIR 2 (the networth trending surfaces) VERDICT
+IDENTICAL; PAIR 1 (the dashboard) flagged 4. `vlm-arbit-v56.sh` +
+`clone-arbit-v56.sh` arbitrated every PAIR 1 flag (the v43 rule):
+the nav highlight = the documented root-URL active-nav gap (a
+reference bug the clone fixes; the non-root control at /networth
+renders the byte-identical 135deg forest-gradient active style on
+BOTH sites), the progress bar = the track byte-identical 568x12 on
+both sites with the fill = pct x 568 per each site's own data, the
+avatar = the user-identity class, the FAB = the Base44 platform
+chrome — the pair CLEAN. `hero-desk-v56.sh` censused the hero card
+at 1280x800 on both sites: byte-identical (the 304px triple-column
+grid, the 632x316 goal card, the 568x12 track, the 90deg fill, the
+48px stat tiles).
+
+**The pin.** The "hero desktop 1280 census (v56 — plan F1)"
+describe in `tests/e2e/dashboard.spec.ts` (+1): the hero grid's
+304px triple-column template + 24px gap + the [632x364, 304x364]
+children at y 136, the goal card's 632x316/radius 16/pad 32/135deg
+forest gradient + shadow, the 568x12 track, the fill's 90deg
+status-gradient family + the pct-proportional width arithmetic
+(+-2px), the three 48px stat tiles' 24x24 svgs. GREEN on the first
+run (pin-only). THREE pin-sanity mutations verified to FAIL then
+restored (the track h-3->h-2; the card p-8->p-6; the grid
+gap-6->gap-4) — each with the standalone REBUILD as a SEPARATE
+command (the first sed attempt taught the line-addressed
+class-token lesson — a display-rendering pattern silently no-ops
+against the source's own spacing).
+
+**The standing checks (50th).** The reference's four bugs ALL live
+(the toast-blocker, the sheet-trap, the no-landmark, the 464
+/networth overflow); the data census intact (no trending-down
+opportunity); the clone's mobile navigation menu VERIFIED WORKING
+(R1 the burger hit + the sheet, R2 the close-on-nav, R3 the
+landmark, R4 the zero overflow at 390 on all five views; the SEO
+pair 200 on both).
+
+**The chain.** lint + typecheck + 108/108 unit + build + **255 e2e
+(105 + 151, two ordered chunks, both exit 0, zero failures — +1:
+the hero-desk pin)** + 35/35 smoke. The 16 screenshots regenerated
+— 7 trivial timing diffs (0.002-0.005% of pixels, pixel-compared;
+`git diff src/` empty — the pin-only invariant). The docs aligned
+(AGENTS/CLAUDE/README/SKILL Session 91 row + the 255 state/PAD
+v1.1.13/the probe README's v56 section/session_134 +
+session_135/this worklog + the ledger list). Commit + push to main
+via the SSH wrapper.
 
 ---
 

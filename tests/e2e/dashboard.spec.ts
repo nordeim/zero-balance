@@ -2334,3 +2334,148 @@ test.describe("mobile surface census at 390 (v51 — plan F2/F4/F5)", () => {
     expect(census!.plus).toEqual({ w: 16, opacity: "0.5", color: "rgb(143, 188, 63)" });
   });
 });
+
+test.describe("hero desktop 1280 census (v56 — plan F1)", () => {
+  // The v56 pin (PIN-ONLY — no production change): the NET ZERO GOAL
+  // card's DESKTOP 1280x800 state, measured byte-identical on BOTH sites
+  // (scripts/parity-probes/hero-desk-v56.sh, the session-131 v56 queue's
+  // desktop standing pair surface). The v50 F3 census pins the hero at
+  // mobile 390; the v55 glyph census pins the stat-row/tile SHAPE data;
+  // THIS pin locks the hero's desktop chrome geometry — the grid's
+  // 304px triple-column template, the 632x316 goal panel with its 32px
+  // pad and forest gradient + shadow, the 568x12 progress track, the
+  // fill's 90deg status-gradient family + its pct-proportional width
+  // (the reference's own fill: 173px = 30.5% x 568 — the arithmetic is
+  // data-INDEPENDENT, the geometry is data-locked), and the 48px stat
+  // tiles' 24x24 svgs.
+  test("the goal card's desktop geometry + track + fill family + stat tiles (v56 F1)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const h3 = [...document.querySelectorAll("h3")].find(
+        (e) => (e.textContent || "").trim() === "NET ZERO GOAL",
+      );
+      if (!h3) return null;
+      let card = h3.parentElement as HTMLElement | null;
+      for (let i = 0; i < 12 && card; i++) {
+        const cs = getComputedStyle(card);
+        const r = card.getBoundingClientRect();
+        if (r.width > 500 && r.height > 250 && cs.borderRadius !== "0px" && cs.boxShadow !== "none") break;
+        card = card.parentElement as HTMLElement | null;
+      }
+      if (!card) return null;
+      const csC = getComputedStyle(card);
+      const rC = card.getBoundingClientRect();
+      // The hero grid: the lg:grid-cols-3 wrapper (goal panel spans 2).
+      const grid = (card.parentElement as HTMLElement).parentElement!;
+      const csG = getComputedStyle(grid);
+      const children = [...grid.children].map((c) => {
+        const r = c.getBoundingClientRect();
+        return { w: Math.round(r.width), h: Math.round(r.height), y: Math.round(r.y) };
+      });
+      // The progress track: the 12px rounded bar inside the card.
+      const track = [...card.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        const cs = getComputedStyle(d);
+        return r.height >= 10 && r.height <= 16 && cs.borderRadius === "9999px" && r.width > 200;
+      });
+      const fillEl = track && track.firstElementChild ? (track.firstElementChild as HTMLElement) : null;
+      // The rendered pct figure (the allocation label's sibling).
+      const pct = [...card.querySelectorAll("span, p")].find((s) =>
+        /^[0-9.]+%$/.test((s.textContent || "").trim()),
+      );
+      // The stat-row icon tiles: the 48px squares carrying the 24x24
+      // legacy glyphs (the v55 swap chrome).
+      const main = card.closest("main");
+      const tiles = main
+        ? [...main.querySelectorAll("div")]
+            .filter((d) => {
+              const r = d.getBoundingClientRect();
+              return Math.abs(r.width - 48) < 2 && Math.abs(r.height - 48) < 2;
+            })
+            .slice(0, 3)
+            .map((d) => {
+              const svg = d.querySelector("svg");
+              return {
+                w: Math.round(d.getBoundingClientRect().width),
+                svg: svg ? Math.round(svg.getBoundingClientRect().width) : null,
+              };
+            })
+        : [];
+      return {
+        grid: { cols: csG.gridTemplateColumns, gap: csG.gap, children },
+        card: {
+          w: Math.round(rC.width),
+          h: Math.round(rC.height),
+          radius: csC.borderRadius,
+          pad: csC.padding,
+          bg: csC.backgroundImage,
+          shadow: csC.boxShadow,
+        },
+        track: track
+          ? {
+              w: Math.round(track.getBoundingClientRect().width),
+              h: Math.round(track.getBoundingClientRect().height),
+              bg: getComputedStyle(track).backgroundColor,
+              radius: getComputedStyle(track).borderRadius,
+            }
+          : null,
+        fill: fillEl
+          ? {
+              w: Math.round(fillEl.getBoundingClientRect().width),
+              bg: getComputedStyle(fillEl).backgroundImage,
+              radius: getComputedStyle(fillEl).borderRadius,
+            }
+          : null,
+        pct: pct ? (pct.textContent || "").trim() : null,
+        tiles,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The hero grid: the 304px triple-column template, the 24px gap, and
+    // the two children — the 632-wide goal panel (col-span-2) + the
+    // 304-wide breakdown card, both 364 tall at y 136 (byte-identical on
+    // both sites — hero-desk-v56.sh).
+    expect(census!.grid.cols).toBe("304px 304px 304px");
+    expect(census!.grid.gap).toBe("24px");
+    expect(census!.grid.children).toEqual([
+      { w: 632, h: 364, y: 136 },
+      { w: 304, h: 364, y: 136 },
+    ]);
+    // The goal card: 632x316, radius 16, pad 32, the 135deg forest
+    // gradient + the 26-58-46/0.3 shadow (byte-identical on both sites).
+    expect(census!.card.w).toBe(632);
+    expect(census!.card.h).toBe(316);
+    expect(census!.card.radius).toBe("16px");
+    expect(census!.card.pad).toBe("32px");
+    expect(census!.card.bg).toContain("linear-gradient(135deg, rgb(26, 58, 46)");
+    expect(census!.card.shadow).toBe("rgba(26, 58, 46, 0.3) 0px 20px 60px 0px");
+    // The track: 568x12 at the white/10 tint, pill radius (the v56
+    // arbitration's byte-identical finding — the VLM's "longer bar" flag
+    // was the FILL's data-driven width, never the track).
+    expect(census!.track!.w).toBe(568);
+    expect(census!.track!.h).toBe(12);
+    expect(census!.track!.bg).toBe("rgba(255, 255, 255, 0.1)");
+    expect(census!.track!.radius).toBe("9999px");
+    // The fill: the 90deg orange status-gradient family + the pill
+    // radius (data-independent), and the DATA-INTEGRITY arithmetic —
+    // the fill's width is pct/100 of the 568 track within ±2px (the
+    // reference's own 173 = 30.5% x 568).
+    expect(census!.fill!.bg).toContain("linear-gradient(90deg, rgb(224, 122, 59)");
+    expect(census!.fill!.radius).toBe("9999px");
+    expect(census!.pct).toMatch(/^[0-9.]+%$/);
+    const pctNum = parseFloat((census!.pct || "0").replace("%", ""));
+    const expectedFill = Math.round((pctNum / 100) * 568);
+    expect(Math.abs(census!.fill!.w - expectedFill)).toBeLessThanOrEqual(2);
+    // The stat tiles: three 48px squares each carrying a 24x24 svg (the
+    // v55 legacy-glyph swap's chrome — the shapes pinned by the v55
+    // glyph-parity spec, the tile geometry pinned here).
+    expect(census!.tiles).toEqual([
+      { w: 48, svg: 24 },
+      { w: 48, svg: 24 },
+      { w: 48, svg: 24 },
+    ]);
+  });
+});
