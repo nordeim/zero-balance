@@ -1,3 +1,43 @@
+我将开始执行这个任务。首先检查工作区状态并刷新代码库。
+工作区已存在。现在刷新代码库：
+Pull 成功。创建任务清单并开始审阅文档：
+文档已就位。开始审阅核心文档（这些文件很大，我会重点读取关键部分）：
+现在查看 worklog 最新条目和技能目录：
+现在查看 session_134（包含 v57 队列）和核心文档的关键部分：
+核心文档审阅完成。现在验证代码库当前状态（.env、db 路径、SEO、测试配置）：
+所有契约均已就位。现在运行基线验证链。先检查环境状态：
+环境就绪。运行基线验证链（lint → typecheck → 单元测试）：
+Build 绿色。现在按规范分两块运行 e2e 测试套件。先检查分块模式：
+运行 e2e 测试（两块有序执行）：
+**基线链全绿：89+167=256（含 setup auth 1 项）= 255 e2e + 108 unit。** 运行 smoke 测试：
+基线链全部通过。更新任务状态，开始代码审计：
+Trap-log 扫描正常（`-mb-2` 命中均在已记录的已转换容器内；oklab 命中均为缓解注释；命名 red/slate 类仅存在于超集删除确认面上）。验证 v56 pin 与 legacy-icons 模块：
+v55/v56 状态完全验证。现在审阅 skills/ 目录中的相关技能：
+技能审阅完成。现在启动对等检查基础设施。先查看 with-server 模式和常置检查脚本：
+创建第 51 次常置检查脚本（使用全新会话名，遵循 v50 模式）：
+参考站第 51 次常置检查完成——四个已记录 bug 均仍在线（toast-blocker、sheet-trap overlayCount:1、no-landmark、464 溢出），数据普查不变，SEO 对上线。现在运行克隆端：
+**第 51 次常置检查克隆端全部通过——移动端导航菜单验证正常工作。** 现在执行 v57 扫描（items 视图桌面 1280 VLM 配对）。先查看 v56 对比脚本模式：
+创建 v57 VLM 配对探测脚本（参考端 + 克隆端 + 对比脚本）：
+4 张截图已捕获。运行 VLM 对比：
+VLM 配对标记了若干项。按 v43 规则，所有 flag 必须 DOM 溯源。先检查 item-card 源码了解 footer 结构：
+检查 v37 时代参考站卡片 footer 的 DOM 证据：
+v37 文档已记录 footer payment chips 为数据级差异。现在构建 v57 DOM 仲裁探针验证关键 chrome 轴：
+超时。清理 agent-browser 守护进程并分步执行：
+参考站卡片结构已获取。检查 footer 两个子元素的内容与样式：
+重要发现：参考站 income 卡片 footer 有两个子元素（“Oct 7, 2026” + “Bank Account”）。需要检查克隆端对应结构。先看参考站 expenses footer：
+克隆端 income footer 也渲染双元素（"PayPal"）——与参考站条件渲染模式一致。继续克隆端 search input 和 badge 普查：
+搜索输入字节级一致（含 v55 旧字形）。克隆端徽章普查返回空，需直接 dump 结构：
+两站卡片结构匹配。现在对比两站徽章的计算样式：
+两站徽章 chrome 字节级一致（分类色差异为数据类）。VLM 仲裁全部溯源为已记录类别。现在检查 e2e 种子以设计 v57 pin：
+e2e 种子确认。现在补齐克隆端 /expenses 普查（网格 + footer）：
+克隆端 /expenses 网格模板与参考站字节级一致。**v57 扫描裁定：无生产代码差距——PIN-ONLY 迭代。** 现在检查 items.spec.ts 结构以设计 pin：
+已存在 v45 的 1280 网格普查。检查其覆盖范围避免重叠：
+v45 已覆盖网格+卡片 chrome。检查 glyph-parity 规范中 search 字形的视口范围：
+Badge 规范只锁颜色。现在查看 items-view 和 item-card 源码中的确切 class 以设计 pin 和突变目标：
+所有源码事实已确认。现在编写 v57 修复计划：
+计划 v57 已保存。现在实现 F1——编写 pin。先找到 items.spec.ts 的插入点：
+现在编写 v57 pin（追加到 items.spec.ts 末尾）。先更新计划中的计数（两个测试：/income 普查 + /expenses 网格）：
+
 工作区已被重置。让我克隆仓库：
 Workspace reset confirmed — latest commit is v56 (ef18561). The previous session's in-flight v57 work was lost with the reset. Let me review the session docs and worklog to reconstruct the exact state:
 session_136 确认已交付 v56。被中断的会话正在进行 **v57 迭代**（items view 1280 VLM 配对 → 仅 PIN 修改），但其在本地的工作因重置而丢失。让我来重构完整状态。首先，检查 session_134 中的 v57 队列和 v56 计划模式：
