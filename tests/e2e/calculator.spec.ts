@@ -965,3 +965,130 @@ test.describe("calculator dialog mobile census (v53 — plan F2)", () => {
     await restoreRent(page);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v59 — plan F1 (docs/remediation-plan-v59.md): the calculator panel's
+// desktop census at 1280x800 (the session-139 v59 queue's first item —
+// the panel + row surfaces). The v45 F2a pin walked the panelW + the ROW
+// census at 1280; the v49 F3 pin walked the panel's full chrome at 640
+// only; the total card is pinned at 390 only (v53 F2). The v59 pin locks
+// the panel chrome + the total card at the PAIR viewport.
+//
+// Measured live on BOTH sites (calc-census-ref-v59.sh +
+// calc-census-clone-v59.sh — the with-row state, byte-identical on every
+// axis; the VLM pair vlm-shots-v59.sh + clone-vlmshots-v59.sh +
+// vlm-compare-v59.mjs CLEAN per the v43 rule — both flags DOM-arbitrated:
+// the "Will update category total" span is DATA-CONDITIONAL [lineTotal
+// vs parentAmount at open — the pinned contract], the row action pair is
+// a POINTER-POSITION artifact [both sites gate it at opacity 0 at rest]):
+//   the panel: w 768 / radius 16px / maxW 768px (48rem) / maxH 680px
+//             (the 85vh cap of the 800 viewport — the v49 F3's 816px was
+//             the 960 viewport's) / bg white / overflow hidden / the 2xl
+//             VISIBLE shadow layer (the reference's 2 transparent leads
+//             are the accepted lead-divergence class — v10/v25/v45)
+//   the centering invariant: y = round((800 − h) / 2) — the height is
+//             data-dependent (the e2e seed's Rent has no line items),
+//             never pinned
+//   the close: 36×36 (the v49 F3 value)
+//   the header: border-b 1px solid rgb(229,231,227) (the v49 F3 value)
+//   the total card: 720 wide (768 − the 2×24 p-6) / #fff7f5 / radius 12
+//             / pad 16px / border 1px solid rgb(252,221,213) — the v53
+//             F2's own chrome at the 1280 viewport (the width is the
+//             panel constant minus p-6, data-independent)
+// The read-only open state — no line items, no recalcs, no fixture
+// restore needed (the v49 F3 pattern).
+// ---------------------------------------------------------------------------
+test.describe("calculator panel census at 1280 (v59 — plan F1)", () => {
+  test("the panel + total-card chrome at the pair viewport (read-only open state)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate(() => {
+      const panel = [...document.querySelectorAll('[role="dialog"]')].find((d) =>
+        (d.textContent || "").includes("Rent Calculator"),
+      ) as HTMLElement | null;
+      if (!panel) return null;
+      const cs = getComputedStyle(panel);
+      const r = panel.getBoundingClientRect();
+      const totalCard = [...panel.querySelectorAll("div")].find(
+        (d) => getComputedStyle(d).backgroundColor === "rgb(255, 247, 245)",
+      );
+      const tcs = totalCard ? getComputedStyle(totalCard) : null;
+      const tr = totalCard ? totalCard.getBoundingClientRect() : null;
+      const closeBtn = [...panel.querySelectorAll("button")].find(
+        (b) => (b.getAttribute("aria-label") || "") === "Close",
+      );
+      const hdr = [...panel.querySelectorAll("div")].find(
+        (d) => getComputedStyle(d).borderBottomWidth !== "0px",
+      );
+      return {
+        panel: {
+          w: Math.round(r.width),
+          h: Math.round(r.height),
+          y: Math.round(r.y),
+          radius: cs.borderRadius,
+          maxW: cs.maxWidth,
+          maxH: cs.maxHeight,
+          bg: cs.backgroundColor,
+          overflow: cs.overflow,
+          shadow: cs.boxShadow,
+        },
+        totalCard: tcs
+          ? {
+              w: Math.round(tr!.width),
+              bg: tcs.backgroundColor,
+              radius: tcs.borderRadius,
+              pad: tcs.padding,
+              border: tcs.border,
+            }
+          : null,
+        closeBtn: closeBtn
+          ? {
+              w: Math.round(closeBtn.getBoundingClientRect().width),
+              h: Math.round(closeBtn.getBoundingClientRect().height),
+            }
+          : null,
+        hdrBorder: hdr ? getComputedStyle(hdr).borderBottom : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The panel: the 1280 contract (the pair viewport).
+    expect(census!.panel.w).toBe(768);
+    expect(census!.panel.radius).toBe("16px");
+    expect(census!.panel.maxW).toBe("768px");
+    // The 85vh cap of the 800 viewport (680 = 0.85 × 800).
+    expect(census!.panel.maxH).toBe("680px");
+    expect(census!.panel.bg).toBe("rgb(255, 255, 255)");
+    expect(census!.panel.overflow).toBe("hidden");
+    // The 2xl VISIBLE layer (the reference's transparent leads are the
+    // accepted lead-divergence class; the clone's .zb-modal-panel emits
+    // the visible layer directly).
+    expect(census!.panel.shadow).toContain("rgba(0, 0, 0, 0.25) 0px 25px 50px -12px");
+    // The centering invariant (the height is data-dependent — the e2e
+    // seed's Rent carries NO line items, so this is the EMPTY state).
+    expect(census!.panel.y).toBe(Math.round((800 - census!.panel.h) / 2));
+    // The close + the header (the v49 F3 values, re-measured at 1280).
+    expect(census!.closeBtn).toEqual({ w: 36, h: 36 });
+    expect(census!.hdrBorder).toBe("1px solid rgb(229, 231, 227)");
+    // The total card: the v53 F2 chrome at the 1280 viewport.
+    expect(census!.totalCard).toEqual({
+      w: 720,
+      bg: "rgb(255, 247, 245)",
+      radius: "12px",
+      pad: "16px",
+      border: "1px solid rgb(252, 221, 213)",
+    });
+
+    // Read-only close — no fixture restore needed (the Rent amount is
+    // never recalculated; no line items touched).
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+  });
+});

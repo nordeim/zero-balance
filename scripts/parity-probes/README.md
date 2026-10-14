@@ -2372,3 +2372,89 @@ conditional payment footer, the classification VALUE + the badge count)
    drops auth.spec.ts / calculator-error.spec.ts / networth-error.spec
    .ts from the run; stems-only alternations (`badge` for
    badge-colors) fail the same way on the suffix side.
+
+## v59 — the calculator-view desktop 1280 VLM pair + the panel/total-card census + the login 1280 pair (session-141)
+
+The session-139 v59 queue's first TWO items: the CALCULATOR dialog's
+desktop 1280x800 pair (the panel + row surfaces — the v45 F2a pin
+covered the panelW + row census at 1280, the v49 F3 panel chrome at 640
+only, the total card at 390 only [v53 F2]) and the LOGIN view's 1280
+pair (the v55 glyph pin's surface, no pair at 1280 yet) — plus the 53rd
+standing checks.
+
+**The calculator pair** (`vlm-shots-v59.sh` + `clone-vlmshots-v59.sh` +
+`vlm-compare-v59.mjs`): the reference's own Rent calculator (its Rent
+$25.00 carries ONE "Contents Insurance" $25.00 monthly-active line
+item — its own data) vs the clone's (the SAME line item added through
+the real UI for the pair, then FULLY restored: delete + the $1850
+edit-flow restore + the "3 items · $2235.00" page total verified).
+Both VLM flags DOM-arbitrated (`calc-census-ref-v59.sh` +
+`calc-census-clone-v59.sh`, the v43 rule):
+
+1. the total card's "• Will update category total" span —
+   DATA-CONDITIONAL: the lineTotal-vs-parentAmount-at-open contract
+   (the reference's $25 === $25 → hidden; the clone's $25 !== $1850 →
+   shown; the conditional itself is the pinned contract);
+2. the row's hover-action pair — POINTER-POSITION artifact: both sites
+   gate the pair at opacity 0 at rest (the census: opacity 0 / 2
+   buttons / btnW 32, both sides); the reference's shot caught them
+   mid-hover (its pointer rested inside the dialog after the click).
+
+The census, byte-identical on every axis: the panel 768×393 @ (256,
+204) — the centering invariant round((800−393)/2) — radius 16 / maxW
+768px / maxH 680px (85vh of the 800 viewport; the v49 F3's 816px was
+the 960 viewport's) / bg white / overflow hidden / the 2xl VISIBLE
+layer; the total card 720×90 / #fff7f5 / radius 12 / pad 16 / border
+1px solid rgb(252,221,213); the close 36×36; the header border-b 1px
+solid rgb(229,231,227); the row 720 / pad 16 / radius 12 / border /
+transition all 0.15s (the v45 F2a values).
+
+**The login pair** (`login-shots-v59.sh` + `clone-login-shots-v59.sh`):
+IDENTICAL — the only flag the reference's "Edit with Base44" platform
+badge. The census matches exactly: title "ZeroBudget" / h1 "Welcome to
+ZeroBudget" / the email+password inputs (the same placeholders) / the
+Sign-in button 368×48.
+
+**The pin** (`tests/e2e/calculator.spec.ts`, the "calculator panel
+census at 1280" describe, +1 → 259): the read-only open state — the
+panel chrome + the centering invariant + the 36×36 close + the header
+border-b + the total card (the v53 F2 chrome at the 1280 viewport) +
+the panelW 768 control. THREE pin-sanity mutations verified to FAIL
+then restored: the total card bg #fff7f5→#fff8f0, the panel maxWidth
+48rem→42rem (768→672), the total card p-4→p-5 (16px→20px).
+
+### v59 probe lessons
+
+1. `agent-browser mouse click` DOES NOT EXIST in 0.39.0 — the low-level
+   pair is `mouse down` + `mouse up` after a `mouse move` (valid mouse
+   subcommands: move, down, up, wheel). The failure mode of using the
+   nonexistent subcommand (its error swallowed by >/dev/null): the
+   pointer stays wherever it was — over the CARD BODY — and the
+   down/up click OPENS THE ITEM DETAILS dialog instead of the
+   calculator: a false-failure signature to recognize on sight.
+2. The eval output is a JSON-encoded STRING — `"443,550"` — and
+   `cut -d,` on it yields `"443` (a leading quote) which silently
+   breaks `mouse move`. Strip the quotes FIRST with bash parameter
+   expansion: `POS=${POS//\"/}`.
+3. The reference's dialogs are PLAIN fixed divs (no role=dialog — the
+   documented reference class): the reference-side dialog census must
+   find the panel by GEOMETRY (e.g. `getComputedStyle(d).maxWidth ===
+   '768px'` or the fixed-overlay width filter), never by
+   `[role=dialog]`. The clone's Radix dialogs DO carry the role.
+4. The reference's session EXPIRES between long eval gaps (the carried
+   v58 lesson, re-confirmed twice): re-login via the same eval before
+   any follow-up census, or the eval reads the /login redirect.
+5. The reference's /expenses data census (documented for future
+   calculator pairs): "4 items · $525.00" — Miscellaneous $0.00 (need)
+   / Investments $300.00 (savings) / Netflix $200.00 (want, Streaming)
+   / Rent $25.00 (need, Apartment); its Rent carries ONE line item
+   ("Contents Insurance" $25.00 monthly active).
+6. The screenshot SEED-DATE class (a capture-infra lesson): the seed's
+   `isoDate(-N)` anchors the item dates to the SEED-RUN date, so a
+   fresh checkout seeded N days after the last capture regenerates
+   date-bearing screenshots with drifted date text (7 of 16 diffed;
+   VLM-arbitrated DATE-TEXT-only, zero layout diffs). The e2e DB
+   re-seeds EVERY RUN (global-setup) so the suite is date-independent;
+   only docs/screenshots carry the class. Future pin-only sessions
+   that re-seed on a later date should expect the 7-file diff, not
+   byte-identity, and arbitrate it as this class.

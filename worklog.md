@@ -47,7 +47,8 @@ and `docs/remediation-plan-v54.md`,
 and `docs/remediation-plan-v55.md`,
 and `docs/remediation-plan-v56.md`,
 and `docs/remediation-plan-v57.md`,
-and `docs/remediation-plan-v58.md`.
+and `docs/remediation-plan-v58.md`,
+and `docs/remediation-plan-v59.md`.
 
 ---
 
@@ -56,6 +57,58 @@ and `docs/remediation-plan-v58.md`.
 ---
 
 ---
+
+---
+
+## Session 93 — Parity iteration v59: the calculator-view desktop 1280 VLM standing pair + the calculator panel/total-card census (PIN-ONLY — the fifth consecutive pin-only iteration) (2026-10-15)
+
+**Goal:** the session-139 v59 queue's first TWO suggestions — the
+CALCULATOR dialog's desktop 1280x800 VLM pair (the panel + row
+surfaces) and the LOGIN view's 1280 pair — plus the 53rd standing
+checks. PIN-ONLY: no production gap found; the deliverable is the
+calculator panel + total-card census pin (+1 e2e → 259). The formal
+narrative: `docs/session_141.md`; the plan:
+`docs/remediation-plan-v59.md`.
+
+**The sweep:** the calculator pair CLEAN per the v43 rule — both VLM
+flags DOM-arbitrated (the "Will update category total" span is
+DATA-CONDITIONAL [the lineTotal-vs-parentAmount-at-open contract; the
+reference's own Rent $25 === its line-item sum so hidden, the clone's
+$1850 parent showed it]; the row's hover-action pair a
+POINTER-POSITION artifact [both sites gate opacity 0 at rest]); the
+census byte-identical on every axis (the panel 768×393 @ 256,204 —
+the centering invariant / radius 16 / maxW 768px / maxH 680px [85vh
+of 800] / the 2xl VISIBLE layer / the total card 720×90 #fff7f5
+radius 12 pad 16 / the close 36×36 / the header border-b / the row
+720 pad 16 radius 12 transition all 0.15s — the v45 F2a values). The
+login pair IDENTICAL (the only flag the reference's Base44 platform
+badge). The clone-side pair state built by adding the reference's OWN
+"Contents Insurance" $25 line item through the real UI, then FULLY
+restored (delete + the $1850 edit restore + the $2235.00 total
+verified).
+
+**The pin:** the "calculator panel census at 1280" describe in
+`tests/e2e/calculator.spec.ts` (+1 → 259) — GREEN on the first run;
+THREE pin-sanity mutations verified to FAIL then restored (the total
+card bg #fff7f5→#fff8f0; the panel maxWidth 48rem→42rem; the total
+card p-4→p-5). The 53rd standing checks clean (the mobile menu
+verified working — the 53rd time; the reference's four bugs ALL
+live; the reference's /expenses census documented: "4 items ·
+$525.00", its Rent carrying one "Contents Insurance" line item).
+
+**The chain:** lint + typecheck + 108 unit + build + 259 e2e (90 +
+94 + 76, three ordered chunks, zero failures) + 35 smoke — all
+green. The 16 screenshots: 9 byte-identical + 7 diff the SEED-DATE
+class (the seed's isoDate(-N) anchors to the seed-run date —
+VLM-arbitrated DATE-TEXT-only, zero layout diffs).
+
+**Probe lessons:** `agent-browser mouse click` DOES NOT EXIST in
+0.39.0 (`mouse down`+`mouse up` after a `mouse move`; the swallowed
+failure opens the ITEM DETAILS dialog — a false-failure signature);
+the eval output is a JSON-encoded STRING (strip the quotes before
+`cut`); the reference's dialogs are PLAIN fixed divs (find by
+geometry, not [role=dialog]); the reference's session EXPIRES between
+long eval gaps.
 
 ---
 

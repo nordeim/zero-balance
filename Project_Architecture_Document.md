@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.15
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.16
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,10 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.16 (Tracked Changes)
+
+- `[UI]` v1.1.16 (2026-10-15) — the v59 parity iteration (PIN-ONLY — no production-code change; the ninth iteration since v46, the pin-only line's continuation): the counts 108 unit / 259 e2e / 35 smoke; the calculator-view desktop 1280 VLM standing pair (the session-139 v59 queue's first item — the panel + row surfaces; every flag DOM-arbitrated to the documented classes: the total card's "Will update category total" span [DATA-CONDITIONAL — the lineTotal-vs-parentAmount-at-open contract], the row's hover-action pair [POINTER-POSITION artifact — both sites gate opacity 0 at rest]) + the login view's 1280 pair (IDENTICAL — the only flag the reference's Base44 platform badge); the new calculator panel + total-card census pin in tests/e2e/calculator.spec.ts (+1 → 259: the panel chrome 768/radius 16/maxW 768px/maxH 680px [85vh of 800]/the 2xl VISIBLE layer + the centering invariant + the 36×36 close + the header border-b + the total card 720/#fff7f5/radius 12/pad 16/border — the v53 F2 chrome at the pair viewport) with three pin-sanity mutations (the total card bg #fff7f5→#fff8f0; the panel maxWidth 48rem→42rem; the total card p-4→p-5); the v59 probe family (the VLM trio + the login pair + the calc-census pair + the 53rd standing checks) + the probe lessons (agent-browser 0.39.0 has NO `mouse click` — `mouse down`+`mouse up` after a `mouse move`; the eval output is a JSON-encoded string — strip quotes before `cut`; the reference's dialogs are plain fixed divs, find by geometry not [role=dialog]; the reference's /expenses data census documented: 4 items $525 — its Rent carries one "Contents Insurance" line item); the 16 screenshots 9 byte-identical + 7 diff the SEED-DATE class (VLM-arbitrated DATE-TEXT-only); the 59th remediation plan + the probe catalog through v59.
 
 #### Revision Block — v1.1.15 (Tracked Changes)
 
