@@ -50,7 +50,8 @@ and `docs/remediation-plan-v57.md`,
 and `docs/remediation-plan-v58.md`,
 and `docs/remediation-plan-v59.md`,
 and `docs/remediation-plan-v60.md`,
-and `docs/remediation-plan-v61.md`.
+and `docs/remediation-plan-v61.md`,
+and `docs/remediation-plan-v62.md`.
 
 ---
 
@@ -59,6 +60,90 @@ and `docs/remediation-plan-v61.md`.
 ---
 
 ---
+
+---
+
+---
+
+## Session 96 — Parity iteration v62: the reference-side a11y re-audit (NO DRIFT since v38) + the TWO-pair VLM program (desktop + the NEW mobile 390 twin) + the mobile header-subtitle 390 census pin (2026-10-15)
+
+**Goal:** the session-147 v62 queue's first TWO items — the reference-side
+a11y surface re-audit (deferred from v61: "has the reference's own axe
+tree drifted since v38?") and the SKILL doc's four stale count lines
+(177/474/1191/1255, the v61 doc digest's flag) — plus the 56th standing
+checks and the standing VLM program's mobile extension. **PIN-ONLY** — no
+production-code change; the pin-only line resumes after the v61 fix.
+The formal narrative: `docs/session_151.md`; the plan:
+`docs/remediation-plan-v62.md`.
+
+**The a11y re-audit (`axe-detail-ref-v62.mjs`, the full a11y.spec.ts
+surface: six authed routes at 1280 + the 404 + the logged-out login + the
+mobile 390 sheet-open state, axe-core 4.13, the same four tags): NO
+DRIFT** — the logged-out login still ZERO-violation clean; the structural
+families still exactly `button-name` (10 nodes: the unlabeled Select
+triggers + card kebabs) + `svg-img-alt` (6 nodes: the recharts donut
+sectors `path[name=…]`) — the two families the clone deliberately fixes
+(GATE 1's superset contrast); the contrast palette still EXACTLY the v38
+7-color set (lime / blue / orange / orangeLight / gray-500 / #cbd5e1 /
+zinc-500) — no new low-contrast color entered the reference's design, so
+the clone's GATE 2 allow-list needs no change; the mobile sheet-open tree
+carries color-contrast only. **The clone's a11y.spec.ts contract remains
+valid as pinned.**
+
+**The TWO-pair VLM program (`vlm-shots-v62.sh` + `clone-vlmshots-v62.sh` +
+`vlm-compare-v62.mjs`): the desktop 1280 full-page pair + the NEW mobile
+390x844 full-page twin.** The desktop pair's five flags ALL arbitrated to
+documented classes (the nav-highlight root-URL gap [the reference's own
+bug, the clone's superset fix #3]; the avatar U-vs-D [user-identity]; the
+progress-bar length [allocation data class]; the donut labels [PERCEPTION
+ARTIFACT — the reference renders its three (92.3/4.6/3.1), DOM-verified,
+the clone its own (81.6/13.8/4.6)]; the Base44 FAB [platform chrome]).
+The mobile pair's two flags both arbitrated (the Base44 tooltip [platform
+chrome]; **"the clone's subtitle wraps to a third line" — a PERCEPTION
+ARTIFACT**, DOM-arbitrated via `arbit2-v62.sh`: the leaf-text census
+measured the subtitle P on BOTH sides byte-identical [h 48, 2 lines,
+16px/400/rgb(107,114,128), lh 24px, block h 92, top 121; the 5px width
+delta is the reference's own 395px docSW overflow] — the v61
+meta-lesson's INVERSE: the DOM census ACQUITTED what the VLM convicted).
+
+**The v62 pin (+1 e2e = 264): the mobile header-subtitle block census at
+390** (`tests/e2e/dashboard.spec.ts`, the "mobile header-subtitle block
+census at 390" describe — the never-pinned surface the M2 arbitration
+measured): the P {h 48, top 121, 16px/400/gray-500, lh 24px, 2 lines} +
+the lineRhythm contract [the delta between the two line tops = exactly
+the 24px line-height — the glyph rects themselves are ~19px font
+metrics, deliberately NOT pinned] + the block {h 92 = h1 36 + mb-2 8 +
+p 48, top 77} + the h1 {36/30px/700/mb 8px}; the WIDTH axis deliberately
+not pinned (the WRAP OUTCOME is the contract). ONE pin-sanity mutation
+verified to FAIL then restored (the inline lineHeight 24→28px → h 48→56,
+lineRhythm 24→28, lh "28px" — three axes at once; the standalone REBUILD
+as a SEPARATE command).
+
+**The F3 docs sweep:** the SKILL doc's four stale current-state count
+lines corrected (the 214-era bootstrap line, the 223/223 gate line, the
+223 decisions line, the 22-files/214-tests inventory line — all now the
+current counts; the historical session rows stay era-correct).
+
+**The 56th standing checks:** the mobile menu VERIFIED WORKING (the 56th
+consecutive time — R1 hit-test true + sheet opens, R2 closes + navigates,
+R3 landmark, R4 zero overflow at 390 on all five views); the reference's
+four bugs ALL live (toast-blocker, overlay trap, no-landmark, the 464px
+/networth overflow); the data census intact ("1 items · $25,000" /
+"1 items · $5000.00" / "4 items · $525.00"); the SEO pair live on both
+sites.
+
+**The 16 screenshots:** 10 byte-identical + 6 VLM-arbitrated (5 the
+SEED-DATE class — the item-view card footers + the details date row +
+the networth Updated stamp, each advanced exactly one day, the dev DB
+re-seeded this session; 1 [08-calculator] a 1,596-pixel/57×73-bbox
+sub-perceptual AA-timing class — the full-shot VLM AND the 3×-upscaled
+region-crop re-arbitration both IDENTICAL).
+
+**Full chain GREEN: lint ✓ · typecheck ✓ · 108 unit ✓ · build ✓ · 264
+e2e ✓ (95 + 93 + 75, three ordered chunks, zero failures) · 35/35 smoke
+✓.** The docs aligned (AGENTS/CLAUDE/README/SKILL Session 97 row + the
+264 state / PAD v1.1.19 / the probe README's v62 section / session_151 /
+this worklog). One new e2e, 263 → 264.
 
 ---
 

@@ -2637,3 +2637,63 @@ Lessons (v61):
    padding) — the max-w-7xl cap never bites on this stack; the grid
    templates derive from it (3×304 + 2×24 gaps = 960; 2×468 + 24 =
    960).
+
+## v62 — the reference-side a11y re-audit + the TWO-pair VLM program
+(desktop + the NEW mobile 390 twin) + the mobile header-subtitle pin
+(session-150)
+
+The session-147 v62 queue's first TWO items (the a11y re-audit deferred
+from v61 + the SKILL doc's stale count lines), the 56th standing
+checks, and the standing VLM program's mobile extension.
+
+1. **axe-detail-ref-v62.mjs** — the reference-side a11y re-audit, the
+   full a11y.spec.ts surface (six authed routes at 1280 + the 404 + the
+   logged-out login + the mobile 390 sheet-open state). VERDICT: **NO
+   DRIFT since v38** — the login zero-violation, the structural
+   families still exactly `button-name` (10) + `svg-img-alt` (6), the
+   contrast palette still exactly the 7-color v38 set. The clone's
+   a11y.spec.ts contract stays valid as pinned; no code change.
+2. **vlm-shots-v62.sh / clone-vlmshots-v62.sh / vlm-compare-v62.mjs** —
+   the TWO-pair VLM program: the dashboard full-page at 1280x800 (the
+   standing pair) AND at 390x844 (the NEW mobile twin — the standing
+   checks verify mobile functionally; this pair adds the visual
+   confirmation). Every flag on both pairs DOM-arbitrated to documented
+   classes — the desktop pair: nav-highlight gap / avatar / allocation
+   data / donut-labels perception artifact / Base44 FAB; the mobile
+   pair: Base44 tooltip + the "subtitle third line" PERCEPTION
+   ARTIFACT.
+3. **arbit-v62.sh / arbit2-v62.sh** — the two unclassified flags'
+   arbitrations: the donut labels (the reference renders its three:
+   92.3 / 4.6 / 3.1 — the clone its own 81.6 / 13.8 / 4.6) and the
+   mobile subtitle (the leaf-text census, both sides byte-identical:
+   h 48, 2 lines, 16px/400/rgb(107,114,128), lh 24px, block h 92, top
+   121 — the 5px width delta is the reference's own 395px docSW
+   overflow).
+4. **vlm-shotsdiff-v62.mjs + arbit-calc-v62.mjs** — the screenshot
+   regeneration arbitration: 6 of 16 diff, 5 the SEED-DATE class (the
+   dev DB re-seeded this session — each date +1 day) + 1 the
+   sub-perceptual AA-timing class (08-calculator: 1,596px in a 57×73
+   bbox; the full-shot AND the 3×-upscaled region crop both VLM
+   IDENTICAL).
+5. **ref-standing-v56.sh / standing-checks-v56.sh** — the 56th round
+   (version bumps of the v55 scripts; the mobile menu verified working
+   the 56th consecutive time; the reference's four bugs ALL live).
+
+**The v62 lessons:**
+1. The fresh-sandbox caveat — the Playwright browsers must be installed
+   (`npx playwright install chromium`) before the first e2e run; a
+   "browserType.launch: Executable doesn't exist" failure signature on
+   EVERY test is this, not a code regression.
+2. The text-range `getClientRects()` heights are GLYPH boxes (~19px
+   for a 16px font — the font-metric content height), NOT the 24px
+   line boxes: a wrap-rhythm pin must assert the DELTA between
+   consecutive line tops (= the line-height) + the element's total
+   height — never the individual rect heights.
+3. A pin's expected geometry must come from the PROBE's measured
+   values, never from derived arithmetic (the v62 block-top miss:
+   block top = P top 121 − h1 36 − mb-2 8 = 77, not the assumed 68).
+4. The v61 meta-lesson's INVERSE case: the DOM census can ACQUIT what
+   the VLM convicts (the mobile pair's "third line" flag — the census
+   showed both sides identical; the perception artifact class).
+5. The mobile full-page pair (390x844) joins the standing VLM program
+   — the desktop pair alone can miss mobile-only reflow divergences.

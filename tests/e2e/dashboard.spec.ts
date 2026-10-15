@@ -2862,3 +2862,103 @@ test.describe("the quick-action card row census at 1280 (v61 — plan F3)", () =
     });
   });
 });
+
+// v62 — plan F2: the mobile header-subtitle block census at 390. The M2
+// arbitration of the v62 VLM pair (the mobile dashboard full-page pair's
+// one non-chrome flag — the VLM claimed the clone's subtitle wraps to a
+// THIRD line) measured this surface live on BOTH sites: the wrap is
+// IDENTICAL (2 lines, h 48, block h 92, top 121) — the VLM's claim was a
+// perception artifact (the DOM census is the authority, the v61
+// meta-lesson's inverse). The surface was never pinned: the desktop
+// header test (above) asserts the subtitle's VISIBILITY only. This pin
+// locks the mobile wrap outcome: the subtitle P (16px/400/gray-500,
+// lh 24px, 2 lines, h 48) inside the header block DIV (h 92 = h1 36 +
+// mb-2 8 + p 48) — the geometry both sites share. The WIDTH axis is
+// deliberately NOT pinned: the reference renders its content column 5px
+// wider (its own 395px docSW overflow, the R-bug-4 family) — the WRAP
+// OUTCOME is the contract, not the absolute width.
+test.describe("the mobile header-subtitle block census at 390 (v62 — plan F2)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+  });
+
+  test("the subtitle P wraps to two 24px lines inside the 92px header block", async ({ page }) => {
+    const census = await page.evaluate(() => {
+      const h1 = [...document.querySelectorAll("h1")].find(
+        (x) => (x.textContent || "").trim() === "Budget Dashboard",
+      );
+      if (!h1) return null;
+      // v61 lesson: parentElement, never closest() — the h1's own block
+      // is the immediate parent DIV (dashboard-view.tsx:927-934).
+      const block = h1.parentElement as HTMLElement | null;
+      if (!block) return null;
+      const p = block.querySelector("p") as HTMLElement | null;
+      if (!p) return null;
+      const range = document.createRange();
+      range.selectNodeContents(p);
+      // The line rects are GLYPH boxes (~19px for a 16px font — the
+      // font-metric content height), NOT the 24px line boxes: the wrap
+      // rhythm lives in the DELTA between consecutive line tops (= the
+      // line-height) and the P's total height (2 × lh).
+      const lineRects = [...range.getClientRects()].filter(
+        (r) => r.width > 1 && r.height > 1,
+      );
+      const lineTops = lineRects.map((r) => r.top);
+      const csP = getComputedStyle(p);
+      const rp = p.getBoundingClientRect();
+      const rb = block.getBoundingClientRect();
+      const csH1 = getComputedStyle(h1);
+      const rh1 = h1.getBoundingClientRect();
+      return {
+        text: (p.textContent || "").trim(),
+        p: {
+          h: Math.round(rp.height),
+          top: Math.round(rp.top),
+          fs: csP.fontSize,
+          fw: csP.fontWeight,
+          color: csP.color,
+          lh: csP.lineHeight,
+          lines: lineRects.length,
+          lineRhythm:
+            lineTops.length === 2
+              ? Math.round((lineTops[1] - lineTops[0]) * 10) / 10
+              : null,
+        },
+        block: {
+          h: Math.round(rb.height),
+          top: Math.round(rb.top),
+          display: getComputedStyle(block).display,
+        },
+        h1: {
+          h: Math.round(rh1.height),
+          fs: csH1.fontSize,
+          fw: csH1.fontWeight,
+          mb: csH1.marginBottom,
+        },
+      };
+    });
+    expect(census, "the header block finder (h1 → parentElement → p)").toBeTruthy();
+    expect(census!.text).toBe("Track your income, savings, and expenses to achieve net zero");
+    // The subtitle P: the reference's measured chrome, byte-identical.
+    // lineRhythm = the delta between the two line tops — exactly the
+    // 24px line-height (the glyph boxes themselves are ~19px font
+    // metrics, an implementation detail deliberately not pinned).
+    expect(census!.p).toEqual({
+      h: 48,
+      top: 121,
+      fs: "16px",
+      fw: "400",
+      color: "rgb(107, 114, 128)",
+      lh: "24px",
+      lines: 2,
+      lineRhythm: 24,
+    });
+    // The header block: h1 (36) + mb-2 (8) + p (48) = 92 — the exact
+    // arithmetic both sites render at 390 (block top 77 + 36 + 8 = the
+    // P's top 121).
+    expect(census!.block).toEqual({ h: 92, top: 77, display: "block" });
+    expect(census!.h1).toEqual({ h: 36, fs: "30px", fw: "700", mb: "8px" });
+  });
+});
