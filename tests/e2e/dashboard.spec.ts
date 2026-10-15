@@ -2630,3 +2630,235 @@ test.describe("drill-down sub/item-row census at 1280 (v60 — plan F2)", () => 
     expect(census!.sw).toBe(1280);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v61 — plan F2: the Budget Guidelines card census at 1280 (the pair
+// viewport). The card chrome is byte-identical both sides (the v61
+// census); the STRETCH contract is the F1 fix's pin: the reference's
+// card sits at NATURAL height inside a stretched space-y-4 wrapper —
+// the card never stretches to the row height (the clone's pre-v61 bug:
+// the card itself stretched to 656 with ~308px of empty white body
+// below the Savings tile).
+// ---------------------------------------------------------------------------
+test.describe("the Budget Guidelines card census at 1280 (v61 — plan F2)", () => {
+  test("the card chrome + the NO-STRETCH contract + the tiles", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("Budget Guidelines")).toBeVisible();
+    const census = await page.evaluate(() => {
+      const heading = [...document.querySelectorAll("h1, h2, h3, div, span")].find(
+        (x) => (x.textContent || "").trim() === "Budget Guidelines" && x.children.length === 0,
+      );
+      if (!heading) return null;
+      // Walk up to the bordered card (shadow + radius + a <p> descendant).
+      let card = heading as HTMLElement;
+      while (card.parentElement) {
+        const cs = getComputedStyle(card);
+        if (cs.boxShadow !== "none" && cs.borderRadius !== "0px" && card.querySelector("p")) break;
+        card = card.parentElement as HTMLElement;
+      }
+      // The row: the ancestor 2-col grid (the lg:grid-cols-2 row holding
+      // the breakdown card + the guidelines column).
+      let row = card.parentElement as HTMLElement;
+      while (row) {
+        const cls = (row.className || "").toString();
+        if (/grid-cols-2/.test(cls) && row.children.length === 2) break;
+        row = row.parentElement as HTMLElement;
+      }
+      const csC = getComputedStyle(card);
+      const rC = card.getBoundingClientRect();
+      const header = heading.parentElement as HTMLElement;
+      const body = [...card.children].find((c) => c !== header) as HTMLElement | undefined;
+      const tiles = [...card.querySelectorAll("div")].filter((d) => {
+        const cs = getComputedStyle(d);
+        const r = d.getBoundingClientRect();
+        return (
+          cs.borderRadius === "8px" && r.height > 40 && r.height < 200 &&
+          d.querySelector("span, p") && cs.backgroundColor !== "rgba(0, 0, 0, 0)" && d !== card
+        );
+      }) as HTMLElement[];
+      const lastTile = tiles[tiles.length - 1];
+      return {
+        card: {
+          w: Math.round(rC.width), h: Math.round(rC.height),
+          radius: csC.borderRadius, border: csC.borderTopColor,
+          bg: csC.backgroundColor, shadow: csC.boxShadow,
+        },
+        header: {
+          pad: getComputedStyle(header).padding,
+          fs: getComputedStyle(heading).fontSize,
+          fw: getComputedStyle(heading).fontWeight,
+          color: getComputedStyle(heading).color,
+        },
+        body: body ? { pad: getComputedStyle(body).padding } : null,
+        tileCount: tiles.length,
+        firstTile: tiles[0]
+          ? {
+              w: Math.round(tiles[0].getBoundingClientRect().width),
+              h: Math.round(tiles[0].getBoundingClientRect().height),
+              radius: getComputedStyle(tiles[0]).borderRadius,
+              pad: getComputedStyle(tiles[0]).padding,
+              bg: getComputedStyle(tiles[0]).backgroundColor,
+              border: getComputedStyle(tiles[0]).borderTopColor,
+            }
+          : null,
+        // THE STRETCH CONTRACT — the F1 fix's pin.
+        cardH: Math.round(rC.height),
+        cardBottom: Math.round(rC.bottom),
+        lastTileBottom: lastTile ? Math.round(lastTile.getBoundingClientRect().bottom) : null,
+        rowH: row ? Math.round(row.getBoundingClientRect().height) : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    expect(census!.tileCount).toBe(3);
+    // The card chrome (the v61 census — byte-identical both sides).
+    expect(census!.card.w).toBe(468);
+    expect(census!.card.radius).toBe("12px");
+    expect(census!.card.border).toBe("rgb(229, 231, 227)");
+    expect(census!.card.bg).toBe("rgb(255, 255, 255)");
+    expect(census!.card.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(census!.card.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+    expect(census!.header.pad).toBe("24px");
+    expect(census!.header.fs).toBe("16px");
+    expect(census!.header.fw).toBe("600");
+    expect(census!.header.color).toBe("rgb(26, 58, 46)");
+    expect(census!.body!.pad).toBe("0px 24px 24px");
+    expect(census!.firstTile).toEqual({
+      w: 418, h: 78, radius: "8px", pad: "16px",
+      bg: "rgb(255, 247, 245)", border: "rgb(252, 221, 213)",
+    });
+    // THE STRETCH CONTRACT: the card at NATURAL height (the reference's
+    // own 348 — the header 64 + the body 282 arithmetic; the GUIDELINE_ROWS
+    // constant makes it deterministic)…
+    expect(census!.cardH).toBe(348);
+    // …the card's bottom sits exactly one body-pad (24px) below the last
+    // tile — NO empty card body below the tiles (the ±1 is the subpixel
+    // rounding of the two rects — the pre-fix value was 308+ — v61)…
+    expect(census!.cardBottom - census!.lastTileBottom!).toBeGreaterThanOrEqual(24);
+    expect(census!.cardBottom - census!.lastTileBottom!).toBeLessThanOrEqual(25);
+    // …and the ROW (the 2-col grid) is taller than the card — the stretch
+    // lives on the space-y-4 WRAPPER (the grid child), never the card.
+    expect(census!.rowH!).toBe(656);
+    expect(census!.rowH! - census!.cardH).toBe(308);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// v61 — plan F3: the quick-action card row census at 1280 (the pair
+// viewport). The v61 census measured the row byte-identical on both
+// sites (grid 960 / 3×304 / gap 24; the cards 304×90 / radius 16 /
+// pad 24; the tile 40×40 / radius 12 / the type tints; the icon 20;
+// the label 16px/500/forestDark; the plus 16 / opacity 0.5). The label
+// finder pins the LEAF span (exact text + zero element children) — a
+// bare textContent match catches the row WRAPPER span (the v61 label
+// lesson: the clone's wrapper read fw 400 / rgb(10,10,10) before the
+// finder fix). The hover:shadow-lg layers are the v45 F3b pin.
+// ---------------------------------------------------------------------------
+test.describe("the quick-action card row census at 1280 (v61 — plan F3)", () => {
+  test("the row grid + the three cards' chrome + the tile/icon/label/plus", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByRole("button", { name: "Add Income" })).toBeVisible();
+    const census = await page.evaluate(() => {
+      const qas = [...document.querySelectorAll("button")].filter(
+        (b) => /^Add (Income|Savings|Expense)$/.test((b.textContent || "").trim()),
+      ) as HTMLElement[];
+      if (qas.length !== 3) return null;
+      const grid = qas[0]!.parentElement as HTMLElement;
+      const csG = getComputedStyle(grid);
+      const cards = qas.map((b) => {
+        const cs = getComputedStyle(b);
+        const r = b.getBoundingClientRect();
+        const tile = [...b.querySelectorAll("span, div")].find((s) => {
+          const st = getComputedStyle(s);
+          const sr = s.getBoundingClientRect();
+          return (
+            st.borderRadius === "12px" &&
+            sr.width >= 30 && sr.width <= 60 && sr.height >= 30 && sr.height <= 60
+          );
+        }) as HTMLElement | undefined;
+        // THE LEAF-SPAN FINDER (the v61 label lesson): the exact text +
+        // zero element children — never the row wrapper.
+        const label = [...b.querySelectorAll("span")].find(
+          (s) =>
+            /^Add (Income|Savings|Expense)$/.test((s.textContent || "").trim()) &&
+            s.children.length === 0,
+        ) as HTMLElement | undefined;
+        const svgs = [...b.querySelectorAll("svg")];
+        const icon = svgs[0] as SVGElement | undefined;
+        const plus = svgs[svgs.length - 1] as SVGElement | undefined;
+        return {
+          text: (b.textContent || "").trim(),
+          w: Math.round(r.width), h: Math.round(r.height),
+          radius: cs.borderRadius, pad: cs.padding,
+          bg: cs.backgroundColor, border: cs.borderTopColor,
+          shadow: cs.boxShadow, textAlign: cs.textAlign,
+          tile: tile
+            ? {
+                w: Math.round(tile.getBoundingClientRect().width),
+                h: Math.round(tile.getBoundingClientRect().height),
+                radius: getComputedStyle(tile).borderRadius,
+                bg: getComputedStyle(tile).backgroundColor,
+              }
+            : null,
+          icon: icon
+            ? {
+                w: Math.round(icon.getBoundingClientRect().width),
+                h: Math.round(icon.getBoundingClientRect().height),
+                color: getComputedStyle(icon).color,
+              }
+            : null,
+          label: label
+            ? {
+                fs: getComputedStyle(label).fontSize,
+                fw: getComputedStyle(label).fontWeight,
+                color: getComputedStyle(label).color,
+              }
+            : null,
+          plus: plus && svgs.length > 1
+            ? {
+                w: Math.round(plus.getBoundingClientRect().width),
+                h: Math.round(plus.getBoundingClientRect().height),
+                opacity: getComputedStyle(plus).opacity,
+                color: getComputedStyle(plus).color,
+              }
+            : null,
+        };
+      });
+      return {
+        grid: {
+          display: csG.display, template: csG.gridTemplateColumns,
+          gap: csG.columnGap, w: Math.round(grid.getBoundingClientRect().width),
+        },
+        cards,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The row grid (the v61 census — byte-identical both sides).
+    expect(census!.grid).toEqual({
+      display: "grid", template: "304px 304px 304px", gap: "24px", w: 960,
+    });
+    // The three cards (identical chrome; the accent trio per type).
+    const expected = [
+      { text: "Add Income", tint: "rgba(143, 188, 63, 0.125)", accent: "rgb(143, 188, 63)" },
+      { text: "Add Savings", tint: "rgba(59, 126, 161, 0.125)", accent: "rgb(59, 126, 161)" },
+      { text: "Add Expense", tint: "rgba(224, 122, 59, 0.125)", accent: "rgb(224, 122, 59)" },
+    ];
+    census!.cards.forEach((c, i) => {
+      const e = expected[i]!;
+      expect(c.text).toBe(e.text);
+      expect(c.w).toBe(304);
+      expect(c.h).toBe(90);
+      expect(c.radius).toBe("16px");
+      expect(c.pad).toBe("24px");
+      expect(c.bg).toBe("rgb(255, 255, 255)");
+      expect(c.border).toBe("rgb(229, 231, 227)");
+      expect(c.shadow).toBe("none");
+      expect(c.textAlign).toBe("left");
+      expect(c.tile).toEqual({ w: 40, h: 40, radius: "12px", bg: e.tint });
+      expect(c.icon).toEqual({ w: 20, h: 20, color: e.accent });
+      expect(c.label).toEqual({ fs: "16px", fw: "500", color: "rgb(26, 58, 46)" });
+      expect(c.plus).toEqual({ w: 16, h: 16, opacity: "0.5", color: e.accent });
+    });
+  });
+});

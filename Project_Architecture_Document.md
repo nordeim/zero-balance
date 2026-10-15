@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.17
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.18
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,10 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.18 (Tracked Changes)
+
+- `[UI]` v1.1.18 (2026-10-15) — the v61 parity iteration (the Budget Guidelines card's STRETCH fix — the FIRST production-code change since v55, the pin-only line broken after six consecutive iterations): the counts 108 unit / 263 e2e / 35 smoke; the dashboard's below-the-fold FULL-PAGE 1280x800 VLM pair (VERDICT IDENTICAL — but the DOM census caught what the VLM missed) + the Budget Guidelines card's stretch divergence [the reference's card at NATURAL height 348 inside a stretched space-y-4 wrapper — the grid child, the row 656 under the seed — vs the pre-v61 clone's card itself stretched to 656 with ~308px of empty card body below the Savings tile; arbitrated by the census both sides + the REGION-CROP VLM re-arbitration (DIFFERENT pre-fix / SAME post-fix) + the reference's own row DOM]; the fix mirrors the reference's DOM — the guidelines card wrapped in a space-y-4 div at the lg:grid-cols-2 row's right column (dashboard-view.tsx) — TDD (the pin RED at cardH 656 → the fix → GREEN); the quick-action row + the guidelines chrome censuses byte-identical on every axis (the grid 960/3×304/gap 24; the cards 304×90/16px/24px; the tile 40×40/12px/type tints; the label via the LEAF-SPAN finder; the three GUIDELINE_ROWS tiles byte-identical — the constant content, the deterministic natural height); the two new pins (+2 → 263: the Budget Guidelines card census at 1280 with the NO-STRETCH contract + the quick-action card row census at 1280) with three pin-sanity mutations (the wrapper removal; the card p-6→p-8; the tile rounded-xl→rounded-2xl); the v61 probe family (the dashboard full-page pair + the qa-census pair + the region-crop arbitration + the 55th standing checks) + the probe lessons (the .closest self-match trap; the leaf-span finder; the DIV-vs-SPAN tile — the chrome the contract; the region-crop pattern; the stretch-can-hide-inside-an-IDENTICAL-verdict lesson — the DOM census the authority); the 16 screenshots byte-identical (the fix's effect below every viewport shot's fold); the 61st remediation plan + the probe catalog through v61.
 
 #### Revision Block — v1.1.17 (Tracked Changes)
 

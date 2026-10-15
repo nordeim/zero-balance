@@ -2582,3 +2582,58 @@ production-code change, the v60 deliverables are the TWO pins (+2 →
    rows[last] finder catches instead of the REAL item row. The
    dump-then-pin pattern (drill-itemdump) is the arbitration
    instrument.
+
+## v61 — the Budget Guidelines STRETCH fix + the quick-action row + the
+## guidelines chrome 1280 censuses (session 96)
+
+The family: `vlm-shots-v61.sh` + `clone-vlmshots-v61.sh` +
+`vlm-compare-v61.mjs` (the dashboard FULL-PAGE 1280x800 pair — both v61
+surfaces live below the fold), `qa-census-ref-v61.sh` +
+`qa-census-clone-v61.sh` (the guidelines + quick-action DOM census, both
+sides, the cross-row gap included), `vlm-glcol-v61.mjs` (the
+guidelines-column REGION-CROP arbitration),
+`ref-standing-v55.sh` + `standing-checks-v55.sh` (the 55th standing
+checks).
+
+The session's finding: the VLM pair called the dashboard IDENTICAL, but
+the DOM census caught the **Budget Guidelines card's STRETCH divergence**
+— the reference's card sits at NATURAL height (348) inside a stretched
+`space-y-4` wrapper (the grid child; the row 656 under the seed), while
+the pre-v61 clone's card itself stretched to 656 with ~308px of empty
+white card body below the Savings tile. Arbitrated three ways (the
+census both sides; the region-crop re-arbitration — DIFFERENT pre-fix /
+SAME post-fix; the reference's own row DOM). The fix mirrors the
+reference's DOM; TDD: the pin RED (cardH 656) → the fix → GREEN.
+
+Lessons (v61):
+
+1. **The heading leaf is a DIV — `.closest("div")` returns the heading
+   ITSELF** (closest checks self first). Use `.parentElement` for the
+   wrapper. The failure mode: the census reads the heading's own padding
+   (0px) as the header wrapper's, then the body lookup walks off the
+   card and `getComputedStyle(null)` throws — the empty-eval signature.
+2. **Census finders must pin the LEAF span (the exact text + zero
+   element children)** — a bare textContent match catches ancestor
+   wrappers: the clone's quick-action row wrapper SPAN carries the
+   label's textContent (fw 400 / rgb(10,10,10) — the inherited body
+   chrome) and sorts before the label in document order; the reference's
+   row is a DIV so the first census pass read the label correctly by
+   accident. The tag asymmetry is itself the DOM-shape class (the
+   GEOMETRY is the contract, the DOM shape is not).
+3. **The icon tile is a DIV on the reference but a SPAN on the clone** —
+   match BOTH tags by chrome (radius + the 30-60px box), never by tag.
+4. **The REGION-CROP arbitration pattern** — when a full-page VLM pair
+   calls a flagged-or-not surface IDENTICAL but the DOM census diverges,
+   crop BOTH screenshots to the surface's region (sharp extract) and
+   re-arbitrate the crops with the VLM. The full-page scale hides
+   below-the-fold geometry; the crop isolates it.
+5. **A grid-child STRETCH divergence can hide inside an IDENTICAL
+   full-page VLM verdict** — the stretched card differs from the compact
+   card only by empty space BELOW the content (the tiles all
+   byte-identical), a low-salience difference at page scale. The DOM
+   census (the card height vs the row height) is the authority; the VLM
+   is a screening layer (lesson 37).
+6. **The content column at 1280 is 960** (1280 − 256 sidebar − 64 p-8
+   padding) — the max-w-7xl cap never bites on this stack; the grid
+   templates derive from it (3×304 + 2×24 gaps = 960; 2×468 + 24 =
+   960).

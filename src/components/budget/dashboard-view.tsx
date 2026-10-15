@@ -980,7 +980,14 @@ export function DashboardView() {
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <SpendingBreakdownCard />
-        <BudgetGuidelinesCard />
+        {/* v61 F1: the reference's right column is a stretched space-y-4
+            WRAPPER holding the guidelines card at NATURAL height — the card
+            never stretches to the row height (the pre-v61 clone's card
+            stretched to 656 with ~308px of empty card body below the
+            Savings tile; measured live on both sites + crop-arbitrated). */}
+        <div className="space-y-4">
+          <BudgetGuidelinesCard />
+        </div>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">

@@ -49,7 +49,8 @@ and `docs/remediation-plan-v56.md`,
 and `docs/remediation-plan-v57.md`,
 and `docs/remediation-plan-v58.md`,
 and `docs/remediation-plan-v59.md`,
-and `docs/remediation-plan-v60.md`.
+and `docs/remediation-plan-v60.md`,
+and `docs/remediation-plan-v61.md`.
 
 ---
 
@@ -58,6 +59,74 @@ and `docs/remediation-plan-v60.md`.
 ---
 
 ---
+
+---
+
+## Session 95 — Parity iteration v61: the Budget Guidelines card's STRETCH fix (the FIRST production-code change since v55) + the quick-action row + the guidelines chrome 1280 censuses (2026-10-15)
+
+**Goal:** the session-144 v61 queue's first TWO items — the
+QUICK-ACTION card surfaces' 1280 pair (the v45 F3 hover-shadow pin is
+at 640; the resting chrome at the pair viewport unpaired) and the
+BUDGET GUIDELINES card's 1280 pair (the v51 F4 mobile census's desktop
+twin) — plus the 55th standing checks. **NOT pin-only**: the DOM
+census caught a real production gap the full-page VLM pair missed.
+The formal narrative: `docs/session_147.md`; the plan:
+`docs/remediation-plan-v61.md`.
+
+**The finding:** the reference's Budget Guidelines card sits at
+NATURAL height (348) inside a stretched `space-y-4` wrapper (the grid
+child; the row 656 under the seed; the card ends right after the
+Savings tile — the remaining ~308px of the column are page
+background), while the clone's card ITSELF stretched to 656 with
+~308px of empty white card body + border + shadow below the last
+tile. Arbitrated three ways — the DOM census both sides, the
+REGION-CROP VLM re-arbitration (the x 770-1258 / y 764-1472 column
+crops: DIFFERENT pre-fix / SAME post-fix), and the reference's own
+row DOM measured live. **The fix mirrors the reference's DOM** (the
+guidelines card wrapped in a `space-y-4` div at the lg:grid-cols-2
+row's right column) — TDD: the pin RED (cardH Expected 348, Received
+656) → the fix → GREEN.
+
+**The censuses:** the quick-action row byte-identical on every axis
+both sides (the grid 960/"304px 304px 304px"/gap 24 — the content
+column 1280 − 256 sidebar − 64 p-8; the cards 304×90/radius 16px/pad
+24px/border rgb(229,231,227)/shadow none at rest; the icon tile
+40×40/radius 12px/the type tints [a DIV on the reference, a SPAN on
+the clone — the chrome the contract]; the label 16px/500/
+rgb(26,58,46) via the LEAF-SPAN finder [the v61 label lesson]; the
+plus 16px/opacity 0.5). The guidelines chrome byte-identical (the
+card 468/12px/white + the shadow's visible layers [the leading
+zero-alpha layer count the Tailwind v4 computed-form class]; the
+header/body; the three GUIDELINE_ROWS tiles 418×78 byte-identical —
+the constant content, the deterministic natural height). The DOM-shape
+classes documented (no action): the reference's `mb-8` row margins vs
+the clone's `mt-8` (identical geometry — the quick grid top 1462 BOTH
+sides); the tile/row tag differences; the shadow's leading layers.
+
+**The pins:** the "Budget Guidelines card census at 1280" describe
+(the card chrome + the NO-STRETCH contract: cardH 348 + the card
+bottom one body-pad below the last tile [±1 subpixel] + the row 656 −
+card 308) + the "quick-action card row census at 1280" describe (the
+grid + the three cards' chrome trio + the leaf-span label) — +2 →
+263. THREE pin-sanity mutations verified to FAIL then restored (the
+wrapper removal → cardH 656 again; the card p-6→p-8 → h 106 vs 90;
+the tile rounded-xl→rounded-2xl → the radius-12 chrome finder nulls).
+The 55th standing checks clean (the mobile menu verified working —
+the 55th time; the reference's four bugs ALL live; the data census
+intact; the SEO pair live both sides).
+
+**The chain:** lint + typecheck + 108 unit + build + **263 e2e (93 +
+94 + 78, three ordered chunks, zero failures)** + 35/35 smoke — all
+green. The 16 screenshots byte-identical (the fix's visual effect
+lives below every viewport shot's fold — the pinned census + the
+crop arbitration carry the verification). Docs aligned D1–D8;
+`docs/remediation-plan-v61.md` + the probe family persisted.
+
+**Next:** the v62 queue — the reference-side a11y surface re-audit
+(has the reference's own axe tree drifted since v38?), the deferred
+reference-write censuses (unchanged), and a sweep of the SKILL doc's
+stale count lines (177, 474, 1191, 1255 — pre-existing doc drift
+flagged by the v61 doc digest).
 
 ---
 
