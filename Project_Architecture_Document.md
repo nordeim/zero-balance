@@ -1,4 +1,4 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.19
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.20
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
@@ -7,6 +7,10 @@
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.20 (Tracked Changes)
+
+- `[UI]` v1.1.20 (2026-10-15) — the v63 parity iteration (PIN-ONLY — no production-code change; the pin-only line continues): the counts 108 unit / 265 e2e / 35 smoke; the /networth MOBILE 390 full-page VLM pair — the standing-pair program's LAST un-paired viewport × view combination, completing the pair matrix {dashboard, items (income/expenses), savings, calculator, networth} × {1280 desktop, 390 mobile} (v56–v62 for the rest): VERDICT DIFFERENT with three flags, ALL DOM-arbitrated via arbit-v63.sh to documented classes — the stat-tile stacking (the v41 mobile-superset class: the reference's 432-wide card inside its own 464 docSW overflow renders its fixed 2-col grid [cols "175.828px 175.844px", tiles 176×84]; the clone's 358-fit card stacks 1-col [cols "294px", tiles 294×84] — the v4 data-fit superset), the card height (the arithmetic consequence: the reference's 333 + the second 84px tile row + the 16px gap = the clone's 421), and the trend-icon "larger" flag (a PERCEPTION ARTIFACT of the v54 clipping class — the medallion 64×64 + the icon 32×32 BYTE-IDENTICAL both sides; the reference's medallion sits at right 416 in its 464-overflowing page, 26px PAST the 390 viewport edge; the clone's fits at right 342); the axe-core version-drift re-check: **NO DRIFT** — @axe-core/playwright@4.13.0 is still npm-latest and its NESTED engine axe-core@4.13.0 is byte-identical to the v38/v62 audits (the top-level axe-core@4.14.0 belongs to eslint-plugin-jsx-a11y — lint-time static analysis, never scans pages; the next re-check point is a 5.x wrapper release); the new pin (+1 → 265): the networth summary card's STAT-TILE family census at 390 (tests/e2e/networth.spec.ts, extending the v41 F3 describe — the stat grid {cols "294px", gap "16px", w 294, 2 children}, the tiles {294×84 each; bg rgba(255,255,255,0.1), backdrop blur(10px), radius 12px, pad 16px}, the card HEIGHT 421 [the 1-col stacking arithmetic], the medallion's inner icon 32×32) with three pin-sanity mutations (the grid gap-4→gap-2 [gap 16→8 + card h 421→413]; the tile p-4→p-2 [tile h 84→68]; the medallion svg h-8 w-8→h-6 w-6 [icon 32→24]); the 57th standing checks (the mobile menu verified working — the 57th consecutive time; the reference's four bugs ALL live; the data census intact — the 57th clean drift check; the SEO pair live); the 16 screenshots BYTE-IDENTICAL (no re-seed this session — the seed dates still anchor to the same day); the probe lessons (the VLM's size judgments on CLIPPED elements are unreliable — always read the bounding rect AND the viewport-clipping boolean before believing a "larger/smaller" flag; the pair-matrix completion rule — the last un-paired combination is never "minor"); the 63rd remediation plan + the probe catalog through v63.
 
 #### Revision Block — v1.1.19 (Tracked Changes)
 

@@ -843,6 +843,110 @@ test.describe("net worth summary card census (v41 — plan F2/F3)", () => {
     expect(geo.chip!.x).toBeGreaterThanOrEqual(16);
     expect(geo.chip!.right).toBeLessThanOrEqual(geo.vw - 16 + 1);
   });
+
+  // v63 F3 (docs/remediation-plan-v63.md) — the stat-tile family census at
+  // 390, measured live on BOTH sites (arbit-v63.sh, the /networth 390
+  // full-page pair's three-flag arbitration): the v41 F3 pin above covers
+  // the card w/pad/radius/bg/shadow, the 24px figure, the gridCols and the
+  // chip bounds — but NOT the tile geometry, the tile chrome, the grid
+  // gap, the card HEIGHT arithmetic, or the medallion's inner icon.
+  //
+  //   - The stat grid: cols "294px" (1-col), gap "16px", w 294, 2 children.
+  //   - The tiles: 294×84 each — the h 84 = p-4 16 + label 16 + mb-1 4 +
+  //     text-2xl amount 32 + p-4 16 (deterministic under the fixed seed);
+  //     chrome: bg rgba(255,255,255,0.1), backdrop blur(10px), radius 12,
+  //     pad 16px — byte-identical to the reference's own tiles.
+  //   - The card HEIGHT: 421 — the 1-col stacking arithmetic (the
+  //     reference's own card renders h 333 with its fixed 2-col grid
+  //     inside its 432-wide overflow; the clone's 421 = 333 + the second
+  //     84px tile row + the 16px gap — the v63 pair's flag-1/flag-2
+  //     contract, the v41 mobile-superset class).
+  //   - The medallion's inner icon: 32×32 (h-8 w-8) inside the 64×64
+  //     circle — byte-identical on both sides (the reference's CLIPS the
+  //     390 viewport at right 416, the v54 class; the VLM's "larger in the
+  //     clone" flag was the perception artifact of that clipping).
+  test("the stat-tile family census at 390 — the tiles, the grid gap, the card height arithmetic, the medallion icon (v63 F3)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const label = [...document.querySelectorAll("p, span, h2, div")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      if (!label) return null;
+      const card = label.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      const cr = card.getBoundingClientRect();
+      // The stat grid: the "Total Assets" leaf label's grid parent — NOT
+      // the card grid (the v46 F2 lesson: the summary card's inner
+      // sm:grid-cols-2 stat grid, never an outer grid).
+      const assetsLabel = [...card.querySelectorAll("p, span")].find(
+        (e) => (e.textContent || "").trim() === "Total Assets",
+      );
+      const grid = assetsLabel ? (assetsLabel.closest('[class*="grid"]') as HTMLElement | null) : null;
+      if (!grid) return null;
+      const gcs = getComputedStyle(grid);
+      const gr = grid.getBoundingClientRect();
+      const tiles = [...grid.children].map((c) => {
+        const el = c as HTMLElement;
+        const r = el.getBoundingClientRect();
+        const s = getComputedStyle(el);
+        return {
+          w: Math.round(r.width), h: Math.round(r.height),
+          bg: s.backgroundColor, blur: s.backdropFilter,
+          radius: s.borderRadius, pad: s.padding,
+        };
+      });
+      // The medallion (the v41 chip finder) + its inner svg.
+      const chip = [...card.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        const c = getComputedStyle(d);
+        return (
+          r.width > 40 && r.width < 90 &&
+          (c.borderRadius === "9999px" || (parseFloat(c.borderRadius) > 40 && c.borderRadius !== "0px")) &&
+          d.querySelector("svg")
+        );
+      });
+      const svg = chip ? chip.querySelector("svg") : null;
+      const sr = svg ? svg.getBoundingClientRect() : null;
+      return {
+        cardH: Math.round(cr.height),
+        grid: { cols: gcs.gridTemplateColumns, gap: gcs.gap, w: Math.round(gr.width), children: grid.children.length },
+        tiles,
+        medallionSvg: sr ? { w: Math.round(sr.width), h: Math.round(sr.height) } : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("stat-tile census found no grid");
+
+    // The stat grid: 1-col at 390, the 16px gap, the 294px track.
+    expect(census.grid.cols).toBe("294px");
+    expect(census.grid.gap).toBe("16px");
+    expect(census.grid.w).toBe(294);
+    expect(census.grid.children).toBe(2);
+
+    // The tiles: 294×84 each, the translucent-blur chrome byte-identical
+    // to the reference's own tiles (176×84 in its overflowing 2-col).
+    expect(census.tiles).toHaveLength(2);
+    for (const t of census.tiles) {
+      expect(t.w).toBe(294);
+      expect(t.h).toBe(84);
+      expect(t.bg).toBe("rgba(255, 255, 255, 0.1)");
+      expect(t.blur).toBe("blur(10px)");
+      expect(t.radius).toBe("12px");
+      expect(t.pad).toBe("16px");
+    }
+
+    // The card height: the 1-col stacking arithmetic (the reference's own
+    // 333 + 84 + 16 — the superset class, not a divergence).
+    expect(census.cardH).toBe(421);
+
+    // The medallion's inner icon: 32×32, byte-identical both sides.
+    expect(census.medallionSvg).not.toBeNull();
+    expect(census.medallionSvg!.w).toBe(32);
+    expect(census.medallionSvg!.h).toBe(32);
+  });
 });
 
 test.describe("net-worth asset card census (v46 — remediation-plan-v46.md F2/F3)", () => {

@@ -2697,3 +2697,62 @@ checks, and the standing VLM program's mobile extension.
    showed both sides identical; the perception artifact class).
 5. The mobile full-page pair (390x844) joins the standing VLM program
    — the desktop pair alone can miss mobile-only reflow divergences.
+
+## v63 — the /networth mobile 390 full-page pair (the matrix COMPLETED) +
+the stat-tile family pin + the axe-core version-drift re-check
+(session-153)
+
+The session-149/151 v63 queue's two items (the standing-pair program's
+last un-paired viewport × view combination + the axe toolchain drift
+watch) and the 57th standing checks.
+
+1. **vlm-shots-v63.sh / clone-vlmshots-v63.sh / vlm-compare-v63.mjs** —
+   the /networth view full-page at 390x844, the LAST un-paired
+   viewport × view combination. With it the pair matrix is COMPLETE:
+   {dashboard, items (income/expenses), savings, calculator, networth}
+   × {1280 desktop, 390 mobile}. VERDICT: DIFFERENT with three flags,
+   every one DOM-arbitrated to a documented class — the pair is CLEAN.
+2. **arbit-v63.sh** — the three-flag DOM arbitration census (both
+   sides, 390x844): the stat-tile stacking = the v41 mobile-superset
+   class (the reference's 432-wide card in its own 464 overflow → its
+   fixed 2-col grid, tiles 176×84; the clone's 358-fit card → 1-col,
+   tiles 294×84); the card height = the arithmetic consequence
+   (333 + 84 + 16 = 421); the trend-icon "larger" = a PERCEPTION
+   ARTIFACT of the v54 clipping class (the medallion 64×64 + the icon
+   32×32 BYTE-IDENTICAL both sides; the reference's medallion clips
+   the 390 viewport at right 416 — `clipsViewport:true` — while the
+   clone's fits at 342).
+3. **The axe-core version-drift re-check** (the npm/lockfile audit, no
+   script needed): **NO DRIFT** — @axe-core/playwright@4.13.0 is still
+   npm-latest and its NESTED engine axe-core@4.13.0 is byte-identical
+   to the v38/v62 audits; the top-level axe-core@4.14.0 belongs to
+   eslint-plugin-jsx-a11y (lint-time static analysis — it never scans
+   pages). The next re-check point: a 5.x wrapper release or an engine
+   bump inside the wrapper's nested dep.
+4. **ref-standing-v57.sh / standing-checks-v57.sh** — the 57th round
+   (version bumps of the v56 scripts; the mobile menu verified working
+   the 57th consecutive time; the reference's four bugs ALL live; the
+   data census unchanged — the 57th clean drift check).
+5. **The v63 pin** (tests/e2e/networth.spec.ts) — the stat-tile family
+   census at 390: the stat grid {cols "294px", gap "16px", w 294}, the
+   tiles 294×84 with the translucent-blur chrome, the card h 421
+   stacking arithmetic, the medallion's inner 32×32 icon. Three
+   pin-sanity mutations verified to FAIL (the grid gap-4→gap-2, the
+   tile p-4→p-2, the medallion svg h-8→h-6).
+
+**The v63 lessons:**
+1. The VLM's size judgments on CLIPPED elements are unreliable — a
+   byte-identical element partially cut off by its own page's overflow
+   reads "smaller" (the trend-icon flag): always read the bounding
+   rect AND the viewport-clipping boolean before believing a
+   "larger/smaller" verdict.
+2. The pair-matrix completion rule — the last un-paired viewport ×
+   view combination is never "minor": its three flags needed three
+   separate documented classes to arbitrate (the stacking superset,
+   the height arithmetic, the clipping artifact).
+3. The lockfile can hold TWO axe-core versions at once — the WRAPPER's
+   nested engine (what AxeBuilder actually executes) is the one the
+   a11y contract names; a top-level copy under a different consumer
+   (eslint-plugin-jsx-a11y) never scans pages. Verify the nested dep,
+   not `npm ls axe-core`'s first line.
+

@@ -51,7 +51,8 @@ and `docs/remediation-plan-v58.md`,
 and `docs/remediation-plan-v59.md`,
 and `docs/remediation-plan-v60.md`,
 and `docs/remediation-plan-v61.md`,
-and `docs/remediation-plan-v62.md`.
+and `docs/remediation-plan-v62.md`,
+and `docs/remediation-plan-v63.md`.
 
 ---
 
@@ -62,6 +63,59 @@ and `docs/remediation-plan-v62.md`.
 ---
 
 ---
+
+---
+
+## Session 97 — Parity iteration v63: the /networth mobile 390 full-page pair (the standing-pair matrix COMPLETED) + the stat-tile family pin + the axe-core version-drift re-check (2026-10-15)
+
+**Goal:** the session-149/151 v63 queue's two items — the standing-pair
+program's last un-paired viewport × view combination (a /networth 390
+full-page pair) and the axe-core version-drift re-check — plus the 57th
+standing checks. **PIN-ONLY** — no production-code change; the pin-only
+line continues. The formal narrative: `docs/session_153.md`; the plan:
+`docs/remediation-plan-v63.md`.
+
+**The /networth 390 pair — the matrix COMPLETED** (`vlm-shots-v63.sh` +
+`clone-vlmshots-v63.sh` + `vlm-compare-v63.mjs`): with this pair, the
+{dashboard, items (income/expenses), savings, calculator, networth} ×
+{1280 desktop, 390 mobile} matrix is fully paired. VERDICT DIFFERENT
+with three flags, ALL DOM-arbitrated via `arbit-v63.sh` to documented
+classes — (1) the stat-tile stacking = the v41 mobile-superset class
+(the reference's 432-wide card in its own 464 overflow renders its
+fixed 2-col grid, tiles 176×84; the clone's 358-fit card stacks 1-col,
+tiles 294×84 — the v4 data-fit superset); (2) the card height = the
+arithmetic consequence (333 + 84 + 16 = 421); (3) the trend-icon
+"larger" = a PERCEPTION ARTIFACT of the v54 clipping class (the
+medallion 64×64 + the icon 32×32 BYTE-IDENTICAL both sides; the
+reference's clips the 390 viewport at right 416, the clone's fits at
+342 — the VLM read the clipped medallion as "smaller").
+
+**The axe-core version-drift re-check: NO DRIFT** — the pinned
+`@axe-core/playwright@4.13.0` is still npm-latest and its NESTED engine
+`axe-core@4.13.0` (what AxeBuilder actually executes) is
+byte-identical to the v38/v62 audits; the top-level `axe-core@4.14.0`
+belongs to `eslint-plugin-jsx-a11y` (lint-time only, never scans
+pages). The a11y.spec.ts contract stays valid as pinned.
+
+**The v63 pin (+1 e2e = 265): the networth summary card's STAT-TILE
+family census at 390** (`tests/e2e/networth.spec.ts`, extending the
+v41 F3 describe): the stat grid {cols "294px", gap "16px", w 294, 2
+children} · the tiles {294×84; bg rgba(255,255,255,0.1), backdrop
+blur(10px), radius 12px, pad 16px} · the card HEIGHT 421 (the 1-col
+stacking arithmetic) · the medallion's inner icon 32×32. THREE
+pin-sanity mutations verified to FAIL then restored (the grid
+gap-4→gap-2 [gap 16→8 + card h 413]; the tile p-4→p-2 [h 68]; the
+medallion svg h-8→h-6 [icon 24] — each with the standalone REBUILD as
+a SEPARATE command).
+
+**The 57th standing checks ALL GREEN** (the mobile menu verified
+working — the 57th consecutive time; the reference's four bugs ALL
+live; the data census unchanged, the 57th clean drift check; the SEO
+pair live). The 16 screenshots BYTE-IDENTICAL (no re-seed this
+session). Full chain: lint + typecheck + 108 unit + build + 265 e2e +
+35/35 smoke green. The docs aligned D1–D8 (AGENTS/CLAUDE/README/SKILL
+Session 98 row + the 265 state/PAD v1.1.20/the probe README's v63
+section/session_153 + this worklog).
 
 ---
 
