@@ -110,6 +110,113 @@ test.describe("income view", () => {
     expect(filterCard!.iconCls).toContain("w-5");
   });
 
+  test("the filter-card computed census at 1280 (v64 — plan F3)", async ({ page }) => {
+    // The v64 fresh sweep of the OLDEST desktop pair (the v57-era items
+    // pair re-run) measured a never-census'd family: the INCOME view's
+    // filter card at desktop 1280 — the never-census'd sibling of the
+    // v38 S2 savings pin (v37/v38 measured the /expenses triggers + the
+    // /savings instance; the v52 F2 pin covered this card's MOBILE 390
+    // state; the test above pins the CLASS STRINGS only). Measured
+    // BYTE-IDENTICAL on BOTH sites via arbit-v64.sh: the card 960×86,
+    // the search 447×36 with the asymmetric 40px left pad, the 4-track
+    // 215.5px grid with the search spanning 2, the two 216×36
+    // comboboxes at 14px. This pin locks the computed geometry.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/income");
+    await expect(page.getByText("2 items · $5550.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const search = document.querySelector<HTMLInputElement>(
+        "input[placeholder^='Search income']",
+      );
+      if (!search) return null;
+      const card = search.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      const ccs = getComputedStyle(card);
+      const scs = getComputedStyle(search);
+      // the inner grid: the card's direct grid child
+      const inner = [...card.children].find(
+        (c) => getComputedStyle(c).display === "grid",
+      );
+      const ics = inner ? getComputedStyle(inner) : null;
+      return {
+        card: {
+          w: Math.round(card.getBoundingClientRect().width),
+          h: Math.round(card.getBoundingClientRect().height),
+          pad: ccs.padding,
+          radius: ccs.borderRadius,
+          bg: ccs.backgroundColor,
+          border: ccs.borderTopColor,
+          mb: ccs.marginBottom,
+        },
+        search: {
+          w: Math.round(search.getBoundingClientRect().width),
+          h: Math.round(search.getBoundingClientRect().height),
+          pad: scs.padding,
+          radius: scs.borderRadius,
+          border: scs.borderTopColor,
+        },
+        innerGrid: ics
+          ? {
+              cols: ics.gridTemplateColumns,
+              gap: ics.gap,
+              childCount: inner!.children.length,
+            }
+          : null,
+        comboboxes: inner
+          ? [...inner.querySelectorAll<HTMLElement>('[role="combobox"]')].map(
+              (c) => ({
+                w: Math.round(c.getBoundingClientRect().width),
+                h: Math.round(c.getBoundingClientRect().height),
+                fs: getComputedStyle(c).fontSize,
+                text: (c.textContent || "").trim().slice(0, 22),
+              }),
+            )
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The card chrome — measured byte-identical on BOTH sites: the
+    // 960-wide (the rail 256 + the content column 1024 − the p-8 64)
+    // 86-tall (24 pad + 36 control + 24 pad + the 2px borders) card.
+    expect(census!.card).toEqual({
+      w: 960,
+      h: 86,
+      pad: "24px",
+      radius: "16px",
+      bg: "rgb(255, 255, 255)",
+      border: "rgb(229, 231, 227)",
+      mb: "24px",
+    });
+
+    // The search input: 447×36 (the 2-col span: 215.5 + 16 + 215.5)
+    // with the asymmetric 40px left pad (the search icon's room).
+    expect(census!.search).toEqual({
+      w: 447,
+      h: 36,
+      pad: "4px 12px 4px 40px",
+      radius: "6px",
+      border: "rgb(229, 229, 229)",
+    });
+
+    // The inner grid: 4 tracks × 215.5px, 16px gap, 3 children (the
+    // search wrapper spanning 2 + the two comboboxes).
+    expect(census!.innerGrid).toEqual({
+      cols: "215.5px 215.5px 215.5px 215.5px",
+      gap: "16px",
+      childCount: 3,
+    });
+
+    // The comboboxes: 216×36 each at 14px with the All-rest texts.
+    expect(census!.comboboxes).toHaveLength(2);
+    for (const combo of census!.comboboxes!) {
+      expect(combo).toMatchObject({ w: 216, h: 36, fs: "14px" });
+    }
+    expect(census!.comboboxes![0].text).toBe("All Categories");
+    expect(census!.comboboxes![1].text).toBe("All Frequencies");
+  });
+
   test("the category filter's listbox keyboard contract (v36 S2)", async ({ page }) => {
     // Session-72 surface #2, first measured v36 on the reference's FILTER
     // instances (v34 covered the calculator sub-dialog only): fresh-open

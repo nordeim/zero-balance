@@ -2756,3 +2756,62 @@ watch) and the 57th standing checks.
    (eslint-plugin-jsx-a11y) never scans pages. Verify the nested dep,
    not `npm ls axe-core`'s first line.
 
+
+## v64 — the OLDEST desktop pair's fresh standing sweep + the axe-core
+5.x wrapper watch + the income filter-card pin (session-155)
+
+The session-153 v64 queue's first two items (the re-run cadence on the
+OLDEST desktop pairs — the v57-era items pair re-run — and the axe-core
+5.x wrapper watch) and the 58th standing checks.
+
+1. **vlm-shots-v64.sh / clone-vlmshots-v64.sh / vlm-compare-v64.mjs** —
+   the items pair (income + expenses) at desktop 1280x800, FULL-PAGE
+   both views, the fresh re-run of the OLDEST desktop pair (v57's shots
+   predate the v61 dashboard fix and the v62/v63 mobile twins). PAIR 1
+   (income): the avatar + the Base44 FAB + the seed data — all
+   documented classes. PAIR 2 (expenses): THREE style flags, all
+   DOM-arbitrated to documented classes — the footer content (the v57
+   DATA-CONDITIONAL class: chrome byte-identical, the reference's
+   expense items carry no paymentMethod values), the badge wrap (the
+   v57 class: chrome byte-identical, the Recurring superset badge wraps
+   h 52 = 22+8+22), the grid population (the seed-count class: the
+   axes byte-identical incl. the SAME fractional 309.344px last track).
+   **The pair is CLEAN.**
+2. **arbit-v64.sh** — the DOM arbitration census (both sides, both
+   views at 1280x800): the item grid + first-card chrome + footer
+   (per-child spans + icons) + badge row + the FILTER CARD (the never
+   -census'd income variant) + the header. The census that arbitrated
+   every flag and measured the v64 pin's values.
+3. **The axe-core 5.x wrapper watch** (the npm/lockfile audit, no
+   script): **NO DRIFT** — @axe-core/playwright@4.13.0 is still
+   npm-latest (no 5.x release exists) and its NESTED engine
+   axe-core@4.13.0 is byte-identical to the v38/v62/v63 audits; the
+   top-level axe-core@4.14.0 still belongs to eslint-plugin-jsx-a11y
+   (lint-time only). The next re-check point unchanged.
+4. **ref-standing-v58.sh / standing-checks-v58.sh** — the 58th round
+   (version bumps of the v57 scripts; the mobile menu verified working
+   the 58th consecutive time; the reference's four bugs ALL live; the
+   data census unchanged — the 58th clean drift check).
+5. **The v64 pin** (tests/e2e/items.spec.ts) — the INCOME view's
+   filter-card COMPUTED census at 1280 (the never-census'd sibling of
+   the v38 S2 savings pin; the early-era income test pins class strings
+   only): the card 960×86, the search 447×36 with the asymmetric 40px
+   left pad, the 4-track 215.5px grid with the search spanning 2, the
+   two 216×36 comboboxes at 14px. Three pin-sanity mutations verified
+   to FAIL (the card p-6→p-4, the search wrapper md:col-span-2 removed,
+   the grid gap-4→gap-2).
+
+**The v64 lessons:**
+1. A VLM can contradict itself on the SAME platform-chrome element
+   between two pairs in one comparison run — the Base44 FAB was
+   "missing from the clone" in pair 1 and "present in the clone" in
+   pair 2. Platform chrome is excluded from comparisons by rule;
+   never arbitrate it, just note the class.
+2. The re-run cadence on an OLD pair re-proves the documented data
+   classes live — the v57 conditional-footer and badge-wrap contracts
+   re-measured byte-identical five iterations later.
+3. A never-census'd sibling can hide behind an early-era CLASS-STRING
+   pin — the income filter card looked pinned (rounded-2xl /
+   md:grid-cols-4 / md:col-span-2 / pl-10 were pinned as class
+   strings) but its computed geometry (960×86 / 447×36 / 215.5px
+   tracks) was never measured.

@@ -52,7 +52,8 @@ and `docs/remediation-plan-v59.md`,
 and `docs/remediation-plan-v60.md`,
 and `docs/remediation-plan-v61.md`,
 and `docs/remediation-plan-v62.md`,
-and `docs/remediation-plan-v63.md`.
+and `docs/remediation-plan-v63.md`,
+and `docs/remediation-plan-v64.md`.
 
 ---
 
@@ -63,6 +64,74 @@ and `docs/remediation-plan-v63.md`.
 ---
 
 ---
+
+---
+
+## Session 98 — Parity iteration v64: the OLDEST desktop pair's fresh standing sweep (the v57-era items pair re-run) + the axe-core 5.x wrapper watch + the income filter-card computed census pin (2026-10-15)
+
+**Goal:** the session-153 v64 queue's first two items — the re-run
+cadence on the OLDEST desktop pairs ("v57's items pair and v58's
+savings pair predate the v61 dashboard fix and the v62/v63 mobile
+twins — a fresh standing sweep of one of them") and the axe-core 5.x
+wrapper watch (F1's documented next re-check point) — plus the 58th
+standing checks. **PIN-ONLY** — no production-code change; the
+pin-only line continues. The formal narrative: `docs/session_155.md`;
+the plan: `docs/remediation-plan-v64.md`.
+
+**The fresh items pair (FULL-PAGE income + expenses at 1280×800,
+`vlm-shots-v64.sh` + `clone-vlmshots-v64.sh` + `vlm-compare-v64.mjs`):
+the pair is CLEAN** — PAIR 1's flags the documented avatar/user-identity
++ Base44/platform-chrome + seed classes (the VLM CONTRADICTED ITSELF on
+the FAB between the two pairs — "missing from the clone" in pair 1,
+"present in the clone" in pair 2; platform chrome is excluded by rule,
+never arbitrated); PAIR 2's three style flags ALL DOM-arbitrated via
+`arbit-v64.sh` to documented classes — the card footer content (the v57
+DATA-CONDITIONAL class re-measured live: the chrome BYTE-IDENTICAL
+[flex justify-between 12px rgb(107,114,128) h 16; every child span
+flex gap 4px + the 12×12 gray icon]; the reference's expense items
+carry no paymentMethod values so their footers render the date alone;
+the clone's render the SAME two-child structure the reference's OWN
+income card renders ["Oct 7, 2026" + "Bank Account"]), the badge wrap
+(the v57 class re-measured: the chrome BYTE-IDENTICAL; the clone's
+Recurring superset badge wraps the row to h 52 = 22+8+22), and the
+grid population (the seed-count class: the axes BYTE-IDENTICAL
+[960/16px/the template "309.328px 309.328px 309.344px" — the same
+fractional last track both sides]; the reference's 4 cards vs the
+clone's 3) — plus the card heights (200 vs 230 = the badge-wrap
+arithmetic data class).
+
+**The axe-core 5.x wrapper watch: NO DRIFT** — the npm-latest
+`@axe-core/playwright` is STILL 4.13.0 (no 5.x release exists), the
+wrapper's NESTED engine `axe-core@4.13.0` (what AxeBuilder actually
+executes) is byte-identical to the v38/v62/v63 audits, and the
+top-level `axe-core@4.14.0` still belongs to eslint-plugin-jsx-a11y
+(lint-time only); the next re-check point unchanged.
+
+**The v64 pin (+1 e2e = 266): the INCOME view's filter-card COMPUTED
+census at 1280** (`tests/e2e/items.spec.ts`, inside the income describe
+right after the early-era class-string filter-card test) — the
+never-census'd sibling of the v38 S2 savings pin (v37/v38 measured the
+/expenses triggers + the /savings instance; the v52 F2 pin covered this
+card's MOBILE 390 state; the early-era test pins CLASS STRINGS only):
+the card 960×86 (pad 24px/radius 16px/white/border rgb(229,231,227)/
+mb 24px — the 24+36+24+2 height arithmetic) · the search 447×36 (the
+2-col span 215.5+16+215.5; the asymmetric 40px left pad — the icon's
+room, pl-10; radius 6px/border rgb(229,229,229)) · the inner grid 4
+tracks "215.5px"/16px gap/3 children · the two comboboxes 216×36 at
+14px ("All Categories"/"All Frequencies"). THREE pin-sanity mutations
+verified to FAIL then restored (the card p-6→p-4 [pad 24→16 + h
+86→70]; the search wrapper md:col-span-2 removed [w 447→215.5]; the
+grid gap-4→gap-2 [gap 16→8 + the tracks recompute] — each with the
+standalone REBUILD as a SEPARATE command).
+
+**The 58th standing checks ALL GREEN** (the mobile menu verified
+working — the 58th consecutive time; the reference's four bugs ALL
+live; the data census unchanged, the 58th clean drift check; the SEO
+pair live). The 16 screenshots BYTE-IDENTICAL. Full chain: lint +
+typecheck + 108 unit + build + 266 e2e + 35/35 smoke green. The docs
+aligned D1–D8 (AGENTS/CLAUDE/README/SKILL Session 99 row + the 266
+state/PAD v1.1.21/the probe README's v64 section/session_155 + this
+worklog).
 
 ---
 
