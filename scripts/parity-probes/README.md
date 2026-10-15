@@ -2815,3 +2815,75 @@ OLDEST desktop pairs — the v57-era items pair re-run — and the axe-core
    md:grid-cols-4 / md:col-span-2 / pl-10 were pinned as class
    strings) but its computed geometry (960×86 / 447×36 / 215.5px
    tracks) was never measured.
+
+
+## v65 — the OLDEST remaining desktop pair's fresh standing sweep + the
+axe-core 5.x wrapper watch + the savings page-header-row pin (session-156)
+
+The session-155 v65 queue's two items (the re-run cadence's other OLDEST
+candidate — the v58-era savings pair re-run, the v64 pass having covered
+the v57-era items pair — and the axe-core 5.x wrapper watch) and the 59th
+standing checks.
+
+1. **vlm-shots-v65.sh / clone-vlmshots-v65.sh / vlm-compare-v65.mjs** —
+   the savings pair at desktop 1280x800, FULL-PAGE, the fresh re-run of
+   the OLDEST remaining desktop pair (the v58 shots predate the v61
+   dashboard fix and the v62/v63 mobile twins). The parked-pointer
+   discipline (mouse at 5,5) so no hover-revealed chrome is caught
+   mid-flight.
+2. **arbit-v65.sh + arbit-v65b.sh** — the DOM arbitration census (both
+   sides at 1280x800): the avatar (36x36/radius 9999px/14px-600/white/
+   bg rgb(143,188,63) — BYTE-IDENTICAL chrome; only the initial "U" vs
+   "D" is the user-identity class), the grid axes (960/16px/3 tracks —
+   the seed-count class), the goal-card footer + badge chrome (the v57
+   classes re-measured byte-identical), and the never-census'd
+   PAGE-HEADER ROW family (the row/chip/icon/h1/subtitle/Add-button
+   computed geometry). The v65b pass re-ran with the fixed avatar
+   finder (the clone's avatar uses rounded-[9999px], not rounded-full)
+   and the FULL Add-button shadow strings. NOTE the census-JS-in-
+   unquoted-heredoc rule re-learned: NO dollar sequences in the census
+   string (a comment "N items · $X" blew up as "X: unbound variable").
+3. **ref-standing-v59.sh / standing-checks-v59.sh** — the 59th standing
+   checks (version-bumped from v58). Reference: the four bugs ALL live
+   + the data census unchanged (59th clean drift check) + the SEO pair.
+   Clone: R1-R4 green — the mobile menu VERIFIED WORKING (59th
+   consecutive time), zero overflow at 390 on all five views.
+4. **F1 — the axe-core 5.x wrapper watch** — NO DRIFT: npm-latest
+   @axe-core/playwright still 4.13.0 (no 5.x exists), the wrapper's
+   NESTED engine axe-core@4.13.0 byte-identical to the v38/v62/v63/v64
+   audits, the top-level 4.14.0 still eslint-plugin-jsx-a11y's.
+5. **The v65 pin** (tests/e2e/items.spec.ts) — the SAVINGS view's
+   PAGE-HEADER ROW computed census at 1280: the row flex
+   space-between/center/gap 16px/mb 32px/h 60, the chip 48×48 radius
+   12px with the savings blue gradient + the white 24×24 icon, the h1
+   30px/700/lh 36/forestDark, the subtitle 16px/400/gray-500, the Add
+   button 150×36/6px radius/8px 16px pad/14px-500/white with the
+   .zb-btn-add visible shadow layers, the 16×16 plus icon. Three
+   pin-sanity mutations verified to FAIL (the row mb-8→mb-4, the chip
+   h-12 w-12→h-10 w-10, the h1 text-3xl→text-2xl — the last moving the
+   ROW height 60→56, proving the text block governs the row height).
+
+**The v65 lessons:**
+1. Identical computed colors can read as different hues to a VLM — the
+   avatar's "green vs lime" flag dissolved on census (bg rgb(143,188,63)
+   on BOTH sides). Always read the computed backgroundColor before
+   believing a color flag.
+2. The grid's fractional last-track distribution is CONTENT-COUNT-
+   CONDITIONAL — the reference's template reads 309.328×3 at one child
+   while the clone's reads 309.328/309.328/309.344 at two (the v64
+   census measured the same 309.344 tail on both sides at 4-vs-3
+   children). Compare the AXES — width, gap, track count — never the
+   subpixel tail at differing child counts.
+3. A view's header row can hide behind a MID-VIEWPORT stacked-state
+   census — the v42 pin covered the 640 dir-column state only; the
+   1280 row's computed geometry (the space-between row, the chip, the
+   subtitle chrome, the Add button) was never measured.
+4. The reference's savings page carries a HIDDEN zero-size h1
+   "ZeroBalance" FIRST in its DOM (its own SEO pattern; an 18px/700 h2
+   logo in its sidebar) before the VISIBLE 30px/700 h1 —
+   querySelector('h1') is ambiguous on the reference; filter by
+   non-zero geometry (the v65 first-pass measured the hidden 20px h1
+   before the fix).
+5. The row-height governor: the h1+subtitle TEXT BLOCK (36+24 = 60)
+   sets the header row's height, not the 48px chip — the text-3xl→
+   text-2xl mutation moved the row h to 56 while the chip stayed 48.

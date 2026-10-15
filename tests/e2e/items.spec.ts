@@ -936,6 +936,170 @@ test.describe("savings view", () => {
     await expect(cat).toHaveText(/All Categories/);
     await expect(page.getByText("2 items · $1250.00")).toBeVisible();
   });
+
+  test("the page-header row computed census at 1280 (v65 — plan F3)", async ({ page }) => {
+    // The v65 fresh sweep of the OLDEST remaining desktop pair (the
+    // v58-era savings pair re-run) measured a never-census'd family: the
+    // DESKTOP 1280 page-header row of the items views — the v42 census
+    // pinned the MID-640 STACKED state only (dir column); the v63 pin
+    // the mobile 390 networth header block; the early-era tests pin
+    // CLASS STRINGS (the chip h-12, the Add-button gradient) but never
+    // the computed geometry of the 1280 row. Measured BYTE-IDENTICAL on
+    // BOTH sites via arbit-v65.sh + arbit-v65b.sh: the row flex
+    // space-between/center/gap 16/mb 32/h 60, the chip 48×48 rounded-xl
+    // with the savings blue gradient, the white 24×24 chip icon, the h1
+    // 30px/700/lh 36/forestDark, the subtitle 16px/400/gray-500, the
+    // Add button 150×36/6px radius/8px 16px pad/14px-500/white with the
+    // .zb-btn-add visible shadow layers, the 16×16 plus icon. (The
+    // reference carries a HIDDEN zero-size h1 "ZeroBalance" first in
+    // its DOM — its own SEO pattern; the VISIBLE h1 is the contract.)
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const addBtn = [...document.querySelectorAll("button")].find(
+        (b) => (b.textContent || "").includes("Add") && b.getBoundingClientRect().width > 0,
+      );
+      if (!addBtn) return null;
+      // the header row: walk UP from the Add button to the container
+      // that also holds the visible h1 (the v65 arbitration's finder)
+      let row: HTMLElement | null = null;
+      let cur: HTMLElement | null = addBtn.parentElement;
+      for (let i = 0; i < 6 && cur; i++) {
+        if (cur.querySelector("h1") && cur !== addBtn) {
+          row = cur;
+          break;
+        }
+        cur = cur.parentElement;
+      }
+      if (!row) return null;
+      const rcs = getComputedStyle(row);
+      const h1 = row.querySelector("h1") as HTMLElement | null;
+      if (!h1) return null;
+      const h1cs = getComputedStyle(h1);
+      const chip = row.querySelector<HTMLElement>("div.h-12");
+      const chipCs = chip ? getComputedStyle(chip) : null;
+      const chipIcon = chip?.querySelector("svg") ?? null;
+      const sub = h1.parentElement?.querySelector("p") ?? null;
+      const subCs = sub ? getComputedStyle(sub) : null;
+      const btcs = getComputedStyle(addBtn);
+      const btnIcon = addBtn.querySelector("svg");
+      return {
+        row: {
+          display: rcs.display,
+          justify: rcs.justifyContent,
+          align: rcs.alignItems,
+          gap: rcs.gap,
+          mb: rcs.marginBottom,
+          h: Math.round(row.getBoundingClientRect().height),
+        },
+        chip: chip
+          ? {
+              w: Math.round(chip.getBoundingClientRect().width),
+              h: Math.round(chip.getBoundingClientRect().height),
+              radius: chipCs!.borderRadius,
+              bg: chipCs!.backgroundImage,
+            }
+          : null,
+        chipIcon: chipIcon
+          ? {
+              w: Math.round(chipIcon.getBoundingClientRect().width),
+              h: Math.round(chipIcon.getBoundingClientRect().height),
+              color: getComputedStyle(chipIcon).color,
+            }
+          : null,
+        h1: {
+          fs: h1cs.fontSize,
+          fw: h1cs.fontWeight,
+          lh: h1cs.lineHeight,
+          color: h1cs.color,
+        },
+        subtitle: sub
+          ? {
+              fs: subCs!.fontSize,
+              fw: subCs!.fontWeight,
+              color: subCs!.color,
+            }
+          : null,
+        addButton: {
+          text: (addBtn.textContent || "").trim().slice(0, 20),
+          w: Math.round(addBtn.getBoundingClientRect().width),
+          h: Math.round(addBtn.getBoundingClientRect().height),
+          radius: btcs.borderRadius,
+          pad: btcs.padding,
+          fs: btcs.fontSize,
+          fw: btcs.fontWeight,
+          color: btcs.color,
+          bg: btcs.backgroundImage,
+          shadow: btcs.boxShadow,
+        },
+        addButtonIcon: btnIcon
+          ? {
+              w: Math.round(btnIcon.getBoundingClientRect().width),
+              h: Math.round(btnIcon.getBoundingClientRect().height),
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The header row — measured byte-identical on BOTH sites: the
+    // space-between row (the chip block left, the Add button right),
+    // gap 16px, mb 32px, h 60 (the chip 48 + the 12px centering).
+    expect(census!.row).toEqual({
+      display: "flex",
+      justify: "space-between",
+      align: "center",
+      gap: "16px",
+      mb: "32px",
+      h: 60,
+    });
+
+    // The gradient chip + its white icon (h-12 w-12 rounded-xl).
+    expect(census!.chip).toEqual({
+      w: 48,
+      h: 48,
+      radius: "12px",
+      bg: "linear-gradient(135deg, rgb(44, 95, 124), rgb(59, 126, 161))",
+    });
+    expect(census!.chipIcon).toEqual({
+      w: 24,
+      h: 24,
+      color: "rgb(255, 255, 255)",
+    });
+
+    // The h1 + the count subtitle (the subtitle TEXT is the data class;
+    // the chrome — 16px/400/gray-500 — is the pin).
+    expect(census!.h1).toEqual({
+      fs: "30px",
+      fw: "700",
+      lh: "36px",
+      color: "rgb(26, 58, 46)",
+    });
+    expect(census!.subtitle).toEqual({
+      fs: "16px",
+      fw: "400",
+      color: "rgb(107, 114, 128)",
+    });
+
+    // The Add button + its icon — the .zb-btn-add chrome (v11) with the
+    // savings blue gradient; the visible shadow layers byte-identical
+    // to the reference's (the v4 lead-layer form documented in AGENTS).
+    expect(census!.addButton).toEqual({
+      text: "Add Savings",
+      w: 150,
+      h: 36,
+      radius: "6px",
+      pad: "8px 16px",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(255, 255, 255)",
+      bg: "linear-gradient(135deg, rgb(44, 95, 124), rgb(59, 126, 161))",
+      shadow: "rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+    });
+    expect(census!.addButtonIcon).toEqual({ w: 16, h: 16 });
+  });
 });
 
 test.describe("budget-item card delete failure (v18 G1)", () => {

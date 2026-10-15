@@ -53,7 +53,8 @@ and `docs/remediation-plan-v60.md`,
 and `docs/remediation-plan-v61.md`,
 and `docs/remediation-plan-v62.md`,
 and `docs/remediation-plan-v63.md`,
-and `docs/remediation-plan-v64.md`.
+and `docs/remediation-plan-v64.md`,
+and `docs/remediation-plan-v65.md`.
 
 ---
 
@@ -66,6 +67,94 @@ and `docs/remediation-plan-v64.md`.
 ---
 
 ---
+
+## Session 99 — Parity iteration v65: the OLDEST remaining desktop pair's fresh standing sweep (the v58-era savings pair re-run) + the axe-core 5.x wrapper watch + the savings page-header row computed census pin (2026-10-15)
+
+**Goal:** the session-155 v65 queue's two items — "the v58-era savings
+pair's fresh sweep (the queue's other OLDEST candidate — the v64 pass
+covered the v57-era items pair)" and "the axe-core 5.x wrapper watch
+(unchanged next re-check point)" — plus the 59th standing checks.
+**PIN-ONLY** — no production-code change; the pin-only line continues.
+The formal narrative: `docs/session_158.md`; the plan:
+`docs/remediation-plan-v65.md`.
+
+**The fresh savings pair (FULL-PAGE at 1280x800, `vlm-shots-v65.sh` +
+`clone-vlmshots-v65.sh` + `vlm-compare-v65.mjs`): the pair is CLEAN** —
+every flag DOM-arbitrated via `arbit-v65.sh` + `arbit-v65b.sh` (the
+computed census on both sides) to documented classes: the avatar (the
+user-identity class re-measured live with a NEW perception lesson: the
+chrome BYTE-IDENTICAL [36x36/radius 9999px/14px-600/white/bg
+rgb(143, 188, 63) on BOTH sides — the same lime]; only the INITIAL
+differs — the reference renders "U" for its nameless account, the
+clone's demo user "D"; the VLM's "green vs lime" color claim was a
+PERCEPTION ARTIFACT — identical computed colors read as different
+hues), the card grid layout (the seed-count data class: the axes
+BYTE-IDENTICAL [w 960, gap 16px, 3 tracks]; the fractional last-track
+distribution CONTENT-COUNT-CONDITIONAL — the reference's template reads
+309.328x3 at one child, the clone's 309.328/309.328/309.344 at two;
+the v64 census measured the same 309.344 tail both sides at 4-vs-3 —
+the axes are the contract, the subpixel tail a rendering artifact of
+the data class), the goal-card footer + badges + card heights (the v57
+DATA-CONDITIONAL + wrap classes re-measured live: the chrome
+BYTE-IDENTICAL [the footer flex justify-between 12px
+rgb(107,114,128) h 16 + the 12x12 icons; the badges flex/6px radius/
+2px 10px pad/12px-600/h 22; the row flex wrap 8px gap mb 12px]; the
+reference's item carries no paymentMethod so its footer renders the
+date alone; the clone's Recurring superset badge wraps the row to
+h 52 = 22+8+22; the heights 200 vs 230 = the wrap arithmetic), and the
+Add button's computed box-shadow (the reference's two LEADING
+zero-alpha layers — the Tailwind v4 computed-form class — over the
+clone's `.zb-btn-add` visible layers: the visible geometry
+BYTE-IDENTICAL, the documented v11 class). **A DOM-structure discovery
+(documented, not a gap):** the reference's savings page carries a
+HIDDEN zero-size h1 "ZeroBalance" FIRST in its DOM (its own SEO
+pattern; an 18px/700 h2 "ZeroBalance" logo in its sidebar) before the
+VISIBLE 30px/700 h1 "Savings" — the clone renders the visible h1
+alone, BYTE-IDENTICAL chrome.
+
+**The axe-core 5.x wrapper watch: NO DRIFT** — the npm-latest
+`@axe-core/playwright` is STILL 4.13.0 (no 5.x release exists), the
+wrapper's NESTED engine `axe-core@4.13.0` (what AxeBuilder actually
+executes) is byte-identical to the v38/v62/v63/v64 audits, and the
+top-level `axe-core@4.14.0` still belongs to eslint-plugin-jsx-a11y
+(lint-time only); the next re-check point unchanged.
+
+**The v65 pin (+1 e2e = 267): the SAVINGS view's PAGE-HEADER ROW
+COMPUTED census at 1280** (`tests/e2e/items.spec.ts`, inside the
+savings describe right after the v38 S2 filter-card test) — the
+never-census'd family: the v42 census pinned the MID-640 STACKED state
+only (headerRowMb 32px/dir column); the v63 pin the mobile 390 networth
+block; the early-era tests pin CLASS STRINGS but never the computed
+geometry of the 1280 row. The census, measured BYTE-IDENTICAL on both
+sides: the row flex space-between/center/gap 16px/mb 32px/h 60; the
+chip 48x48 radius 12px with the savings blue gradient + the white
+24x24 icon; the h1 30px/700/lh 36/forestDark; the count subtitle
+16px/400/rgb(107,114,128); the Add button 150x36/6px radius/8px 16px
+pad/14px/500/white with the savings blue gradient + the .zb-btn-add
+visible shadow layers; the 16x16 plus icon. THREE pin-sanity mutations
+verified to FAIL then restored (the header row mb-8→mb-4 [mb 32→16];
+the chip h-12 w-12→h-10 w-10 [48→40 + the chip finder nulls]; the h1
+text-3xl→text-2xl [30px→24px + lh 36→32 + the row h 60→56 — the TEXT
+BLOCK governs the row height, not the 48px chip] — each with the
+standalone REBUILD as a SEPARATE command).
+
+**The 59th standing checks** (`ref-standing-v59.sh` +
+`standing-checks-v59.sh`): the mobile menu verified working (the 59th
+consecutive time); the reference's four bugs ALL live (the
+toast-blocker, the sheet-trap, the no-landmark, the 464px /networth
+overflow); the data census intact (the 59th clean drift check); the SEO
+pair live on both sites. **The 16 screenshots BYTE-IDENTICAL.**
+
+**Probe lessons:** identical computed colors can read as different
+hues to a VLM (always read the computed backgroundColor before
+believing a color flag); the grid's fractional last-track distribution
+is content-count-conditional (compare the AXES, never the subpixel
+tail at differing child counts); a view's header row can hide behind a
+MID-VIEWPORT stacked-state census (the v42 pin covered 640 only); the
+hidden zero-size h1 makes querySelector('h1') ambiguous on the
+reference — filter by non-zero geometry; the census JS inside the
+unquoted heredoc must carry NO dollar sequences (the v64 rule
+re-learned as "X: unbound variable").
 
 ## Session 98 — Parity iteration v64: the OLDEST desktop pair's fresh standing sweep (the v57-era items pair re-run) + the axe-core 5.x wrapper watch + the income filter-card computed census pin (2026-10-15)
 
