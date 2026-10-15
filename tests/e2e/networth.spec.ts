@@ -1430,3 +1430,189 @@ test.describe("net worth tablist mobile census (v53 — plan F1)", () => {
     expect(census!.docSW).toBe(390);
   });
 });
+
+test.describe("net worth view census at 1280 (v60 — plan F1)", () => {
+  // The v60 standing pair's pin: the summary card + the tablist at the
+  // 1280x800 pair viewport (the v41 F2/F3 pins walk them at 640/390; the
+  // v50 F2 tablist at 640, the v53 F1 at 390 — the 1280 axes unpinned
+  // until v60). Measured live on BOTH sites (nw-census-ref-v60.sh +
+  // nw-census-clone-v60.sh): byte-identical on every axis — the summary
+  // card 960/32px/16px/the 135deg forest→lime gradient/the 26-58-46
+  // shadow; the figure 48px/700; the medallion 64×64; the stat grid
+  // 440×2 gap 16; the stat tile 16px/12px/white-10%/blur(10px); the
+  // ratio value 18px/700 (the seed's 0.21:1 vs the reference's own ∞:1
+  // — the formatRatio data class); the tablist 448/36/220px 220px (the
+  // v50 F2's own values, max-w-md capped at every viewport ≥ 448); the
+  // group header 18px/600/forest-medium; + the v46 F2 grid/card controls
+  // re-asserted (960 / 3×309.328 / gap 16 / the card 309/20px/12px).
+  test("the summary card + tablist + group/grid controls at the pair viewport (v60 F1)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const label = [...document.querySelectorAll("p, span, h2, div")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      if (!label) return null;
+      const card = label.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      const cr = card.getBoundingClientRect();
+      const cs = getComputedStyle(card);
+      // The figure (the net-worth amount).
+      const h2 = [...card.querySelectorAll("h1, h2, h3, p")].find(
+        (e) => /-?\$[\d,]+\.\d{2}/.test((e.textContent || "").trim()) && e !== label,
+      );
+      const h2cs = h2 ? getComputedStyle(h2) : null;
+      // The medallion (the round icon chip in the card head).
+      const chip = [...card.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        const c = getComputedStyle(d);
+        return r.width > 40 && r.width < 90 && c.borderRadius === "9999px" && d.querySelector("svg");
+      });
+      // The stats grid + the first tile.
+      const assetsLabel = [...card.querySelectorAll("p, span")].find(
+        (e) => (e.textContent || "").trim() === "Total Assets",
+      );
+      const grid = assetsLabel ? assetsLabel.closest('[class*="grid"]') : null;
+      const gcs = grid ? getComputedStyle(grid) : null;
+      const tile = assetsLabel ? assetsLabel.closest('[class*="rounded"]') : null;
+      const tcs = tile ? getComputedStyle(tile) : null;
+      const amt = tile
+        ? [...tile.querySelectorAll("p, span")].find((e) => e !== assetsLabel && /\$/.test(e.textContent || ""))
+        : null;
+      // The ratio value (the border-t footer's right-hand span).
+      const ratioLabel = [...card.querySelectorAll("span, p, div")].find(
+        (e) => /Asset to Liability Ratio/.test(e.textContent || "") && e.children.length === 0,
+      );
+      const ratioVal = ratioLabel
+        ? [...(ratioLabel.parentElement?.children || [])].find((e) => e !== ratioLabel)
+        : null;
+      // The tablist.
+      const list = document.querySelector('[role="tablist"]') as HTMLElement | null;
+      const lcs = list ? getComputedStyle(list) : null;
+      const lr = list ? list.getBoundingClientRect() : null;
+      const active = list
+        ? ([...list.querySelectorAll('button[role="tab"]')].find(
+            (t) => t.getAttribute("aria-selected") === "true",
+          ) as HTMLElement | null)
+        : null;
+      const acs = active ? getComputedStyle(active) : null;
+      // The type-group header + the card grid (the v46 F2 controls).
+      const groupH = [...document.querySelectorAll("h3")].find(
+        (e) => e.getBoundingClientRect().height > 0,
+      );
+      const ghs = groupH ? getComputedStyle(groupH) : null;
+      const cardGrid = groupH ? groupH.nextElementSibling : null;
+      const cgcs = cardGrid ? getComputedStyle(cardGrid) : null;
+      const c0 = cardGrid ? (cardGrid.children[0] as HTMLElement) : null;
+      const c0cs = c0 ? getComputedStyle(c0) : null;
+      return {
+        card: {
+          x: Math.round(cr.x), w: Math.round(cr.width), pad: cs.padding,
+          radius: cs.borderRadius, bg: (cs.backgroundImage || "").replace(/\s+/g, " ").slice(0, 110),
+          shadow: (cs.boxShadow || "").replace(/\s+/g, " ").slice(0, 80),
+        },
+        figure: h2cs ? { fs: h2cs.fontSize, fw: h2cs.fontWeight, color: h2cs.color } : null,
+        label: { fs: getComputedStyle(label).fontSize, color: getComputedStyle(label).color },
+        medallion: chip
+          ? {
+              w: Math.round(chip.getBoundingClientRect().width),
+              h: Math.round(chip.getBoundingClientRect().height),
+              bg: getComputedStyle(chip).backgroundColor,
+              iconW: Math.round(chip.querySelector("svg")!.getBoundingClientRect().width),
+            }
+          : null,
+        statGrid: gcs ? { template: gcs.gridTemplateColumns, gap: gcs.gap } : null,
+        statTile: tcs
+          ? {
+              w: Math.round(tile!.getBoundingClientRect().width), pad: tcs.padding,
+              radius: tcs.borderRadius, bg: tcs.backgroundColor, blur: tcs.backdropFilter,
+              amtFs: amt ? getComputedStyle(amt).fontSize : null,
+              amtFw: amt ? getComputedStyle(amt).fontWeight : null,
+            }
+          : null,
+        ratio: ratioVal
+          ? { text: (ratioVal.textContent || "").trim(), fs: getComputedStyle(ratioVal).fontSize, fw: getComputedStyle(ratioVal).fontWeight }
+          : null,
+        tablist: lcs && lr
+          ? {
+              w: Math.round(lr.width), h: Math.round(lr.height),
+              template: lcs.gridTemplateColumns, maxW: lcs.maxWidth, pad: lcs.padding,
+              trigH: active ? Math.round(active.getBoundingClientRect().height) : null,
+              trigPad: acs ? acs.padding : null, trigFs: acs ? acs.fontSize : null,
+              trigFw: acs ? acs.fontWeight : null, trigColor: acs ? acs.color : null,
+            }
+          : null,
+        groupHeader: ghs
+          ? {
+              fs: ghs.fontSize, fw: ghs.fontWeight, color: ghs.color,
+              mb: ghs.marginBottom, tt: ghs.textTransform,
+            }
+          : null,
+        grid: cgcs && cardGrid
+          ? {
+              w: Math.round(cardGrid.getBoundingClientRect().width),
+              cols: cgcs.gridTemplateColumns, gap: cgcs.gap,
+            }
+          : null,
+        card0: c0cs && c0
+          ? { w: Math.round(c0.getBoundingClientRect().width), pad: c0cs.padding, radius: c0cs.borderRadius }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("networth 1280 census found no card");
+
+    // The summary card — the 960 column (1280 − the 256 rail − the 64 p-8),
+    // 32px pad, 16px radius, the 135deg forest→lime gradient, the 26-58-46
+    // shadow (byte-identical to the reference's live census).
+    expect(census.card.x).toBe(288);
+    expect(census.card.w).toBe(960);
+    expect(census.card.pad).toBe("32px");
+    expect(census.card.radius).toBe("16px");
+    expect(census.card.bg).toBe("linear-gradient(135deg, rgb(45, 90, 74) 0%, rgb(143, 188, 63) 100%)");
+    expect(census.card.shadow).toContain("rgba(26, 58, 46, 0.3) 0px 20px 60px");
+
+    // The figure + the label (the sm:text-5xl tier: 48px from 640 up).
+    expect(census.figure).toEqual({ fs: "48px", fw: "700", color: "rgb(255, 255, 255)" });
+    expect(census.label).toEqual({ fs: "14px", color: "rgba(255, 255, 255, 0.8)" });
+
+    // The medallion — 64×64, white/20%, the 32px icon.
+    expect(census.medallion).toEqual({ w: 64, h: 64, bg: "rgba(255, 255, 255, 0.2)", iconW: 32 });
+
+    // The stat grid + the tile — the 440×440 tracks inside the 896 content
+    // box, 16px gap; the tile 16px pad / 12px radius / white-10% / blur.
+    expect(census.statGrid).toEqual({ template: "440px 440px", gap: "16px" });
+    expect(census.statTile).toEqual({
+      w: 440, pad: "16px", radius: "12px",
+      bg: "rgba(255, 255, 255, 0.1)", blur: "blur(10px)",
+      amtFs: "24px", amtFw: "700",
+    });
+
+    // The ratio footer's value — the seed's 0.21:1 at 18px/700 (the
+    // reference's own ∞:1 is the formatRatio data class, not chrome).
+    expect(census.ratio).toEqual({ text: "0.21:1", fs: "18px", fw: "700" });
+
+    // The tablist — max-w-md capped at 448 (the v50 F2 values at the pair
+    // viewport; the reference's own list byte-identical).
+    expect(census.tablist).toEqual({
+      w: 448, h: 36, template: "220px 220px", maxW: "448px", pad: "4px",
+      trigH: 28, trigPad: "4px 12px", trigFs: "14px", trigFw: "500",
+      trigColor: "rgb(20, 83, 45)",
+    });
+
+    // The type-group header — 18px/600/forest-medium/capitalize/mb 12.
+    expect(census.groupHeader).toEqual({
+      fs: "18px", fw: "600", color: "rgb(45, 90, 74)", mb: "12px", tt: "capitalize",
+    });
+
+    // The controls — the v46 F2 grid/card values re-asserted at 1280.
+    expect(census.grid).toEqual({ w: 960, cols: "309.328px 309.328px 309.328px", gap: "16px" });
+    expect(census.card0).toEqual({ w: 309, pad: "20px", radius: "12px" });
+
+    // No overflow at the pair viewport.
+    expect(census.docSW).toBe(1280);
+  });
+});

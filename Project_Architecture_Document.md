@@ -1,12 +1,16 @@
-# ZeroBalance — Master Project Architecture Document (PAD) v1.1.16
+# ZeroBalance — Master Project Architecture Document (PAD) v1.1.17
 
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
 **Companion Document:** README.md (user-facing); AGENTS.md / CLAUDE.md (agent operating rules)
-**Last Updated:** 2026-10-13
+**Last Updated:** 2026-10-15
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.17 (Tracked Changes)
+
+- `[UI]` v1.1.17 (2026-10-15) — the v60 parity iteration (PIN-ONLY — no production-code change; the tenth iteration since v46, the pin-only line's continuation): the counts 108 unit / 261 e2e / 35 smoke; the networth-view DEDICATED desktop 1280 VLM standing pair (the session-141 v60 queue's first item — the standing-pair program's remaining major view, the v56 PAIR 2 having been the glyph-swap audit pass; VERDICT IDENTICAL, every difference the expected data class [the figures, the groups, the ratio "∞:1" vs "0.21:1"]; the census byte-identical on every axis — the summary card 960/32px/16px/the 135deg forest→lime gradient/the rgba(26,58,46,0.3) shadow, the medallion 64×64, the stat grid 440px 440px gap 16, the tile 16px/12px/white-10%/blur(10px), the tablist 448/36/"220px 220px", the group header 18px/600/forest-medium, the grid 960/3×309.328/gap 16) + the dashboard drill-down EXPANDED-state pair at 1280 (the queue's second item — the first VLM pair over the expanded surfaces; five flags every one DOM-arbitrated: the nav highlight [the root-URL active-nav gap], the avatar [user-identity], the Base44 tooltip [platform chrome], the hero progress fill [the pct × 568 data class], the donut percentage labels [a PERCEPTION ARTIFACT — the reference DOES render them: 3 texts/labelLineCount 0/16px/black, the v9 G1b measurement re-confirmed]; the drill census byte-identical — the card 304, collapsed 364 both sides, the section/category/sub/item/footer chrome, the heights 364→445→499 [reference] vs 364→481→535 [clone] = the data class); the two new pins — the networth summary-card + tablist census at 1280 (tests/e2e/networth.spec.ts, +1) and the drill-down sub/item-row census at 1280 (tests/e2e/dashboard.spec.ts, +1 → 261; the finder pins the REAL rows by chrome [justify-between + pad "4px 8px"], never rows[last] — the itemdump lesson) with three pin-sanity mutations (the summary card p-8→p-10; the tablist max-w-md→max-w-lg [448→512]; the item label max-w-[120px]→max-w-[140px]); the v60 probe family (the FULL-PAGE VLM pairs + the nw-census pair + the drill-census pair + the drill-arbit pair + the itemdump + the 54th standing checks — the expenses census now in the standing script) + the probe lessons (a single-quoted bash census string must contain NO single quotes — the JS '[role="tablist"]' selectors terminate the string and the eval silently returns empty; the --full screenshot is the pair-shot mode for views taller than the 800 viewport; the drill-down expansion clicks are view-state toggles — safe under the v46 read-only rule; the recharts label census filters the individual <text> labels from the group wrapper; census row-finders pin rows by chrome, never by array position); the 16 screenshots 15 byte-identical + 1 diff the DATE class (07-add-item-modal's Date input defaults to the capture-run day — VLM-arbitrated DATE-TEXT-only); the 60th remediation plan + the probe catalog through v60.
 
 #### Revision Block — v1.1.16 (Tracked Changes)
 

@@ -2458,3 +2458,127 @@ then restored: the total card bg #fff7f5→#fff8f0, the panel maxWidth
    only docs/screenshots carry the class. Future pin-only sessions
    that re-seed on a later date should expect the 7-file diff, not
    byte-identity, and arbitrate it as this class.
+
+## v60 — the networth-view desktop 1280 VLM pair + the dashboard drill-down EXPANDED-state pair (session-144)
+
+The session-141 v60 queue's first TWO items — the NETWORTH view's
+DEDICATED desktop 1280x800 standing pair (the standing-pair program's
+remaining major view; the v56 PAIR 2 was the glyph-swap audit pass, not
+a dedicated pair) and the DASHBOARD's drill-down EXPANDED surfaces at
+1280 (the first VLM pair over the expanded drill-down; the v43 F3
+family pinned the sub/item rows at 640, the v44 F2b the section/
+category/footer heights at 1280) — plus the 54th standing checks (the
+expenses census now IN the standing script). PIN-ONLY iteration: no
+production-code change, the v60 deliverables are the TWO pins (+2 →
+261).
+
+- `vlm-shots-v60.sh` + `clone-vlmshots-v60.sh` +
+  `vlm-compare-v60.mjs` — the FULL-PAGE (--full) desktop 1280x800
+  pairs: PAIR 1 the networth view (the below-the-fold card grids
+  captured whole), PAIR 2 the dashboard with the drill-down EXPANDED
+  (the Total Income section + its first category — VIEW-STATE clicks
+  only, no data mutation). PAIR 1 VERDICT IDENTICAL (zero layout/style
+  flags; every difference the expected data class — the figures, the
+  groups, the ratio "∞:1" vs "0.21:1"); PAIR 2 flagged FIVE.
+- `drill-arbit-ref-v60.sh` + `drill-arbit-clone-v60.sh` — the PAIR 2
+  flags' DOM arbitration (the v43 rule): the nav highlight = the
+  documented root-URL active-nav gap (the reference transparent/
+  zinc-700/400 at `/`, the clone white/500 + the gradient — superset
+  contrast #3); the avatar = the user-identity class ("U" vs "D"); the
+  Base44 tooltip = the platform-chrome class; the hero progress fill
+  30.5% vs 62.8% = the pct × 568 data class (the track byte-identical
+  568×12 rgba(255,255,255,0.1), the fill each site's own pct — the
+  v56 arbitration); the donut percentage labels = a PERCEPTION
+  ARTIFACT — the reference DOES render them (count 3 individual
+  texts "92.3%"/"4.6%"/"3.1%", labelLineCount 0, 16px, fill black —
+  the v9 G1b measurement re-confirmed live; the clone byte-identical
+  chrome: "81.6%"/"13.8%"/"4.6%", labelLineCount 0, 16px, black).
+  The pair CLEAN.
+- `nw-census-ref-v60.sh` + `nw-census-clone-v60.sh` — the networth DOM
+  arbitration + the F1 pin's measurement source (both sides):
+  byte-identical on every axis — the summary card 960/32px/16px/the
+  135deg forest→lime gradient/the rgba(26,58,46,0.3) 0px 20px 60px
+  shadow; the figure 48px/700/white; the label 14px/0.8-white; the
+  medallion 64×64 white-20% + the 32px svg; the stat grid 440px
+  440px gap 16; the tile 440/16px/12px/white-10%/blur(10px)/the
+  amount 24px-700; the ratio value 18px/700 (the text the data
+  class: "∞:1" vs "0.21:1"); the tablist 448/36/"220px 220px" (the
+  v50 F2 values at the pair viewport); the group header
+  18px/600/rgb(45,90,74)/mb 12/capitalize; the grid 960/3×309.328/
+  gap 16; the card 309/20px/12px/1px solid rgb(229,231,227)/the
+  rgba(0,0,0,0.04) 0px 2px 8px rest shadow/the dot 8×
+  rgb(143,188,63). The divergences both documented classes: the
+  summary mb (the reference computes 0 — its 32px card→tablist GAP
+  lives on another element; the GEOMETRY is the contract, the DOM
+  shape is not [the v45 lesson]) + the clone's break-words figure
+  guard (the D-5 superset).
+- `drill-census-ref-v60.sh` + `drill-census-clone-v60.sh` — the
+  drill-down EXPANDED census (both sides): byte-identical on every
+  axis — the card 304; collapsed 364 BOTH (the v44 F2b start); the
+  section {56, 8px, -8px, 8px, pointer, labelH 40}; the category
+  {28, "6px 12px", 8px, rgb(249,250,251), 12px/500/rgb(26,58,46)};
+  the sub {24, "4px 8px", rgb(250,250,250), 12px/400/
+  rgb(107,114,128)}; the item {24, "4px 8px", 12px,
+  rgb(156,163,175), maxW 120px, ellipsis}; the footer {29, "6px
+  12px", 1px, 12px/600}; the heights 364→445→499 (reference, its one
+  Salary category) vs 364→481→535 (clone, the seed's two categories)
+  = the DATA class.
+- `drill-itemdump-ref-v60.sh` — the ONE census-axis false alarm's
+  evidence: the reference-side census's rows[last] caught the item
+  row's INNER label-group div (flex items-center gap-1.5, h 16, pad
+  0, also carrying a maxW-120/ellipsis span) — the reference's REAL
+  item row (flex items-center justify-between py-1 px-2, h 24, pad
+  "4px 8px") is byte-identical to the clone's. The v60 pin's finder
+  pins the REAL rows by their chrome (justify-between + pad
+  "4px 8px"), never by array position.
+- `ref-standing-v54.sh` + `standing-checks-v54.sh` — the 54th
+  standing checks (the v53 scripts + the expenses census added to the
+  reference side): the four bugs ALL live (toast-blocker
+  hitIsBurgerChild:false, the sheet-trap overlayCount:1, the
+  no-landmark, the 464 /networth overflow), the data census intact
+  ("1 items · $25,000" / "1 items · $5000.00" / "4 items · $525.00"),
+  the SEO pair live; the clone R1-R4 all green (the mobile menu
+  VERIFIED WORKING — the 54th time).
+- `vlm-shotsdiff-v60.mjs` — the v60 screenshot-regeneration
+  arbitration: 15 of 16 byte-identical + ONE diff
+  (07-add-item-modal.png) arbitrated as the DATE class — the modal's
+  Date input defaults to the CAPTURE-run day (10/14/2026 →
+  10/15/2026), DATE-TEXT-only, zero layout diffs. The seed-date
+  family's dialog-default extension: the seed's item dates anchor to
+  the SEED-run date (v59 lesson 6) while a dialog's default-today
+  input anchors to the CAPTURE-run date — an un-re-seeded db can
+  still produce ONE date-class screenshot diff.
+
+### v60 probe lessons
+
+1. **A single-quoted bash CENSUS string must contain NO single
+   quotes.** The JS selectors like `'[role="tablist"]'` TERMINATE the
+   bash string mid-assignment — the script's eval then silently
+   returns EMPTY (the failure signature: a blank line between the
+   === markers; `bash -n` does NOT catch it because the mangled
+   assignment is still valid bash). Use escaped double-quoted JS
+   strings inside the single-quoted wrapper
+   (`"[role=\"tablist\"]"`) or a quoted heredoc. The same trap bites
+   the clone-side single-quoted eval inside a `<<'EOF'` heredoc.
+2. **The FULL-PAGE screenshot (`agent-browser screenshot --full`) is
+   the pair-shot mode for views taller than the 800 viewport** — the
+   networth view's card grids and the dashboard's expanded drill-down
+   extend below the fold; the v56-v59 pairs were viewport shots of
+   surfaces that fit. The parked-pointer discipline applies the same
+   way (`mouse move 5 5` before the shot).
+3. **The drill-down expansion clicks are VIEW-STATE toggles** — safe
+   under the v46 read-only rule (no data mutation; the reference's
+   own Salary category expanded and collapsed cleanly).
+4. **The recharts label census must filter the individual `<text>`
+   labels from the group wrapper** — the `[class*=recharts-pie-label]`
+   selector matches the group g (whose textContent concatenates all
+   labels) plus the individual texts (count 4 = 1 group + 3 labels);
+   the arbitration axes are the individual count, the labelLineCount
+   (0 — the v9 G1b contract), the fontSize and the fill.
+5. **Census row-finders must pin rows by their CHROME (pad /
+   justify-between), never by array position** — the reference's
+   drill-down sub-area contains the rows' INNER label-group divs
+   (flex gap-1.5, h 16, pad 0, carrying maxW-120 spans) that a
+   rows[last] finder catches instead of the REAL item row. The
+   dump-then-pin pattern (drill-itemdump) is the arbitration
+   instrument.

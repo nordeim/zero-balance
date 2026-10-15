@@ -2479,3 +2479,154 @@ test.describe("hero desktop 1280 census (v56 — plan F1)", () => {
     ]);
   });
 });
+
+test.describe("drill-down sub/item-row census at 1280 (v60 — plan F2)", () => {
+  // The v60 standing pair's pin: the drill-down's SUB + ITEM rows at the
+  // 1280x800 pair viewport (the v43 F3 pin walks them at 640; the v44 F2b
+  // 1280 pin walked the section/category/footer heights — the sub/item
+  // chrome at 1280 unpinned until v60). Measured live on BOTH sites
+  // (drill-census-ref-v60.sh + drill-census-clone-v60.sh + the
+  // drill-itemdump-ref-v60.sh finder arbitration): byte-identical — the
+  // sub row 24 / "4px 8px" / rgb(250,250,250) / the label 12px/400/
+  // rgb(107,114,128); the item row 24 / "4px 8px" / 12px /
+  // rgb(156,163,175) / the label maxW 120px + ellipsis. The reference's
+  // own expansion heights 364→445→499 differ from the seed's
+  // 364→481→535 by DATA (its one Salary category vs the seed's two).
+  test("the sub + item rows' chrome at the pair viewport + the expansion controls (v60 F2)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+
+    const census = await page.evaluate(async () => {
+      const leaf = (txt: string) =>
+        [...document.querySelectorAll("h1,h2,h3,h4,p,span")].find(
+          (e) => (e.textContent || "").trim() === txt && e.children.length === 0,
+        );
+      const bdH = leaf("Net Zero Breakdown");
+      const card = bdH ? (bdH.closest('div[class*="rounded-2xl"]') as HTMLElement | null) : null;
+      if (!card) return null;
+      const cardW = Math.round(card.getBoundingClientRect().width);
+      const collapsedH = Math.round(card.getBoundingClientRect().height);
+      const sec = [...card.querySelectorAll("button")].find((b) =>
+        /Total Income/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!sec) return null;
+      const secLabel = [...sec.querySelectorAll("span")].find((s) =>
+        /Total Income/i.test(s.textContent || ""),
+      ) as HTMLElement | null;
+      const section = {
+        h: Math.round(sec.getBoundingClientRect().height),
+        pad: getComputedStyle(sec).padding,
+        labelH: secLabel ? Math.round(secLabel.getBoundingClientRect().height) : null,
+      };
+      sec.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const secExpandedH = Math.round(card.getBoundingClientRect().height);
+      const cat = [...card.querySelectorAll("button")].find(
+        (b) => b.offsetParent !== null && /\$/.test(b.textContent || "") && !/Total|Net Balance/i.test(b.textContent || ""),
+      ) as HTMLElement | null;
+      if (!cat) return null;
+      const catChrome = {
+        h: Math.round(cat.getBoundingClientRect().height),
+        pad: getComputedStyle(cat).padding,
+        bg: getComputedStyle(cat).backgroundColor,
+      };
+      cat.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const fullExpandedH = Math.round(card.getBoundingClientRect().height);
+      const subArea = [...cat.parentElement!.children].find(
+        (c) => c !== cat && c.getBoundingClientRect().height > 0,
+      ) as HTMLElement | null;
+      if (!subArea) return null;
+      // The v60 itemdump lesson: pin the REAL rows (justify-between +
+      // py-1 px-2 — pad "4px 8px"), never the inner label-group divs
+      // (gap-2/gap-1.5 wrappers, pad 0 — the reference-side census's
+      // rows[last] false-negative class).
+      const realRows = [...subArea.querySelectorAll("div")].filter((d) => {
+        const cs = getComputedStyle(d);
+        return (
+          cs.display === "flex" &&
+          cs.justifyContent === "space-between" &&
+          cs.padding === "4px 8px" &&
+          d.children.length >= 2
+        );
+      });
+      const subRow = realRows.find((d) => getComputedStyle(d).backgroundColor === "rgb(250, 250, 250)") as HTMLElement | undefined;
+      const itemRow = realRows.find((d) => getComputedStyle(d).backgroundColor === "rgba(0, 0, 0, 0)") as HTMLElement | undefined;
+      const subLabel = subRow
+        ? [...subRow.querySelectorAll("span")].find((s) => {
+            const t = (s.textContent || "").trim();
+            return t.length > 1 && s.children.length === 0 && !/^\$/.test(t);
+          })
+        : null;
+      const itemLabel = itemRow
+        ? [...itemRow.querySelectorAll("span")].find((s) => {
+            const t = (s.textContent || "").trim();
+            return t.length > 1 && s.children.length === 0 && !/^\$/.test(t);
+          })
+        : null;
+      const footP = [...card.querySelectorAll("span")].find(
+        (e) => /categor/i.test(e.textContent || "") && e.children.length === 0,
+      );
+      const footRow = footP ? (footP.closest("div") as HTMLElement | null) : null;
+      return {
+        cardW,
+        collapsedH,
+        secExpandedH,
+        fullExpandedH,
+        section,
+        cat: catChrome,
+        sub: subRow
+          ? {
+              h: Math.round(subRow.getBoundingClientRect().height),
+              pad: getComputedStyle(subRow).padding,
+              bg: getComputedStyle(subRow).backgroundColor,
+              labelFont: subLabel ? getComputedStyle(subLabel).fontSize : null,
+              labelWeight: subLabel ? getComputedStyle(subLabel).fontWeight : null,
+              labelColor: subLabel ? getComputedStyle(subLabel).color : null,
+            }
+          : null,
+        item: itemRow
+          ? {
+              h: Math.round(itemRow.getBoundingClientRect().height),
+              pad: getComputedStyle(itemRow).padding,
+              color: getComputedStyle(itemRow).color,
+              font: getComputedStyle(itemRow).fontSize,
+              labelMaxW: itemLabel ? getComputedStyle(itemLabel).maxWidth : null,
+              labelTrunc: itemLabel ? getComputedStyle(itemLabel).textOverflow : null,
+            }
+          : null,
+        foot: footRow
+          ? {
+              h: Math.round(footRow.getBoundingClientRect().height),
+              borderTop: getComputedStyle(footRow).borderTopWidth,
+            }
+          : null,
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The v44 F2b expansion controls re-asserted (the seed's deterministic
+    // arithmetic; the reference's own 364→445→499 is the data class).
+    expect(census!.cardW).toBe(304);
+    expect(census!.collapsedH).toBe(364);
+    expect(census!.secExpandedH).toBe(481);
+    expect(census!.fullExpandedH).toBe(535);
+    expect(census!.section).toEqual({ h: 56, pad: "8px", labelH: 40 });
+    expect(census!.cat).toEqual({ h: 28, pad: "6px 12px", bg: "rgb(249, 250, 251)" });
+    // THE v60 PIN — the sub row (the reference's own live values:
+    // 24 / "4px 8px" / rgb(250,250,250) / 12px/400/rgb(107,114,128)).
+    expect(census!.sub).toEqual({
+      h: 24, pad: "4px 8px", bg: "rgb(250, 250, 250)",
+      labelFont: "12px", labelWeight: "400", labelColor: "rgb(107, 114, 128)",
+    });
+    // THE v60 PIN — the item row (the reference's own live values:
+    // 24 / "4px 8px" / 12px / rgb(156,163,175) / maxW 120px + ellipsis).
+    expect(census!.item).toEqual({
+      h: 24, pad: "4px 8px", color: "rgb(156, 163, 175)", font: "12px",
+      labelMaxW: "120px", labelTrunc: "ellipsis",
+    });
+    expect(census!.foot).toEqual({ h: 29, borderTop: "1px" });
+    expect(census!.sw).toBe(1280);
+  });
+});

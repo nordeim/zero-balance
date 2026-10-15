@@ -48,7 +48,8 @@ and `docs/remediation-plan-v55.md`,
 and `docs/remediation-plan-v56.md`,
 and `docs/remediation-plan-v57.md`,
 and `docs/remediation-plan-v58.md`,
-and `docs/remediation-plan-v59.md`.
+and `docs/remediation-plan-v59.md`,
+and `docs/remediation-plan-v60.md`.
 
 ---
 
@@ -57,6 +58,78 @@ and `docs/remediation-plan-v59.md`.
 ---
 
 ---
+
+---
+
+## Session 94 — Parity iteration v60: the networth-view desktop 1280 VLM standing pair + the dashboard drill-down EXPANDED-state pair (PIN-ONLY — the sixth consecutive pin-only iteration) (2026-10-15)
+
+**Goal:** the session-141 v60 queue's first TWO suggestions — the
+NETWORTH view's DEDICATED desktop 1280x800 pair (the standing-pair
+program's remaining major view; the v56 PAIR 2 was the glyph-swap
+audit pass) and the DASHBOARD's drill-down EXPANDED surfaces at 1280
+(the first VLM pair over the expanded drill-down) — plus the 54th
+standing checks (the expenses census now in the standing script).
+PIN-ONLY: no production gap found; the deliverables are TWO pins (+2
+e2e → 261). The formal narrative: `docs/session_144.md`; the plan:
+`docs/remediation-plan-v60.md`.
+
+**The sweep:** the networth pair VERDICT IDENTICAL (zero layout/style
+flags; every difference the expected data class — the figures, the
+groups, the ratio "∞:1" vs "0.21:1"); the census byte-identical on
+every axis (the summary card 960/32px/16px/the 135deg forest→lime
+gradient/the rgba(26,58,46,0.3) shadow; the medallion 64×64; the stat
+grid 440px 440px gap 16; the tile 16px/12px/white-10%/blur(10px);
+the tablist 448/36/"220px 220px"; the group header 18px/600/forest-
+medium; the grid 960/3×309.328/gap 16 + the card 309/20px/12px — the
+v46 F2 values re-confirmed live). The drill-down pair: FIVE flags,
+every one DOM-arbitrated — the nav highlight (the root-URL active-nav
+gap), the avatar (user-identity), the Base44 tooltip (platform
+chrome), the hero progress fill 30.5% vs 62.8% (the pct × 568 data
+class), and the donut percentage labels (a PERCEPTION ARTIFACT — the
+reference DOES render them: 3 texts/labelLineCount 0/16px/black, the
+v9 G1b measurement re-confirmed live both sides); the drill census
+byte-identical on every axis (the card 304; collapsed 364 BOTH; the
+section/category/sub/item/footer chrome; the heights 364→445→499
+[reference] vs 364→481→535 [clone] = the data class — its one Salary
+category vs the seed's two). One census-axis false alarm arbitrated
+by the itemdump (the reference-side rows[last] caught the item row's
+INNER label-group div — the REAL item row byte-identical).
+
+**The pins:** the "net worth view census at 1280" describe in
+`tests/e2e/networth.spec.ts` (+1) + the "drill-down sub/item-row
+census at 1280" describe in `tests/e2e/dashboard.spec.ts` (+1 → 261)
+— both GREEN on the first run; the finder pins the REAL rows by
+their chrome (justify-between + pad "4px 8px"), never rows[last].
+THREE pin-sanity mutations verified to FAIL then restored (the
+summary card p-8→p-10; the tablist max-w-md→max-w-lg [448→512]; the
+item label max-w-[120px]→max-w-[140px]). The 54th standing checks
+clean (the mobile menu verified working — the 54th time; the
+reference's four bugs ALL live; the data census intact; the SEO pair
+live both sides).
+
+**The chain:** lint + typecheck + 108 unit + build + 261 e2e (91 +
+94 + 78, three ordered chunks, zero failures) + 35 smoke — all
+green. The 16 screenshots: 15 byte-identical + 1 diff the DATE class
+(07-add-item-modal's Date input defaults to the capture-run day
+10/14→10/15 — VLM-arbitrated DATE-TEXT-only, zero layout diffs).
+Docs aligned: AGENTS/CLAUDE/README/the SKILL doc (Session 95 row +
+the 261 state)/the PAD (v1.1.17)/the probe README (the v60 section +
+five lessons)/this worklog.
+
+**Probe lessons (the v60 five):** a single-quoted bash census string
+must contain NO single quotes (the JS '[role="tablist"]' selectors
+terminate the string — the eval silently returns empty; escaped
+double-quoted JS strings or a quoted heredoc); the FULL-PAGE
+screenshot (--full) is the pair-shot mode for views taller than the
+800 viewport; the drill-down expansion clicks are view-state toggles
+(safe under the v46 read-only rule); the recharts label census
+filters the individual <text> labels from the group wrapper (count 4
+= 1 group + 3 labels); census row-finders pin rows by chrome (pad/
+justify-between), never by array position.
+
+**Next:** the v61 queue — the quick-action card surfaces' 1280 pair,
+the Budget Guidelines card's 1280 pair, or the deferred
+reference-write censuses (unchanged).
 
 ---
 
