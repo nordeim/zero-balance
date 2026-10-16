@@ -56,9 +56,94 @@ and `docs/remediation-plan-v63.md`,
 and `docs/remediation-plan-v64.md`,
 and `docs/remediation-plan-v65.md`,
 and `docs/remediation-plan-v66.md`,
-and `docs/remediation-plan-v67.md`.
+and `docs/remediation-plan-v67.md`,
+and `docs/remediation-plan-v68.md`.
 
 ---
+
+---
+
+## Session 102 — Parity iteration v68: the DEDICATED axe-core wrapper upgrade (the deliberate 4.14.0 pin bump + the rule-coverage re-audit: the sets byte-identical) + the v61-era pair re-run (the dashboard full-page 1280) + the a11y gate's ENGINE-CONTRACT pin (2026-10-16)
+
+**Goal:** the session-163/164 v68 queue's two items — the DEDICATED
+axe-core wrapper upgrade (the v67 plan's own decision, executed
+mechanically: never a drift, never a rider) and the re-run cadence
+rotating to the v61-era pair (the dashboard full-page 1280 — the
+quick-action row + the Budget Guidelines card) — plus the 62nd
+standing checks. **TOOLCHAIN-ONLY** — no production-code change (the
+pin-only line continues; the upgrade touches package.json +
+package-lock.json, never src/). The formal narrative:
+`docs/session_165.md`; the plan: `docs/remediation-plan-v68.md`.
+
+**The upgrade chain, measured live:** the registry state (npm-latest
+`@axe-core/playwright` 4.14.0, no 5.x exists); the RULE-COVERAGE
+re-audit — the activated rule sets at the gate's TAGS enumerated from
+BOTH engines via `scripts/parity-probes/axe-rule-census-v68.mjs`
+(the axe.js bundle requires cleanly under Node, attaching `axe` to
+module.exports; `axe.getRules()` returns metadata keyed `ruleId`):
+**69 of 105 rules activated on 4.13.0 AND 69 of 105 on 4.14.0 — the
+sets byte-identical, zero added, zero removed** — no new rule to
+arbitrate, no markup issue to fix; the deliberate pin bump
+(package.json one line, the only manifest change); the lockfile
+regeneration (npm dedupe: the wrapper's NESTED engine entry DISSOLVES
+— the top-level axe-core@4.14.0, eslint-plugin-jsx-a11y's, whose
+^4.10.0 admits it, now satisfies the wrapper's ~4.14.0 too, so the
+tree carries ONE axe-core; 23 lockfile lines changed, net -7); the
+engine verify (the wrapper's own `require.resolve('axe-core')` →
+`node_modules/axe-core/axe.js` = **4.14.0**, no nested dir remains);
+**the full a11y gate re-run under 4.14.0: 22 passed** (the v38
+contract holds — structural clean, contrast failures only in the
+reference's 7-color palette, the login page zero-violation) — no
+rule-behavior regression on any scanned surface.
+
+**The v61-era pair re-run** (the dashboard FULL-PAGE at 1280x800 via
+vlm-shots-v68.sh + clone-vlmshots-v68.sh + vlm-compare-v68.mjs; login
+on the first attempt both sides, the parked pointer at (5,5)):
+**VERDICT IDENTICAL** — zero layout/style flags ("the geometry,
+borders, padding, typography, icon sizing/tinting, and color palette
+for the Budget Guidelines card and the Quick Actions row are visually
+identical"), every difference the expected DATA class; the re-run
+re-proves the v61-era surfaces live after the v61 STRETCH fix and
+v62-v67's pins.
+
+**The v68 pin (+1 → 270):** the a11y gate's ENGINE-CONTRACT pin
+(tests/e2e/a11y.spec.ts, a new describe at the file tail, the
+logged-out login surface, read-only) — a real AxeBuilder scan asserts
+testEngine.name "axe-core" + testEngine.version /^4\.14\./ (the
+AxeResults carry the identity of the engine that ACTUALLY executed
+the scan — the ground truth, not the lockfile's promise); any future
+engine change without a conscious re-verification (a lockfile drift,
+a dedupe flip, a wrapper downgrade, a 4.15/5.x bump) fails the suite
+— the "never a drift" discipline made executable. GREEN on first
+run. The pin-sanity mutation (the TOOLCHAIN downgrade: `npm install
+@axe-core/playwright@4.13.0`, no rebuild needed — axe-core is a
+test-only dep never in the standalone build) verified to FAIL with
+the exact diagnostic, then restored (the restore's own lesson:
+`git checkout` reverts to HEAD's ^4.13.0 while the bump is
+uncommitted — the restore must re-apply the bump deliberately).
+
+**The 62nd standing checks** (ref-standing-v62.sh +
+standing-checks-v62.sh, version-bumped from v61): the mobile menu
+VERIFIED WORKING (the 62nd consecutive time), the reference's four
+bugs ALL live (toast-blocker, sheet-trap, no-landmark, the 464px
+/networth overflow), the data census intact (the 62nd clean drift
+check), the SEO pair live. **The screenshots: 10/16 byte-identical
++ 6 the DATE class** (the fresh-cloned workspace's re-seed
+re-anchored the seed's isoDate(offsetDays) dates one day later — the
+committed set's DB was seeded 2026-10-15; db/ is gitignored, it does
+not travel; every changed region pixel-arbitrated to date digits via
+the v66 PIL-diff method, the calculator's diff sub-perceptual at max
+channel 2; `git diff src/` = 0 lines). Full chain: lint + typecheck
++ 108 unit + build + 270 e2e (97 + 98 + 77 chunks) + 35/35 smoke
+green. The docs aligned (AGENTS/CLAUDE/README/SKILL Session 103 row +
+the 270 state/PAD v1.1.25/the probe README's v68 section/session_165/
+the repo worklog Session 102 + the ledger list). **Next** (the v69
+queue): (1) the re-run cadence rotates to the v62-era pair (the
+networth mobile 390 full-page twin — the oldest remaining), (2) the
+axe-core watch continues at its next re-check point (the 4.14.0
+upgrade closes the 4.x story; only a 5.x wrapper changes the
+calculus — the engine-contract pin now guards the gate's toolchain),
+(3) the deferred reference-write censuses (unchanged).
 
 ---
 

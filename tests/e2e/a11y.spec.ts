@@ -276,3 +276,41 @@ test.describe("a11y gate MOBILE — the sheet-open structure on EVERY route (v41
     });
   }
 });
+
+// ---------------------------------------------------------------------------
+// v68 F3 — the a11y gate's ENGINE-CONTRACT pin (docs/remediation-plan-v68.md).
+// The dedicated axe-core upgrade iteration's own invariant: the engine the
+// AxeBuilder executes under is axe-core 4.14.x — the DELIBERATELY-PINNED
+// toolchain state (package.json `@axe-core/playwright` `^4.14.0`), never a
+// silent drift. Every AxeResults object carries `testEngine:
+// { name, version }` — the identity of the engine that actually executed
+// the scan — so a REAL scan's testEngine is the ground truth, not the
+// lockfile's promise.
+//
+// The upgrade's verification chain (all measured this iteration): the
+// registry 4.14.0 (no 5.x exists), the activated rule sets at the gate's
+// TAGS byte-identical 4.13.0 → 4.14.0 (69 of 105 rules each, zero added,
+// zero removed — the axe-rule-census-v68.mjs re-audit), and the full gate
+// green under 4.14.0. This pin makes the state executable: any future
+// engine change without a conscious re-verification (a lockfile drift, a
+// dedupe flip, a wrapper downgrade, a 4.15/5.x bump) FAILS here — the
+// "never a drift" discipline. When a deliberate future upgrade changes
+// this expectation, it changes WITH its own full re-verification chain
+// (the v68 precedent).
+// ---------------------------------------------------------------------------
+test.describe("a11y gate — the engine contract (v68 — the dedicated axe-core upgrade)", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+  test("the gate executes under axe-core 4.14.x (the deliberately-pinned engine — never a drift)", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+    await page.waitForTimeout(1000);
+
+    // A real scan — the testEngine field reports the engine that ran it.
+    const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+    expect(results.testEngine.name).toBe("axe-core");
+    expect(
+      results.testEngine.version,
+      `the a11y gate executed under axe-core ${results.testEngine.version} — the v68 upgrade pinned the engine at 4.14.x (package.json ^4.14.0); an unintended engine change (a lockfile drift, a dedupe flip, a wrapper downgrade) must fail here, never silently pass`,
+    ).toMatch(/^4\.14\./);
+  });
+});

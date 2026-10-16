@@ -3068,3 +3068,93 @@ v57/v58/v59 pairs — and the axe-core wrapper upgrade decision) and the
    must be the SHARED-class regression (both tiles). The stretch also
    explains the arithmetic's stability: both tiles share the content
    structure, so the row = either tile's natural height.
+
+## v68 — the DEDICATED axe-core wrapper upgrade (the deliberate 4.14.0
+pin bump + the rule-coverage re-audit) + the v61-era pair re-run (the
+dashboard full-page 1280) + the a11y gate's engine-contract pin (session-165)
+
+The session-163/164 v68 queue's two items (the DEDICATED axe-core
+wrapper upgrade — the v67 plan's own decision, executed mechanically —
+and the re-run cadence rotating to the v61-era pair, the dashboard
+full-page 1280 standing pair, the oldest remaining after
+v64/v65/v66/v67 covered the v57/v58/v59/v60 pairs) and the 62nd
+standing checks. TOOLCHAIN-ONLY — src/ untouched (the pin-only line
+continues; the upgrade touches package.json + package-lock.json).
+
+1. **axe-rule-census-v68.mjs** — the rule-coverage census: enumerates
+   the ACTIVATED rule set at the a11y gate's TAGS
+   (wcag2a/wcag2aa/wcag21a/wcag21aa) from any axe.js bundle, via a
+   plain Node require (the bundle attaches `axe` to module.exports).
+   Run on BOTH engines — the pre-upgrade nested
+   axe-core@4.13.0 (69 of 105 rules) and the 4.14.0 (69 of 105):
+   the sets byte-identical, ZERO added, ZERO removed. The upgrade
+   changes the engine version, NOT the activated coverage — no new
+   rule to arbitrate, no markup issue to fix.
+2. **The upgrade itself** — the deliberate pin bump (package.json
+   ^4.13.0→^4.14.0, one line, the only manifest change) + npm install
+   (the lockfile regenerates: the wrapper 4.14.0 and the NESTED engine
+   entry DISSOLVES — npm dedupe; the top-level axe-core@4.14.0
+   [eslint-plugin-jsx-a11y's, whose ^4.10.0 admits it] now satisfies
+   the wrapper's ~4.14.0 too, so the tree carries ONE axe-core; 23
+   lockfile lines, net -7) + the engine verify (the wrapper's own
+   require.resolve('axe-core') → node_modules/axe-core/axe.js = 4.14.0,
+   no nested dir remains) + the full a11y gate re-run: 22 passed (the
+   v38 contract holds — no rule-behavior regression on any surface).
+3. **ref-standing-v62.sh / standing-checks-v62.sh** — the 62nd standing
+   checks (version-bumped from v61). Reference: the four bugs ALL live
+   + the data census unchanged (62nd clean drift check) + the SEO pair.
+   Clone: R1-R4 green — the mobile menu VERIFIED WORKING (62nd
+   consecutive time), zero overflow at 390 on all five views.
+4. **vlm-shots-v68.sh / clone-vlmshots-v68.sh / vlm-compare-v68.mjs** —
+   the v61-era pair re-run (the dashboard FULL-PAGE at 1280x800 — the
+   Budget Guidelines card + the quick-action row below the fold; login
+   on the first attempt both sides, the parked pointer at (5,5)):
+   VERDICT IDENTICAL, zero style flags — the re-run re-proves the
+   v61-era surfaces live after the v61 STRETCH fix and v62-v67's pins.
+5. **db-seedcheck-v68.cjs** — the pre-capture dev-DB seed-state check
+   (7 items / Rent 1850 / expenses 2235 / 0 line items / 3 assets / 2
+   liabilities) via the Prisma client (BudgetItem is keyed `category`,
+   not `name` — the first draft's `name: "Rent"` query crashed).
+6. **The v68 pin (+1 e2e = 270)** — the a11y gate's ENGINE-CONTRACT
+   pin (a new describe at the a11y.spec.ts tail, the logged-out login
+   surface): a real AxeBuilder scan asserts testEngine.name "axe-core"
+   + testEngine.version /^4\.14\./ — the AxeResults carry the identity
+   of the engine that ACTUALLY executed the scan, so the pinned
+   toolchain is executable, not aspirational. The pin-sanity mutation
+   is the TOOLCHAIN downgrade (npm install @axe-core/playwright@4.13.0
+   — no rebuild needed, axe-core is a test-only dep never in the
+   standalone build): the pin FAILED with the exact diagnostic, then
+   the manifest was restored and the gate re-run green.
+7. **The screenshots** — 10/16 byte-identical + 6 the DATE class: the
+   FRESH-CLONED workspace's re-seed re-anchored the seed's
+   isoDate(offsetDays) dates one day later (the committed set's DB was
+   seeded 2026-10-15; db/ is gitignored — it does not travel). Every
+   changed region pixel-arbitrated to date digits via the v66 PIL-diff
+   method (the income "10"→"11", the expenses "13, 2026"→"14, 2026";
+   the calculator's diff sub-perceptual at max channel 2).
+
+**The v68 lessons:**
+1. The axe.js bundle is a UMD-ish IIFE — under require() it attaches
+   `axe` to module.exports. A vm sandbox with window/document stubs
+   FAILS silently (the IIFE takes `typeof window === 'object' ? window
+   : this`, attaches, then the load aborts on the missing DOM pieces —
+   the global never appears). The honest census load is the plain
+   Node require.
+2. axe.getRules() returns metadata keyed `ruleId`, NOT `id` — a census
+   sorting by `.id` crashes on undefined (the first draft's
+   `Cannot read properties of undefined (reading 'localeCompare')`).
+   Each entry carries `tags` + an `enabled` field; filter by the tag
+   intersection with the gate's TAGS.
+3. A createRequire path passed as a relative string resolves against
+   the SCRIPT's directory, not the CWD — resolve(process.cwd(), arg)
+   before require() or the census reports "Cannot find module".
+4. An npm dedupe can DISSOLVE the wrapper's nested engine — after the
+   ^4.14.0 bump the tree carries ONE axe-core (the top-level
+   eslint-plugin-jsx-a11y copy satisfies both). The engine-verify
+   must follow the WRAPPER'S OWN require.resolve('axe-core'), never
+   assume the nested path exists.
+5. A fresh-cloned workspace re-anchors the seed's relative dates —
+   db/custom.db is gitignored, so a re-seed on a different day shifts
+   every rendered date digit (the committed screenshots' DATE class).
+   The PIL pixel-diff (the v66 method) arbitrates it in minutes; the
+   honest capture is committed, not reverted.
