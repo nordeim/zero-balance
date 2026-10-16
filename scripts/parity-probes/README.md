@@ -2887,3 +2887,87 @@ standing checks.
 5. The row-height governor: the h1+subtitle TEXT BLOCK (36+24 = 60)
    sets the header row's height, not the 48px chip — the text-3xl→
    text-2xl mutation moved the row h to 56 while the chip stayed 48.
+
+## v66 — the v59-era pair's fresh standing sweep + the axe-core 5.x
+wrapper watch (an upstream 4.14.0 appears) + the calculator dialog's
+height-family pin (session-157)
+
+The session-159/160 v66 queue's two items (the re-run cadence rotates to
+the v59-era pair — the calculator dialog + login view re-run at 1280, the
+oldest remaining after v64/v65 covered the v57/v58 pairs — and the
+axe-core 5.x wrapper watch) and the 60th standing checks.
+
+1. **vlm-shots-v66.sh / clone-vlmshots-v66.sh / vlm-compare-v66.mjs** —
+   the calculator pair at 1280x800 (the dialog opened on the Rent card;
+   the clone half adds the matching "Contents Insurance" $25 monthly-
+   active line item through the real UI then FULLY restores the fixture:
+   delete + restore Rent's $1850 + verify the "$2235.00" page total).
+   The fresh-login warm-up retry: the reference's /expenses first fetch
+   can exceed the wait window (a transient "0 items" state) — retry the
+   Rent finder on a warm session before the hover.
+2. **login-shots-v66.sh / clone-login-shots-v66.sh** — the login pair at
+   1280x800 (the logged-out surface; the clone shot against the
+   production standalone on :3200).
+3. **arbit-v66.sh + arbit-v66b.sh** — the DOM arbitration census (both
+   sides at 1280x800, the row-HEIGHT family added): the actions rest at
+   opacity 0 on BOTH sides (btnCount 2 each — the pointer-position
+   class; the reference's screenshot caught the pair mid-reveal), the
+   "• Will update category total" span DATA-CONDITIONAL (the reference's
+   natively-$25 Rent hides it, the clone's opened-at $1850 snapshot shows
+   it), the panel shadow's two LEADING zero-alpha layers (the Tailwind v4
+   computed-form class), and the never-pinned HEIGHT family measured
+   BYTE-IDENTICAL: the row 720x102, the name h4 (16px/600/h 24/mb 4px),
+   the badge pill row (h 20) + the first pill (20/65/2px 8px/9999px),
+   the amount P (h 28), the totalCard h 90. The v66b pass re-ran with
+   the fixture add + full restore on the clone side (the quoted-heredoc
+   + two-level escaping conventions).
+4. **ref-standing-v60.sh / standing-checks-v60.sh** — the 60th standing
+   checks (version-bumped from v59). Reference: the four bugs ALL live +
+   the data census unchanged (60th clean drift check) + the SEO pair.
+   Clone: R1-R4 green — the mobile menu VERIFIED WORKING (60th
+   consecutive time), zero overflow at 390 on all five views.
+5. **F1 — the axe-core 5.x wrapper watch** — local NO DRIFT (the
+   lockfile resolves 4.13.0; the wrapper's NESTED engine axe-core@4.13.0
+   byte-identical to the v38–v65 audits; the top-level 4.14.0 still
+   eslint-plugin-jsx-a11y's — lint-time only) — BUT the npm registry now
+   carries @axe-core/playwright@4.14.0 (a MINOR bump inside 4.x, NOT the
+   guarded 5.x). Recorded as the candidate for a future DEDICATED
+   upgrade iteration; the next re-check point unchanged.
+6. **The v66 pin** (tests/e2e/calculator.spec.ts) — the calculator
+   dialog's HEIGHT-family computed census at 1280 (a new describe after
+   the v59 panel-census block, riding the add-then-restoreRent fixture
+   flow): the row 720x102/pad 16/radius 12/border rgb(229,231,227)/bg
+   white, the name h4 16/600/forestDark/h 24/mb 4, the pill row
+   flex/gap 8/12px/h 20, the first pill 20/65/2px 8px/9999px/12px/400,
+   the amount P 20/700/orangeDark/h 28, the totalCard 720x90. Three
+   pin-sanity mutations verified to FAIL (the row p-4→p-2 [6 failures —
+   the v45/v49/v53/v59 pins + the v66]; the h4 mb-1→mb-2; the totalCard
+   p-4→p-2).
+7. **The screenshot DATE-class re-arbitration** — the 16-screenshot
+   regeneration came out 15 byte-identical + 1 (07-add-item-modal) the
+   documented dialog-default DATE class (the v60 class): the calendar
+   had rolled past midnight. Pixel-arbitrated this time — a programmatic
+   PIL diff localized the change to a 16x22 px region at
+   (1552,931)–(1568,953), exactly the date input's day digits
+   "15"→"16"; everything else in the 2880x1800 frame byte-stable.
+
+**The v66 lessons:**
+1. The VLM's "shorter row" was a perception artifact — the row measured
+   720x102 on BOTH sides. Always measure the computed heights before
+   believing a proportion claim.
+2. The fresh-login first fetch can exceed the wait window — the
+   reference's /expenses rendered "0 items · $0.00" transiently before
+   the data landed. Retry the finder on a warm session; a "data gone"
+   reading on a standing-check surface is usually a cold-session
+   artifact, never a drift verdict on its own.
+3. The height arithmetic is DETERMINISTIC: 32 (actions) + 4 (mb) + 28
+   (amount) + 32 (p-4) + 2 (border) = 102. A pin on the parts makes the
+   whole predictable — and a mutation on any part bites the whole.
+4. A single-region screenshot diff is better arbitrated by a
+   programmatic pixel-diff than a VLM verdict — the bbox and the changed-
+   row histogram localize the change to the exact widget, with no
+   perception artifacts.
+5. The dialog-default DATE class recurs every calendar rollover — the
+   capture script's date field (the Add Item dialog's todayIso() default)
+   re-renders daily. Expect exactly one 16-pixel-region diff per
+   overnight regeneration; the class is documented, never a regression.

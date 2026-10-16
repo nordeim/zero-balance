@@ -1092,3 +1092,162 @@ test.describe("calculator panel census at 1280 (v59 — plan F1)", () => {
     await expect(dialog).toBeHidden();
   });
 });
+
+// ---------------------------------------------------------------------------
+// v66 — the calculator dialog's HEIGHT-family census (plan F3,
+// docs/remediation-plan-v66.md).
+//
+// The v66 arbitration (arbit-v66.sh + arbit-v66b.sh, the fresh v59-era
+// pair re-run) measured a never-pinned family: the computed HEIGHTS of
+// the dialog's interior. The v45 F2a pin covers the row's width/pad/
+// radius/border + the hover reveal; the v53 pin the 390 reflow; the v59
+// pin the panel + the totalCard's w/bg/radius/pad/border — the HEIGHTS
+// were never measured before v66. Measured BYTE-IDENTICAL on both sites
+// (the reference's own Rent calculator, one "Contents Insurance" $25
+// monthly-active row): the row 720×102 (the deterministic arithmetic:
+// the 32px top actions row + the h4's 4px mb + the 28px amount block +
+// the 32px p-4 padding + the 2px border), the name h4 block (16px/600/
+// forestDark/h 24/mb 4px), the badge pill row (flex/gap 8/12px/h 20),
+// the first pill (h 20/w 65/pad 2px 8px/radius 9999px/12px/400), the
+// amount P (20px/700/orangeDark/h 28), and the totalCard 720×90 (the
+// v59-pinned chrome's own height axis: the 32px total row + the 8px
+// mb-2 + the 16px caption row + the 32px p-4 padding + the 2px border).
+// The height family needs a live row — the e2e seed's Rent carries
+// none — so the pin rides the v45 F2a add-then-restoreRent fixture.
+test.describe("calculator dialog height-family census at 1280 (v66 — plan F3)", () => {
+  test("the row + name-block + pill-row + amount + total-card HEIGHTS (the never-pinned family)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await lineDialog.getByLabel("Item Name *").fill("Contents Insurance");
+    await lineDialog.getByLabel("Amount *").fill("25");
+    await lineDialog.getByRole("button", { name: "Save Item" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Contents Insurance")).toBeVisible();
+    await page.waitForTimeout(300);
+
+    const census = await page.evaluate(() => {
+      // The finders modeled on the v66 arbitration's own census
+      // (arbit-v66.sh / arbit-v66b.sh).
+      const panel = [...document.querySelectorAll('[role="dialog"]')].find(
+        (d) => (d.textContent || "").includes("Rent Calculator"),
+      ) as HTMLElement | null;
+      if (!panel) return null;
+      const totalCard = [...panel.querySelectorAll("div")].find(
+        (d) => getComputedStyle(d).backgroundColor === "rgb(255, 247, 245)",
+      );
+      const h4 = [...panel.querySelectorAll("h4")].find(
+        (h) => (h.textContent || "").trim() === "Contents Insurance",
+      );
+      if (!h4 || !totalCard) return null;
+      let row: HTMLElement = h4 as HTMLElement;
+      while (row && row !== panel) {
+        const cs = getComputedStyle(row);
+        if (parseFloat(cs.borderTopWidth) > 0 && cs.backgroundColor === "rgb(255, 255, 255)") break;
+        row = row.parentElement!;
+      }
+      if (!row || row === panel) return null;
+      const pills = [...row.querySelectorAll("span")].filter(
+        (s) => parseFloat(getComputedStyle(s).borderRadius) > 100 && s.getBoundingClientRect().width > 10,
+      );
+      const pillRow = pills.length ? (pills[0].parentElement as HTMLElement) : null;
+      const p1 = pills[0] ? getComputedStyle(pills[0]) : null;
+      const p1R = pills[0] ? pills[0].getBoundingClientRect() : null;
+      const amountP = [...row.querySelectorAll("p,span,div")]
+        .filter((e) => e.children.length === 0 && (e.textContent || "").trim().startsWith("$"))
+        .sort((a, b) => parseFloat(getComputedStyle(b).fontSize) - parseFloat(getComputedStyle(a).fontSize))[0];
+      const h4cs = getComputedStyle(h4);
+      const prcs = pillRow ? getComputedStyle(pillRow) : null;
+      const apcs = amountP ? getComputedStyle(amountP) : null;
+      return {
+        row: {
+          w: Math.round(row.getBoundingClientRect().width),
+          h: Math.round(row.getBoundingClientRect().height),
+        },
+        nameH4: {
+          fs: h4cs.fontSize,
+          fw: h4cs.fontWeight,
+          color: h4cs.color,
+          h: Math.round(h4.getBoundingClientRect().height),
+          mb: h4cs.marginBottom,
+        },
+        pillRow: prcs
+          ? {
+              display: prcs.display,
+              gap: prcs.gap,
+              fs: prcs.fontSize,
+              h: Math.round(pillRow!.getBoundingClientRect().height),
+            }
+          : null,
+        pill1: p1
+          ? {
+              h: Math.round(p1R!.height),
+              w: Math.round(p1R!.width),
+              pad: p1.padding,
+              radius: p1.borderRadius,
+              fs: p1.fontSize,
+              fw: p1.fontWeight,
+            }
+          : null,
+        amountP: apcs
+          ? {
+              fs: apcs.fontSize,
+              fw: apcs.fontWeight,
+              color: apcs.color,
+              h: Math.round(amountP!.getBoundingClientRect().height),
+            }
+          : null,
+        totalCard: {
+          w: Math.round(totalCard.getBoundingClientRect().width),
+          h: Math.round(totalCard.getBoundingClientRect().height),
+        },
+      };
+    });
+    expect(census).not.toBeNull();
+    // The row: 720×102 — the deterministic arithmetic (the 32px actions
+    // row + the 4px h4 mb + the 28px amount block + the 32px p-4 + the
+    // 2px border), byte-identical to the reference's own row.
+    expect(census!.row).toEqual({ w: 720, h: 102 });
+    // The name h4 block.
+    expect(census!.nameH4).toEqual({
+      fs: "16px",
+      fw: "600",
+      color: "rgb(26, 58, 46)",
+      h: 24,
+      mb: "4px",
+    });
+    // The badge pill row + its first pill (the "monthly" default).
+    expect(census!.pillRow).toEqual({ display: "flex", gap: "8px", fs: "12px", h: 20 });
+    expect(census!.pill1).toEqual({
+      h: 20,
+      w: 65,
+      pad: "2px 8px",
+      radius: "9999px",
+      fs: "12px",
+      fw: "400",
+    });
+    // The amount P (the row's own text-xl orange figure).
+    expect(census!.amountP).toEqual({
+      fs: "20px",
+      fw: "700",
+      color: "rgb(224, 122, 59)",
+      h: 28,
+    });
+    // The total card: 720×90 — the v59-pinned chrome's height axis.
+    expect(census!.totalCard).toEqual({ w: 720, h: 90 });
+
+    // --- cleanup (the fixture-restore discipline).
+    await dialog.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await dialog.getByText("Based on 0 items").waitFor();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await restoreRent(page);
+  });
+});

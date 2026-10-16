@@ -54,7 +54,117 @@ and `docs/remediation-plan-v61.md`,
 and `docs/remediation-plan-v62.md`,
 and `docs/remediation-plan-v63.md`,
 and `docs/remediation-plan-v64.md`,
-and `docs/remediation-plan-v65.md`.
+and `docs/remediation-plan-v65.md`,
+and `docs/remediation-plan-v66.md`.
+
+---
+
+---
+
+## Session 100 — Parity iteration v66: the v59-era pair's fresh standing sweep (the calculator dialog + login view re-run) + the axe-core 5.x wrapper watch (an upstream 4.14.0 appears) + the calculator dialog's height-family computed census pin (2026-10-16)
+
+**Goal:** the session-159/160 v66 queue's two items — "the re-run
+cadence rotates to the v59-era pair (the calculator + login views at
+1280 — the oldest remaining after v64/v65 covered the v57/v58 pairs)"
+and "the axe-core 5.x wrapper watch (unchanged next re-check point)" —
+plus the 60th standing checks. **PIN-ONLY** — no production-code
+change; the pin-only line continues. The formal narrative:
+`docs/session_161.md`; the plan: `docs/remediation-plan-v66.md`.
+
+**The fresh calculator pair (1280x800, `vlm-shots-v66.sh` +
+`clone-vlmshots-v66.sh` + `vlm-compare-v66.mjs`): the pair is CLEAN** —
+both style flags DOM-arbitrated via `arbit-v66.sh` + `arbit-v66b.sh`
+(the computed census on both sides, the row-HEIGHT family added) to
+documented classes: the row actions (the POINTER-POSITION class: the
+actions rest at **opacity 0 on BOTH sides** [btnCount 2 each; the v6
+G9/G10 + v45 F2a pins]; the reference's screenshot caught the pair
+mid-reveal — the pointer had rested inside the dialog at shot time, a
+capture-timing artifact) and the "• Will update category total" span
+(the DATA-CONDITIONAL class: renders while total !== item.amount; the
+reference's OWN Rent is natively $25.00 and its single line item sums
+to $25.00 → HIDDEN [measured hasWillUpdateSpan:false]; the clone's
+modal snapshot carries the opened-at parent $1850 against the
+recalculated $25.00 → SHOWN — the conditional itself the pinned
+contract); plus the panel's computed box-shadow censused (the
+reference's two LEADING zero-alpha layers — the Tailwind v4
+computed-form class — over the clone's `.zb-modal-panel` visible layer:
+the documented accepted lead-divergence class, the v49 pin's idiom).
+
+**The fresh login pair (`login-shots-v66.sh` + `clone-login-shots-v66.sh`):
+VERDICT IDENTICAL** — the only distinction the reference's "Edit with
+Base44" FAB (platform chrome, excluded by rule); the census
+byte-for-byte (title "ZeroBudget", h1 "Welcome to ZeroBudget", the
+same placeholders, the Sign in button 368x48, no `<a>` on either side).
+
+**The never-pinned HEIGHT family (the v66 census's own discovery),
+measured BYTE-IDENTICAL on both sides:** the row **720x102** (the
+deterministic arithmetic: the 32px top-actions row + the h4's 4px mb +
+the 28px amount block + the 32px p-4 padding + the 2px border), the
+name h4 block (16px/600/rgb(26,58,46)/h 24/mb 4px), the badge pill row
+(flex/gap 8px/12px/h 20), the first pill (h 20/w 65/pad 2px 8px/
+radius 9999px/12px/400), the amount P (20px/700/rgb(224,122,59)/h 28),
+and the totalCard **h 90** (the 32px total row + the 8px mb-2 + the
+16px caption row + the 32px p-4 + the 2px border — the height
+arithmetic of the v59-pinned chrome).
+
+**F1 — the axe-core 5.x wrapper watch: local NO DRIFT + an upstream
+4.14.0 appears.** The lockfile resolves `@axe-core/playwright` to
+4.13.0; the wrapper's NESTED engine `axe-core@4.13.0` byte-identical
+to the v38–v65 audits; the top-level 4.14.0 still
+eslint-plugin-jsx-a11y's (lint-time only). BUT the npm registry now
+carries `@axe-core/playwright@4.14.0` (a MINOR bump inside the
+documented 4.x family, NOT the guarded 5.x; the pinned ^4.13.0 would
+admit it on an unconstrained fresh install but the lockfile holds the
+tree) — recorded as the candidate for a future DEDICATED upgrade
+iteration (bump deliberately + re-run the full a11y gate + re-audit
+the rule coverage — never a side-effect lockfile drift). The next
+re-check point: unchanged.
+
+**The 60th standing checks (`ref-standing-v60.sh` +
+`standing-checks-v60.sh`, version-bumped from v59):** reference — the
+four bugs ALL live + the data census unchanged (the 60th clean drift
+check) + the SEO pair live; clone — R1-R4 green, the mobile navigation
+menu **VERIFIED WORKING (the 60th consecutive time)**, zero overflow
+at 390 on all five views.
+
+**The v66 pin (+1 → 268): the calculator dialog's HEIGHT-family
+computed census at 1280** (`tests/e2e/calculator.spec.ts`, a new
+describe after the v59 panel-census block, riding the established
+add-then-restoreRent fixture flow): the row 720x102/pad 16px/radius
+12px/border-top 1px solid rgb(229,231,227)/bg white, the name h4
+16px/600/rgb(26,58,46)/h 24/mb 4px, the badge pill row flex/gap 8px/
+12px/h 20, the first pill h 20/w 65/pad 2px 8px/radius 9999px/12px/
+400, the amount P 20px/700/rgb(224,122,59)/h 28, the totalCard 720x90.
+**THREE pin-sanity mutations verified to FAIL then restored** (the row
+p-4→p-2 [pad 16→8 + row h 102→70 — caught by the v66 pin AND the
+v45/v49/v53/v59 row pins, 6 failures]; the h4 mb-1→mb-2 [the nameH4
+mb axis 4→8]; the totalCard p-4→p-2 [pad 16→8 + totalCard h 90→58] —
+each with the standalone REBUILD as a SEPARATE command).
+
+**The 16 screenshots: 15 byte-identical + 1 the documented
+dialog-default DATE class** (07-add-item-modal — the calendar rolled
+past midnight; the committed set 2026-10-15, this capture 2026-10-16).
+Re-arbitrated with a STRONGER method: a programmatic pixel-diff
+localized the change to a 16x22 px region at (1552,931)–(1568,953) —
+exactly the date input's day digits "15"→"16"; everything else in the
+2880x1800 frame byte-stable.
+
+**Probe lessons:** the VLM's "shorter row" was a perception artifact
+(the row 720x102 BOTH sides — always measure the computed heights
+before believing a proportion claim); the fresh-login first fetch can
+exceed the wait window (the reference's /expenses rendered "0 items"
+transiently before the data landed — retry the finder on a warm
+session); the height arithmetic is deterministic (32+4+28+32+2 = 102 —
+a pin on the parts makes the whole predictable); a single-region
+screenshot diff is better arbitrated by a programmatic pixel-diff than
+a VLM verdict.
+
+**Full chain green:** lint + typecheck + 108 unit + build + 268 e2e
+(the --list convention; 267 chromium + 1 setup — the chunk runs 95 +
+96 + 79) + 35/35 smoke. **The docs aligned** (AGENTS/CLAUDE/README/
+SKILL Session 101 row + the 268 state/PAD v1.1.23/the probe README's
+v66 section/session_161/the repo worklog Session 100). Shipped to
+`main` via the SSH wrapper, remote-verified, keys shredded.
 
 ---
 
