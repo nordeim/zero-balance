@@ -55,9 +55,116 @@ and `docs/remediation-plan-v62.md`,
 and `docs/remediation-plan-v63.md`,
 and `docs/remediation-plan-v64.md`,
 and `docs/remediation-plan-v65.md`,
-and `docs/remediation-plan-v66.md`.
+and `docs/remediation-plan-v66.md`,
+and `docs/remediation-plan-v67.md`.
 
 ---
+
+---
+
+## Session 101 — Parity iteration v67: the v60-era pair's fresh standing sweep (the networth + drill-down EXPANDED re-run) + the axe-core 5.x wrapper watch (the upgrade DECISION: v68 = the dedicated upgrade iteration) + the networth summary card's height-family computed census pin (2026-10-16)
+
+**Goal:** the session-161/162 v67 queue's two items — "the re-run
+cadence rotates to the v60-era pair (the networth-view desktop 1280
+standing pair — the oldest remaining after v64/v65/v66 covered the
+v57/v58/v59 pairs)" and "the axe-core wrapper upgrade decision (the
+upstream 4.14.0 — a dedicated upgrade iteration, never a drift)" —
+plus the 61st standing checks. **PIN-ONLY** — no production-code
+change; the pin-only line continues. The formal narrative:
+`docs/session_163.md`; the plan: `docs/remediation-plan-v67.md`.
+
+**The v60-era pair re-run (BOTH of that era's pairs — the v66 precedent:
+the v59-era re-run covered the calculator + login set), FULL-PAGE at
+1280x800 via vlm-shots-v67.sh + clone-vlmshots-v67.sh +
+vlm-compare-v67.mjs: the pair is CLEAN.** The networth half: VERDICT
+IDENTICAL — the VLM found ZERO layout/style differences ("pixel-perfect
+matches" on the nav rail, the page header, the summary card
+geometry/gradient, the tab bar, the card layouts, the typography, the
+spacing); every difference the expected DATA class + the Base44 FAB
+(platform chrome, excluded by rule). The drill-down EXPANDED half:
+VERDICT DIFFERENT with 5 style flags, every one DOM-arbitrated via
+arbit-v67.sh + arbit-v67b.sh (the two-part computed census on both
+sides — the five flags + the networth summary-card HEIGHT family) to
+documented classes: the Dashboard nav highlight (the root-URL
+active-nav gap, re-confirmed live: the reference transparent/zinc-700/
+400 vs the clone transparent/white/500 — the superset contrast #3),
+the avatar ("U" vs "D" — the user-identity class), the hero
+progress-bar fill (the pct × 568 data class re-measured live: the
+track 568×12 rgba(255,255,255,0.1) BYTE-IDENTICAL both sides, the
+fills 173/357 = each site's own allocation pct), the donut percentage
+labels (the PERCEPTION ARTIFACT re-confirmed live: both sides render
+count 4 [1 group + 3 labels]/labelLineCount 0/16px/black/3 sectors —
+the v9 G1b contract holds), and the stat cards' footer TREND ICONS (a
+NEW flag variant — "different paths/angles" — DOM-arbitrated to a
+PERCEPTION ARTIFACT via a GLYPH census: the icons BYTE-IDENTICAL
+16×16/rgb(143,188,63)/viewBox "0 0 24 24" with the same two-polyline
+Heroicons-v1 outline trending-up — POLYLINE-based, no `<path>`
+element, which is why the census needs the innerHTML glyph signature;
+plus the hero-glyph census: the same 7 svgs in the same order on both
+sides, every path signature byte-identical).
+
+**The arbitration's own discovery — the never-pinned HEIGHT family**
+(the v60 F1 pin covered the card's width/pad/radius/gradient/shadow +
+the fonts + the grid template/gap; the v63 F3 pin the stat-tile
+heights at 390 — NEVER the 1280 heights), measured BYTE-IDENTICAL on
+both sides: the card **960×333** (the deterministic arithmetic 32 +
+76 + 32 + 84 + 24 + 24 + 1 + 28 + 32), the head row **h 76** (the
+label h 20 + mb 8 + the figure h 48 govern; the 64px medallion rides),
+the figure **h 48** (lh 48px), the stat grid **rows "84px"/h 84** (ONE
+row at 1280 — the 390 twin's two-row 184 is the v63 class), the stat
+tile **440×84** (pad 16 + the label 16 + mb 4 + the amount 32 + pad
+16), the ratio footer **mt/pt 24/24 + border 1px + h 53** (the pt 24 +
+the border 1 + the ratio row 28 — text-lg's 28px lh).
+
+**The axe watch + the upgrade DECISION:** local NO DRIFT (the registry
+state unchanged from v66 — npm-latest 4.14.0 with the declared nested
+engine axe-core ~4.14.0 verified by packing the tarball; the lockfile
+resolves 4.13.0; the NESTED engine axe-core@4.13.0 byte-identical to
+the v38–v66 audits; the top-level 4.14.0 still eslint-plugin-jsx-a11y's
+— lint-time only). **The DECISION: the 4.14.0 upgrade is DEFERRED TO A
+DEDICATED v68 ITERATION** — never a drift, never a rider (the upgrade
+changes the toolchain the a11y.spec.ts contract executes under and
+deserves an iteration whose center of gravity is the toolchain change;
+the complete specification — the pin bump ^4.13.0→^4.14.0 + the
+lockfile regeneration + the nested-engine verify + the full a11y gate
+re-run + the rule-coverage re-audit — is carried in the v67 plan's v68
+queue). The watch's next re-check point unchanged.
+
+**The v67 pin (+1 → 269):** the networth summary card's HEIGHT-family
+computed census at 1280 (tests/e2e/networth.spec.ts, a new describe
+after the v60 F1 block, the read-only logged-in state — no fixture
+flow needed): the card 960×333, the head row h 76/mb 32px, the label
+mb 8px/h 20, the figure lh 48px/h 48, the medallion h 64/iconH 32,
+the stat grid rows "84px"/h 84, the stat tile h 84/labelH 16/labelMb
+4px/amtH 32, the ratio footer mt 24px/pt 24px/borderTopW 1px/h 53.
+GREEN on first run. THREE pin-sanity mutations verified to FAIL then
+restored (the head row mb-8→mb-4 [mb 32→16 + card h 333→317]; BOTH
+stat tiles p-4→p-2 [the shared-class regression — a FIRST-tile-only
+mutation does NOT move the axis: the tile height is STRETCH-GOVERNED,
+the grid row follows the taller p-4 sibling and stretches the p-2
+tile back to 84, measured live; BOTH tiles: pad 16→8 + tile h 84→68 +
+grid rows "84px"→"68px" + card h 333→317]; the ratio footer mt-6
+pt-6→mt-3 pt-3 [mt/pt 24→12 + footer h 53→29 + card h 333→309] — each
+with the standalone REBUILD as a SEPARATE command).
+
+**The 61st standing checks** (ref-standing-v61.sh +
+standing-checks-v61.sh, version-bumped from the v60 family): the
+mobile menu VERIFIED WORKING (the 61st consecutive time), the
+reference's four bugs ALL live (toast-blocker, sheet-trap,
+no-landmark, the 464px /networth overflow), the data census intact
+(the 61st clean drift check), the SEO pair live. **The 16 screenshots
+BYTE-IDENTICAL** (no production-code change; the capture date
+matching the committed set's). Full chain: lint + typecheck + 108
+unit + build + 269 e2e (97 + 97 + 77 chunks) + 35/35 smoke green.
+The docs aligned (AGENTS/CLAUDE/README/SKILL Session 102 row + the 269
+state/PAD v1.1.24/the probe README's v67 section/session_163/the repo
+worklog Session 101 + the ledger list). **Next** (the v68 queue): (1)
+the DEDICATED axe-core wrapper upgrade iteration (the pin bump
+^4.13.0→^4.14.0 + the lockfile regeneration + the nested-engine verify
++ the full a11y gate re-run + the rule-coverage re-audit), (2) the
+re-run cadence rotates to the v61-era pair (the dashboard full-page
+1280 — the quick-action row + the Budget Guidelines card), (3) the
+deferred reference-write censuses (unchanged).
 
 ---
 

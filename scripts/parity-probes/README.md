@@ -2971,3 +2971,100 @@ axe-core 5.x wrapper watch) and the 60th standing checks.
    capture script's date field (the Add Item dialog's todayIso() default)
    re-renders daily. Expect exactly one 16-pixel-region diff per
    overnight regeneration; the class is documented, never a regression.
+
+## v67 — the v60-era pair's fresh standing sweep + the axe-core 5.x
+wrapper watch (the upgrade DECISION: v68 = the dedicated upgrade
+iteration) + the networth summary card's height-family pin (session-158)
+
+The session-161/162 v67 queue's two items (the re-run cadence rotates to
+the v60-era pair — the networth view + the dashboard drill-down EXPANDED
+re-run at 1280, the oldest remaining after v64/v65/v66 covered the
+v57/v58/v59 pairs — and the axe-core wrapper upgrade decision) and the
+61st standing checks.
+
+1. **vlm-shots-v67.sh / clone-vlmshots-v67.sh / vlm-compare-v67.mjs** —
+   the v60-era pair re-run, BOTH of that era's pairs (the v66 precedent:
+   the v59-era re-run covered the calculator + login set): the networth
+   FULL-PAGE pair + the dashboard drill-down EXPANDED pair at 1280x800
+   (the expansion clicks are VIEW-STATE toggles — safe under the v46
+   read-only rule; the parked-pointer discipline at (5,5) before every
+   shot so no hover-revealed chrome is caught mid-flight). The networth
+   half: VERDICT IDENTICAL, zero style flags. The drill-down half:
+   5 style flags, all arbitrated (item 3).
+2. **ref-standing-v61.sh / standing-checks-v61.sh** — the 61st standing
+   checks (version-bumped from v60). Reference: the four bugs ALL live +
+   the data census unchanged (61st clean drift check) + the SEO pair.
+   Clone: R1-R4 green — the mobile menu VERIFIED WORKING (61st
+   consecutive time), zero overflow at 390 on all five views.
+3. **arbit-v67.sh + arbit-v67b.sh** — the two-part DOM arbitration
+   census (both sides at 1280x800): PART A the five drill-down flags —
+   the nav highlight (the root-URL active-nav gap: the reference
+   transparent/zinc-700/400 vs the clone transparent/white/500), the
+   avatar (the user-identity class), the hero progress fill (the pct ×
+   568 data class: the track 568x12 byte-identical, the fills 173/357 =
+   each site's own allocation pct), the donut percentage labels (the
+   perception artifact re-confirmed: both sides count 4 [1 group + 3
+   labels]/labelLineCount 0/16px/black/3 sectors), and the stat cards'
+   footer TREND ICONS (a NEW flag variant — "different paths/angles" —
+   arbitrated via the GLYPH census: byte-identical 16x16/
+   rgb(143,188,63)/"0 0 24 24" with the same two-polyline Heroicons-v1
+   outline trending-up; plus the hero-glyph census: the same 7 svgs in
+   the same order both sides); PART B the networth summary card's HEIGHT
+   family (the F-pin candidate): the card 960x333, the head row h 76/mb
+   32px, the label mb 8px/h 20, the figure lh 48px/h 48, the medallion
+   64x64 + icon 32x32, the stat grid rows "84px"/h 84, the stat tile
+   440x84 (label 16 + mb 4 + amount 32 + pad 32), the ratio footer
+   mt/pt 24/24 + border 1px + h 53 — BYTE-IDENTICAL on both sides.
+4. **F1 — the axe-core 5.x wrapper watch + the upgrade DECISION** —
+   local NO DRIFT (the registry state unchanged from v66: npm-latest
+   4.14.0 with the declared nested engine axe-core ~4.14.0, verified by
+   packing the tarball; the lockfile resolves 4.13.0; the NESTED engine
+   axe-core@4.13.0 byte-identical to the v38–v66 audits; the top-level
+   4.14.0 still eslint-plugin-jsx-a11y's — lint-time only). THE
+   DECISION: the 4.14.0 upgrade is DEFERRED TO A DEDICATED v68
+   ITERATION — never a drift, never a rider. The complete upgrade
+   specification (the pin bump ^4.13.0→^4.14.0 + the lockfile
+   regeneration + the nested-engine verify + the full a11y gate re-run +
+   the rule-coverage re-audit) is carried in the v67 plan's v68 queue.
+5. **The v67 pin** (tests/e2e/networth.spec.ts) — the networth summary
+   card's HEIGHT-family computed census at 1280 (a new describe after
+   the v60 F1 block, the read-only logged-in state, no fixture flow
+   needed): the card 960x333, the head row h 76/mb 32px, the label mb
+   8px/h 20, the figure lh 48px/h 48, the medallion h 64/iconH 32, the
+   stat grid rows "84px"/h 84, the stat tile h 84/labelH 16/labelMb
+   4px/amtH 32, the ratio footer mt 24px/pt 24px/borderTopW 1px/h 53.
+   Three pin-sanity mutations verified to FAIL (the head row mb-8→mb-4;
+   BOTH stat tiles p-4→p-2 — the shared-class regression, see lesson 5;
+   the ratio footer mt-6 pt-6→mt-3 pt-3).
+6. **The screenshots** — the 16-screenshot regeneration came out 16/16
+   BYTE-IDENTICAL (no production-code change; the capture date matching
+   the committed set's — no DATE-class diff this run).
+
+**The v67 lessons:**
+1. The single-quote-selector rule bites BOTH ways — the v60 lesson #1
+   (a single quote inside a single-quoted bash string terminates it)
+   applies inside the quoted-heredoc clone script too: the eval
+   argument is ITSELF a single-quoted bash string. Use double-quoted
+   attribute-value selectors — closest("[class*=grid]") — never
+   closest('[class*="grid"]'). The failure signature is the same: an
+   empty eval line between the === markers.
+2. A `const` census variable assigned inside a walk-up loop throws
+   "Assignment to constant variable" — and with stderr discarded the
+   ONLY signature is that same empty eval line. Debug census evals
+   with stderr visible before assuming a finder problem.
+3. A childless-div finder pattern FAILS on container tracks — the hero
+   progress TRACK legitimately carries the fill as a child. Drop the
+   !children.length requirement when the element is a container; filter
+   by geometry + computed chrome instead.
+4. The reference's Heroicons-v1 trend glyph is POLYLINE-based — the svg
+   carries NO `<path>` element, so a path-`d` signature census returns
+   null. A glyph census needs the innerHTML signature (the polyline
+   points); pathSig null ≠ broken, it means "no path element".
+5. The stat tile's height at 1280 is STRETCH-GOVERNED — the grid row
+   follows the TALLER sibling and stretch-fills both tiles to it
+   (align-items: stretch, the default). A FIRST-tile-only pad mutation
+   leaves the pinned h axis untouched (measured live: pad 8px + h 84 on
+   the mutated tile beside its p-4 sibling) — the pin-sanity mutation
+   must be the SHARED-class regression (both tiles). The stretch also
+   explains the arithmetic's stability: both tiles share the content
+   structure, so the row = either tile's natural height.

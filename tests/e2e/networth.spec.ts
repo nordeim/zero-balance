@@ -1720,3 +1720,143 @@ test.describe("net worth view census at 1280 (v60 — plan F1)", () => {
     expect(census.docSW).toBe(1280);
   });
 });
+
+test.describe("net worth summary card HEIGHT census at 1280 (v67 — plan F3)", () => {
+  // The v67 re-run pair's pin: the summary card's computed HEIGHT family at
+  // the 1280x800 pair viewport — the arbitration census (arbit-v67.sh +
+  // arbit-v67b.sh) measured the family byte-identical on BOTH sites, a
+  // family never pinned before v67: the v60 F1 pin covers the card's
+  // width/pad/radius/gradient/shadow + the figure/label/medallion/tile
+  // FONTS + the grid template/gap + the ratio value's text axes; the v63
+  // F3 pin the stat-tile heights at 390 — NEVER the 1280 heights. The
+  // arithmetic is deterministic: the card h 333 = 32 (pad-top) + 76 (the
+  // head row: the label h 20 + mb 8 + the figure h 48) + 32 (the head
+  // row's mb-8) + 84 (the one-row stat grid: the tile h 84 = pad 16 +
+  // the label h 16 + mb 4 + the amount h 32 + pad 16) + 24 (the footer's
+  // mt-6) + 24 (the footer's pt-6) + 1 (the border-top) + 28 (the ratio
+  // row — text-lg's 28px line-height) + 32 (pad-bottom).
+  test("the summary card's height family — the card h 333, the head row 76, the figure h 48, the grid rows 84, the tile h 84, the footer h 53 (v67 F3)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const label = [...document.querySelectorAll("p, span, h2, div")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      if (!label) return null;
+      const card = label.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      const cr = card.getBoundingClientRect();
+      const cs = getComputedStyle(card);
+      // The head row: the label block's parent — the flex justify-between
+      // holding the label+figure block beside the medallion.
+      const headRow = (label.closest("div") as HTMLElement | null)?.parentElement ?? null;
+      const hrs = headRow ? getComputedStyle(headRow) : null;
+      const hrr = headRow ? headRow.getBoundingClientRect() : null;
+      // The label + the figure.
+      const lcs = getComputedStyle(label);
+      const lr = label.getBoundingClientRect();
+      const h2 = [...card.querySelectorAll("h1, h2, h3, p")].find(
+        (e) => /-?\$[\d,]+\.\d{2}/.test((e.textContent || "").trim()) && e !== label,
+      );
+      const h2cs = h2 ? getComputedStyle(h2) : null;
+      const h2r = h2 ? h2.getBoundingClientRect() : null;
+      // The medallion (the round icon chip).
+      const chip = [...card.querySelectorAll("div")].find((d) => {
+        const r = d.getBoundingClientRect();
+        const c = getComputedStyle(d);
+        return r.width > 40 && r.width < 90 && c.borderRadius === "9999px" && d.querySelector("svg");
+      });
+      const svg = chip ? chip.querySelector("svg") : null;
+      // The stat grid + the first tile (Total Assets).
+      const assetsLabel = [...card.querySelectorAll("p, span")].find(
+        (e) => (e.textContent || "").trim() === "Total Assets",
+      );
+      const grid = assetsLabel ? assetsLabel.closest("[class*=grid]") : null;
+      const gcs = grid ? getComputedStyle(grid) : null;
+      const gr = grid ? grid.getBoundingClientRect() : null;
+      const tile = assetsLabel ? assetsLabel.closest("[class*=rounded]") : null;
+      const tr = tile ? tile.getBoundingClientRect() : null;
+      const alr = assetsLabel ? assetsLabel.getBoundingClientRect() : null;
+      const alcs = assetsLabel ? getComputedStyle(assetsLabel) : null;
+      const amt = tile
+        ? [...tile.querySelectorAll("p, span")].find((e) => e !== assetsLabel && /\$/.test(e.textContent || ""))
+        : null;
+      const ar = amt ? amt.getBoundingClientRect() : null;
+      // The ratio footer: walk UP from the ratio leaf to the border-t block.
+      const ratioLabel = [...card.querySelectorAll("span, p, div")].find(
+        (e) => /Asset to Liability Ratio/.test(e.textContent || "") && e.children.length === 0,
+      );
+      let footer: HTMLElement | null = null;
+      if (ratioLabel) {
+        let node: HTMLElement | null = ratioLabel as HTMLElement;
+        while (node && node !== card) {
+          const s = getComputedStyle(node);
+          if (parseInt(s.borderTopWidth || "0") > 0) { footer = node; break; }
+          node = node.parentElement;
+        }
+      }
+      const fcs = footer ? getComputedStyle(footer) : null;
+      const fr = footer ? footer.getBoundingClientRect() : null;
+      return {
+        card: { w: Math.round(cr.width), h: Math.round(cr.height), pad: cs.padding, radius: cs.borderRadius },
+        headRow: hrs && hrr ? { h: Math.round(hrr.height), mb: hrs.marginBottom, display: hrs.display } : null,
+        label: { mb: lcs.marginBottom, h: Math.round(lr.height) },
+        figure: h2cs && h2r ? { lh: h2cs.lineHeight, h: Math.round(h2r.height) } : null,
+        medallion: chip
+          ? {
+              h: Math.round(chip.getBoundingClientRect().height),
+              iconH: svg ? Math.round(svg.getBoundingClientRect().height) : null,
+            }
+          : null,
+        statGrid: gcs && gr ? { rows: gcs.gridTemplateRows, h: Math.round(gr.height) } : null,
+        statTile: tr && alr && alcs && ar
+          ? {
+              h: Math.round(tr.height),
+              labelH: Math.round(alr.height), labelMb: alcs.marginBottom,
+              amtH: Math.round(ar.height),
+            }
+          : null,
+        ratioFooter: fcs && fr
+          ? {
+              mt: fcs.marginTop, pt: fcs.paddingTop, borderTopW: fcs.borderTopWidth,
+              h: Math.round(fr.height),
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("networth height census found no card");
+
+    // The card — the w/pad/radius controls (the v60 F1 axes) + the height
+    // axis: the deterministic 333 (32 + 76 + 32 + 84 + 24 + 24 + 1 + 28 + 32).
+    expect(census.card).toEqual({ w: 960, h: 333, pad: "32px", radius: "16px" });
+
+    // The head row — h 76 (the label 20 + mb 8 + the figure 48 govern; the
+    // 64px medallion rides), the 32px mb-8 rhythm below it.
+    expect(census.headRow).toEqual({ h: 76, mb: "32px", display: "flex" });
+
+    // The label — mb 8px (mb-2), h 20 (text-sm's 20px line box).
+    expect(census.label).toEqual({ mb: "8px", h: 20 });
+
+    // The figure — lineHeight 48px, one line, h 48 (sm:text-5xl's lh-1).
+    expect(census.figure).toEqual({ lh: "48px", h: 48 });
+
+    // The medallion — 64 tall, the 32px icon (the v63 F3 axes at 1280).
+    expect(census.medallion).toEqual({ h: 64, iconH: 32 });
+
+    // The stat grid — ONE 84px row at 1280 (the 390 twin's two-row 184 is
+    // the v63 F3 class), the grid h 84.
+    expect(census.statGrid).toEqual({ rows: "84px", h: 84 });
+
+    // The stat tile — h 84 (pad 16 + the label 16 + mb 4 + the amount 32 +
+    // pad 16); the label mb 4px (mb-1), the amount h 32 (text-2xl's 32px
+    // line box).
+    expect(census.statTile).toEqual({ h: 84, labelH: 16, labelMb: "4px", amtH: 32 });
+
+    // The ratio footer — mt-6/pt-6 (24/24), the 1px border-top, h 53
+    // (the pt 24 + the border 1 + the ratio row 28 — text-lg's 28px lh).
+    expect(census.ratioFooter).toEqual({ mt: "24px", pt: "24px", borderTopW: "1px", h: 53 });
+  });
+});
