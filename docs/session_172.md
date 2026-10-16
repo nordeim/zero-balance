@@ -1,3 +1,72 @@
+我将继续执行 zero-balance 仓库的 v70 一致性维护迭代任务。用户明确指示不提问直接继续，我先建立任务清单并开始工作。
+工作区已被重置，需要重新 clone 仓库。开始执行：
+仓库已 clone 成功，最新提交是 v70 迭代（fade38e）。现在通读核心文档：
+核心文档行数少但内容很长（长行）。让我读取完整内容：
+长行导致输出被持久化。用 fold 处理后分块阅读：
+AGENTS.md 已通读。现在读取 v70 计划文档与会话日志：
+现在读取 remediation-plan-v70.md 确认 v71 队列：
+现在读取 worklog 尾部确认最新会话条目编号与惯例：
+worklog 是新条目在顶部。读取头部最新条目：
+现在理解了状态：v70 已交付（272 e2e），当前任务是 **v71 迭代**。继续读取 CLAUDE.md 与 README：
+核心文档已通读。现在验证环境状态并建立基线。先更新工作区 worklog 与任务清单：
+如预期：全新 clone 无 .env、无 db/、无 node_modules，且沙箱有 `DATABASE_URL` 污染（文档已记载）。检查 .env.example 并搭建环境：
+环境就绪。开始 F0 基线链 —— 先 lint + typecheck + unit：
+Lint ✓ · typecheck ✓ · 108/108 unit ✓。现在 build：
+Build ✓（robots + sitemap 预渲染）。现在分块运行 272 个 e2e。先统计 spec 文件清单：
+每文件计数与总数有差异，检查 playwright.config.ts 的项目结构：
+确认：272 e2e = 271 chromium + 1 setup（每文件计数含 setup 污染）。分块方案：91 + 89 + 91。运行 Chunk 1：
+Chunk 1 ✓ (92 = 91 chromium + setup)。运行 Chunk 2：
+E2E 全绿：92 + 90 + 92（271 chromium + 3 setups = 272 惯例）。运行 smoke test：
+**F0 完成 — 基线链全绿**（lint · typecheck · 108 unit · build · 272 e2e · 35 smoke，无 F0 发现）。
+
+现在 F1 — axe-core watch 复查点：
+**F1 完成 — 无偏移 (NO DRIFT)**（npm-latest 4.14.0，无 5.x；lockfile 保持 v68 dedupe 状态；engine-contract pin 独立复验通过）。
+
+F2 — 第 65 次 standing checks。先读 v64 脚本以进行版本升级：
+创建 v65 standing check 脚本（从 v64 进行版本升级）：
+参考站侧 ✓ — 四个 bug 均仍在线（toast-blocker `hitIsBurgerChild:false`、sheet-trap `overlayCount:1`、no-landmark、/networth 464px 溢出）、数据 census 无漂移（第 65 次）、SEO 对在线。现在 clone 侧：
+**F2 完成 — 第 65 次 standing checks 全绿**（移动端导航菜单第 65 次验证工作正常、五视图零溢出、参考站四 bug 均在线）。
+
+F3 — NEW-pair 程序（items 视图 mobile 390 全页面对）。先研究 v69 家族（最近的 mobile 390 twin 工作）：
+理解了 v69 模式。现在创建 v71 探针家族 —— NEW-pair 程序：items 三视图（income/expenses/savings）的 mobile 390 全页面对。先查看 with-server.sh：
+创建 v71 探针家族（三脚本）：
+双侧截图完成（首次登录均成功）。运行 VLM 成对比较：
+VLM 结果：PAIR 1（income）**IDENTICAL**；PAIR 2（expenses）与 PAIR 3（savings）DIFFERENT，各 3 个 style flags —— 按 v43 规则全部需要 DOM 仲裁（特别是 savings "active badge 样式"声明与 expenses "subtitle 条件渲染"声明）。先研究 arbit-v70.sh 模式：
+研究 clone 的 item-card 结构以设计 census（subtitle 条件渲染与 badge 家族）：
+检查 seed 数据以确定 e2e 卡片构成：
+理解了完整模式。现在编写 arbit-v71.sh —— mobile 390 双侧 census（badge/footer/subtitle/active badge 仲裁）：
+census 完成。分析双侧输出：
+**仲裁完成 —— 发现一个真实差距**：参考站的 Miscellaneous/Investments 卡片（空 subcategory）渲染 `subtitleP: {present: false}`、titleRowH 28、卡片 h 180 —— **参考站条件渲染 subtitle P**；而 clone 的 item-card.tsx 无条件渲染空 P（`{item.subcategory ?? ""}`，多出 20px 空块）。其余所有 flag 均仲裁为已记载类别（footer DATA-CONDITIONAL、badge wrap、active badge 字节相同 = VLM 感知伪影）。
+
+检查 items.spec.ts 尾部与 fixture 模式，规划 TDD：
+检查 items-view 对 ItemCard 的使用与 subcategory 的其他渲染点：
+确认：`item-card.tsx:127` 是唯一无条件 subcategory 渲染点（details sheet 已用 v52 条件式）。所有仲裁完成，现在编写 remediation-plan-v71.md：
+整改计划已保存。现在执行 TDD —— 先写两个新 e2e 测试（F4 回归 + F5 pin）。查看 items.spec.ts 尾部：
+卡片根元素确认（div.rounded-xl）。现在追加两个新 describe 到 items.spec.ts 尾部：
+TDD 第一步：对当前（未修复）build 运行新测试 —— F4 应 RED，F5 应 GREEN：
+**TDD RED 确认** —— F4 回归测试在未修复 build 上如期失败（空 P 仍在渲染）；F5 pin 首跑即 GREEN。现在应用修复：
+仍有一个失败 —— 查看具体断言：
+修复生效（subtitlePresent=false 通过），但 titleRowH=36 ≠ 28 —— 原因：income 卡片有 36px kebab（h-9）主导行高，而参考站的无 sub 卡片是 **expense 卡**（无 kebab，action 行为绝对定位）。正确 fixture 应为 expense。查看 expense 的删除流程模式：
+
+工作区仍然存在。让我检查当前状态以确认之前的工作进度：
+工作区完好，v71 迭代正在进行中。上个会话在 F4 测试修复处中断（fixture 需改用 expense 卡片）。让我恢复上下文：
+Fixture 需改为 expense 卡片（无 kebab，title row 可折叠到 28px）。先确认 expense 卡片的操作行结构与现有 expense 删除流程模式：
+Card 结构确认：expense 卡片无 kebab（action 行为 absolute），删除经由 Edit 对话框（superset delete）。查找现有 expense 经 Edit 对话框删除的测试模式：
+Dialog 确认栏结构清楚了。现在检查 /expenses 页面的 Add 按钮与 header 计数模式，以及 seed 中 expense 的构成：
+Seed 确认：3 笔支出合计 $2235.00。检查 onDelete 行为与 /expenses 的 Add Expense 流程：
+所有模式已确认。现在重写 F4 测试 — 将 fixture 从 income（有 36px kebab）改为 expense 卡（无 kebab，title row 可折叠到 28px）：
+默认值确认：need + monthly + active = 3 个徽章，recurring 关闭 — 与参考站 Miscellaneous 卡（180px）完全同构。现在重写 F4 fixture：
+现在更新断言部分（header 计数）与 fixture 恢复流程（expense 经 Edit 对话框删除）：
+Census 逻辑对 expense 卡同样适用（header wrapper 含 h4，无 kebab 干扰）。现在修正断言计数与删除流程：
+Fixture 已重写。现在检查 e2e 运行方式（playwright config 的 webServer 设置）：
+e2e 跑在生产 standalone build 上，上次会话的 build 已含修复（subtitlePresent 已通过）。现在对重写后的 expense fixture 运行 F4 — 预期 GREEN：
+F4 仍失败，查看具体断言错误：
+titleRowH=28 通过但 cardH=230（预期 180）— 50px 差异需要定位。临时加调试输出测量卡片内部各块高度：
+谜底揭晓：子块总和 = 180（titleRow 28 + amount 32 + badge 22 + footer 16 + margins + pad），但卡片实际 230 — **GRID STRETCH**（v70 教训：同行卡片拉伸到最高兄弟的高度）。探针卡与 seed 的 230px 卡片同行。参考站的 180 是在 390 移动端测的（1 列网格，自然高度）。查看 F5 测试如何设置 390 视口：
+F5 模式确认：`setViewportSize({width: 390, height: 844})` 后 goto。F4 应同样在 390 运行（匹配 arbit-v71 测量上下文，1 列网格 → 自然高度 180）。确认 390 下 Add 按钮与对话框可用性：
+390 下 1 列网格确认（line 262: `grid-cols-1 ... lg:grid-cols-3`）。现在重写 F4：加 390 视口 + 移除调试输出：
+**F4 GREEN（绿色）！** 390 视口 + expense 夹具下全部断言通过。现在按 v70 规范执行 pin-sanity 变异检查 — 还原未修复代码验证 F4 会失败：
+
 The repo has been freshly re-cloned at v70 state (fade38e) — the previous session's uncommitted v71 work (fix, tests, remediation plan) was lost in the workspace reset. I must redo the v71 iteration from the documented state. First, let me re-read the core docs to re-establish context.
 The persisted-output nesting is unhelpful. Let me read the folded file in sections via bash.
 Now let me read the remaining key docs — worklog head (latest entry), remediation-plan-v70.md (v71 queue), and session_170.md.
