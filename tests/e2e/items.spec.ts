@@ -2533,3 +2533,120 @@ test.describe("the savings goal-card census at 1280 (v58 — plan F1)", () => {
     expect(census!.badges![0].iconW).toBe(12);
   });
 });
+
+// v70 F4 (docs/remediation-plan-v70.md): the EXPENSES view's filter card
+// at desktop 1280 — the last never-census'd filter-card variant (the v38
+// S2 pin covered the /savings instance, the v64 pin the /income variant,
+// the v52 F3 pin the expenses card's MOBILE 390 state only; the v37 S3
+// payment-trigger pin asserts the trigger's 216×36 geometry alone). The
+// expenses DESKTOP variant differs structurally from both siblings: the
+// `lg:grid-cols-4` grid with the search NOT spanning (1 col, 216 wide —
+// vs the income/savings 447 two-col span) and the 4th child — the third
+// payment-method combobox. Measured BYTE-IDENTICAL on BOTH sites via
+// arbit-v70.sh (the v70 items-pair re-run): the card 960×86, the search
+// 216×36 with the asymmetric 40px left pad, the 4-track 215.5px grid,
+// the three 216×36 comboboxes at 14px. This pin locks the computed
+// geometry. Read-only (the logged-in storageState, no fixture flow).
+test.describe("expenses view filter-card census at 1280 (v70 — plan F4)", () => {
+  test("the filter-card computed census at 1280 — the search NOT spanning, the 4-child grid, the 3 comboboxes (v70 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const search = document.querySelector<HTMLInputElement>(
+        "input[placeholder^='Search expense']",
+      );
+      if (!search) return null;
+      const card = search.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      const ccs = getComputedStyle(card);
+      const scs = getComputedStyle(search);
+      // the inner grid: the card's direct grid child
+      const inner = [...card.children].find(
+        (c) => getComputedStyle(c).display === "grid",
+      );
+      const ics = inner ? getComputedStyle(inner) : null;
+      return {
+        card: {
+          w: Math.round(card.getBoundingClientRect().width),
+          h: Math.round(card.getBoundingClientRect().height),
+          pad: ccs.padding,
+          radius: ccs.borderRadius,
+          bg: ccs.backgroundColor,
+          border: ccs.borderTopColor,
+          mb: ccs.marginBottom,
+        },
+        search: {
+          w: Math.round(search.getBoundingClientRect().width),
+          h: Math.round(search.getBoundingClientRect().height),
+          pad: scs.padding,
+          radius: scs.borderRadius,
+          border: scs.borderTopColor,
+        },
+        innerGrid: ics
+          ? {
+              cols: ics.gridTemplateColumns,
+              gap: ics.gap,
+              childCount: inner!.children.length,
+            }
+          : null,
+        comboboxes: inner
+          ? [...inner.querySelectorAll<HTMLElement>('[role="combobox"]')].map(
+              (c) => ({
+                w: Math.round(c.getBoundingClientRect().width),
+                h: Math.round(c.getBoundingClientRect().height),
+                fs: getComputedStyle(c).fontSize,
+                text: (c.textContent || "").trim().slice(0, 22),
+              }),
+            )
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The card chrome — measured byte-identical on BOTH sites (the same
+    // 960-wide [the rail 256 + the content column 1024 − the p-8 64]
+    // 86-tall [24 pad + 36 control + 24 pad + the 2px borders] card as
+    // the income/savings variants — the shared component).
+    expect(census!.card).toEqual({
+      w: 960,
+      h: 86,
+      pad: "24px",
+      radius: "16px",
+      bg: "rgb(255, 255, 255)",
+      border: "rgb(229, 231, 227)",
+      mb: "24px",
+    });
+
+    // The search input: 216×36 — the 1-COL span (the expenses variant's
+    // defining difference: the search does NOT span 2 columns here, so
+    // 215.5px rounds to 216 via offsetWidth) with the same asymmetric
+    // 40px left pad (the search icon's room).
+    expect(census!.search).toEqual({
+      w: 216,
+      h: 36,
+      pad: "4px 12px 4px 40px",
+      radius: "6px",
+      border: "rgb(229, 229, 229)",
+    });
+
+    // The inner grid: 4 tracks × 215.5px, 16px gap, 4 children (the
+    // search wrapper [1 col] + the three comboboxes).
+    expect(census!.innerGrid).toEqual({
+      cols: "215.5px 215.5px 215.5px 215.5px",
+      gap: "16px",
+      childCount: 4,
+    });
+
+    // The comboboxes: 216×36 each at 14px — the THIRD one is the
+    // payment-method filter (the expenses variant's extra child).
+    expect(census!.comboboxes).toHaveLength(3);
+    for (const combo of census!.comboboxes!) {
+      expect(combo).toMatchObject({ w: 216, h: 36, fs: "14px" });
+    }
+    expect(census!.comboboxes![0].text).toBe("All Categories");
+    expect(census!.comboboxes![1].text).toBe("All Frequencies");
+    expect(census!.comboboxes![2].text).toBe("All Payment Methods");
+  });
+});

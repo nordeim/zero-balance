@@ -3241,3 +3241,81 @@ mutations were verified then reverted, `git diff src/` = 0 lines).
    only before the ship summary — a file created in the screenshots
    phase (the chain's tail) escapes a chain run from the morning (the
    v68 seedcheck miss, the F0 repair's own lesson).
+
+## v70 — the OLDEST re-run candidate's fresh standing sweep (the
+## v57-era items pair re-run) + the expenses filter-card pin (session-169)
+
+The session-167/168 v70 queue's items (the re-run cadence returning to
+the DESKTOP pairs — the OLDEST re-run candidate: the v57-era items
+pair, last re-shot by v64 itself, the cadence's first COMPLETED cycle
+[v64→v70]; the NEW-pair program stays the v71+ candidate; the axe-core
+watch at its re-check point [NO DRIFT — only a 5.x wrapper changes the
+calculus now, the engine-contract pin guarding the toolchain]; the
+deferred reference-write censuses [unchanged, blocked by the v46
+read-only rule]) plus the 64th standing checks. PIN-ONLY for src/ (the
+pin-only line continues; the three pin-sanity mutations were verified
+then reverted, `git diff src/` = 0 lines).
+
+1. **vlm-shots-v70.sh / clone-vlmshots-v70.sh / vlm-compare-v70.mjs** —
+   the items pair (income + expenses) at desktop 1280x800, FULL-PAGE
+   both views, the fresh re-run of the OLDEST re-run candidate (the
+   v57-era pair; login on the first attempt both sides, the parked
+   pointer at (5,5)). PAIR 1 (income): the avatar + the card grid + the
+   seed data — all documented classes. PAIR 2 (expenses): the footer +
+   the badge arrangement + the avatar — all documented classes. **Both
+   pairs CLEAN.**
+2. **arbit-v70.sh** — the DOM arbitration census (both sides, both
+   views at 1280x800): the avatar (the first-pass finder caught the
+   clone's brand block — see arbit-v70b.sh) + the item grid + the
+   first-card chrome + the footer (per-child spans + icons) + the badge
+   row + the FILTER CARD on BOTH views — the income variant re-confirmed
+   AND the never-census'd EXPENSES variant measured (the v70 pin's
+   reference-side parity proof: the card 960×86, the search 216×36 NOT
+   spanning, the 4-track 215.5px grid, the 4 children, the three
+   comboboxes 216×36) + the header.
+3. **arbit-v70b.sh** — the follow-up census for the two items the first
+   pass left open: (1) the clone-side AVATAR finder (the v65b pattern —
+   a small round element with 1-2 text chars near the rail bottom; the
+   clone's avatar uses rounded-[9999px], not rounded-full) — the chrome
+   measured BYTE-IDENTICAL (36×36/radius 9999px/14px-600/white/bg
+   rgb(143,188,63), only "U" vs "D"); (2) the CARD INTERNALS
+   decomposition — every card's title/subcategory/amount/badge-row/
+   footer blocks censused on both sides, both views: the card-height
+   delta (ref 200 vs clone 230) decomposes arithmetic-wise — the
+   Recurring superset badge's wrap h 52 (22+8+22) → +30px, and the
+   1-row grid STRETCHES the shorter sibling to the taller card's
+   natural height (the v67 stretch-governed lesson generalized to the
+   item cards).
+4. **ref-standing-v64.sh / standing-checks-v64.sh** — the 64th standing
+   checks (version-bumped from v63). Reference: the four bugs ALL live
+   + the data census unchanged (64th clean drift check) + the SEO pair.
+   Clone: R1-R4 green — the mobile menu VERIFIED WORKING (64th
+   consecutive time), zero overflow at 390 on all five views.
+5. **The v70 pin (+1 e2e = 272)** — the EXPENSES view's filter-card
+   computed census at 1280 (a new describe at the items.spec.ts tail):
+   the card 960×86, the search 216×36 (the 1-COL span — the expenses
+   variant's defining difference, the search NOT spanning 2 columns)
+   with the asymmetric 40px left pad, the 4-track 215.5px grid with 4
+   children, the three 216×36 comboboxes at 14px. GREEN on first run;
+   three pin-sanity mutations verified to FAIL then restored (the
+   expense-branch gap-4→gap-2; the card p-6→p-4; the search
+   pl-10→pl-4 — each with the standalone REBUILD as a SEPARATE
+   command).
+6. **The screenshots** — 16/16 BYTE-IDENTICAL (the second consecutive
+   fully-identical set: the dev DB's 2026-10-16 seed and the v70
+   capture share the calendar day; no DATE-class arbitration needed).
+
+**The v70 lessons:**
+1. A card-height delta decomposes arithmetic-wise — census the card's
+   internal blocks (title/subtitle/amount/badge row/footer) on both
+   sides before classifying; the wrap arithmetic (22+8+22 = 52 → +30px)
+   explains a "mystery" 30px delta exactly.
+2. The grid STRETCH governs sibling card heights — a 1-row grid
+   stretches every card to the tallest sibling's natural height, so a
+   card with an unwrapped badge row can still measure the wrapped
+   height (the v67 stat-tile lesson generalized to the item cards; a
+   single-card mutation may not move the axis if the sibling holds it).
+3. The clone's avatar uses `rounded-[9999px]`, not `rounded-full` — the
+   reliable avatar census is the v65b finder pattern (a small round
+   element with 1-2 text chars near the rail bottom), never a
+   rounded-full class selector.

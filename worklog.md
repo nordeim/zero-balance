@@ -58,9 +58,28 @@ and `docs/remediation-plan-v65.md`,
 and `docs/remediation-plan-v66.md`,
 and `docs/remediation-plan-v67.md`,
 and `docs/remediation-plan-v68.md`,
-and `docs/remediation-plan-v69.md`.
+and `docs/remediation-plan-v69.md`,
+and `docs/remediation-plan-v70.md`.
 
 ---
+
+---
+
+## Session 104 — Parity iteration v70: the OLDEST re-run candidate's fresh standing sweep (the v57-era items pair re-run — income + expenses at 1280) + the axe-core watch (NO DRIFT) + the expenses view's filter-card computed census pin (2026-10-16)
+
+**Goal:** the session-167/168 v70 queue's items — the re-run cadence returning to the DESKTOP pairs (the OLDEST re-run candidate: the v57-era items pair, last re-shot by v64 itself — the cadence's first COMPLETED cycle, v64→v70; the NEW-pair program stays the v71+ candidate), the axe-core watch at its re-check point, and the deferred reference-write censuses (unchanged, blocked by the v46 read-only rule) — plus the 64th standing checks. **PIN-ONLY for src/** (the pin-only line continues; `git diff src/` = 0 lines at ship). The formal narrative: `docs/session_169.md`; the plan: `docs/remediation-plan-v70.md`.
+
+**The baseline chain FULLY GREEN as-shipped** (no F0 finding — the v68 tail-phase lesson holding): lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap prerendered) · 271 e2e ✓ (93 + 94 + 86 chunks = 270 chromium + 3 setups) · 35/35 smoke ✓.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0), the engine-contract pin green (re-verified standalone).
+
+**The 64th standing checks** (ref-standing-v64.sh + standing-checks-v64.sh, version-bumped from v63): the mobile menu VERIFIED WORKING (the 64th consecutive time), the reference's four bugs ALL live (toast-blocker, sheet-trap, no-landmark, the 464px /networth overflow), the data census intact (the 64th clean drift check), the SEO pair live.
+
+**Both items pairs CLEAN** (vlm-shots-v70.sh + clone-vlmshots-v70.sh + vlm-compare-v70.mjs, login on the first attempt both sides, the parked pointer at (5,5)): PAIR 1 (income) — the avatar (the user-identity class: the chrome BYTE-IDENTICAL 36×36/radius 9999px/14px-600/white/bg rgb(143,188,63), only "U" vs "D"; the fixed v65b finder re-used after the first pass caught the clone's brand block), the card grid (the seed-count class: the AXES byte-identical — w 960/gap 16px/the same fractional 309.344px last track class as v64), and the card heights (ref 200 vs clone 230) DECOMPOSED arithmetic-wise via arbit-v70b.sh's card-internals census — the clone's Salary card carries the 4th Recurring superset badge → the wrap h 52 (22+8+22) → +30px, AND the sibling Freelance card (natural 200) STRETCHES to 230 with it = the v57 badge-wrap class + the grid STRETCH-GOVERNED class (the v67 lesson); PAIR 2 (expenses) — the footer (the v57 DATA-CONDITIONAL class: the chrome byte-identical, the reference's expense items carrying no paymentMethod values), the badge arrangement (the v57 wrap class re-confirmed live: 4 badges → h 52 vs 3 → h 22), the avatar (user-identity, again).
+
+**The v70 pin (+1 → 272):** the EXPENSES view's filter-card computed census at 1280 (tests/e2e/items.spec.ts, a new describe at the file tail, the logged-in read-only state, measured BYTE-IDENTICAL on both sides via arbit-v70.sh) — the LAST never-census'd filter-card variant (the v38 S2 pin covered /savings, the v64 pin /income, the v52 F3 pin the expenses card's MOBILE 390 state only): the card 960×86 (pad 24/radius 16/white/border rgb(229,231,227)/mb 24), the search 216×36 — the 1-COL span, the expenses variant's defining difference (the search does NOT span 2 columns; the 215.5px track rounds to 216 via offsetWidth) with the asymmetric pad "4px 12px 4px 40px", the inner grid 4 tracks 215.5px/16px gap/4 children, the three comboboxes 216×36 at 14px ("All Categories"/"All Frequencies"/"All Payment Methods"). GREEN on first run; THREE pin-sanity mutations verified to FAIL then restored (the expense-branch grid gap-4→gap-2 [the expense branch only, the v64 income pin untouched]; the card p-6→p-4 [the shared-class regression]; the search pl-10→pl-4 — each with the standalone REBUILD as a SEPARATE command).
+
+Full chain: lint + typecheck + 108 unit + build + 272 e2e (93 + 95 + 86 chunks) + 35/35 smoke green. **The screenshots: 16/16 BYTE-IDENTICAL** (the second consecutive fully-identical set — the same-day seed; the seedcheck run under `env -u DATABASE_URL`). The docs aligned (AGENTS/CLAUDE/README/SKILL Session 105 row + the 272 state/PAD v1.1.27/the probe README's v70 section/session_169/the repo worklog Session 104 + the ledger list). **Next** (the v71 queue): (1) the NEW-pair program opens (the below-the-fold 390 surfaces — the items views' mobile twins never individually shot, the v62/v63 precedent) or the re-run cadence's second cycle (the v58-era savings pair, last re-shot v65), (2) the axe watch at its next re-check point, (3) the deferred reference-write censuses (unchanged).
 
 ---
 
