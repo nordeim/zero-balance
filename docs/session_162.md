@@ -1,4 +1,50 @@
-The workspace survived. Let me check the git state and where exactly the v66 work left off.
+The workspace has been reset — the repo is gone, and the previous session's v66 work (which was cut off during documentation alignment, before any commit) must be reproduced from scratch. Fortunately, the session log gives me the exact validated recipe. Let me set up the plan and begin.
+仓库已克隆 — HEAD 位于 v65 的提交，这与文档中记录的状态一致。之前的 v66 会话在提交任何内容之前中断了，因此 v66 迭代必须完全重做。我先在后台启动环境重建，同时阅读文档。
+session_160.md 确认了 v65 的发布状态和已记录的 v66 队列。让我检查一下最终的 commit 结构并阅读剩余的关键文档。
+The convention is now clear: parity commit (code + docs + formal narrative) followed by an "update session log" commit. Let me read the v65 remediation plan (my model for v66) and the worklog's latest entry.
+The v65 plan gives me the model. Note the v66 queue discrepancy (v65 plan says "dashboard full-page" but the session docs say "calculator + login") — the previous session resolved this by checking the actual v59 probe scripts: the pair is the calculator dialog + login view at 1280×800. Let me read the worklog's latest entry and check install progress.
+Now let me read AGENTS.md and CLAUDE.md for the operating rules, and check install progress.
+The background install didn't survive the shell exit. Let me restart it properly detached with nohup.
+v59 family confirmed — calculator + login pair. While npm install progresses, let me study the v59 probe scripts I'll version-bump to v66.
+npm install is still running. Meanwhile, let me examine the calculator e2e spec — the F3 pin's insertion point.
+Background processes don't survive in this sandbox. Running npm install in the foreground with extended timeout.
+Install done with postinstall scripts blocked (the documented fresh-sandbox caveat). Rebuilding the prisma engines and blocked packages per the session_156 lesson.
+Prisma rebuilt. Now setting up `.env` (DATABASE_URL="file:../db/custom.db" — db/ at repo root), the database, and checking package.json for the allowScripts artifact.
+DB seeded to the documented state (7 items / 3 assets / 2 liabilities). Installing Playwright chromium, then running the fast gates.
+The fast gates hit issues — likely environment-related (fresh sandbox). Let me see the full errors.
+zod 4.6.5's `v4/` subdirectory is missing — the earlier killed install left corruption. Let me inspect and repair.
+`npm ci` repaired the corruption — lint now passes clean. Continuing the fast gates.
+Lint ✓ · typecheck ✓ · 108/108 unit ✓. Now the production build.
+Build ✓. Let me find the documented e2e chunk split for the v65 state before running the suite.
+The doc counts have some arithmetic slop — let me get the authoritative test inventory directly.
+267 tests in 24 files — matches the documented v65 state. Let me build the chunk split by per-file counts.
+Let me check the playwright config's server port, do the orphan check, and run the e2e suite in chunks.
+Chunk A: 99 passed. Running Chunk B.
+All chunks green: 99+85+85 = 269 runs = 266 chromium + 3 setups — matching the documented v65 state (the "267 e2e" convention = the --list count including the setup). Now the smoke test.
+**Baseline chain fully GREEN** — lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ · 267 e2e ✓ · 35/35 smoke ✓. The codebase matches the documented v65 state exactly. Now executing the v66 iteration per the documented queue.
+**F1 — the axe-core 5.x wrapper watch.** Checking the npm registry, the lockfile resolution, and the nested engine:
+**F1 verdict: local NO DRIFT + a new upstream finding** — the lockfile holds the wrapper at 4.13.0 (nested engine byte-identical to the v38–v65 audits; the top-level 4.14.0 remains eslint-plugin-jsx-a11y's lint-time consumer), but npm-latest `@axe-core/playwright` is now **4.14.0** (nested `axe-core ~4.14.0`) — recorded as the candidate for a future dedicated upgrade iteration, not a drift. No re-scan required.
+
+**F2 — the 60th standing checks.** Creating the v60 script pair (version-bumped from the v59 family per the established convention):
+Reference side: all four bugs STILL LIVE + data census unchanged (60th clean drift check) + SEO pair live. Now the clone side:
+**Clone side ALL GREEN — the mobile navigation menu VERIFIED WORKING (60th consecutive time)**, zero overflow at 390 on all five views, SEO pair live. Now F2b — the v59-era pair's fresh sweep. Creating the v66 probe family:
+Fixing the header comments to correctly describe the v66 re-run (not a blind sed bump):
+Now running the reference-side shots (calculator first — with the fresh-login warm-up retry loop):
+Reference calculator shot done (dialog opened, 1-line-item state, total present). Now the reference login shots:
+Now the clone-side calculator shots (with the matching line-item fixture + full restore):
+Clone calculator shots done — fixture added, shot captured, full restore verified (3 items · $2235.00 + $1850.00 Rent). Now the clone login shots:
+Clone login census matches the reference byte-for-byte. Now the VLM pairwise comparison:
+**VLM verdicts:** calculator DIFFERENT with 2 style flags; login IDENTICAL (only the Base44 FAB — platform chrome, excluded by rule). Per the v43 rule, every flag needs DOM arbitration. Building the v66 arbitration census (with the row-height axes added — the previous session's design):
+Now the clone-side arbitration script (with the fixture add + full restore, using the quoted-heredoc + two-level escaping conventions):
+Reference census captured — the height family measured (row 720×**102**, h4 h24/mb4, pill row h20, amount P h28, totalCard h90, actions opacity 0 at rest, span HIDDEN). The panel finder caught the outer wrapper though — fixing it to the v59 maxWidth finder and re-running on the warm session:
+Reference census complete (panel 768 with the two leading zero-alpha shadow layers — the Tailwind v4 computed-form class). Now the clone side:
+**THE CALCULATOR PAIR IS CLEAN** — every axis byte-identical: row **720×102 both sides** (the VLM's "shorter row" was a perception artifact), actions at rest **opacity 0** on both sides (the pointer-position class), the span is the documented **DATA-CONDITIONAL** class (ref hidden / clone visible — the parent-amount snapshot), and the panel shadow shows the documented Tailwind v4 lead-layer form. The height family (row h102, h4 h24/mb4, pill row h20, amount P h28, totalCard h90) is the never-pinned F3 candidate. Let me study the v45 add-then-restore flow the pin will need:
+Let me verify the restoreRent helper, then write the F3 pin:
+I have the full picture. Now writing the remediation plan v66 (modeled on the v65 plan, with the measured findings and the ToDo):
+Plan saved and validated against the codebase (mutation targets verified at calculator-dialog.tsx:149/205/210; finders proven live in the arbitration). Now the TDD execution — writing the F3 pin:
+Pin appended. Typecheck, then run it (GREEN expected on first run — PIN-ONLY surface):
+**F3 pin GREEN on first run** ✓ (the spec went 13 → 14). Now the pin-sanity mutations — **S1: the row's `p-4`→`p-2`** (expect row h 102→70 + pad 16→8 to FAIL the pin):
+
 The workspace survived with the v66 work in progress. Let me check the exact state of the S1 mutation that was being applied when the session cut off.
 The state is now clear: the F3 pin is in place (was GREEN on first run), and the **S1 mutation (p-4→p-2) is currently applied** in calculator-dialog.tsx — the session was cut off mid-TDD-mutation-verification. Let me check the environment state and running processes.
 No servers running, DB intact, node_modules healthy. The S1 mutation is applied. Let me check the documented mutation-check procedure (the "standalone REBUILD as a SEPARATE command" convention) from the latest session doc.
