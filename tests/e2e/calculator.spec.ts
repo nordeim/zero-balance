@@ -1251,3 +1251,163 @@ test.describe("calculator dialog height-family census at 1280 (v66 — plan F3)"
     await restoreRent(page);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v73 — plan F4 (docs/remediation-plan-v73.md): the calculator's SCRIM +
+// SUMMARY-TEXT chrome census at 390x844 — the never-pinned axes. The v53
+// F2 pin locked the panel/header/chip/close/totalCard/row/addBtn GEOMETRY
+// at 390; the v66 F3 pin locked the height-family at 1280 — the scrim and
+// the text chrome were never pinned (the details-sheet overlay is pinned
+// in item-details.spec.ts; the calculator's own scrim never was).
+//
+// Measured live on BOTH sites (arbit-v73.sh — the with-row state,
+// byte-identical on every axis; the VLM pair vlm-shots-v73.sh +
+// clone-vlmshots-v73.sh + vlm-compare-v73.mjs — the login mobile twin
+// IDENTICAL, the calculator mobile twin CLEAN per the v43 rule — both
+// flags DOM-arbitrated: the "scrim lighter" claim a PERCEPTION ARTIFACT
+// [the scrim bg rgba(26,58,46,0.5) / opacity 1 / blur(8px) / 390x844
+// byte-identical; the reference's wrapper-scrim carries the text, the
+// clone's Radix scrim is a textless sibling — the v72 structural class],
+// the "Will update category total" span the v66 DATA-CONDITIONAL class
+// [the reference's Rent natively 25.00 === its line-item total 25.00 ->
+// hidden; the clone's opened-at 1850 vs the recalculated 25.00 -> shown]):
+//   the scrim: bg rgba(26, 58, 46, 0.5) / computed opacity 1 /
+//             backdrop-filter blur(8px) / w 390 / h 844 (the full-viewport
+//             fixed overlay — the clone's .zb-modal-overlay sibling)
+//   the summary amount: 24px / 700 / lh 32px / rgb(224, 122, 59)
+//   the "Based on 1 item" line: 12px / rgb(107, 114, 128)
+//   the description: 14px / lh 20px / rgb(107, 114, 128)
+//   the "• Will update category total" span (with the 1-row fixture):
+//             12px / 400 / rgb(234, 88, 12)
+// The fixture rides the v53 F2 discipline (hover → Calculate → Add Line
+// Item → census → Delete → restoreRent).
+// ---------------------------------------------------------------------------
+test.describe("calculator scrim + summary-text census at 390 (v73 — plan F4)", () => {
+  test("the scrim + the summary text chrome — the never-pinned axes (byte-parity)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await lineDialog.getByLabel("Item Name *").fill("Contents Insurance");
+    await lineDialog.getByLabel("Amount *").fill("25");
+    await lineDialog.getByRole("button", { name: "Save Item" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Contents Insurance")).toBeVisible();
+    await page.waitForTimeout(300);
+
+    const census = await page.evaluate(() => {
+      // The scrim: the fixed full-viewport overlay (the clone's Radix
+      // sibling — textless, non-transparent bg, z>=50). Modeled on the
+      // v73 arbitration's own census (arbit-v73.sh).
+      const scrim = [...document.querySelectorAll("div")]
+        .filter((d) => {
+          const s = getComputedStyle(d);
+          const r = d.getBoundingClientRect();
+          return (
+            s.position === "fixed" &&
+            parseInt(s.zIndex || "0") >= 50 &&
+            r.width >= 380 &&
+            r.height >= 800 &&
+            s.backgroundColor &&
+            s.backgroundColor !== "rgba(0, 0, 0, 0)"
+          );
+        })
+        .pop() as HTMLElement | undefined;
+      // The panel: the calculator dialog itself.
+      const panel = [...document.querySelectorAll('[role="dialog"]')]
+        .filter((p) => (p.textContent || "").includes("Total Calculated"))
+        .pop() as HTMLElement | undefined;
+      if (!panel || !scrim) return null;
+      // The total card (the #fff7f5 block) — the summary amount + the
+      // based-on line live inside it.
+      const totalCard = [...panel.querySelectorAll("div")].find(
+        (d) => getComputedStyle(d).backgroundColor === "rgb(255, 247, 245)",
+      ) as HTMLElement | undefined;
+      if (!totalCard) return null;
+      const leaf = (scope: HTMLElement, test: (t: string) => boolean) =>
+        [...scope.querySelectorAll("*")].find(
+          (e) => e.children.length === 0 && test((e.textContent || "").trim()),
+        ) as HTMLElement | undefined;
+      const amountEl = leaf(totalCard, (t) => /^\$25\.00$/.test(t));
+      const basedOnEl = leaf(totalCard, (t) => /^Based on 1 item$/.test(t));
+      const willUpdateEl = leaf(totalCard, (t) => /Will update category total/.test(t));
+      const descEl = leaf(panel, (t) => /Break down your rent/i.test(t));
+      const ss = getComputedStyle(scrim);
+      const sr = scrim.getBoundingClientRect();
+      const cs = (el?: HTMLElement) => (el ? getComputedStyle(el) : null);
+      return {
+        scrim: {
+          bg: ss.backgroundColor,
+          opacity: ss.opacity,
+          blur: ss.backdropFilter,
+          w: Math.round(sr.width),
+          h: Math.round(sr.height),
+        },
+        amount: (() => {
+          const c = cs(amountEl);
+          return c ? { fs: c.fontSize, fw: c.fontWeight, lh: c.lineHeight, color: c.color } : null;
+        })(),
+        basedOn: (() => {
+          const c = cs(basedOnEl);
+          return c ? { fs: c.fontSize, color: c.color } : null;
+        })(),
+        willUpdate: (() => {
+          const c = cs(willUpdateEl);
+          return c ? { fs: c.fontSize, fw: c.fontWeight, color: c.color } : null;
+        })(),
+        desc: (() => {
+          const c = cs(descEl);
+          return c ? { fs: c.fontSize, lh: c.lineHeight, color: c.color } : null;
+        })(),
+      };
+    });
+    expect(census).not.toBeNull();
+    // The scrim: the forest tint + the blur + the full-viewport geometry —
+    // byte-identical to the reference's wrapper-scrim (the v73 arbitration).
+    expect(census!.scrim).toEqual({
+      bg: "rgba(26, 58, 46, 0.5)",
+      opacity: "1",
+      blur: "blur(8px)",
+      w: 390,
+      h: 844,
+    });
+    // The summary amount: the 24px/700 orange figure.
+    expect(census!.amount).toEqual({
+      fs: "24px",
+      fw: "700",
+      lh: "32px",
+      color: "rgb(224, 122, 59)",
+    });
+    // The "Based on 1 item" line: the 12px gray caption.
+    expect(census!.basedOn).toEqual({ fs: "12px", color: "rgb(107, 114, 128)" });
+    // The conditional span: the 12px/400 orange-600 hint (present with
+    // the fixture — the opened-at 1850 vs the recalculated 25.00).
+    expect(census!.willUpdate).toEqual({
+      fs: "12px",
+      fw: "400",
+      color: "rgb(234, 88, 12)",
+    });
+    // The description line: the 14px/20px gray subtitle.
+    expect(census!.desc).toEqual({
+      fs: "14px",
+      lh: "20px",
+      color: "rgb(107, 114, 128)",
+    });
+
+    // --- cleanup (the v53 F2b discipline): delete the row AND restore the
+    // Rent amount (the line-item mutations recalculate the parent's amount
+    // server-side — the calculator rule).
+    await dialog.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(dialog.getByText("Contents Insurance")).toBeHidden();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await restoreRent(page);
+  });
+});

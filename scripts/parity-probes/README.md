@@ -3503,3 +3503,60 @@ SEPARATE command; git diff src/ = 0 lines).
    see it, and a census must not treat its presence as a visual
    difference (read the computed sr-only geometry or ignore leaf
    text inside buttons when censusing chrome).
+
+## v73 — the NEW-pair program's LAST never-shot surfaces (the login + calculator mobile 390 twins) + the calculator scrim + summary-text chrome pin (PIN-ONLY)
+
+The session-173/174 v73 queue's items (the NEW-pair program's remaining
+surfaces — the login page's mobile 390 twin, the simplest never-shot
+pair; the calculator dialog's mobile 390 twin, the v66 desktop pair's
+mobile twin) and the axe watch at its re-check point — plus the 67th
+standing checks. With these two pairs the NEW-pair program is COMPLETE:
+every view + dialog + sheet surface now carries BOTH a desktop pair and
+a mobile-390 twin.
+
+- `vlm-shots-v73.sh` / `clone-vlmshots-v73.sh` / `vlm-compare-v73.mjs` —
+  the two NEW pairs at mobile 390x844: PAIR 1 (the LOGIN page, the fresh
+  logged-out surface — the shot precedes any login submit) VERDICT
+  IDENTICAL, zero flags; PAIR 2 (the CALCULATOR dialog — the hover +
+  Calculate click at the mobile viewport, the reference's OWN Rent card
+  $25.00 with its single Contents Insurance line item; the clone's 1-row
+  state rides the v66 fixture discipline: add the line item through the
+  real UI, screenshot, then FULLY restore) — two flags, both DOM-arbitrated:
+  the "scrim lighter" claim a PERCEPTION ARTIFACT (the scrim chrome
+  byte-identical: bg rgba(26,58,46,0.5) / opacity 1 / blur(8px) / 390x844)
+  and the "Will update category total" span the v66 DATA-CONDITIONAL class.
+- `arbit-v73.sh` — the calculator's complete chrome census at 390 on BOTH
+  sides (the scrim family, the panel, the header + chip + close, the title
+  + description, the Total Calculated block + the amount + the based-on
+  line + the will-update span, the line-item row, the Add Item button) —
+  byte-identical on every axis.
+- `ref-standing-v67.sh` / `standing-checks-v67.sh` — the 67th standing
+  checks (version-bumped from v66).
+- The v73 pin (tests/e2e/calculator.spec.ts): the calculator's scrim +
+  summary-text chrome census at 390 — the never-pinned axes (the scrim
+  itself — the details-sheet overlay was pinned, the calculator's never
+  was; the summary amount 24/700/lh-32; the based-on line 12px gray; the
+  description 14/20 gray; the will-update span 12/400 #ea580c with the
+  fixture). GREEN on first run. The pin-sanity mutation (the scrim blur
+  8px→4px in `.zb-modal-overlay`) verified to FAIL at exactly the scrim
+  axis, then restored (the standalone REBUILD as a SEPARATE command;
+  git diff src/ = 0 lines).
+
+**The v73 lessons:**
+1. The mobile fold: at 390 the Rent card sits BELOW the fold in the
+   1-col grid (card center y > 844). A raw mouse move to out-of-viewport
+   coordinates never engages the card's `:hover` — the Calculate button
+   stays hidden and the click misses (`no dialog`). `scrollIntoView({block:
+   'center'})` BEFORE the hover is the required step.
+2. The unquoted-heredoc dollar trap: a `<<EOF` (unquoted) heredoc expands
+   `\$1850` into `$1850` at heredoc-processing time, and the inner
+   `bash -s` then reads `$1` (a positional parameter) inside the
+   double-quoted eval string — `set -u` kills the script with
+   "unbound variable". The fix: the QUOTED `<<'EOF'` heredoc with the
+   shared census injected via an ENVIRONMENT variable
+   (`CALC_CENSUS_JS="$CALC_CENSUS_JS" bash ... bash -s <<'EOF'`), the
+   inner script keeping the probe's own `\$` escaping conventions.
+3. A scrim "transparency" claim arbitrates through the computed style,
+   not the screenshot: the bg color, the computed opacity, and the
+   backdrop-filter are three separate axes (all byte-identical here) —
+   the VLM's "lighter" read tracked none of them.

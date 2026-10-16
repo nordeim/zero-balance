@@ -61,9 +61,32 @@ and `docs/remediation-plan-v68.md`,
 and `docs/remediation-plan-v69.md`,
 and `docs/remediation-plan-v70.md`,
 and `docs/remediation-plan-v71.md`,
-and `docs/remediation-plan-v72.md`.
+and `docs/remediation-plan-v72.md`,
+and `docs/remediation-plan-v73.md`.
 
 ---
+
+---
+
+## Session 107 — Parity iteration v73: the NEW-pair program's LAST never-shot surfaces (the login + calculator mobile 390 twins) + the axe watch (NO DRIFT) + the calculator scrim + summary-text chrome pin (PIN-ONLY) (2026-10-17)
+
+**Goal:** the session-173/174 v73 queue's items — the NEW-pair program's remaining never-shot surfaces (the login page's mobile 390 twin, the simplest pair; the calculator dialog's mobile 390 twin, the v66 desktop pair's mobile twin) and the axe-core watch at its re-check point — plus the 67th standing checks. **PIN-ONLY for src/ — no production-code change; +1 e2e = 276.** The formal narrative: `docs/session_175.md`; the plan: `docs/remediation-plan-v73.md`.
+
+**The baseline chain FULLY GREEN as-shipped** (no F0 finding): lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap prerendered) · 275 e2e ✓ (100 + 83 + 94 chunks = 274 chromium + 3 setups) · 35/35 smoke ✓. (The fresh clone needed `npx playwright install chromium` — the sandbox reset wiped the browser cache; the suite itself untouched.)
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0, no nested engine), the engine-contract pin GREEN (re-verified standalone).
+
+**The 67th standing checks** (ref-standing-v67.sh + standing-checks-v67.sh, version-bumped from v66): the mobile menu VERIFIED WORKING (the 67th consecutive time), the reference's four bugs ALL live (toast-blocker, sheet-trap, no-landmark, the 464px /networth overflow), the data census intact (the 67th clean drift check), the SEO pair live.
+
+**The NEW-pair program — the LAST never-shot surfaces, NO NEW GAP** (vlm-shots-v73.sh + clone-vlmshots-v73.sh + vlm-compare-v73.mjs, login on the first attempt both sides, the parked pointer at (5,5), the hover + Calculate clicks VIEW-STATE only; the clone's 1-row calculator state rides the v66 fixture discipline — Contents Insurance $25 added through the real UI, then FULLY restored: delete + Rent's $1850 re-edit + the "3 items · $2235.00" page-total verification + the seedcheck confirming the exact seed state): **PAIR 1 (the LOGIN page at mobile 390 — the fresh logged-out surface) — VERDICT IDENTICAL, zero flags** (the fresh-session census both sides: hasLoginCard true, docSW 390, title "ZeroBudget"). **PAIR 2 (the CALCULATOR dialog at mobile 390 — the v66 desktop pair's mobile twin)** — the "scrim lighter" claim a PERCEPTION ARTIFACT (the scrim chrome BYTE-IDENTICAL: bg rgba(26,58,46,0.5) / computed opacity 1 / blur(8px) / 390×844; the reference's wrapper-scrim carries the dialog's text, the clone's Radix scrim a textless sibling — the v72 structural class), the "Will update category total" span the v66 DATA-CONDITIONAL class re-verified live (the reference's Rent natively 25.00 === its line-item total 25.00 → hidden; the clone's opened-at 1850 vs the recalculated 25.00 → shown, 12px/400/rgb(234,88,12)). The full both-sides census via arbit-v73.sh — the panel x16/y216/w358/h413/maxW 768/maxH 717.4/radius 16/white + the header 101/"16px 24px"/border-b + the close 29×36/radius 6/transparent + the title 18/700/lh 28 + the desc 14/lh 20 gray + the Total Calculated block #fff7f5/#fcddd5/radius 12/pad 16/310×90/mb 24 + the amount 24/700/lh 32 rgb(224,122,59) + the row 102/310/pad 16 + the Add Item 110×32 — BYTE-IDENTICAL on every axis. **With these two pairs the NEW-pair program is COMPLETE — every view + dialog + sheet surface now carries BOTH a desktop pair and a mobile-390 twin.**
+
+**The v73 pin (+1 e2e = 276):** the calculator's scrim + summary-text chrome census at 390 (tests/e2e/calculator.spec.ts — the scrim bg/opacity/blur/geometry [the details-sheet overlay was pinned, the calculator's own scrim never was], the summary amount 24/700/lh 32, the "Based on 1 item" line 12px gray, the description 14/20 gray, the "Will update category total" span 12/400 rgb(234,88,12) with the 1-row fixture — the arbitration's own measured values; the fixture rides the v53 discipline: hover → Calculate → Add Line Item → census → Delete → restoreRent) — GREEN on first run; the pin-sanity mutation (the scrim blur 8px→4px in `.zb-modal-overlay`) verified to FAIL at exactly the scrim axis, then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines).
+
+**The full chain re-run GREEN:** lint → typecheck → 108 unit → build → **276 e2e** (100 + 84 + 94 chunks = 275 chromium + 3 setups) → 35/35 smoke. The screenshots **16/16 BYTE-IDENTICAL** (the fifth consecutive fully-identical set; the seedcheck under `env -u DATABASE_URL` confirming the exact seed state).
+
+**The probe lessons:** (a) the mobile fold — at 390 the Rent card sits BELOW the fold in the 1-col grid (card center y > 844); a raw out-of-viewport mouse move never engages `:hover` (the Calculate button stays hidden, the click misses — the probe's first pass failed exactly there): `scrollIntoView({block:'center'})` BEFORE the hover is required; (b) the unquoted-heredoc dollar trap — a `<<EOF` heredoc expands `\$1850` into `$1850` and the inner `bash -s` reads `$1` (a positional parameter) → `set -u` kills the script; the QUOTED `<<'EOF'` heredoc with the env-injected census (`CALC_CENSUS_JS="$CALC_CENSUS_JS" bash ... bash -s <<'EOF'`) is the fix; (c) a scrim "transparency" claim arbitrates through the computed style (bg + opacity + backdrop-filter are three separate axes), never the screenshot read.
+
+**The v74 queue (suggestions):** the NEW-pair program complete — the cadence rotates to the re-run cycle's OLDEST candidate (the v58-era savings pair, last re-shot v65 — the only pre-v70 pair not re-run since), the axe-core watch at its next re-check point, and the deferred reference-write censuses (unchanged, blocked by the v46 read-only rule).
 
 ---
 
