@@ -618,3 +618,117 @@ test.describe("details sheet internals census (v52 — plan F4)", () => {
     await expect(dialog).toBeHidden();
   });
 });
+
+// v72 F4 (docs/remediation-plan-v72.md): the details sheet's subtitle
+// conditional — the EMPTY side. The v52 F1 pin covers the WITH-subtitle
+// side only (the seeded Rent's P.text-lg 18/400/rgb(107,114,128)); the
+// v52 plan's own assumption ("every reference item carries a
+// subcategory, so both forms produce identical DOM on real data") was
+// disproven by v71's card-side discovery — and the v72 arbitration
+// measured the reference's OWN Miscellaneous sheet rendering NO subtitle
+// P (the H3 name → the amount directly). This pin locks the empty side
+// with the same fixture discipline as the v71 F4 card-side regression
+// (an Add-Expense no-subcategory probe → the sheet census → the
+// Edit-dialog Delete cleanup → the header count restored).
+test.describe("details sheet empty-subtitle census at 390 (v72 — plan F4)", () => {
+  test("an empty-subcategory item's sheet renders NO subtitle P (the H3 → amount adjacency holds)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+
+    // --- create the probe: an expense with NO subcategory (the field
+    // stays empty — the Add dialog's default form state; the defaults
+    // need/monthly/active match the reference's own Miscellaneous card's
+    // badge family, the v71 F4 design).
+    await page.getByRole("button", { name: "Add Expense" }).click();
+    const addDialog = page.getByRole("dialog");
+    await expect(addDialog).toBeVisible();
+    await page.getByLabel("Amount").fill("10.00");
+    await page.getByLabel("Category", { exact: true }).fill("Probe NoSub");
+    await page.getByRole("button", { name: "Save Item" }).click();
+    await expect(addDialog).toBeHidden();
+
+    // --- open the probe card's details sheet (the card body click —
+    // the v28 G3 contract; the h4 click bubbles to the card onClick).
+    const probe = page.locator("div.rounded-xl").filter({ hasText: "Probe NoSub" }).first();
+    await expect(probe).toBeVisible();
+    await probe.locator("h4").click();
+    const sheet = page.getByRole("dialog");
+    await expect(sheet).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await sheet.evaluate((el) => {
+      // the body (the p-6 space-y-6 stack) + the summary (its first child)
+      const body = [...el.children].find((c) =>
+        /space-y-6/.test((c.className || "").toString()),
+      ) as HTMLElement | null;
+      const summary = body?.firstElementChild as HTMLElement | null;
+      const h3 = summary?.querySelector("h3") as HTMLElement | null;
+      // the amount P: the fs >= 30 summary child (text-4xl)
+      const amountP = [...(summary?.querySelectorAll("p") || [])].find(
+        (p) => parseFloat(getComputedStyle(p).fontSize) >= 30,
+      ) as HTMLElement | null;
+      // the subtitle P: the P in the text-lg band (fs 17-19) — the v52
+      // F1 chrome (18/400/rgb(107,114,128)) between the H3 and the amount
+      const subtitleP = [...(summary?.querySelectorAll("p") || [])].filter(
+        (p) => {
+          const fs = parseFloat(getComputedStyle(p).fontSize);
+          return fs >= 17 && fs <= 19 && p !== amountP;
+        },
+      );
+      return {
+        subtitleCount: subtitleP.length,
+        h3: h3
+          ? {
+              text: (h3.textContent || "").trim(),
+              fs: getComputedStyle(h3).fontSize,
+              fw: getComputedStyle(h3).fontWeight,
+              mb: getComputedStyle(h3).marginBottom,
+            }
+          : null,
+        amount: amountP
+          ? {
+              fs: getComputedStyle(amountP).fontSize,
+              fw: getComputedStyle(amountP).fontWeight,
+              mt: getComputedStyle(amountP).marginTop,
+            }
+          : null,
+        panelW: Math.round(el.getBoundingClientRect().width),
+      };
+    });
+
+    // THE CONDITIONAL's EMPTY SIDE: NO subtitle P renders between the
+    // name and the amount (the reference's own Miscellaneous sheet
+    // geometry, measured byte-identical on both sides by arbit-v72.sh).
+    expect(census.subtitleCount).toBe(0);
+    expect(census.h3!.text).toBe("Probe NoSub");
+    // The H3 chrome unchanged by the conditional (the arbit-v72 measured
+    // values: fs 24/700, mb 8px).
+    expect(census.h3!.fs).toBe("24px");
+    expect(census.h3!.fw).toBe("700");
+    expect(census.h3!.mb).toBe("8px");
+    // The amount's chrome intact: fs 36/700 with its mt 16px (the H3 mb 8
+    // + the amount mt 16 = the 24px name→amount gap the reference's own
+    // no-sub sheet renders).
+    expect(census.amount!.fs).toBe("36px");
+    expect(census.amount!.fw).toBe("700");
+    expect(census.amount!.mt).toBe("16px");
+    // The panel: full-width at the 390 viewport (the bottom-sheet).
+    expect(census.panelW).toBe(390);
+
+    // --- cleanup: close the sheet (the Escape superset), then the
+    // expense card's Edit dialog → Delete → the inline confirm (the
+    // v71 F4 discipline; the header count restored).
+    await page.keyboard.press("Escape");
+    await expect(sheet).toBeHidden();
+    await probe.hover();
+    await probe.getByRole("button", { name: "Edit", exact: true }).click();
+    const editDialog = page.getByRole("dialog");
+    await expect(editDialog).toBeVisible();
+    await editDialog.getByRole("button", { name: "Delete" }).click();
+    await expect(editDialog.getByText("Delete this item?")).toBeVisible();
+    await editDialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(page.getByText("Probe NoSub")).toHaveCount(0);
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+  });
+});

@@ -60,11 +60,30 @@ and `docs/remediation-plan-v67.md`,
 and `docs/remediation-plan-v68.md`,
 and `docs/remediation-plan-v69.md`,
 and `docs/remediation-plan-v70.md`,
-and `docs/remediation-plan-v71.md`.
+and `docs/remediation-plan-v71.md`,
+and `docs/remediation-plan-v72.md`.
 
 ---
 
 ---
+
+## Session 106 — Parity iteration v72: the NEW-pair program continues (the details-sheet mobile 390 twins + the drill-down EXPANDED mobile twin) + the axe watch (NO DRIFT) + the details-sheet EMPTY-subtitle pin (PIN-ONLY) (2026-10-17)
+
+**Goal:** the session-171 v72 queue's items — the NEW-pair program's remaining below-the-fold 390 surfaces (the details-sheet mobile twin, the drill-down EXPANDED mobile twin), the axe-core watch at its re-check point, and the deferred reference-write censuses (unchanged) — plus the 66th standing checks. **PIN-ONLY for src/ — no production-code change; +1 e2e = 275.** The formal narrative: `docs/session_173.md`; the plan: `docs/remediation-plan-v72.md`.
+
+**The baseline chain FULLY GREEN as-shipped** (no F0 finding): lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap prerendered) · 274 e2e ✓ (93 + 91 + 92 chunks = 273 chromium + 3 setups) · 35/35 smoke ✓.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0, no nested engine), the engine-contract pin GREEN (re-verified standalone).
+
+**The 66th standing checks** (ref-standing-v66.sh + standing-checks-v66.sh, version-bumped from v65): the mobile menu VERIFIED WORKING (the 66th consecutive time), the reference's four bugs ALL live (toast-blocker, sheet-trap, no-landmark, the 464px /networth overflow), the data census intact (the 66th clean drift check), the SEO pair live.
+
+**The NEW-pair program — NO NEW GAP** (vlm-shots-v72.sh + clone-vlmshots-v72.sh + vlm-compare-v72.mjs, login on the first attempt both sides, the parked pointer at (5,5), the card-open and drill-expand clicks VIEW-STATE only): PAIR 1 (the WITH-subtitle details sheet — the Rent card, "Apartment" both sides) — the close-button "border" claim a PERCEPTION ARTIFACT (the chrome byte-identical: 36x36/radius 6px/border 0px/transparent/no shadow/no outline/16px #0a0a0a X; the clone's "Close" text sr-only), the amount/Recurring values DATA classes, the Payment-Method row the v52 optional-field DATA-CONDITIONAL class, the Base44 FAB platform chrome. PAIR 2 (the EMPTY-subcategory details sheet — the reference's Miscellaneous vs the clone's user-created fixture, the v71 F4 discipline) — the "reference cropped below Status" claim a PERCEPTION ARTIFACT (the sheet geometry byte-identical — surface 390x717@bottom 844, maxH 717.4px, the scrim rgba(26,58,46,0.5)+blur(8px); BOTH sides carry the Created/Last Updated meta rows, the reference's behind its own platform FAB), and **THE HEADLINE: the no-sub sheets BOTH render NO subtitle P — the v52 sheet conditional's EMPTY side verified LIVE against the reference's own empty-side sheet (the v71 card-side fix's sibling surface; the v52 assumption "every reference item carries a subcategory" disproven by v71 — the empty side now measured on the reference itself)**. PAIR 3 (the drill-down EXPANDED at 390 — the v67 desktop pair's mobile twin) — the row inventory the seed-data class (the reference's 1 income item vs the clone's 2; the category chrome byte-identical h 28/pad "6px 12px"/fs 16px/400/radius 8px; the item-row label "Item" vs "Net monthly salary" the NOTES-VALUE data class — the reference's own v60-dumped literal "Item" for notes-less items), the pie/legend/summary values DATA classes, the 5px row-width delta the reference's own docSW-395 overflow class, the Base44 toast platform chrome. Every flag DOM-arbitrated via arbit-v72.sh (the sheet + drill-down census at 390 on BOTH sides).
+
+**The v72 pin (+1 e2e = 275):** the details sheet's EMPTY-subtitle side census at 390 — an Add-Expense no-subcategory fixture's sheet renders NO subtitle P (the H3→amount adjacency holds, the 24/700/mb-8 H3 + the 36/700/mt-16 amount chrome, the panel w 390 — the arbitration's own measured values, byte-identical on both sides' no-sub sheets); the fixture create/cleanup rides the v71 F4 discipline (the Edit-dialog Delete path, the header count restored). GREEN on first run (the v52 conditional correct in the code since v52 — the pin locks it); the pin-sanity mutation (the conditional reverted to the unconditional empty-P render) verified to FAIL at exactly subtitleCount, then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines).
+
+**The full chain re-run GREEN:** lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ · **275 e2e** ✓ (93 + 91 + 93 chunks = 274 chromium + 3 setups) · 35/35 smoke ✓. The screenshots **16/16 BYTE-IDENTICAL** (the fourth consecutive fully-identical set — the same DB, no re-seed, the stored dates stable; the seedcheck under `env -u DATABASE_URL` confirming the exact seed state).
+
+**The probe lessons** (the reference's details sheet carries NO role=dialog — the custom fixed-overlay detection via the z>=50 text-prefixed overlay, the clone's Radix sheet also matching; the reference's card-open is the CARD ROOT click, an h4-only click did not open it; the clone's Edit-dialog cleanup must read the Category INPUT VALUE, never textContent — the first pass stranded the fixture and cleanup-fixture-v72.sh recovered it; the reference's scrim wraps the panel while the clone's Radix scrim is a sibling — the rendered geometry the contract, both x 0/y 127/w 390/h 717/bottom 844).
 
 ## Session 105 — Parity iteration v71: the NEW-pair program opens (the items views' mobile 390 full-page pairs — income + expenses + savings) + the axe watch (NO DRIFT) + the item-card SUBTITLE-P conditional-render fix (2026-10-17)
 

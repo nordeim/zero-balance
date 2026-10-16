@@ -3400,3 +3400,106 @@ checks. THE FIX iteration — the first production-code change since v61
 3. The grid STRETCH + badge-wrap arithmetic re-confirmed at 390 — a
    card-height delta decomposes through the same internal blocks at
    every viewport (the v70 lesson holds at mobile).
+
+## v72 — the NEW-pair program continues (the details-sheet mobile 390
+## twins + the drill-down EXPANDED mobile twin) + the details-sheet
+## EMPTY-subtitle pin (session-173)
+
+The session-171/172 v72 queue's items (the NEW-pair program's remaining
+below-the-fold 390 surfaces — the details-sheet mobile twin + the
+drill-down EXPANDED mobile twin; the re-run alternative was the v58-era
+savings pair, the NEW-pair chosen as the stronger candidate per the v71
+precedent) + the axe-core watch at its re-check point + the 66th
+standing checks. **PIN-ONLY for src/ — no production-code change; +1
+e2e = 275.** The probes:
+
+- `vlm-shots-v72.sh` / `clone-vlmshots-v72.sh` /
+  `vlm-compare-v72.mjs` — the three NEW pairs at mobile 390x844:
+  PAIR 1 the WITH-subtitle details sheet (the Rent card — subcategory
+  "Apartment" on BOTH sides, the tightest data-matched pair), PAIR 2
+  the EMPTY-subcategory details sheet (the reference's Miscellaneous
+  card vs the clone's user-created Add-Expense fixture — the v71 F4
+  discipline; the v52 sheet conditional's EMPTY side never shot against
+  the reference's own empty-side sheet), PAIR 3 the dashboard's
+  drill-down EXPANDED state (the v67 desktop pair's mobile twin — the
+  Total Income section + first category expanded, view-state clicks
+  only). The sheet pairs are VIEWPORT captures (the bottom-anchored
+  overlay state IS the page state); the drill-down pair is full-page.
+- `arbit-v72.sh` — the DOM arbitration census at 390 on BOTH sides:
+  the sheet root (the fixed z>=50 overlay whose text starts with
+  "Budget Item Details"), the scrim, the surface (the white rounded
+  panel: x/y/w/h/bottom/maxH/overflow/radius/shadow), the sticky
+  header + the X close button (the full chrome: border/outline/
+  boxShadow/bg/radius/svg), the summary text blocks (the H3 name /
+  the subtitle P / the amount — the leaf fs>=18 census), the pill
+  badges, the fact-row + meta-footer inventory (the label scan), and
+  the drill-down expanded rows (the button texts/h/pad/fs/radius +
+  the container indent + the footer count).
+- `ref-standing-v66.sh` / `standing-checks-v66.sh` — the 66th
+  standing checks (version-bumped from v65).
+- `cleanup-fixture-v72.sh` — the corrective probe (the first
+  cleanup pass missed: the Edit dialog carries the item name in the
+  Category INPUT VALUE, not textContent — the fixture was stranded
+  and recovered via this script; the seedcheck confirmed the exact
+  seed state after).
+
+**The arbitration's findings:** NO NEW GAP — every flag arbitrates to
+a documented class. The close-button "visible square border" claim =
+a PERCEPTION ARTIFACT (the chrome BYTE-IDENTICAL: 36x36/radius
+6px/border 0px/transparent bg/no shadow/no outline/16px #0a0a0a X;
+the clone's extra "Close" text is sr-only — invisible). The
+"reference cropped below Status / clone reveals Created-Last Updated"
+claim = a PERCEPTION ARTIFACT (the sheet geometry byte-identical —
+surface 390x717 anchored at bottom 844, maxH 717.4px, overflow auto,
+radius 24px top corners, the scrim rgba(26,58,46,0.5)+blur(8px); BOTH
+sides carry the Created/Last Updated meta rows with identical chrome
+rowH 36/labelFs 12px/labelColor rgb(107,114,128) — the reference's
+meta rows sit behind its own platform FAB overlay in the
+bottom-right corner). The Payment-Method row = the v52 optional-field
+DATA-CONDITIONAL class. The drill-down row inventory = the seed-data
+class (the reference's 1 income item vs the clone's 2; the category
+chrome byte-identical h 28/pad "6px 12px"/fs 16px/400/radius 8px;
+the item-row label "Item" vs "Net monthly salary" = the NOTES-VALUE
+data class — the reference's own v60-dumped behavior renders the
+literal "Item" for notes-less items, the clone's itemLabel implements
+exactly this contract). The 5px row-width delta = the reference's own
+docSW-395 overflow class (documented v62/v69). **THE HEADLINE: the
+no-sub sheets BOTH render NO subtitle P (the H3 name -> the amount
+directly) — the v52 sheet conditional's EMPTY side verified LIVE
+against the reference's own empty-side sheet, the v71 card-side
+fix's sibling surface.**
+
+The v72 pin: the details sheet's EMPTY-subtitle side census at 390
+(`tests/e2e/item-details.spec.ts` — an Add-Expense no-subcategory
+fixture's sheet renders NO subtitle P, the H3->amount adjacency holds,
+the 24/700/mb-8 H3 + the 36/700/mt-16 amount chrome, the panel w 390;
+the fixture create/cleanup rides the v71 F4 discipline). GREEN on
+first run — the v52 conditional has been correct in the code since
+v52; the pin locks it. The pin-sanity mutation (the conditional
+reverted to the unconditional empty-P render) verified to FAIL at
+exactly subtitleCount, then restored (the standalone REBUILD as a
+SEPARATE command; git diff src/ = 0 lines).
+
+**The v72 lessons:**
+1. The reference's details sheet carries NO `role=dialog` — it is a
+   custom fixed overlay (`fixed inset-0 z-50 flex items-end…`). The
+   sheet detection must census the fixed z>=50 overlay whose TEXT
+   starts with the sheet title (the clone's Radix sheet also matches
+   — the same detection works on both sides).
+2. The reference's card-open mechanism is the CARD ROOT click
+   (`div.rounded-xl.cursor-pointer`) — an h4-only click did not open
+   it in the probe's first pass; target the card root, not the title.
+3. The clone-side Edit-dialog cleanup must identify the dialog by the
+   Category INPUT VALUE (`#item-category.value`), never textContent —
+   the item name lives in the input's value; a textContent check
+   silently misses the dialog and strands the fixture.
+4. The reference's scrim and the clone's scrim are structurally
+   different elements (the reference's overlay WRAPS the panel and
+   carries the text; the clone's Radix scrim is a SIBLING of the
+   content) — the rendered geometry is the contract, not the DOM
+   shape (both: x 0, y 127, w 390, h 717, bottom 844).
+5. An sr-only text span does not render — but it DOES appear in
+   textContent (the clone's close button "Close" span); a VLM cannot
+   see it, and a census must not treat its presence as a visual
+   difference (read the computed sr-only geometry or ignore leaf
+   text inside buttons when censusing chrome).

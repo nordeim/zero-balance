@@ -3,10 +3,14 @@
 **Classification:** Internal Engineering Reference
 **Status:** DEFINITIVE, PRODUCTION-LOCKED BLUEPRINT
 **Companion Document:** README.md (user-facing); AGENTS.md / CLAUDE.md (agent operating rules)
-**Last Updated:** 2026-10-16
+**Last Updated:** 2026-10-17
 **Audience:** Senior Engineers, Tech Leads, DevOps, and Onboarding Engineers
 **Rule:** Every architectural decision in this document traces to a specific rationale.
            Nothing is here "because it's popular."
+
+#### Revision Block — v1.1.29 (Tracked Changes)
+
+- `[UI]` v1.1.29 (2026-10-17) — the v72 parity iteration (PIN-ONLY — no production-code change; the pin-only line resumes after v71's fix): the counts 108 unit / **275 e2e** (+1) / 35 smoke; **the NEW-pair program continues (the details-sheet mobile 390 twins + the drill-down EXPANDED mobile twin)** — PAIR 1 (the WITH-subtitle Rent sheet) + PAIR 2 (the EMPTY-subcategory sheet — the reference's Miscellaneous vs the clone's fixture, the v71 F4 discipline) + PAIR 3 (the drill-down EXPANDED at 390, the v67 desktop pair's mobile twin): **the headline — the no-sub sheets BOTH render NO subtitle P (the H3 -> the amount directly), the v52 sheet conditional's EMPTY side verified LIVE against the reference's own empty-side sheet** (the v52 assumption "every reference item carries a subcategory" disproven by v71 — the empty side now measured on the reference itself); every other flag DOM-arbitrated (the close-button "border" a perception artifact — the chrome byte-identical 36x36/radius 6/transparent/no shadow/no outline/16px #0a0a0a X, the clone's "Close" text sr-only; the "reference cropped below Status" a perception artifact — the sheet geometry byte-identical [surface 390x717@bottom 844, maxH 717.4px, the scrim rgba(26,58,46,0.5)+blur(8px)] with BOTH sides carrying the Created/Last Updated meta rows, the reference's behind its own platform FAB; the payment-method row the v52 optional-field data-conditional class; the drill-down row inventory the seed/notes data classes — the reference's own v60-dumped literal "Item" for notes-less items; the 5px row-width delta the reference's own docSW-395 overflow class); the v72 pin: the details sheet's EMPTY-subtitle side census at 390 (an Add-Expense no-subcategory fixture's sheet renders NO subtitle P, the H3 24/700/mb-8 + the amount 36/700/mt-16 chrome, the panel w 390) — GREEN on first run, the pin-sanity mutation (the unconditional empty-P render) verified to FAIL at exactly subtitleCount then restored; the axe watch NO DRIFT (4.14.0, no 5.x); the 66th standing checks (the mobile menu the 66th consecutive time, the four reference bugs live, the 66th clean data drift, the SEO pair); the screenshots 16/16 byte-identical (the fourth consecutive set); the probe lessons (the reference's details sheet carries NO role=dialog — the custom fixed-overlay detection via the z>=50 text-prefixed overlay; the reference's card-open is the CARD ROOT click; the clone's Edit-dialog cleanup reads the Category INPUT VALUE, never textContent).
 
 #### Revision Block — v1.1.28 (Tracked Changes)
 
