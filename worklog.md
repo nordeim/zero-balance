@@ -59,9 +59,28 @@ and `docs/remediation-plan-v66.md`,
 and `docs/remediation-plan-v67.md`,
 and `docs/remediation-plan-v68.md`,
 and `docs/remediation-plan-v69.md`,
-and `docs/remediation-plan-v70.md`.
+and `docs/remediation-plan-v70.md`,
+and `docs/remediation-plan-v71.md`.
 
 ---
+
+---
+
+## Session 105 — Parity iteration v71: the NEW-pair program opens (the items views' mobile 390 full-page pairs — income + expenses + savings) + the axe watch (NO DRIFT) + the item-card SUBTITLE-P conditional-render fix (2026-10-17)
+
+**Goal:** the session-170/171 v71 queue's items — the NEW-pair program (the below-the-fold 390 surfaces, the items views' mobile twins never individually shot, the v62/v63 precedent), the axe-core watch at its re-check point, and the deferred reference-write censuses (unchanged) — plus the 65th standing checks. **THE FIX iteration — the first production-code change since v61** (the pin-only line broken): the item-card subtitle-P conditional render. The formal narrative: `docs/session_171.md`; the plan: `docs/remediation-plan-v71.md`. (The prior session's identical iteration — executed through the fix's GREEN — was lost to a workspace reset before its commit; re-executed end-to-end from the freshly re-cloned v70 tree.)
+
+**The baseline chain FULLY GREEN as-shipped** (no F0 finding): lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap prerendered) · 272 e2e ✓ (96 + 72 + 108 chunks = 271 chromium + 3 setups) · 35/35 smoke ✓.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0), the engine-contract pin green in the baseline.
+
+**The 65th standing checks** (ref-standing-v65.sh + standing-checks-v65.sh, version-bumped from v64): the mobile menu VERIFIED WORKING (the 65th consecutive time), the reference's four bugs ALL live (toast-blocker, sheet-trap, no-landmark, the 464px /networth overflow), the data census intact (the 65th clean drift check), the SEO pair live.
+
+**The NEW-pair program — ONE REAL GAP FOUND** (vlm-shots-v71.sh + clone-vlmshots-v71.sh + vlm-compare-v71.mjs, login on the first attempt both sides, the parked pointer at (5,5)): PAIR 1 (income) — VERDICT IDENTICAL, zero layout/style flags. PAIR 2 (expenses) — the footer (the v57 DATA-CONDITIONAL class: the chrome byte-identical, the reference's expense items carrying no paymentMethod values), the badge wrapping (the v57 wrap class: the chrome byte-identical, the clone's 4th Recurring superset badge wrapping the row to h 52), the Base44 FAB (platform chrome). PAIR 3 (savings) — the footer + badge flags the same classes, the badge styling (the v58 classification-VALUE data class: the color maps byte-identical per classification — the reference's own Investments card carries the "savings" badge with exactly the clone's values), the "active badge padding" claim (a PERCEPTION ARTIFACT — the active badge byte-identical on every card both sides: h 22/w 63/pad "2px 10px"/radius 6px/bg rgb(248,250,252)/color rgb(51,65,85)). **THE DISCOVERY:** the reference's Miscellaneous/Investments expense cards (empty subcategory) render NO subtitle P (titleRow 28, card 180 — the arithmetic 20+28+12+32+16+22+12+16+20+2) while its with-subcategory cards render it (h 20, fs 14px, lh 20px, gray; titleRow 48) — **the reference CONDITIONALLY RENDERS the subtitle P**; the clone's item-card.tsx:127 rendered `{item.subcategory ?? ""}` unconditionally (a 20px empty block on user-created empty-subcategory items — the dev seed carries none, the gap hidden in the unshipped state space).
+
+**THE v71 FIX (TDD):** the F4 regression test (an Add-Expense no-subcategory fixture renders NO subtitle P, titleRow 28, card h 180 at 390 in the 1-col grid; the cleanup via the Edit dialog's Delete path, the header count restored) RED on the unfixed build → the fix (the v52 details-sheet idiom: `{item.subcategory ? (<p>…</p>) : null}`) → GREEN; the F5 pin (the seeded Rent card's WITH-subtitle chrome: P h 20/fs 14px/lh 20px/color rgb(107,114,128), titleRow 48, titleRowMb 12) locks the populated state; the pin-sanity mutation (the reverted conditional) verified to FAIL at exactly subtitleCount, then restored. +2 e2e = **274**.
+
+Full chain: lint + typecheck + 108 unit + build + 274 e2e (96 + 72 + 108 chunks) + 35/35 smoke green. **The screenshots: 16/16 BYTE-IDENTICAL** (the third consecutive fully-identical set — the same-day seed; the fix touches no seeded surface; the seedcheck run under `env -u DATABASE_URL`). The docs aligned (AGENTS/CLAUDE/README/SKILL Session 106 row + the 274 state/PAD v1.1.28/the probe README's v71 section/session_171/the repo worklog Session 105 + the ledger list). **Next** (the v72 queue): (1) the NEW-pair program continues (the remaining below-the-fold 390 surfaces: the drill-down EXPANDED mobile twin, the details-sheet mobile twin) or the re-run cadence's second cycle (the v58-era savings pair, last re-shot v65), (2) the axe watch at its next re-check point, (3) the deferred reference-write censuses (unchanged).
 
 ---
 

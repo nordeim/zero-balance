@@ -3319,3 +3319,84 @@ then reverted, `git diff src/` = 0 lines).
    reliable avatar census is the v65b finder pattern (a small round
    element with 1-2 text chars near the rail bottom), never a
    rounded-full class selector.
+
+## v71 — the NEW-pair program opens (the items views' mobile 390
+## full-page pairs) + the item-card subtitle-P conditional-render fix
+## (session-171)
+
+The session-170/171 v71 queue's items (the NEW-pair program opens —
+the below-the-fold 390 surfaces, the items views' mobile twins never
+individually shot, the v62/v63 precedent extending the standing-pair
+matrix to the remaining views; the axe-core watch at its re-check point
+[NO DRIFT — npm-latest 4.14.0, only 4.14.1 rc/next prereleases, no 5.x
+exists; the lockfile holding the v68 dedupe state; the engine-contract
+pin green in the baseline]; the deferred reference-write censuses
+[unchanged, blocked by the v46 read-only rule]) plus the 65th standing
+checks. THE FIX iteration — the first production-code change since v61
+(the pin-only line broken): the item-card SUBTITLE-P conditional render.
+
+1. **vlm-shots-v71.sh / clone-vlmshots-v71.sh / vlm-compare-v71.mjs** —
+   the NEW-pair program's first family: the ITEMS views' mobile 390x844
+   FULL-PAGE pairs (income + expenses + savings — the below-the-fold
+   surfaces never individually shot; login on the first attempt both
+   sides, the parked pointer at (5,5)). PAIR 1 (income): VERDICT
+   IDENTICAL — zero layout/style flags. PAIR 2 (expenses): the footer +
+   the badge wrapping + the Base44 FAB. PAIR 3 (savings): the footer +
+   the badge arrangement + the badge styling + the "active badge
+   padding" claim.
+2. **arbit-v71.sh** — the DOM arbitration census (both sides, all three
+   views at 390x844): the full card-internals decomposition per card —
+   the title row (h/mb) + the SUBTITLE P (presence + h/fs/lh/color —
+   the NEW axis) + the amount block + the badge row (per-badge chrome:
+   h/w/pad/radius/fs/fw/bg/color/border) + the footer (per-child spans
+   + icons). Every PAIR 2/3 flag arbitrates to a documented class: the
+   footer = the v57 DATA-CONDITIONAL class (chrome byte-identical; the
+   childCount the reference's own data), the badge wrapping = the v57
+   wrap class (chrome byte-identical; the Recurring superset badge's
+   wrap h 52), the badge styling = the v58 classification-VALUE data
+   class (the color maps byte-identical per classification), the
+   "active badge padding" = a PERCEPTION ARTIFACT (byte-identical on
+   every card both sides: h 22/w 63/pad "2px 10px"/radius 6px/fs 12px/
+   fw 600/bg rgb(248,250,252)/color rgb(51,65,85)). **THE DISCOVERY:**
+   the reference's Miscellaneous/Investments expense cards (EMPTY
+   subcategory) render subtitleP {present:false} with titleRow 28 and
+   card 180 — **the reference CONDITIONALLY RENDERS the subtitle P**;
+   the clone's item-card.tsx:127 rendered `{item.subcategory ?? ""}`
+   unconditionally (a 20px empty block on user-created
+   empty-subcategory items).
+3. **ref-standing-v65.sh / standing-checks-v65.sh** — the 65th standing
+   checks (version-bumped from v64). Reference: the four bugs ALL live
+   + the data census unchanged (65th clean drift check) + the SEO pair.
+   Clone: R1-R4 green — the mobile menu VERIFIED WORKING (65th
+   consecutive time), zero overflow at 390 on all five views.
+4. **The v71 fix (+2 e2e = 274)** — the subtitle-P conditional render
+   (the v52 details-sheet idiom applied to the item-card: `{item.subcategory ?
+   (<p>…</p>) : null}`) + the F4 REGRESSION test (an Add-Expense
+   no-subcategory fixture renders NO subtitle P, titleRow 28, card h
+   180 at 390 in the 1-col grid — the reference's own no-subtitle
+   geometry; RED on the unfixed build, GREEN after; the cleanup rides
+   the Edit dialog's Delete path, the header count restored) + the F5
+   PIN (the seeded Rent card's WITH-subtitle geometry: the P's chrome
+   h 20/fs 14px/lh 20px/color rgb(107,114,128), titleRow 48,
+   titleRowMb 12 — pins the other side of the conditional so the fix
+   cannot regress the populated state) + the pin-sanity mutation (the
+   reverted conditional → F4 FAILS at exactly subtitleCount; restored
+   → GREEN; the standalone REBUILD as a SEPARATE command).
+5. **The screenshots** — 16/16 BYTE-IDENTICAL (the third consecutive
+   fully-identical set: the same-day seed; the fix touches no seeded
+   surface — the dev seed carries no empty-subcategory items, the gap
+   lived in the UNSHIPPED state space).
+
+**The v71 lessons:**
+1. A conditional-render gap can hide for 40+ iterations when the seed
+   never exercises the empty state — the NEW-pair program's richer
+   flag surfaces are what expose it (the reference's own demo data
+   carries empty-subcategory cards; the clone's richer seed does not).
+2. The card-internals census now includes the SUBTITLE-P PRESENCE axis
+   — census the OPTIONAL-field renders' PRESENCE, not just their
+   chrome: `{value ?? ""}` renders an invisible block the reference
+   never draws (the v52 details-sheet lesson, finally generalized to
+   every optional-field render site).
+3. The grid STRETCH + badge-wrap arithmetic re-confirmed at 390 — a
+   card-height delta decomposes through the same internal blocks at
+   every viewport (the v70 lesson holds at mobile).

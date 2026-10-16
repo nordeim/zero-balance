@@ -123,9 +123,15 @@ export function BudgetItemCard({ item }: { item: BudgetItem }) {
               {item.category}
             </h4>
           </div>
-          <p className="text-sm" style={{ color: rgb.gray }}>
-            {item.subcategory ?? ""}
-          </p>
+          {/* Subtitle CONDITIONAL on the non-empty value (v71 F4, the v52
+              details-sheet idiom): the reference renders NO subtitle P for
+              empty subcategories (titleRow 28, card 180) — an unconditional
+              render leaves a 20px empty block the reference never draws. */}
+          {item.subcategory ? (
+            <p className="text-sm" style={{ color: rgb.gray }}>
+              {item.subcategory}
+            </p>
+          ) : null}
         </div>
         {item.type !== "expense" && (
           <DropdownMenu>

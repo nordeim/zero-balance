@@ -2650,3 +2650,156 @@ test.describe("expenses view filter-card census at 1280 (v70 — plan F4)", () =
     expect(census!.comboboxes![2].text).toBe("All Payment Methods");
   });
 });
+
+// v71 F4+F5 (docs/remediation-plan-v71.md): the item-card SUBTITLE-P
+// conditional render — the v71 NEW-pair program's arbitration discovery.
+// The reference's Miscellaneous/Investments expense cards (EMPTY
+// subcategory) render NO subtitle P at all (titleRow h 28, card h 180 —
+// the arithmetic: 20 pad + 28 titleRow + 12 mb + 32 amount + 16 mb + 22
+// badge + 12 mb + 16 footer + 20 pad + 2 border), while its Netflix/Rent
+// cards (WITH subcategory) render the P (h 20, fs 14px, lh 20px, gray)
+// with titleRow h 48 — the reference CONDITIONALLY RENDERS the subtitle P
+// on the non-empty value. The clone's item-card rendered it
+// unconditionally (`{item.subcategory ?? ""}`) — a user-created
+// empty-subcategory item carried a 20px EMPTY BLOCK. The v52
+// details-sheet idiom applied to the card. The dev seed carries no
+// empty-subcategory items, so the F4 fixture creates one through the Add
+// Expense flow (defaults: need + monthly + active = 3 badges, recurring
+// OFF — the same badge family as the reference's Miscellaneous card);
+// the cleanup rides the expense card's Edit dialog → Delete → the inline
+// confirm (the superset delete path — expense cards carry no kebab).
+test.describe("item-card subtitle-P conditional render at 390 (v71 — plan F4)", () => {
+  test("an empty-subcategory expense card renders NO subtitle P (titleRow 28, card h 180)", async ({ page }) => {
+    // 390 viewport FIRST: the 1-col grid gives every card its own row →
+    // the probe card's height is its NATURAL height (the grid STRETCH
+    // governs only same-row siblings — the v67/v70 lesson).
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+
+    // --- create the probe: an expense with NO subcategory (the field
+    // stays empty — the Add dialog's default form state).
+    await page.getByRole("button", { name: "Add Expense" }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await page.getByLabel("Amount").fill("10.00");
+    await page.getByLabel("Category", { exact: true }).fill("Probe NoSub");
+    // Subcategory intentionally left EMPTY. The classification/frequency/
+    // status defaults (need / monthly / active) match the reference's own
+    // Miscellaneous card's badge family; recurring stays OFF.
+    await page.getByRole("button", { name: "Save Item" }).click();
+    await expect(dialog).toBeHidden();
+
+    const probe = page.locator("div.rounded-xl").filter({ hasText: "Probe NoSub" }).first();
+    await expect(probe).toBeVisible();
+
+    const census = await probe.evaluate((card) => {
+      // the title row: the card's flex child carrying the h4
+      const titleRow = [...card.children].find(
+        (ch) =>
+          getComputedStyle(ch).display.includes("flex") &&
+          ch.querySelector("h4") &&
+          (ch.textContent || "").trim().length > 0,
+      ) as HTMLElement | undefined;
+      if (!titleRow) return null;
+      const h4 = titleRow.querySelector("h4")!;
+      // the subtitle P: the P child of the h4's grandparent flex-1 block
+      const flex1 = h4.parentElement!.parentElement!;
+      const subP = [...flex1.children].filter(
+        (ch) => ch.tagName === "P",
+      ) as HTMLElement[];
+      return {
+        titleRowH: Math.round(titleRow.getBoundingClientRect().height),
+        titleRowMb: getComputedStyle(titleRow).marginBottom,
+        subtitleCount: subP.length,
+        cardH: Math.round(card.getBoundingClientRect().height),
+        cardW: Math.round(card.getBoundingClientRect().width),
+        badgeRowH: Math.round(
+          ([...card.children].find((ch) =>
+            typeof ch.className === "string" && /flex-wrap/.test(ch.className),
+          ) as HTMLElement)!.getBoundingClientRect().height,
+        ),
+      };
+    });
+    expect(census).not.toBeNull();
+    // THE CONDITIONAL: NO subtitle P renders for the empty subcategory.
+    expect(census!.subtitleCount).toBe(0);
+    // The title row collapses to the reference's own no-subtitle geometry
+    // (the dot+h4 row 24 + the mb-1 4 = 28) …
+    expect(census!.titleRowH).toBe(28);
+    expect(census!.titleRowMb).toBe("12px");
+    // … and the card carries the reference's no-subtitle height: 180 (the
+    // 3-badge row stays single-line h 22 — the wrap class needs the 4th
+    // Recurring badge the probe does not carry).
+    expect(census!.badgeRowH).toBe(22);
+    expect(census!.cardW).toBe(358);
+    expect(census!.cardH).toBe(180);
+
+    // --- cleanup: the expense card's Edit dialog → Delete → the inline
+    // confirm (the superset delete path; expense cards carry no kebab).
+    await probe.hover();
+    await probe.getByRole("button", { name: "Edit", exact: true }).click();
+    const editDialog = page.getByRole("dialog");
+    await expect(editDialog).toBeVisible();
+    await editDialog.getByRole("button", { name: "Delete" }).click();
+    await expect(editDialog.getByText("Delete this item?")).toBeVisible();
+    await editDialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(page.getByText("Probe NoSub")).toHaveCount(0);
+    // The header count + total restored (the fixture discipline).
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+  });
+});
+
+// v71 F5: the WITH-subtitle side of the conditional — the seeded Rent
+// card's subtitle-P chrome + the title-row geometry pinned at 390 so the
+// F4 fix cannot regress the populated state (GREEN before AND after the
+// fix — the pin's expected values are the arbit-v71.sh census's own
+// measured values, byte-identical on both sides' seeded cards).
+test.describe("item-card subtitle-P chrome pin at 390 (v71 — plan F5)", () => {
+  test("the seeded Rent card's subtitle P renders the measured chrome (titleRow 48, P h 20)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Rent" })).toBeVisible();
+
+    const card = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    const census = await card.evaluate((el) => {
+      const titleRow = [...el.children].find(
+        (ch) =>
+          getComputedStyle(ch).display.includes("flex") &&
+          ch.querySelector("h4") &&
+          (ch.textContent || "").trim().length > 0,
+      ) as HTMLElement | undefined;
+      if (!titleRow) return null;
+      const h4 = titleRow.querySelector("h4")!;
+      const flex1 = h4.parentElement!.parentElement!;
+      const subP = [...flex1.children].find(
+        (ch) => ch.tagName === "P",
+      ) as HTMLElement | undefined;
+      if (!subP) return null;
+      const cs = getComputedStyle(subP);
+      return {
+        titleRowH: Math.round(titleRow.getBoundingClientRect().height),
+        titleRowMb: getComputedStyle(titleRow).marginBottom,
+        p: {
+          h: Math.round(subP.getBoundingClientRect().height),
+          fs: cs.fontSize,
+          lh: cs.lineHeight,
+          color: cs.color,
+          text: (subP.textContent || "").trim(),
+        },
+      };
+    });
+    expect(census).not.toBeNull();
+    // The title row WITH the subtitle: 24 (dot+h4) + 4 (mb-1) + 20 (P) = 48.
+    expect(census!.titleRowH).toBe(48);
+    expect(census!.titleRowMb).toBe("12px");
+    // The subtitle P's chrome — the reference's own measured values.
+    expect(census!.p).toEqual({
+      h: 20,
+      fs: "14px",
+      lh: "20px",
+      color: "rgb(107, 114, 128)",
+      text: "Apartment",
+    });
+  });
+});
