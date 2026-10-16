@@ -1860,3 +1860,138 @@ test.describe("net worth summary card HEIGHT census at 1280 (v67 — plan F3)", 
     expect(census.ratioFooter).toEqual({ mt: "24px", pt: "24px", borderTopW: "1px", h: 53 });
   });
 });
+
+test.describe("net worth page-header row census at 390 (v69 — plan F3)", () => {
+  // The v69 re-run pair's pin: the /networth view's PAGE-HEADER ROW computed
+  // census at 390x844 — the never-census'd family (the v14 G3 chip test
+  // pins the chip/h1 x-positions only; the v65 F3 savings page-header-row
+  // pin's sibling for the networth surface, at the v69 re-run pair's
+  // viewport). Measured live on the clone (nw-header-v69.sh): the row
+  // flex/center/gap-3 (12px) with the mb-8 (32px) section rhythm (the v41
+  // F1 rhythm, re-measured); the chip 48x48 rounded-xl (12px) with the
+  // forest-medium→lime 135deg gradient wrapping the 24x24 white
+  // TrendingUp; the h1 30px/700/lh 36px/forestDark; the subtitle 16px/400/
+  // gray-500 lh 24px — ONE line at the 250px block (the subtitle's
+  // max-content governs the block width); the block h 60 = the h1 36 + the
+  // subtitle 24 — the TEXT BLOCK governs the row height, not the 48px chip
+  // (the v65 lesson); the row→card gap 32; the page FITS 390 (the superset
+  // — the reference's own page overflows to 464, its R-bug-4).
+  test("the header row — the row flex/gap-3/mb-8, the chip 48x48 gradient, the h1 30px/700, the subtitle 16px one-line, the block-governed h 60, the row→card gap 32 (v69 F3)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const h1 = [...document.querySelectorAll("main h1")].find(
+        (h) => (h.textContent || "").trim() === "Net Worth",
+      );
+      if (!h1) return null;
+      const block = h1.parentElement as HTMLElement | null;
+      const row = block?.parentElement as HTMLElement | null;
+      if (!block || !row) return null;
+      const rcs = getComputedStyle(row);
+      const chip = [...row.children].find((c) => c !== block) as HTMLElement | null;
+      const chipCs = chip ? getComputedStyle(chip) : null;
+      const chipIcon = chip?.querySelector("svg") ?? null;
+      const h1cs = getComputedStyle(h1);
+      const sub = [...block.children].find((c) => c.tagName === "P") as HTMLElement | null;
+      const subCs = sub ? getComputedStyle(sub) : null;
+      const next = row.nextElementSibling;
+      return {
+        docSW: document.documentElement.scrollWidth,
+        row: {
+          display: rcs.display,
+          align: rcs.alignItems,
+          gap: rcs.gap,
+          mb: rcs.marginBottom,
+          w: Math.round(row.getBoundingClientRect().width),
+          h: Math.round(row.getBoundingClientRect().height),
+        },
+        chip: chip
+          ? {
+              w: Math.round(chip.getBoundingClientRect().width),
+              h: Math.round(chip.getBoundingClientRect().height),
+              radius: chipCs!.borderRadius,
+              bg: chipCs!.backgroundImage,
+            }
+          : null,
+        chipIcon: chipIcon
+          ? {
+              w: Math.round(chipIcon.getBoundingClientRect().width),
+              h: Math.round(chipIcon.getBoundingClientRect().height),
+              color: getComputedStyle(chipIcon).color,
+            }
+          : null,
+        h1: {
+          fs: h1cs.fontSize,
+          fw: h1cs.fontWeight,
+          lh: h1cs.lineHeight,
+          color: h1cs.color,
+          h: Math.round(h1.getBoundingClientRect().height),
+          x: Math.round(h1.getBoundingClientRect().x),
+        },
+        block: {
+          w: Math.round(block.getBoundingClientRect().width),
+          h: Math.round(block.getBoundingClientRect().height),
+        },
+        subtitle: sub
+          ? {
+              fs: subCs!.fontSize,
+              fw: subCs!.fontWeight,
+              color: subCs!.color,
+              lh: subCs!.lineHeight,
+              h: Math.round(sub.getBoundingClientRect().height),
+            }
+          : null,
+        rowToCardGap: next
+          ? Math.round(next.getBoundingClientRect().top - row.getBoundingClientRect().bottom)
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("networth header census found no row");
+
+    // The row — flex/center/gap-3 (12px), the mb-8 (32px) section rhythm,
+    // w 358 (the 390 column − 2×16 p-4), h 60 — the TEXT BLOCK governs
+    // (the v65 lesson), not the 48px chip.
+    expect(census.row).toEqual({
+      display: "flex", align: "center", gap: "12px",
+      mb: "32px", w: 358, h: 60,
+    });
+
+    // The chip — 48×48, rounded-xl (12px), the forest-medium→lime 135deg
+    // gradient (the networth HEADER_CHIP_GRADIENTS entry).
+    expect(census.chip).toEqual({
+      w: 48, h: 48, radius: "12px",
+      bg: "linear-gradient(135deg, rgb(45, 90, 74), rgb(143, 188, 63))",
+    });
+
+    // The chip icon — the 24×24 white TrendingUp (h-6 w-6).
+    expect(census.chipIcon).toEqual({ w: 24, h: 24, color: "rgb(255, 255, 255)" });
+
+    // The h1 — 30px/700, lh 36px, forestDark rgb(26, 58, 46), h 36, x 76
+    // (the chip 48 at x 16 + the gap 12 — the v14 axes re-asserted).
+    expect(census.h1).toEqual({
+      fs: "30px", fw: "700", lh: "36px",
+      color: "rgb(26, 58, 46)", h: 36, x: 76,
+    });
+
+    // The block — w 250 (the subtitle's max-content governs; the h1 fills
+    // it block-level), h 60 (the h1 36 + the subtitle 24, no gap utility).
+    expect(census.block).toEqual({ w: 250, h: 60 });
+
+    // The subtitle — 16px/400, gray-500 rgb(107, 114, 128), lh 24px,
+    // ONE line at the 250px block (h 24).
+    expect(census.subtitle).toEqual({
+      fs: "16px", fw: "400", color: "rgb(107, 114, 128)",
+      lh: "24px", h: 24,
+    });
+
+    // The row→card gap — 32 (the v41 F1 rhythm re-measured live).
+    expect(census.rowToCardGap).toBe(32);
+
+    // No overflow (the superset — the reference's own page overflows to
+    // 464 at 390, its R-bug-4; the clone's page fits).
+    expect(census.docSW).toBe(390);
+  });
+});

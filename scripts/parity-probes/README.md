@@ -3158,3 +3158,86 @@ continues; the upgrade touches package.json + package-lock.json).
    every rendered date digit (the committed screenshots' DATE class).
    The PIL pixel-diff (the v66 method) arbitrates it in minutes; the
    honest capture is committed, not reverted.
+
+## v69 — the mobile 390 pair re-run (BOTH twins — the networth
+## full-page, the documented queue item, PLUS the dashboard twin) + the
+## networth page-header row pin + the F0 lint-gate repair (session-167)
+
+The session-165/166 v69 queue's items (the re-run cadence rotating to
+the mobile twins — both covered in one two-pair iteration, the v62/v67
+precedent; the axe-core watch at its re-check point [NO DRIFT — only a
+5.x wrapper changes the calculus now, the engine-contract pin guarding
+the toolchain]; the deferred reference-write censuses [unchanged,
+blocked by the v46 read-only rule]) plus the 63rd standing checks.
+PIN-ONLY for src/ (the pin-only line continues; the three pin-sanity
+mutations were verified then reverted, `git diff src/` = 0 lines).
+
+1. **vlm-shots-v69.sh / clone-vlmshots-v69.sh / vlm-compare-v69.mjs** —
+   BOTH mobile 390x844 full-page twins re-run (the networth view — the
+   documented queue surface — and the dashboard, the other never-re-run
+   mobile pair; login on the first attempt both sides, the parked
+   pointer at (5,5)): both pairs CLEAN, every flag DOM-arbitrated via
+   arbit-v69.sh. The networth re-run's three flags = the v63-era classes
+   re-confirmed live with the EXACT v63 numbers (the stat-tile stacking
+   [the v41 mobile-superset class], the trend icon [the v54 clipping
+   perception artifact], the Base44 overlay [platform chrome]); the
+   dashboard re-run's flags = the Base44 tooltip [platform chrome] + the
+   subtitle wrap [the documented v62 class — the chrome byte-identical,
+   the reference's own docSW 395 overflow shifting its wrap point by one
+   word] + a NEW flag variant DOM-DISPROVEN ("the reference's breakdown
+   card contains a donut" — ZERO donut on EITHER side).
+2. **arbit-v69.sh** — the four flags' DOM census on BOTH sides at 390:
+   the networth summary-card family (the v63 census re-used verbatim)
+   plus the dashboard pair's two censuses (the subtitle's per-word line
+   bucketing via a Range walk — the exact wrap lines on both sides —
+   and the breakdown/spending cards' chart census: the recharts-wrapper
+   + pie-sector counts that disproved the donut claim).
+3. **nw-header-v69.sh** — the v69 pin's measurement probe: the
+   /networth view's PAGE-HEADER ROW computed census at 390 on the clone
+   (the never-census'd family — the v14 chip test pins x-positions
+   only; the v65 savings header-row pin's sibling).
+4. **ref-standing-v63.sh / standing-checks-v63.sh** — the 63rd standing
+   checks (version-bumped from v62). Reference: the four bugs ALL live
+   + the data census unchanged (63rd clean drift check) + the SEO pair.
+   Clone: R1-R4 green — the mobile menu VERIFIED WORKING (63rd
+   consecutive time), zero overflow at 390 on all five views.
+5. **db-seedcheck-v68.cjs** — the F0 repair: the v68 ship's own miss
+   (the file was created AFTER v68's final lint run, so the committed
+   v68 tree failed `npm run lint`). The single-file eslint-disable
+   directive; the gate stays strict for the rest of scripts/. NOTE the
+   v69 lesson: run it under `env -u DATABASE_URL` — the sandbox's
+   inherited parent-workspace URL breaks one-shot Prisma scripts.
+6. **The v69 pin (+1 e2e = 271)** — the networth page-header row
+   computed census at 390 (a new describe at the networth.spec.ts tail):
+   the row flex/center/gap-3 12px/mb-8 32px/w 358/h 60 (the TEXT BLOCK
+   governs — the h1 36 + the subtitle 24 — not the 48px chip), the chip
+   48×48/rounded-xl/forest→lime gradient + the 24×24 white icon, the
+   h1 30px/700/lh 36px/forestDark, the block w 250/h 60, the subtitle
+   16px/400/gray-500 ONE line, the row→card gap 32, docSW 390. GREEN on
+   first run; three pin-sanity mutations verified to FAIL then restored
+   (the row mb-8→mb-4; the chip h-12 w-12→h-10 w-10; the h1
+   text-3xl→text-2xl — each with the standalone REBUILD as a SEPARATE
+   command).
+7. **The screenshots** — 16/16 BYTE-IDENTICAL (the first
+   fully-identical set since v65: the v68 re-seed and the v69 capture
+   share the 2026-10-16 calendar day, every rendered date digit
+   matching; no DATE-class arbitration needed this run).
+
+**The v69 lessons:**
+1. One-shot Prisma scripts need `env -u DATABASE_URL` — the sandbox
+   exports an absolute parent-workspace URL that silently overrides the
+   .env resolution and breaks the DB open (error code 14). The
+   documented npm-script discipline applies to every direct node
+   invocation of the client too.
+2. The VLM can INVENT a chart inside a card that carries none on either
+   side (the "faint circle behind the text" donut claim). A
+   chart-presence claim needs the recharts-wrapper/pie-sector census on
+   BOTH sides — never a screenshot read.
+3. A wrap-point difference with byte-identical chrome is a WIDTH-DELTA
+   class — measure the block width + the docSW before believing a
+   typography flag (the reference's own 395px overflow shifted its
+   subtitle wrap by one word; the chrome was byte-identical).
+4. The clean-check gate must re-run AFTER every new file lands, not
+   only before the ship summary — a file created in the screenshots
+   phase (the chain's tail) escapes a chain run from the morning (the
+   v68 seedcheck miss, the F0 repair's own lesson).

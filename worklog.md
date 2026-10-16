@@ -57,9 +57,28 @@ and `docs/remediation-plan-v64.md`,
 and `docs/remediation-plan-v65.md`,
 and `docs/remediation-plan-v66.md`,
 and `docs/remediation-plan-v67.md`,
-and `docs/remediation-plan-v68.md`.
+and `docs/remediation-plan-v68.md`,
+and `docs/remediation-plan-v69.md`.
 
 ---
+
+---
+
+## Session 103 — Parity iteration v69: the mobile 390 pair re-run (BOTH twins — the networth full-page + the dashboard mobile twin) + the axe-core watch (NO DRIFT) + the networth page-header row computed census pin + the F0 lint-gate repair (2026-10-16)
+
+**Goal:** the session-165/166 v69 queue's items — the re-run cadence rotating to the mobile 390 twins (the documented queue surface, the networth full-page twin, PLUS the dashboard mobile twin, the other never-re-run mobile pair — both in one two-pair iteration, the v62/v67 precedent), the axe-core watch at its re-check point, and the deferred reference-write censuses (unchanged, blocked by the v46 read-only rule) — plus the 63rd standing checks. **PIN-ONLY for src/** (the pin-only line continues; `git diff src/` = 0 lines at ship). The formal narrative: `docs/session_167.md`; the plan: `docs/remediation-plan-v69.md`.
+
+**The F0 lint-gate repair (the audit's first finding, caught by the baseline chain itself):** the v68 changeset shipped `scripts/parity-probes/db-seedcheck-v68.cjs` — the repo's only `.cjs`, created during v68's screenshot phase AFTER its final lint run — and its CommonJS `require()` tripped `@typescript-eslint/no-require-imports`: the committed v68 tree did NOT pass `npm run lint`. The repair: a single-file eslint-disable directive (the file keeps its name + logic; the gate stays strict for the rest of scripts/). LESSON: the clean-check gate must re-run AFTER every new file lands — a file created in the screenshots phase (the chain's tail) escapes a chain run from the morning.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0), the engine-contract pin green in the baseline — the 4.x story stays closed.
+
+**The 63rd standing checks** (ref-standing-v63.sh + standing-checks-v63.sh, version-bumped from v62): the mobile menu VERIFIED WORKING (the 63rd consecutive time), the reference's four bugs ALL live (toast-blocker, sheet-trap, no-landmark, the 464px /networth overflow), the data census intact (the 63rd clean drift check), the SEO pair live.
+
+**Both mobile pairs CLEAN** (vlm-shots-v69.sh + clone-vlmshots-v69.sh + vlm-compare-v69.mjs, login on the first attempt both sides, the parked pointer at (5,5)): the networth 390 re-run's three flags ALL arbitrated via arbit-v69.sh to the v63-era classes re-confirmed live with the EXACT v63 numbers (the stat-tile stacking = the v41 mobile-superset class; the trend icon = the v54 clipping perception artifact [the medallion 64×64 + icon 32×32 byte-identical both sides, the ref clipping at 416, the clone fitting at 342]; the Base44 overlay = platform chrome); the dashboard 390 re-run's flags arbitrated (the Base44 tooltip = platform chrome; the subtitle wrap = the documented v62 class [the chrome byte-identical — the exact v62 pin values re-measured both sides; the ref's own docSW 395 overflow shifting its wrap point by one word]; and a NEW flag variant DOM-DISPROVEN — "the reference's breakdown card contains a donut": ZERO donut on EITHER side [rechartsWrappers 0, pieSectors 0 both; the card h 324 both sides — the v42 census value; the 7 svgs the byte-identical row icons] — a perception artifact, the DOM census the ground truth).
+
+**The v69 pin (+1 → 271):** the networth view's PAGE-HEADER ROW computed census at 390 (tests/e2e/networth.spec.ts, a new describe at the file tail, the logged-in read-only state, measured live via nw-header-v69.sh) — the never-census'd family (the v14 chip test pins x-positions only; the v65 savings header-row pin's sibling): the row flex/center/gap-3 12px/mb-8 32px/w 358/h 60 (the TEXT BLOCK governs — the h1 36 + the subtitle 24 — not the 48px chip, the v65 lesson); the chip 48×48/rounded-xl 12px/forest→lime gradient + the 24×24 white icon; the h1 30px/700/lh 36px/forestDark/h 36/x 76; the block w 250/h 60 (the subtitle's max-content governs); the subtitle 16px/400/gray-500 ONE line; the row→card gap 32; docSW 390. GREEN on first run; THREE pin-sanity mutations verified to FAIL then restored (the row mb-8→mb-4; the chip h-12 w-12→h-10 w-10; the h1 text-3xl→text-2xl — each with the standalone REBUILD as a SEPARATE command).
+
+Full chain: lint + typecheck + 108 unit + build + 271 e2e (97 + 99 + 77 chunks) + 35/35 smoke green. **The screenshots: 16/16 BYTE-IDENTICAL** (the first fully-identical set since v65 — the v68 re-seed and the v69 capture share the 2026-10-16 calendar day; the seedcheck run under `env -u DATABASE_URL`, the sandbox's inherited parent-workspace URL being the documented pollution). The docs aligned (AGENTS/CLAUDE/README/SKILL Session 104 row + the 271 state/PAD v1.1.26/the probe README's v69 section/session_167/the repo worklog Session 103 + the ledger list). **Next** (the v70 queue): (1) the mobile twins both re-run — the re-run cadence returns to the desktop pairs or a NEW-pair program (the below-the-fold 390 surfaces, the items views' mobile twins never individually shot), (2) the axe watch at its next re-check point (only a 5.x wrapper changes the calculus), (3) the deferred reference-write censuses (unchanged).
 
 ---
 

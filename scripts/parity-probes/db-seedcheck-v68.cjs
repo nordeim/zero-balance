@@ -1,6 +1,11 @@
 // v68 — the dev DB seed-state check before the screenshot capture.
 // The capture protocol requires the exact seed state: 7 budget items,
 // Rent $1850, expenses $2235, 0 line items, 3 assets, 2 liabilities.
+// v69: the repo's only .cjs — CommonJS require() by design (the Prisma
+// CJS runtime); the single-file disable keeps the lint gate green without
+// weakening it for the rest of scripts/ (the v68 ship missed this — the
+// file was created after the final lint run; the v69 audit's F0 repair).
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { PrismaClient } = require("@prisma/client");
 const p = new PrismaClient();
 
