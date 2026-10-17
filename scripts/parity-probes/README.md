@@ -4069,3 +4069,106 @@ correction needed — the second consecutive agreement).
    the 1-row grid stretching the shorter sibling) can no longer
    silently regress (a broken wrap or a broken stretch both flip the
    pin).
+
+## v80 — the v58-era savings pair's third re-run + the savings
+## goal-card's double-wrap heights / title-row geometry / border-bg pin
+## (session-190)
+
+The session-189 v80 cycle: the re-run cadence rotating to the
+next-oldest candidate — the v58-era savings pair (the savings view at
+desktop 1280, last re-shot v74 — the pair's THIRD re-run [v58 -> v65 ->
+v74 -> v80], now the oldest remaining candidate [v74 < v75 < v76 < v77
+< v78 < v79]) — plus the axe watch at its re-check point (NO DRIFT —
+only a 5.x wrapper changes the calculus, the engine-contract pin
+guarding the toolchain), the 74th standing checks, and the
+ledger-verified queue (the v79 plan's v80 suggestion agreeing with the
+rotation ledger — the third consecutive agreement).
+
+**The probes:**
+- `vlm-shots-v80.sh` — the reference side: the savings view at desktop
+  1280x800 FULL-PAGE (the login-retry loop; the parked pointer at
+  (5,5); read-only — the v46 rule).
+- `clone-vlmshots-v80.sh` — the clone side, the same shot inside
+  with-server.sh (the :3200 standalone parity server).
+- `vlm-compare-v80.mjs` — the VLM pairwise (the v74 savings-view
+  prompt lineage).
+- `arbit-v80.sh` — the both-sides /savings DOM census (the v75
+  convention: the census runs regardless of the verdict; the v74
+  census axes re-measured PLUS the v80 titleRow geometry — the h4's
+  parent row + the category dot, the never-census'd axis): the header
+  + the grid + the first card (w AND h AND border AND bg) + the
+  titleRow + the h4 + the amount + the footer + the badge row + every
+  badge + the docSW guard.
+- `vlm-arbit-v80.mjs` — the screenshot DATE-class diff crops'
+  visual arbitration (the v66/v75 discipline's crop variant: the
+  changed region pairs [baseline above, fresh below] verified
+  DATE-TEXT-ONLY with identical chrome).
+- `ref-standing-v74.sh` / `standing-checks-v74.sh` — the 74th standing
+  checks (version-bumped from v73).
+- The v80 pin (tests/e2e/items.spec.ts): the savings goal-card's
+  double-wrap heights + title-row geometry + border/bg at 1280 — the
+  never-pinned axes (the savings view's card HEIGHTS [230, 230] — the
+  DOUBLE-WRAP twins, both cards carrying 4 badges wrapping their rows
+  to 52px [the v58 pin holds w/pad/radius only, the v79 pin the income
+  view's stretch twin]; the titleRow's geometry flex/8px/center/h 24/
+  the 8x8 dot at 9999px in the savings blue rgb(59,126,161) [the 1280
+  state of the v51/v54 390-only family — the v45 F1a pin's income
+  lime-dot twin completed]; the card's border 1px solid
+  rgb(229,231,227) + bg white [the v45 F1a income family's savings
+  twin]). GREEN on first run. The pin-sanity mutation (the titleRow's
+  lg:items-start at item-card.tsx:120) verified to FAIL at exactly the
+  titleRow.alignItems axis ("center" -> "flex-start") — cascade-free
+  by construction (the responsive variant inert at 390 — the v51/v54
+  family untouched; the v45 F1a pin asserts no alignItems; the row
+  height content-governed — the full items.spec.ts under the mutation:
+  36 green, only the v80 pin red), then restored (the standalone
+  REBUILD as a SEPARATE command; git diff src/ = 0 lines).
+
+**The v80 findings:**
+
+1. The savings verdict DIFFERENT with every flag a documented class —
+   the seed-count grid (1 vs 2 cards), the v58 DATA-CONDITIONAL footer
+   chips, the classification-VALUE badges, the Recurring superset, the
+   seed-data figures, the user-identity avatar — matching the v74
+   re-run's own flag set exactly (zero drift on the flag-class layer
+   six iterations later).
+2. The both-sides census — the chrome BYTE-IDENTICAL on every axis
+   with zero drift since the v74 census: the GRID + CARD (960 / 16px /
+   the 3-col template; 309 / 20px / 12px / 1px solid rgb(229,231,227)
+   / white — the card h 200-vs-230 the v70b-decomposed class); the
+   TITLE ROW (the new axis: flex / 8px / center / h 24 / the 8x8 dot
+   at 9999px in rgb(59,126,161)); the INTERIOR TEXT (the h4
+   16/600/lh 24; the amount 24/700/lh 32 in the savings blue); the
+   FOOTER + BADGE chrome; the docSW 1280.
+3. The fresh-reclone F0: the workspace reset path exercised for the
+   first time since v76 — node_modules + chromium-1243 reinstalled,
+   .env rewritten, db:push + db:seed re-run, the seedcheck exact, and
+   the baseline chain fully green as-shipped on the rebuilt workspace
+   (282 e2e pre-pin).
+4. The screenshots 10/16 byte-identical + 6/16 DATE-class
+   pixel-arbitrated: the fresh seed's isoDate() offsets resolve against
+   the re-clone's seeding day (a +1-day shift on the date texts), the
+   chrome byte-identical — every diff crop VLM-arbitrated
+   DATE-TEXT-ONLY (03-income / 04-expenses / 05-savings / 06-networth
+   / 08-calculator / 16-item-details, all confined to the date-bearing
+   text bands).
+
+**The v80 lessons:**
+1. THE VIEWPORT-SCOPED CASCADE-FREE MUTATION: a per-view completion
+   pin whose every axis is sibling-pinned (the shared-component
+   reality — the titleRow/dot/border axes all held on other views or
+   viewports) gets its cascade-free sanity via a RESPONSIVE variant:
+   lg:items-start flips the 1280 axis while the 390 family stays green
+   — the mutation scoped by viewport, not by component.
+2. THE STRETCH-TWIN ATTRIBUTION CORRECTION: the v70b "shorter sibling
+   stretched" mechanism holds, but WHICH sibling is stretched is a
+   per-view fact — the items-start experiment (measure the naturals
+   with the stretch off) is the probe that settles it. The income
+   view's FIRST card (Salary, natural 200) is the stretched one; the
+   savings view's two cards are BOTH natural wrap twins. Probe before
+   writing the attribution into a pin's comment.
+3. THE FRESH-SEED DATE SHIFT: a re-clone's db:seed shifts every
+   isoDate() field by the seeding-day delta — expect DATE-class
+   screenshot diffs after any workspace reset, and pixel-arbitrate
+   them (crop pairs, DATE-TEXT-ONLY verdicts), never a full-page VLM
+   verdict.

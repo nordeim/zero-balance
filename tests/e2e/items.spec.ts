@@ -3038,3 +3038,116 @@ test.describe("rail avatar + item-card amount-accent + card-height census at 128
     expect(expenses!.docSW).toBe(1280);
   });
 });
+
+// v80 F4 (docs/remediation-plan-v80.md): the savings pair's third re-run
+// found NO NEW GAP (every census delta a documented class — the seed
+// counts, the v58 DATA-CONDITIONAL chips, the classification-VALUE
+// badges, the user identity) and this pin locks the re-run's
+// never-pinned axes at 1280: the savings goal-card's CARD-HEIGHT TWINS
+// (the v58 pin asserts the first card's w/pad/radius but never its
+// height; the v79 pin holds the income view's WRAP twin — this adds the
+// savings view's own wrap twin [the Investments card's Recurring-badge
+// wrap → natural 230] AND the STRETCH twin [the Emergency Fund
+// sibling's natural 200 stretched by the 1-row grid to the taller
+// card's height — pinned nowhere; a broken wrap OR a broken stretch
+// both flip this pin]), the TITLE ROW's geometry (the 1280 state of the
+// v51/v54 390-only family, measured byte-identical on both sides by
+// arbit-v80.sh: flex/8px/center/h 24/the 8x8 dot at 9999px in the
+// savings blue — the v45 F1a pin's income lime-dot twin completed to
+// the savings type), and the card's BORDER + BG (the v45 F1a pin's
+// income-card family's savings twin). The pin's expected values are the
+// arbit-v80.sh census's own measured values, byte-identical on both
+// sides' savings views at 1280x800.
+test.describe("savings goal-card height-twins + title-row geometry + card chrome census at 1280 (v80 — plan F4)", () => {
+  test("the wrap + stretch card heights + the titleRow + the border/bg (v80 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      // The CARD-HEIGHT TWINS: the first card's WRAP-governed natural
+      // height + the second card's STRETCH-governed height (the live
+      // grid probe measured [230, 230] with alignItems "normal" — the
+      // grid default = stretch, byte-identical CSS with the reference).
+      const heights = [...grid.children].map((c) =>
+        Math.round(c.getBoundingClientRect().height),
+      );
+      const card = grid.children[0] as HTMLElement;
+      const ccs = getComputedStyle(card);
+      const cardChrome = {
+        border: `${ccs.borderTopWidth} ${ccs.borderTopStyle} ${ccs.borderTopColor}`,
+        bg: ccs.backgroundColor,
+      };
+      // The TITLE ROW — the h4's direct parent (the dot + title line —
+      // the arbitration's own walk): the row's flex geometry + the
+      // category dot's full chrome.
+      const h4 = card.querySelector("h4");
+      let titleRow: Record<string, unknown> | null = null;
+      if (h4 && h4.parentElement && h4.parentElement !== card) {
+        const row = h4.parentElement;
+        const rs = getComputedStyle(row);
+        const dot = [...row.querySelectorAll("div,span")].find((d) => {
+          const b = d.getBoundingClientRect();
+          return b.width > 0 && b.width <= 12 && b.height > 0 && b.height <= 12;
+        });
+        titleRow = {
+          display: rs.display,
+          gap: rs.gap,
+          alignItems: rs.alignItems,
+          h: Math.round(row.getBoundingClientRect().height),
+          dotW: dot ? Math.round(dot.getBoundingClientRect().width) : null,
+          dotH: dot ? Math.round(dot.getBoundingClientRect().height) : null,
+          dotRadius: dot ? getComputedStyle(dot).borderRadius : null,
+          dotBg: dot ? getComputedStyle(dot).backgroundColor : null,
+        };
+      }
+      return {
+        childCount: grid.children.length,
+        heights,
+        cardChrome,
+        titleRow,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The CARD-HEIGHT TWINS — the v70b lesson's full arithmetic on the
+    // savings view's own two-card row: the Investments card's
+    // Recurring-badge wrap (the badge row's 52px two-line height) gives
+    // its natural 230 (the WRAP twin), and the 1-row grid STRETCHES the
+    // Emergency Fund sibling (natural 200) to match (the STRETCH twin).
+    // A broken badge wrap, a broken grid stretch, or a changed card
+    // interior each flip these values.
+    expect(census!.childCount).toBe(2);
+    expect(census!.heights).toEqual([230, 230]);
+
+    // The TITLE ROW's geometry at 1280 — the 1280 state of the v51/v54
+    // 390-only family, byte-identical on both sides' savings goal cards:
+    // the dot + h4 line at flex/8px/center/h 24 with the 8x8 fully-round
+    // dot in the savings blue.
+    expect(census!.titleRow).toEqual({
+      display: "flex",
+      gap: "8px",
+      alignItems: "center",
+      h: 24,
+      dotW: 8,
+      dotH: 8,
+      dotRadius: "9999px",
+      dotBg: "rgb(59, 126, 161)",
+    });
+
+    // The card's border + bg at 1280 — the v45 F1a pin's income-card
+    // family's savings twin.
+    expect(census!.cardChrome).toEqual({
+      border: "1px solid rgb(229, 231, 227)",
+      bg: "rgb(255, 255, 255)",
+    });
+
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});
