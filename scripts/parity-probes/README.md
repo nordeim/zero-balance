@@ -3976,3 +3976,96 @@ commitment, no correction needed).
    390 — the VLM's invented-donut class can no longer resurface
    un-arbitrated in a future re-run (the pin fails if a chart ever
    appears in the breakdown card).
+
+## v79 — the v57-era items pair's third re-run + the rail-avatar /
+## amount-accent / card-height pin (session-188)
+
+The session-187 v79 cycle: the re-run cadence rotating to the
+next-oldest candidate — the v57-era items pair (the income + expenses
+view pair at desktop 1280, last re-shot v70 — the pair's THIRD re-run
+[v57 → v64 → v70 → v79], the cadence's most-re-verified desktop
+surface) — plus the axe watch at its re-check point (NO DRIFT — only a
+5.x wrapper changes the calculus, the engine-contract pin guarding the
+toolchain), the 73rd standing checks, and the ledger-verified queue
+(the v78 plan's v79 suggestion agreeing with the rotation ledger:
+v70 items < v74 savings < v75 login+calculator < v76 networth+drill-down
+< v77 dashboard < v78 mobile twins — the oldest remaining by LAST
+RE-SHOT DATE; the v77 target-selection lesson applied: the queue
+suggestion verified against the ledger before commitment, no
+correction needed — the second consecutive agreement).
+
+**The probes:**
+- `vlm-shots-v79.sh` — the reference side: BOTH items views at desktop
+  1280x800 FULL-PAGE (the login-retry loop; the parked pointer at
+  (5,5); read-only — the v46 rule).
+- `clone-vlmshots-v79.sh` — the clone side, the same shots inside
+  with-server.sh (the :3200 standalone parity server).
+- `vlm-compare-v79.mjs` — the VLM pairwise (the v70 prompt lineage —
+  the items focus).
+- `arbit-v79.sh` — the both-sides DOM census (the v75 convention: the
+  census runs regardless of the verdict; the v70 census axes
+  re-measured on BOTH views): the sidebar avatar (the v70b round
+  1-2-char finder) + the item grid + the first card (w AND h) + the
+  titleRow + the AMOUNT leaf (the ≥20px-font P — the never-pinned
+  axis) + the footer + the badge row + the filter card (both variants)
+  + the header + the docSW guard.
+- `ref-standing-v73.sh` / `standing-checks-v73.sh` — the 73rd standing
+  checks (version-bumped from v72).
+- The v79 pin (tests/e2e/items.spec.ts): the rail-avatar's full chrome
+  + the item-card amount leaf's per-type accent family + the income
+  view's first-card HEIGHT at 1280 — the never-pinned axes (the
+  avatar's w 36/h 36/radius 9999px/fs 14px/fw 600/color white/bg
+  rgb(143,188,63) [the tokens.spec pin holds the radius only]; the
+  amount's 24px/700/lh 32px/h 32 with the income lime + expenses
+  orange accents [the v74 pin holds the savings variant only —
+  completed to all three types]; the income first card's h 230 [the
+  v70b wrap/stretch arithmetic regression guard: the Salary sibling's
+  Recurring-wrap natural 230 + the 1-row grid stretching the Freelance
+  card]). GREEN on first run. The pin-sanity mutation (the avatar's
+  font-semibold -> font-medium at sidebar.tsx:120) verified to FAIL at
+  exactly the avatar.fw axis (600 -> 500), cascade-free (the
+  tokens.spec radius pin + the boot-failure shell pin verified GREEN
+  under the mutation), then restored (the standalone REBUILD as a
+  SEPARATE command; git diff src/ = 0 lines).
+
+**The v79 findings:**
+
+1. BOTH items views' VLM verdicts DIFFERENT with every flag a
+   documented class — the income pair: the avatar letter the
+   user-identity class; the 1-card vs 2-card grid the seed-count
+   class; the figures the seed-data class. The expenses pair: the
+   footer's payment-method chips the v57 DATA-CONDITIONAL class; the
+   badge arrangement the v57 Recurring superset wrap class; the avatar
+   the user-identity class (matching the v70 re-run's own flag set
+   exactly — zero drift on the flag-class layer nine iterations
+   later).
+2. The both-sides census — the chrome BYTE-IDENTICAL on every axis
+   with zero drift since the v70 census: the AVATAR (36x36 / 9999px /
+   14px / 600 / white / rgb(143,188,63) — the identity text the only
+   delta); the GRID + CARD (960 / 16px / the 3-col template; 309 /
+   20px / 12px / rgb(229,231,227) — the card h 200-vs-230 the
+   v70b-decomposed class: the Recurring superset wrap h 52 → +30px +
+   the 1-row sibling stretch); the AMOUNT leaf (24/700/lh 32/h 32 with
+   the per-type accents); the FOOTER + BADGE chrome; the FILTER CARD
+   on both variants (the income 447-spanning + the expenses
+   216-not-spanning — the v64/v70 pins' own values); the header; the
+   docSW 1280 on both views.
+3. The screenshots 16/16 byte-identical — the tenth consecutive
+   fully-identical set (the same-day regeneration, no calendar
+   rollover).
+
+**The v79 lessons:**
+1. The reference session's mid-script expiry hit the F2 data census
+   this time (the income leg read "no match" — the /income redirect
+   landed on /login): the census re-read after a fresh login-retry
+   recovered the exact documented values. The standing pattern
+   generalizes: ANY multi-eval reference flow should treat a "no
+   match"/empty census as a possible EXPIRY first (re-login + re-read)
+   before suspecting drift — the v75 cold-session lesson's expiry
+   twin.
+2. The v70b card-height lesson now has its regression guard: the
+   income view's first-card HEIGHT 230 is pinned at 1280 — the
+   wrap/stretch arithmetic (the Recurring superset badge's 52px wrap +
+   the 1-row grid stretching the shorter sibling) can no longer
+   silently regress (a broken wrap or a broken stretch both flip the
+   pin).

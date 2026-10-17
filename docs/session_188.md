@@ -1,0 +1,42 @@
+# Session 188 — Parity iteration v79 (the v57-era items pair's third re-run) + the rail-avatar / amount-accent / wrap-stretch card-height pin (PIN-ONLY)
+
+The v79 session narrative. The plan: `docs/remediation-plan-v79.md`; the repo worklog entry: Session 114. All work on `main`; pushed via the SSH wrapper (`docs/ssh_git_wrapper_v3.py`).
+
+## The session log
+
+Workspace existed and was clean; `git pull` brought in `docs/session_187.md` (the v78 transcript) — `main @ 387efae`, v78 fully shipped (281 e2e / Session 113 / PAD v1.1.35). The next iteration: **v79 / session_188**. Core docs reviewed (AGENTS.md, CLAUDE.md, README.md, the PAD, the SKILL doc) — all at the documented v78 state. The ledger-verified target: the **v57-era items pair** (the income + expenses view pair at desktop 1280, last re-shot v70 — now the oldest remaining candidate [v70 < v74 < v75 < v76 < v77 < v78]; the v78 plan's queue suggestion agreeing with the rotation ledger, no correction needed).
+
+The environment verified in place (no reset): node_modules + `.env` (DATABASE_URL="file:../db/custom.db") + `db/custom.db` + chromium-1243, no orphaned servers, the seedcheck exact (7 items / rent 1850 / expenses 2235 / 0 line items / 3 assets / 2 liabilities) before any flow ran.
+
+**F0 — the baseline chain FULLY GREEN as-shipped**: lint ✓ · typecheck ✓ · 108/108 unit ✓ · `npm run build` ✓ (robots + sitemap prerendered; the standalone static + public copies verified — the v76 lesson applied by construction) · **281 e2e ✓** (100 + 106 + 77 chunks = 281 unique tests in 24 files — the exact documented v78 state) · 35/35 smoke ✓.
+
+**F1 — the axe-core watch at its re-check point: NO DRIFT**: npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), npm-latest `axe-core` 4.14.0 (only a canary beyond); the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0, no nested engine dir); the engine-contract pin GREEN standalone (2 passed).
+
+**F2 — the 73rd standing checks ALL GREEN**: ref-standing-v73.sh + standing-checks-v73.sh (version-bumped from v72 — version-bump-only diffs verified). Reference side: the four bugs ALL live (the toast-blocker `hitIsBurgerChild:false`; the sheet-trap `overlayCount:1`; the no-landmark `navLandmark:false`; the 464px /networth overflow at 390) + the data census UNCHANGED (the 73rd clean drift check: "1 items · $25,000" / "1 items · $5000.00" / "4 items · $525.00" — the income leg re-read after a mid-script session expiry, the documented login-retry pattern) + the SEO pair live. Clone side: R1–R4 ALL GREEN — the mobile navigation menu VERIFIED WORKING (the 73rd consecutive time), zero overflow at 390 on all five views, the SEO pair live.
+
+**F3 — the re-run pair (BOTH items views at desktop 1280x800, full-page)**: via vlm-shots-v79.sh + clone-vlmshots-v79.sh + vlm-compare-v79.mjs (login on the first attempt both sides; the parked pointer at (5,5); read-only on the reference — the v46 rule holds). The income verdict DIFFERENT with every flag a documented class (the avatar letter the user-identity class; the 1-card vs 2-card grid the seed-count class; the figures the seed-data class); the expenses verdict DIFFERENT with every flag a documented class (the footer's payment-method chips the v57 DATA-CONDITIONAL class; the badge arrangement the v57 Recurring superset wrap class; the avatar the user-identity class) — matching the v70 re-run's own flag set exactly.
+
+The both-sides census (arbit-v79.sh — the v75 convention, the v70 census axes re-measured on BOTH views): the AVATAR chrome BYTE-IDENTICAL (w 36 × h 36 / radius 9999px / fs 14px / fw 600 / color rgb(255,255,255) / bg rgb(143,188,63) — the identity text the only delta); the GRID + CARD chrome BYTE-IDENTICAL (grid 960 / gap 16px / the 3-col 309.328px template; card 309 / pad 20px / radius 12px / border rgb(229,231,227)); the card h (ref 200 vs clone 230) the v70b-decomposed class (the Recurring superset badge's wrap h 52 [22+8+22] → +30px, and the 1-row grid STRETCHES the shorter sibling to the taller card's natural height); the TITLE ROW + the AMOUNT leaf chrome BYTE-IDENTICAL (the amount 24px/700/lh 32px/h 32 with the income lime rgb(143,188,63) + expenses orange rgb(224,122,59) accents matching per type); the FOOTER + BADGE chrome BYTE-IDENTICAL (the footer childCount the v57 DATA-CONDITIONAL class; the badgeRow h 22 vs 52 the v57 wrap class); the FILTER CARD BYTE-IDENTICAL on BOTH variants (the income 447-spanning + the expenses 216-not-spanning — the v64/v70 pins' own values, zero drift) + the header + the docSW 1280 guard on both views. **NO NEW GAP.**
+
+**F4 — the v79 pin (+1 e2e = 282)**: the rail-avatar chrome + the item-card amount-accent + wrap/stretch card-height census at 1280 (tests/e2e/items.spec.ts — the never-pinned axes: the avatar's full chrome [the tokens.spec pin holds the radius only], the amount leaf's per-type accent family [the v74 pin holds the savings variant only — completed to all three types], the income view's first-card HEIGHT 230 [the v70b lesson's wrap/stretch arithmetic regression guard]) — **GREEN on first run**. The pin-sanity mutation (the avatar's `font-semibold` → `font-medium` at sidebar.tsx:120) verified to FAIL at exactly the avatar.fw axis (600 → 500) — cascade-free (the tokens.spec radius pin + the boot-failure shell pin verified GREEN under the mutation) — then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines).
+
+**F5 — the full chain re-run GREEN**: lint → typecheck → 108 unit → `npm run build` → **282 e2e** (100 + 107 + 77 chunks = 282 unique tests in 24 files) → 35/35 smoke. The screenshots 16/16 BYTE-IDENTICAL — the tenth consecutive fully-identical set (the same-day regeneration, no calendar rollover; the seedcheck under `env -u DATABASE_URL` confirming the exact seed state).
+
+**The docs alignment**: D1 AGENTS.md (the v79 paragraph), D2 CLAUDE.md (282 + the v79 pin clause), D3 README.md (the counts + the v79 plan-table row), D4 zero-balance_SKILL.md (Session 114 audit row + the state lines), D5 the PAD's v1.1.36 revision block, D6 the probe README's v79 section, D7 this narrative + the worklog Session 114 entry.
+
+## The summary
+
+- **Ledger-verified target**: the v57-era items pair (income + expenses at desktop 1280, last re-shot v70) — the pair's third re-run, the cadence's most-re-verified desktop surface; the queue suggestion agreed with the ledger (the second consecutive agreement)
+- **F0–F2 all green**: baseline chain as-shipped (281 e2e → 282), axe watch no drift, 73rd standing checks (mobile menu verified 73rd consecutive time; the reference's four bugs all live; the data census clean — the income leg re-read after a mid-script session expiry)
+- **F3 re-run**: both items views' VLM verdicts DIFFERENT with every flag a documented class (matching the v70 re-run's own flag set exactly); the census chrome byte-identical — **NO NEW GAP**
+- **+1 pin (282 e2e)**: the rail-avatar's full chrome + the amount leaf's per-type accents + the income first card's h 230 (the v70b wrap/stretch arithmetic regression guard) — PIN-ONLY, `src/` untouched, pin-sanity verified cascade-free
+- **16/16 screenshots byte-identical** (10th consecutive set); D1–D7 docs aligned
+
+## The lessons
+
+1. **THE MID-SCRIPT EXPIRY TWIN**: the reference session expired between the F2 R-bug checks and the data census — the income leg read "no match" (the /income redirect had landed on /login). The census re-read after a fresh login-retry recovered the exact documented values. The generalization: any multi-eval reference flow should treat a "no match"/empty census as a possible EXPIRY first (re-login + re-read) before suspecting drift — the v75 cold-session lesson's expiry twin.
+2. **THE v70b CARD-HEIGHT LESSON NOW HAS ITS REGRESSION GUARD**: the income view's first-card HEIGHT 230 is pinned at 1280 — the wrap/stretch arithmetic (the Recurring superset badge's 52px wrap + the 1-row grid stretching the shorter sibling) can no longer silently regress (a broken wrap or a broken stretch both flip the pin).
+
+## Suggested next step
+
+Run the **v80 cycle** — the queue (in `docs/remediation-plan-v79.md`) points to the v58-era savings pair (the savings view + goal-card surfaces at desktop 1280, last re-shot v74 — now the oldest remaining candidate), plus the axe watch at its next re-check point. As always, verify the queue suggestion against the rotation ledger before commitment.

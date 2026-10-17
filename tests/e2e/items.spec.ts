@@ -2903,3 +2903,138 @@ test.describe("item-card subtitle-P chrome pin at 390 (v71 — plan F5)", () => 
     });
   });
 });
+
+// v79 F4 (docs/remediation-plan-v79.md): the items pair's third re-run
+// found NO NEW GAP (every census delta a documented class — the identity
+// avatar, the seed counts, the v57 DATA-CONDITIONAL chips, the Recurring
+// wrap) and this pin locks the re-run's never-pinned chrome axes at 1280:
+// the rail AVATAR's full chrome (the tokens.spec pin holds its radius
+// only — w/h/fs/fw/color/bg never pinned), the item-card AMOUNT leaf's
+// per-type accent family (the v74 pin holds the savings variant; the
+// income lime + expenses orange twins never pinned — plus the leaf's box
+// h), and the income view's first-card HEIGHT — the v70b lesson's
+// wrap/stretch arithmetic regression guard (the Salary card's
+// Recurring-wrap natural 230 + the 1-row grid stretching the Freelance
+// sibling to match; if the stretch or the wrap ever breaks, this fails).
+// The pin's expected values are the arbit-v79.sh census's own measured
+// values, byte-identical on both sides' items views at 1280x800.
+test.describe("rail avatar + item-card amount-accent + card-height census at 1280 (v79 — plan F4)", () => {
+  test("the avatar chrome + the amount's per-type accents + the wrap/stretch card height (v79 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/income");
+    await expect(page.getByText("Freelance").first()).toBeVisible();
+
+    const income = await page.evaluate(() => {
+      const out: Record<string, unknown> = {};
+      // The rail avatar — the arbitration's own finder (the v70b pattern:
+      // the round 1-2 char element in the fixed aside).
+      const rail = document.querySelector("aside");
+      const avatar = rail
+        ? [...rail.querySelectorAll("div,span,button")].find((el) => {
+            const r = el.getBoundingClientRect();
+            const cs = getComputedStyle(el);
+            const t = (el.textContent || "").trim();
+            return (
+              r.width >= 30 &&
+              r.width <= 45 &&
+              Math.abs(r.width - r.height) < 3 &&
+              parseFloat(cs.borderRadius) > 100 &&
+              t.length >= 1 &&
+              t.length <= 2
+            );
+          })
+        : null;
+      if (avatar) {
+        const cs = getComputedStyle(avatar);
+        out.avatar = {
+          w: Math.round(avatar.getBoundingClientRect().width),
+          h: Math.round(avatar.getBoundingClientRect().height),
+          radius: cs.borderRadius,
+          fs: cs.fontSize,
+          fw: cs.fontWeight,
+          color: cs.color,
+          bg: cs.backgroundColor,
+        };
+      }
+      // The first income card's height + its amount leaf.
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (grid) {
+        const card = grid.children[0] as HTMLElement;
+        out.cardH = Math.round(card.getBoundingClientRect().height);
+        const amount = [...card.querySelectorAll("p")].find(
+          (p) => parseFloat(getComputedStyle(p).fontSize) >= 20,
+        );
+        if (amount) {
+          const cs = getComputedStyle(amount);
+          out.incomeAmount = {
+            fs: cs.fontSize,
+            fw: cs.fontWeight,
+            color: cs.color,
+            lh: cs.lineHeight,
+            h: Math.round(amount.getBoundingClientRect().height),
+          };
+        }
+      }
+      out.docSW = document.documentElement.scrollWidth;
+      return out;
+    });
+    expect(income.avatar).toEqual({
+      w: 36,
+      h: 36,
+      radius: "9999px",
+      fs: "14px",
+      fw: "600",
+      color: "rgb(255, 255, 255)",
+      bg: "rgb(143, 188, 63)",
+    });
+    // The card height — the v70b wrap/stretch arithmetic: the Salary
+    // sibling's Recurring badge wraps its row to 52px (natural 230) and
+    // the 1-row grid stretches the Freelance card (natural 200) to match.
+    expect(income.cardH).toBe(230);
+    expect(income.incomeAmount).toEqual({
+      fs: "24px",
+      fw: "700",
+      color: "rgb(143, 188, 63)",
+      lh: "32px",
+      h: 32,
+    });
+    expect(income.docSW).toBe(1280);
+
+    // The expenses twin — the orange accent on the same leaf family.
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Entertainment" })).toBeVisible();
+    const expenses = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      const amount = [...card.querySelectorAll("p")].find(
+        (p) => parseFloat(getComputedStyle(p).fontSize) >= 20,
+      );
+      if (!amount) return null;
+      const cs = getComputedStyle(amount);
+      return {
+        expenseAmount: {
+          fs: cs.fontSize,
+          fw: cs.fontWeight,
+          color: cs.color,
+          lh: cs.lineHeight,
+          h: Math.round(amount.getBoundingClientRect().height),
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(expenses).not.toBeNull();
+    expect(expenses!.expenseAmount).toEqual({
+      fs: "24px",
+      fw: "700",
+      color: "rgb(224, 122, 59)",
+      lh: "32px",
+      h: 32,
+    });
+    expect(expenses!.docSW).toBe(1280);
+  });
+});
