@@ -3719,3 +3719,95 @@ watch at its re-check point and the 69th standing checks.
    expect exactly one small-region diff per overnight regeneration and
    arbitrate it programmatically (the PIL bbox + the region size), never
    with a VLM verdict.
+
+## v76 — the re-run cycle's next-oldest candidate (the v60-era networth + drill-down pair's second re-run) + the breakdown section-icon chip glyph + donut label chrome pin (PIN-ONLY)
+
+The session-181 v76 cycle: the re-run cadence rotating past the v75
+login+calculator pair to the next-oldest candidate — the v60-era pair (the
+networth view + the dashboard drill-down EXPANDED at 1280, last re-shot v67)
+— plus the axe watch at its re-check point, the 70th standing checks, and
+the F0 standalone-static-copy environment lesson.
+
+**The probes:**
+- `vlm-shots-v76.sh` — the reference side: the NETWORTH view at desktop
+  1280x800 FULL-PAGE + the DASHBOARD's drill-down EXPANDED state (the
+  login-retry loop; the parked pointer at (5,5); the expansion clicks
+  VIEW-STATE only — the v46 read-only rule holds).
+- `clone-vlmshots-v76.sh` — the clone side, the same shots inside
+  with-server.sh (the :3200 standalone parity server).
+- `vlm-compare-v76.mjs` — the VLM pairwise (the networth + drill-down
+  prompts, the v67 prompt lineage).
+- `arbit-v76.sh` — the both-sides DOM arbitration census (the v43 rule),
+  the v75 single-script convention: the reference side direct + the clone
+  side inside the QUOTED heredoc with the censuses env-injected (the v73
+  lesson) + the seedcheck at the end. PART A (the drill-down): the nav
+  highlight (the v56 class), the avatar letter, the hero progress track +
+  fill (the pct data class), the donut labels (the v60 perception class),
+  the stat trend icons + the hero trend glyphs (the v67 axes — the drift
+  re-check). PART B (the networth): the summary card's full HEIGHT family
+  (the v67 F3 pin's own axes — the drift re-check).
+- `ref-standing-v70.sh` / `standing-checks-v70.sh` — the 70th standing
+  checks (version-bumped from v69).
+- The v76 pin (tests/e2e/dashboard.spec.ts): the breakdown card's
+  income-SECTION ICON CHIP glyph + the donut label chrome census at 1280 —
+  the never-pinned axes (the section icon's 16x16 twin-polyline
+  glyphSig/color rgb(143,188,63)/viewBox 0 0 24 24 + its h-8 w-8 chip
+  32x32/radius 8px/rgba(143,188,63,0.125) + the donut label count 4/fs
+  16px/fill rgb(0,0,0)/sectors 3/labelLineCount 0), with the precise
+  section-button finder. GREEN on first run. The pin-sanity mutation (the
+  section icon's h-4 w-4 → h-5 w-5 at dashboard-view.tsx:316) verified to
+  FAIL at exactly the sectionIcons axis (the empty array at 20x20), then
+  restored (the standalone REBUILD as a SEPARATE command; git diff src/ =
+  0 lines).
+
+**The v76 findings:**
+
+1. PAIR 1 (the networth view at 1280) — two style flags, both documented
+   classes (the Base44 FAB + the avatar letter, which the VLM misread as
+   "P" on the clone — the census says "D"). The PART B census — the
+   summary card's full HEIGHT family — byte-identical on every axis with
+   ZERO drift since the v67 pin: the card 960x333/32px/16px/gradient/
+   shadow, the headRow 76/mb 32, the label 14/80-white/mb 8/h 20, the
+   figure 48/700/white/lh 48/h 48, the medallion 64x64/icon 32, the
+   statGrid 440px 440px/rows 84/gap 16, the statTile 440x84/pad 16/
+   radius 12/white-10/blur(10)/label 12/h 16/mb 4/amount 24/700/h 32,
+   the ratioFooter mt 24/pt 24/1px/white-20/h 53/14/18/700. The
+   labelBlock width 304-vs-357 is the figure-text-length data class.
+2. PAIR 2 (the drill-down EXPANDED at 1280) — six flags, every one
+   DOM-arbitrated to a documented class: the nav highlight the v56
+   root-URL class (bg TRANSPARENT both sides; the delta the clone's
+   white/500 vs the reference's zinc-600/400); the progress fill the pct
+   × 568 data class (the track chrome byte-identical; fillW 173 vs 357);
+   the donut labels the v60 perception class (the label chrome
+   byte-identical — count 4/16px/black/3 sectors/0 lines — the
+   reference's first label element carries the three texts concatenated,
+   the clone's distributed: a recharts label-grouping DOM artifact); the
+   extra rows + footer + stat counts the seed-data classes; the tooltip
+   the Base44 platform chrome. The stat trend icons + the hero trend
+   glyph row byte-identical (the v67 axes, no drift).
+3. The screenshots 16/16 byte-identical — the seventh consecutive
+   fully-identical set (the same-day regeneration, no calendar rollover
+   since the v75 re-baseline).
+
+**The v76 lessons:**
+1. THE F0 LESSON (the standalone static copy): `npx next build` alone does
+   NOT produce a servable standalone — package.json's `build` script is
+   `next build && cp -r .next/static .next/standalone/.next/ && cp -r
+   public .next/standalone/`, and the bare build leaves the standalone
+   404ing every `/_next/static/chunks/*` request: the server renders the
+   HTML shell but the client never hydrates, boot() never runs, and every
+   hydration-dependent assertion burns its full 10s expect timeout (a
+   "slow suite" that is really a 404 loop). The F0 build step must run
+   `npm run build`, and a boot-failure-style stuck-at-Loading page with a
+   fast /api/health is the fingerprint of the missing static copy.
+2. THE FINDER-DESCRIPTION LESSON: the v67/v76 arbitration's "stat-card
+   footer trend icon" label was a MISNOMER — its width-200-500 "Total
+   Income" finder matches the BREAKDOWN SECTION ROW first in the DOM on
+   BOTH sites (the actual stat tiles match second/third), and THAT row's
+   icon chrome is what measured byte-identical all along. Name a census's
+   finder by what it actually resolves to (dump the matched element's
+   text when in doubt), and when a pin-sanity mutation FAILS TO FAIL,
+   debug the finder before touching the pin — the first v76 mutation
+   (the hero-stat-tile trend icon, dashboard-view.tsx:619) stayed GREEN
+   because the pin never measured that icon; the corrected mutation (the
+   section icon at :316) failed at exactly the pinned axis.

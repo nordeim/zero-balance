@@ -64,9 +64,34 @@ and `docs/remediation-plan-v71.md`,
 and `docs/remediation-plan-v72.md`,
 and `docs/remediation-plan-v73.md`,
 and `docs/remediation-plan-v74.md`,
-and `docs/remediation-plan-v75.md`.
+and `docs/remediation-plan-v75.md`,
+and `docs/remediation-plan-v76.md`.
 
 ---
+
+---
+
+## Session 110 — Parity iteration v76: the re-run cycle's next-oldest candidate (the v60-era networth + drill-down pair's second re-run) + the axe watch (NO DRIFT) + the breakdown section-icon chip glyph + donut label chrome pin (PIN-ONLY) (2026-10-17)
+
+**Goal:** the session-181 v76 queue's first item — the re-run cadence rotating past the v75 login+calculator pair to the next-oldest candidate (the v60-era networth + drill-down pair, last re-shot v67 — the oldest remaining standing pair), plus the axe-core watch at its re-check point and the 70th standing checks. **PIN-ONLY for src/ — no production-code change; +1 e2e = 279.** The formal narrative: `docs/session_182.md`; the plan: `docs/remediation-plan-v76.md`.
+
+**The environment preserved** (no reset this session): the workspace survived the boundary intact — `main @ 2f69d0e` (v75 shipped + the session_181 transcript), node_modules + `.env` (DATABASE_URL="file:../db/custom.db", db/ at the repo root) + `db/custom.db` + chromium-1243 all verified, no orphaned servers, the seedcheck confirming the exact seed before any flow ran.
+
+**The baseline chain GREEN with THE F0 ENVIRONMENT LESSON** (no code defect): the first e2e pass hit a 20-test 5.9-minute wall with the boot-failure spec stuck at `aria-label="Loading"` — every `/_next/static/chunks/*` request 404ing. The root cause: a bare `npx next build` does NOT produce a servable standalone — package.json's `build` script's `cp -r .next/static .next/standalone/.next/` + `cp -r public .next/standalone/` steps are part of the build contract; without them the client never hydrates and every hydration-dependent assertion burns its 10s expect timeout (the "slow suite" was the 404 loop). After `npm run build`: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap) · 278 e2e ✓ (98 + 60 + 122 chunks = 277 chromium + 3 setups) · 35/35 smoke ✓ — the exact documented v75 state.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0, no nested engine dir), the engine-contract pin GREEN standalone (2 passed).
+
+**The 70th standing checks ALL GREEN:** the mobile menu VERIFIED WORKING (the 70th consecutive time — `hitIsBurgerChild:true`, the sheet opens + closes on nav, the nav landmark present); the reference's four bugs ALL live [toast-blocker, sheet-trap `overlayCount:1`, no-landmark, the 464px /networth overflow]; the data census UNCHANGED (the 70th clean drift check); the SEO pair live; zero overflow at 390 on all five clone views.
+
+**The re-run pair (the networth view + the dashboard drill-down EXPANDED at desktop 1280x800):** the networth pair DIFFERENT with two style flags, both documented classes (the Base44 FAB + the avatar letter — which the VLM misread as "P"; the census says "D"); the PART B census — the summary card's full HEIGHT family — **byte-identical on every axis with ZERO drift since the v67 pin** (the card 960×333/32px/16px/gradient/shadow; the headRow 76/mb 32; the label 14/80-white/mb 8/h 20; the figure 48/700/white/lh 48; the medallion 64×64/icon 32; the statGrid 440px×2/rows 84/gap 16; the statTile 440×84/pad 16/radius 12/white-10/blur(10)/label 12/amount 24/700; the ratioFooter mt 24/pt 24/1px/53) — the labelBlock width 304-vs-357 the figure-text-length data class. The drill-down pair DIFFERENT with six flags, every one DOM-arbitrated via arbit-v76.sh to a documented class: the nav highlight the v56 root-URL class (bg TRANSPARENT both sides — the delta the clone's white/500 vs the reference's zinc-600/400); the progress fill the pct × 568 data class (the track chrome byte-identical; fillW 173-vs-357); the donut labels the v60 perception class (the label chrome BYTE-IDENTICAL — count 4/16px/black/3 sectors/0 lines; the reference's first label element carries the three texts concatenated, the clone's distributed — a recharts label-grouping DOM artifact); the extra rows + footer + stat counts the seed-data classes; the tooltip the Base44 platform chrome. The stat trend icons + the hero trend glyph row byte-identical (the v67 axes — no drift). The seedcheck exact after. **NO NEW GAP.**
+
+**The v76 pin (+1 e2e = 279):** the breakdown card's income-SECTION ICON CHIP glyph + the donut label chrome census at 1280 (tests/e2e/dashboard.spec.ts — the never-pinned axes: the section icon's 16×16 twin-polyline glyphSig/rgb(143,188,63)/viewBox 0 0 24 24 + its h-8 w-8 chip 32×32/radius 8px/rgba(143,188,63,0.125) + the donut label count 4/fs 16px/fill rgb(0,0,0)/sectors 3/labelLineCount 0; the precise section-button finder — the arbitration's own measured values) — GREEN on first run; the pin-sanity mutation (the section icon's h-4 w-4 → h-5 w-5 at dashboard-view.tsx:316) verified to FAIL at exactly the sectionIcons axis (the empty array at 20×20), then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines).
+
+**The full chain re-run GREEN:** lint → typecheck → 108 unit → `npm run build` → 279 e2e (98 + 60 + 123 chunks = 278 chromium + 3 setups) → 35/35 smoke. The screenshots 16/16 BYTE-IDENTICAL — the seventh consecutive fully-identical set (the same-day regeneration, no calendar rollover since the v75 re-baseline).
+
+**The docs alignment:** D1 AGENTS.md (the v76 paragraph), D2 CLAUDE.md (279 + the v76 pin clause), D3 README.md (the counts + the v76 plan-table row), D4 zero-balance_SKILL.md (Session 111 audit row + the state lines), D5 the PAD's v1.1.33 revision block, D6 the probe README's v76 section, D7 session_182.md + this entry.
+
+**The probe lessons:** (1) THE F0 LESSON — `npm run build`, never a bare `npx next build`: the standalone static+public copy is part of the build contract, and a stuck-at-Loading page with a fast /api/health is the fingerprint of the missing static copy; (2) THE FINDER-DESCRIPTION LESSON — the v67/v76 arbitration's "stat-card footer trend icon" label was a MISNOMER (its width-200-500 "Total Income" finder matches the breakdown section row FIRST in the DOM on BOTH sites): name a census's finder by what it actually resolves to, and when a pin-sanity mutation FAILS TO FAIL, debug the finder before touching the pin.
 
 ---
 

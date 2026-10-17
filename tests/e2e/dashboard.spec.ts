@@ -2962,3 +2962,114 @@ test.describe("the mobile header-subtitle block census at 390 (v62 — plan F2)"
     expect(census!.h1).toEqual({ h: 36, fs: "30px", fw: "700", mb: "8px" });
   });
 });
+
+test.describe("breakdown section-icon glyph + donut label chrome census at 1280 (v76 — plan F4)", () => {
+  // The v76 re-run pair's pin: the never-pinned axes the arbitration
+  // census (arbit-v76.sh PART A) measured byte-identical on BOTH sites at
+  // 1280x800 — the Net Zero Breakdown card's INCOME-SECTION ICON CHIP (the
+  // h-4 w-4 legacy TrendingUpIcon inside the section button's h-8 w-8
+  // rounded-lg chip, limeGreen on the tinted 12.5% bg) and the DONUT
+  // LABEL chrome. The existing pins cover around them: the v43 F2/v44
+  // F1-F4 censuses pin the section rows' geometry/chevron glyph swap, the
+  // v60 F2 pin the expanded sub/item rows, the v55 glyph census the
+  // stat-tile SHAPE row, the v9 G1b contract the labelLineCount 0 + the
+  // early test the sector fill order — NEVER the section icon's own
+  // glyph signature, color, or viewBox, and never the donut label
+  // elements' own count/fs/fill. The trend icon: the legacy
+  // TrendingUpIcon's twin-polyline path in the 0 0 24 24 viewBox; the
+  // donut labels: the percent formatter's text nodes inherit the
+  // document defaults (16px/black), recharts rendering one label element
+  // per sector + one grouping element — count 4 with the 3-sector seed.
+  test("the breakdown card's income-section icon chip + the donut's label chrome (v76 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("Spending Breakdown")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const out: Record<string, unknown> = {};
+      // The breakdown card's income SECTION: the aria-expanded section
+      // button (the same surface the arbitration census measured — its
+      // statCards[0] finder resolved to this row on BOTH sites).
+      const section = [...document.querySelectorAll("button[aria-expanded]")].find(
+        (b) => /Total Income/.test(b.textContent || ""),
+      );
+      if (section) {
+        const icons = [...section.querySelectorAll("svg")].filter((s) => {
+          const r = s.getBoundingClientRect();
+          return Math.round(r.width) === 16 && Math.round(r.height) === 16;
+        });
+        out.sectionIcons = icons.map((s) => {
+          const r = s.getBoundingClientRect();
+          const cs = getComputedStyle(s);
+          return {
+            w: Math.round(r.width),
+            h: Math.round(r.height),
+            color: cs.color,
+            glyphSig: (s.innerHTML || "").replace(/\s+/g, " ").slice(0, 110),
+            viewBox: s.getAttribute("viewBox"),
+          };
+        });
+        // The chip that carries the icon (the h-8 w-8 rounded-lg tile).
+        const chip = icons[0]?.parentElement ?? null;
+        if (chip) {
+          const chr = chip.getBoundingClientRect();
+          const chcs = getComputedStyle(chip);
+          out.iconChip = {
+            w: Math.round(chr.width),
+            h: Math.round(chr.height),
+            radius: chcs.borderRadius,
+            bg: chcs.backgroundColor,
+          };
+        }
+      }
+      // The donut labels: the recharts pie label text nodes (the sector
+      // labels, the connector lines filtered out — the v9 G1b finder).
+      const pieSvgs = [...document.querySelectorAll("svg")].filter((s) =>
+        s.querySelector("[class*=recharts-pie-sector], [class*=recharts-pie-label]"),
+      );
+      if (pieSvgs.length) {
+        const svg = pieSvgs[0];
+        const labels = [...svg.querySelectorAll("[class*=recharts-pie-label]")].filter(
+          (e) => !/line/i.test(e.getAttribute("class") || ""),
+        );
+        const labelLines = [...svg.querySelectorAll("[class*=recharts-pie-label-line]")];
+        out.donutLabels = {
+          count: labels.length,
+          labelLineCount: labelLines.length,
+          labelFs: labels.length ? getComputedStyle(labels[0]).fontSize : null,
+          labelFill: labels.length ? getComputedStyle(labels[0]).fill : null,
+          sectors: [...svg.querySelectorAll("[class*=recharts-pie-sector]")].length,
+        };
+      }
+      return out;
+    });
+
+    // The income-section icon chip — the arbitration's own measured
+    // values (the 16x16 twin-polyline trending-up, limeGreen, in the
+    // 32x32 rounded-lg tinted chip).
+    expect(census!.sectionIcons).toEqual([
+      {
+        w: 16,
+        h: 16,
+        color: "rgb(143, 188, 63)",
+        glyphSig:
+          '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline>',
+        viewBox: "0 0 24 24",
+      },
+    ]);
+    expect(census!.iconChip).toEqual({
+      w: 32,
+      h: 32,
+      radius: "8px",
+      bg: "rgba(143, 188, 63, 0.125)",
+    });
+    // The donut label chrome — the v9 G1b contract's axes extended.
+    expect(census!.donutLabels).toEqual({
+      count: 4,
+      labelLineCount: 0,
+      labelFs: "16px",
+      labelFill: "rgb(0, 0, 0)",
+      sectors: 3,
+    });
+  });
+});
