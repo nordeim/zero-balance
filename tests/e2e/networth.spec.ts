@@ -1995,3 +1995,77 @@ test.describe("net worth page-header row census at 390 (v69 — plan F3)", () =>
     expect(census.docSW).toBe(390);
   });
 });
+
+test.describe("net worth summary card completion census at 1280 (v82 — plan F4)", () => {
+  // The v82 re-run pair's pin: the summary card's never-pinned COMPLETION
+  // family at the 1280x800 pair viewport — the arbitration census
+  // (arbit-v82.sh PART B) measured the axes byte-identical on BOTH sites:
+  // the head row's ALIGNMENT (items center — the v80 titleRow.alignItems
+  // pattern's networth twin; the v67 F3 pin holds the row's h 76/mb 32px/
+  // display flex but never its items axis), the label block's HEIGHT (76 —
+  // the min-w-0 wrapper's own height, the label 20 + mb 8 + the figure 48
+  // stack; the v67 pin holds the PARENT row's 76, never the block's own),
+  // the stat grid's content-box WIDTH (896 — the 960 card − the 2×32 pad
+  // arithmetic twin; the v60 F1 pin holds the template/gap, the v67 pin
+  // the rows/h), and the ratio label's TYPOGRAPHY (fs 14px — text-sm; the
+  // G9 test holds the label's COLOR, the v4-era structure test the VALUE's
+  // 18px/700 + the tile label's 12px + the footer border's rgba — never
+  // the ratio label's own font-size). Every pinned axis STATIC chrome —
+  // none depends on the figures (the labelBlock's WIDTH is the
+  // data-conditional axis — the 48px figure's text length — and is
+  // EXCLUDED); the pin rides the plain authenticated view.
+  test("the summary card's head-row alignment + label-block height + stat-grid width + ratio-label typography (v82 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const label = [...document.querySelectorAll("p, span, h2, div")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      if (!label) return null;
+      const card = label.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      // The head row: the label block's parent — the flex justify-between.
+      const headRow = (label.closest("div") as HTMLElement | null)?.parentElement ?? null;
+      const hrs = headRow ? getComputedStyle(headRow) : null;
+      // The label block (the min-w-0 wrapper around the label + figure).
+      const labelBlock = label.parentElement;
+      const lbr = labelBlock ? labelBlock.getBoundingClientRect() : null;
+      // The stat grid (the 2-col tile grid) + its bounding width.
+      const assetsLabel = [...card.querySelectorAll("p, span")].find(
+        (e) => (e.textContent || "").trim() === "Total Assets",
+      );
+      const grid = assetsLabel ? assetsLabel.closest("[class*=grid]") : null;
+      const gr = grid ? grid.getBoundingClientRect() : null;
+      // The ratio label (the text-sm leaf in the border-t footer row).
+      const ratioLabel = [...card.querySelectorAll("span, p, div")].find(
+        (e) => /Asset to Liability Ratio/.test(e.textContent || "") && e.children.length === 0,
+      );
+      return {
+        headRow: hrs ? { items: hrs.alignItems } : null,
+        labelBlock: lbr ? { h: Math.round(lbr.height) } : null,
+        statGrid: gr ? { w: Math.round(gr.width) } : null,
+        ratioLabel: ratioLabel ? { fs: getComputedStyle(ratioLabel).fontSize } : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("networth completion census found no card");
+
+    // The head row's ALIGNMENT — items center (the medallion rides the
+    // row's 76px height, vertically centered against the label block).
+    expect(census.headRow).toEqual({ items: "center" });
+
+    // The label block — h 76 (the label 20 + mb 8 + the figure 48 stack;
+    // the v67 pin holds the parent row's h — this is the block's own).
+    expect(census.labelBlock).toEqual({ h: 76 });
+
+    // The stat grid — the 896 content-box width (the 960 card − the 2×32
+    // pad; the 440px 440px tracks + the 16px gap live inside it).
+    expect(census.statGrid).toEqual({ w: 896 });
+
+    // The ratio label — text-sm's 14px (the label's own font-size; the
+    // value beside it is the v60-pinned 18px/700).
+    expect(census.ratioLabel).toEqual({ fs: "14px" });
+  });
+});

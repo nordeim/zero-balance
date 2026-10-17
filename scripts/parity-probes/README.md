@@ -4270,3 +4270,111 @@ re-shot v76 — now the oldest remaining), (2) the axe-core watch at
 its next re-check point (only a 5.x wrapper changes the calculus),
 (3) the deferred reference-write censuses (unchanged — out of bounds
 under the v46 read-only rule).
+
+## v82 — the networth + drill-down pair's third re-run (the rebuilt workspace)
+
+The v82 iteration (docs/remediation-plan-v82.md): the re-run cycle's
+next-oldest candidate — the ledger-verified queue (the v81 plan's v82
+suggestion AGREEING with the rotation ledger: the v60-era networth +
+drill-down pair [the networth view + the dashboard drill-down EXPANDED
+at desktop 1280], last re-shot v76, the oldest remaining by LAST
+RE-SHOT DATE [v76 < v77 < v78 < v79 < v80 < v81]; the pair's THIRD
+re-run [v60 -> v67 -> v76 -> v82] — the FIFTH consecutive queue/ledger
+agreement), plus the axe watch at its re-check point (NO DRIFT —
+4.14.0, no 5.x, the v68 dedupe holds) and the 76th standing checks
+(ref-standing-v76.sh + standing-checks-v76.sh, version-bumped from
+v75 — version-bump-only diffs verified).
+
+The probe series (the v76 lineage, version-bumped):
+- vlm-shots-v82.sh — the REFERENCE side (login on the first attempt;
+  the drill-down expanded via the Total Income section + first
+  category clicks; the parked pointer at (5,5); read-only — the v46
+  rule).
+- clone-vlmshots-v82.sh — the CLONE side (the with-server :3200 parity
+  server; the same expansion clicks; no fixture writes).
+- vlm-compare-v82.mjs — the VLM pairwise (the networth twin IDENTICAL
+  with the only style flag the Base44 overlay; the drill-down twin
+  DIFFERENT with eight flags, every one DOM-arbitrated to a documented
+  class).
+- arbit-v82.sh — the both-sides census (the v76 axes re-measured:
+  PART A the drill-down census [nav highlight, avatar, progress fill,
+  donut labels, stat trend icons], PART B the networth summary-card
+  family; the census runs regardless of the verdict — the v75
+  convention).
+- stat-title-ref-v82.sh — the dedicated DOM arbitration for the VLM's
+  "Total Expense vs Total Expenses" flag: the reference's statTitles
+  measured VERBATIM (SPAN + H3 both: "Total Income"/"Total Savings"/
+  "Total Expenses" at 14px/500/rgb(107,114,128); hasSingular:false,
+  hasPlural:true) — the MISREAD disproven in one probe.
+
+The findings:
+1. The NETWORTH pair: IDENTICAL — the only layout/style flag the
+   reference's "Edit with Base44" overlay (the platform-chrome
+   class); every other delta the seed classes (the figures, the
+   1-asset vs 3-asset groups, the ratio). The PART B census
+   byte-identical on every chrome axis (the card/head row/label/
+   figure/medallion/stat grid/stat tile/ratio footer families); the
+   ONE width delta — the labelBlock w ref 304 vs clone 357 — the
+   DATA-CONDITIONAL width class (the 48px figure's text length:
+   "$25,000.00" vs "-$245,950.00"; the heights byte-identical).
+2. The DRILL-DOWN pair: DIFFERENT with eight flags, every one
+   DOM-arbitrated to a documented class — (a) the nav highlight the
+   v56 SUPERSET class (the reference's link INERT rgb(63,63,70)/400
+   vs the clone's ACTIVE white/500); (b) the progress-bar length the
+   pct x 568 DATA class (fillW ref 173 vs clone 357 on the
+   byte-identical 568x12 track — the v60 arbitration's own values
+   REPRODUCED EXACTLY, zero drift since v60); (c) the extra expanded
+   category + the footer count the seed-data class (the clone's 2
+   income categories vs the reference's 1); (d) the donut proportions
+   the seed-data class; (e) the percentage-labels claim the v60
+   PERCEPTION class re-arbitrated live (the reference DOES render its
+   labels — the census's own texts 92.3%/4.6%/3.1%, count 4 = 1 group
+   + 3 labels, 0 lines, 16px, black, 3 sectors — the chrome
+   byte-identical, the texts each site's own data); (f) the "Total
+   Expense vs Total Expenses" a VLM MISREAD (the stat-title probe:
+   the plural on BOTH sides, measured verbatim); (g) the avatar the
+   user-identity class; (h) the Base44 overlay the platform-chrome
+   class.
+3. NO NEW GAP — the iteration is PIN-ONLY: the networth summary
+   card's COMPLETION family at 1280 (the never-pinned axes: the head
+   row's ALIGNMENT [items center — the v80 titleRow.alignItems
+   pattern's networth twin; the v67 pin holds the row's h/mb/display],
+   the label block's HEIGHT [76 — the min-w-0 wrapper's own height],
+   the stat grid's content-box WIDTH [896 — the 960 card - the 2x32
+   pad arithmetic twin], the ratio label's TYPOGRAPHY [fs 14px — G9
+   holds the color, the structure test the VALUE's 18px/700 + the
+   tile label's 12px + the footer border's rgba — never the label's
+   own font-size]) — every pinned axis STATIC chrome (the
+   labelBlock's WIDTH is the data-conditional axis, EXCLUDED); the
+   pin-sanity mutation the ratio label's text-sm -> text-sm
+   lg:text-base (viewport-scoped; the value-governed ratio row keeps
+   the v67 footer h 53 green — cascade-free: 26 green under the
+   mutation, only the v82 pin red).
+4. The screenshots 16/16 BYTE-IDENTICAL — the thirteenth consecutive
+   fully-identical set (the same-day seed + the same-day shots
+   reproducing the committed set byte-for-byte; the seedcheck exact).
+
+**The v82 lessons:**
+1. THE VERBATIM-TITLE MISREAD DISPROOF: a VLM flag that claims a TEXT
+   difference ("Total Expense" vs "Total Expenses") is cheapest to
+   disprove with a dedicated verbatim-DOM probe (the exact strings,
+   their tags, and their typography measured on the live reference) —
+   one probe settles what pixel-cropping never could; the v43
+   misattribution rule's text-twin.
+2. THE CENSUS-ARITHMETIC REPRODUCTION: when a re-run's data-class
+   delta reproduces a PRIOR arbitration's exact values (the fillW 173
+   vs 357 = the v60 numbers, five re-runs later), cite the
+   reproduction explicitly — it is the strongest possible
+   no-drift evidence for the standing chrome.
+3. THE SAME-DAY-SEED BYTE-IDENTITY: a fresh seed planted and shot on
+   the same calendar day reproduces the committed screenshot set
+   byte-for-byte — the v80 date-shift lesson's converse: the date
+   bands shift ONLY when the seed day and the shot day differ.
+
+The v83 queue (suggestions — verify against the rotation ledger
+before executing): (1) the re-run cadence rotates to the next-oldest
+candidate after this pair (the v61-era dashboard pair [the dashboard
+FULL-PAGE at desktop 1280], last re-shot v77 — now the oldest
+remaining), (2) the axe-core watch at its next re-check point (only a
+5.x wrapper changes the calculus), (3) the deferred reference-write
+censuses (unchanged — out of bounds under the v46 read-only rule).
