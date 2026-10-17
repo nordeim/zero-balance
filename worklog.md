@@ -62,9 +62,35 @@ and `docs/remediation-plan-v69.md`,
 and `docs/remediation-plan-v70.md`,
 and `docs/remediation-plan-v71.md`,
 and `docs/remediation-plan-v72.md`,
-and `docs/remediation-plan-v73.md`.
+and `docs/remediation-plan-v73.md`,
+and `docs/remediation-plan-v74.md`,
+and `docs/remediation-plan-v75.md`.
 
 ---
+
+---
+
+## Session 109 — Parity iteration v75: the re-run cycle's next-oldest candidate (the v59-era login + calculator pair's second re-run) + the axe watch (NO DRIFT) + the login card's geometry + typography pin (PIN-ONLY) (2026-10-17)
+
+**Goal:** the session-179 v75 queue's first item — the re-run cadence rotating past the v74 savings pair to the next-oldest candidate (the v59-era login + calculator pair, last re-shot v66), plus the axe-core watch at its re-check point and the 69th standing checks. **PIN-ONLY for src/ — no production-code change; +1 e2e = 278.** The formal narrative: `docs/session_180.md`; the plan: `docs/remediation-plan-v75.md`.
+
+**The environment preserved** (no reset this session): the workspace survived the boundary intact — `main @ d6c278a` (v74 shipped + the session_179 transcript), node_modules + `.env` + `db/` + chromium-1243 all verified, the seedcheck confirming the exact seed before any flow ran.
+
+**The baseline chain FULLY GREEN as-shipped** (no F0 finding): lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap) · 277 e2e ✓ (84 + 74 + 122 chunks = 276 chromium + 3 setups) · 35/35 smoke ✓.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0, no nested engine dir), the engine-contract pin GREEN standalone (2 passed).
+
+**The 69th standing checks ALL GREEN:** the mobile menu VERIFIED WORKING (the 69th consecutive time — `hitIsBurgerChild:true`, the sheet opens + closes on nav, the nav landmark present); the reference's four bugs ALL live [toast-blocker, sheet-trap `overlayCount:1`, no-landmark, the 464px /networth overflow]; the data census UNCHANGED (the 69th clean drift check); the SEO pair live; zero overflow at 390 on all five clone views.
+
+**The re-run pair (the login view + the calculator dialog at desktop 1280x800):** the login pair **VERDICT IDENTICAL, zero style flags** — the both-sides census byte-identical on every axis (the card 448/16px/rgba(255,255,255,0.95); the h1 30/700/lh 36/rgb(15,23,42); the subtitle 16/rgb(100,116,139); the logo 96×96; the inputs 48/12px/14px/1px rgb(226,232,240); the Sign in 368×48/12px/14px/500/rgb(15,23,42); the Google + OR blocks both; the card shadow's visible layer byte-identical — the lead-layer count the v66 computed-form class). The calculator pair DIFFERENT with three flags, every one DOM-arbitrated to a documented class: the "extra will-update line" the v66 DATA-CONDITIONAL class (ref false — its Rent natively $25.00 === its line-item total; clone true — opened-at $1850); the "row hover state" the v66 pointer-position class (actionsAtRest opacity 0/btnCount 2 on BOTH sides); the "amount alignment" the corollary (the amount chrome byte-identical 20/700/rgb(224,122,59)/h 28). The full census otherwise byte-identical (the panel 768×393/16px/white; the scrim rgba(26,58,46,0.5)/blur(8px); the title 18/700/lh 28; the desc 14/20 gray; the totalCard 720×90; the row 720×102; the pillRow/pill1; the addBtn 110×32; the docSW 1280). The clone twin's fixture FULLY restored (the delete + Rent's $1850 re-edit + the "$2235.00" page-total verify; the seedcheck exact after). **NO NEW GAP.**
+
+**The v75 pin (+1 e2e = 278):** the login card's geometry + typography census at 1280 (tests/e2e/login-parity.spec.ts — the never-pinned axes of the VLM-identical surface: the card w 448/radius 16px/bg white-95; the h1's TYPOGRAPHY family 30px/700/lh 36px; the subtitle fs 16px; the input pair 48/12px/14px; the Sign in FULL chrome 368×48/12px/14px/500; the logo 96×96/alt; the docSW 1280 guard — the logged-out storageState opt-out, fixture-free) — GREEN on first run; the pin-sanity mutation (the h1's sm:text-3xl → sm:text-2xl) verified to FAIL at exactly the h1 axis (fs 30px→24px), then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines).
+
+**The full chain re-run GREEN:** lint → typecheck → 108 unit → build → 278 e2e (84 + 74 + 122 chunks = 277 chromium + 3 setups) → 35/35 smoke. The screenshots 15/16 BYTE-IDENTICAL + 07-add-item-modal the documented dialog-default DATE class (the calendar rolled 2026-10-16 → 2026-10-17; pixel-arbitrated via pixel-diff-v75.py — the 16×22 px region at (1552,931)-(1568,953), the exact v66 bbox; the new shot re-baselined).
+
+**The docs alignment:** D1 AGENTS.md (the v75 paragraph), D2 CLAUDE.md (278 + the v75 pin clause), D3 README.md (the counts + the v75 plan-table row), D4 zero-balance_SKILL.md (Session 110 audit row + the state lines), D5 the PAD's v1.1.32 revision block, D6 the probe README's v75 section, D7 session_180.md + this entry (the ledger's v74 omission repaired alongside v75's row).
+
+**The probe lessons:** (1) the cold-session login census races its page load — the load-RETRIED census is the reliable pattern, never a single-shot "not found" verdict; (2) the login card's shadow arbitrates through the VISIBLE layer — the lead-layer count differs by engine, the rendered chrome does not; (3) the DATE-class screenshot diff recurs every calendar rollover — arbitrate programmatically (the PIL bbox), never with a VLM verdict.
 
 ---
 

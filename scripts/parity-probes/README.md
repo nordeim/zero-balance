@@ -3614,3 +3614,108 @@ plus the axe watch at its re-check point and the 68th standing checks.
    (with-server + one eval) returned display "block"/w 0/h 0 and
    corrected the pin BEFORE the RED/GREEN cycle — the mutation check
    only validates the axes you actually assert.
+
+## v75 — the re-run cycle's next-oldest candidate (the v59-era login + calculator pair's second re-run) + the login card's geometry + typography pin (PIN-ONLY)
+
+The session-180 v75 cycle: the re-run cadence rotating past the v74
+savings pair to the next-oldest candidate — the v59-era pair (the login
+view + the calculator dialog at 1280, last re-shot v66) — plus the axe
+watch at its re-check point and the 69th standing checks.
+
+**The probes:**
+- `vlm-shots-v75.sh` — the reference side: the CALCULATOR dialog at
+  1280x800 (the login-retry loop; the Rent-card finder RETRIES — the
+  fresh-login first fetch can be slow; the real-mouse hover + the
+  Calculate click; the parked pointer after the census).
+- `clone-vlmshots-v75.sh` — the clone side, the same shot inside
+  with-server.sh (the :3200 standalone parity server), riding the v66
+  fixture discipline: the matching "Contents Insurance" $25 monthly-active
+  line item added through the real UI, the 1-row state shot, then the
+  FULL restore (delete + Rent's $1850 re-edit + the "$2235.00" page-total
+  verification).
+- `login-shots-v75.sh` / `clone-login-shots-v75.sh` — the LOGIN pair at
+  1280x800 (the logged-out surface, no session).
+- `vlm-compare-v75.mjs` — the VLM pairwise (the calculator + login
+  prompts).
+- `arbit-v75.sh` — the both-sides DOM arbitration census (the v43 rule):
+  the CALCULATOR census (the panel + scrim + the header family + the
+  totalCard + the row + the pills + the amount + the hover actions + the
+  Add Item button — the shared env-injected JS, the amount leaf found via
+  String.fromCharCode(36), the v64 dollar rule) + the LOGIN census (the
+  card + h1 + subtitle + inputs + signIn + links + brand) — the clone side
+  inside the QUOTED heredoc with the censuses env-injected (the v73
+  lesson) + the seedcheck at the end.
+- `login-census-ref-v75.sh` — the reference login census FOLLOW-UP: the
+  arbit-v75.sh pass raced the cold session's page load (the form wasn't
+  in the DOM at census time — "form not found"); this script RETRIES the
+  load until the census lands.
+- `pixel-diff-v75.py` — the 07-add-item-modal DATE-class arbitration
+  (the v66 discipline): the PIL diff localizing the overnight change to
+  the date input's day-digit region.
+- `ref-standing-v69.sh` / `standing-checks-v69.sh` — the 69th standing
+  checks (version-bumped from v68, the ordinal included).
+- The v75 pin (tests/e2e/login-parity.spec.ts): the login card's
+  geometry + typography census at 1280 — the never-pinned axes of the
+  VLM-identical surface (the card w 448/radius 16px/bg white-95; the
+  h1's TYPOGRAPHY family 30px/700/lh 36px — only its color was pinned
+  by v7; the subtitle fs 16px; the input pair 48/12px/14px; the Sign in
+  FULL chrome 368x48/12px/14px/500; the logo 96x96/alt; the docSW
+  guard). GREEN on first run. The pin-sanity mutation (the h1's
+  sm:text-3xl → sm:text-2xl) verified to FAIL at exactly the h1 axis
+  (fs 30px→24px), then restored (the standalone REBUILD as a SEPARATE
+  command; git diff src/ = 0 lines).
+
+**The v75 findings:**
+
+1. **PAIR 1 (the LOGIN view at 1280) — VERDICT IDENTICAL, zero style
+   flags** (the only delta the Base44 FAB — platform chrome). The
+   census byte-identical on every axis: the card 448/16px/
+   rgba(255,255,255,0.95), the h1 30/700/lh 36/rgb(15,23,42), the
+   subtitle 16/rgb(100,116,139), the logo 96x96, the inputs
+   48/12px/14px/1px rgb(226,232,240), the Sign in
+   368x48/12px/14px/500/rgb(15,23,42), the links [] on BOTH sides (the
+   mode switchers are buttons, not anchors), the Google + OR blocks
+   both present. The card shadow: the reference's 3-layer computed form
+   (2 transparent leads) vs the clone's 5-layer (4 transparent leads) —
+   the VISIBLE layer byte-identical (rgba(0,0,0,0.25) 0px 25px 50px
+   -12px), the lead-layer count the v66 documented computed-form class.
+2. **PAIR 2 (the CALCULATOR dialog at 1280)** — three VLM flags, every
+   one DOM-arbitrated to a documented class: the "extra will-update
+   line" the v66 DATA-CONDITIONAL class (ref false/clone true — the
+   reference's Rent natively $25.00 === its line-item total); the "row
+   hover state" the v66 pointer-position class (actionsAtRest opacity
+   0/btnCount 2 on BOTH sides — the reference's screenshot caught the
+   actions mid-reveal because the shot precedes the pointer park, the
+   clone's follows it); the "amount alignment" the pointer-position
+   corollary (the amount chrome byte-identical
+   20/700/rgb(224,122,59)/h 28). The full census otherwise
+   byte-identical: the panel 768x393/16px/white, the scrim
+   rgba(26,58,46,0.5)/blur(8px)/1280x800, the title 18/700/lh 28, the
+   desc 14/20 gray, the totalCard 720x90/16px/12px/rgb(252,221,213),
+   the nameH4 16/600/h 24/mb 4, the row 720x102/16px/12px/
+   rgb(229,231,227), the pillRow flex/gap 8/h 20, the pill1
+   20x65/2px 8px/9999px/12px/400, the addBtn 110x32/6px/12px/500,
+   the docSW 1280. NO NEW GAP.
+3. The screenshots 15/16 byte-identical + 07-add-item-modal the
+   documented dialog-default DATE class (the calendar rolled
+   2026-10-16 → 2026-10-17): pixel-arbitrated via pixel-diff-v75.py —
+   the 16x22 px region at (1552,931)-(1568,953), the EXACT v66 bbox,
+   everything else in the 2880x1800 frame byte-stable.
+
+**The v75 lessons:**
+1. The cold-session login census races its page load: a single-shot
+   read returned "form not found" on the reference side (the fresh
+   context's first navigation hadn't painted the form at census time).
+   The load-RETRIED census (login-census-ref-v75.sh — loop the open +
+   census until the form lands) is the reliable pattern for a
+   cold-context surface; never accept a "not found" as a verdict.
+2. The login card's shadow arbitrates through the VISIBLE layer: the
+   reference's computed string carries 2 transparent lead layers, the
+   clone's 4 (different engines, different lead counts) — the rendered
+   chrome (the one non-transparent layer) is byte-identical. The v66
+   computed-form class generalizes: compare the full string, classify
+   on the visible layer.
+3. The DATE-class screenshot diff recurs every calendar rollover —
+   expect exactly one small-region diff per overnight regeneration and
+   arbitrate it programmatically (the PIL bbox + the region size), never
+   with a VLM verdict.

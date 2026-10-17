@@ -1113,3 +1113,154 @@ test.describe("auth-mode panel census (v50 — plan F1)", () => {
     expect(at640!.headingMt).toBe("24px");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v75 — the login card's geometry + typography census at 1280
+// (docs/remediation-plan-v75.md F4). The v59-era login pair's second
+// re-run (vlm-compare-v75.mjs: VERDICT IDENTICAL, zero style flags) with
+// the both-sides DOM census (arbit-v75.sh + login-census-ref-v75.sh):
+// byte-identical on every axis. The v7 G2/G3 pins lock this surface's
+// COLORS (the slate family, the card bg, the bar/page gradients, the
+// submit bg/color/h, the email border/bg) and the v9 pins its per-state
+// control heights — the card's WIDTH + RADIUS, the h1's TYPOGRAPHY
+// family (fs/fw/lh — only its color was pinned), the subtitle's fs, the
+// Sign in button's FULL chrome (w/radius/fs/fw), the logo's geometry,
+// and the input radius/fs family at desktop were never pinned. This pin
+// locks the arbitration's own measured values — the pin-only line
+// continues (no production-code change).
+test.describe("login card geometry + typography census at 1280 (v75 — plan F4)", () => {
+  test("the card + h1 + subtitle + inputs + signIn + logo chrome (v75 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The card: the rounded-2xl container holding the h1 (the v7 pin's
+      // own finder — the inline rgba(255,255,255,0.95) background).
+      const card = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && /rounded-2xl/.test(d.className) && d.querySelector("h1"),
+      );
+      const h1 = document.querySelector("h1");
+      const sub = [...document.querySelectorAll("p")].find((p) =>
+        /Sign in to continue/.test(p.textContent || ""),
+      );
+      const form = document.querySelector("form");
+      const em = form?.querySelector<HTMLInputElement>('input[type="email"]');
+      const pw = form?.querySelector<HTMLInputElement>('input[type="password"]');
+      const signIn = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const logo = document.querySelector("img");
+      const inputCensus = (i: HTMLInputElement | null | undefined) => {
+        if (!i) return null;
+        const cs = getComputedStyle(i);
+        const r = i.getBoundingClientRect();
+        return {
+          h: Math.round(r.height),
+          radius: cs.borderRadius,
+          fs: cs.fontSize,
+          border: `${cs.borderTopWidth} ${cs.borderTopColor}`,
+        };
+      };
+      const btnCs = signIn ? getComputedStyle(signIn) : null;
+      const btnR = signIn ? signIn.getBoundingClientRect() : null;
+      return {
+        card: card
+          ? {
+              w: Math.round(card.getBoundingClientRect().width),
+              radius: getComputedStyle(card).borderRadius,
+              bg: getComputedStyle(card).backgroundColor,
+            }
+          : null,
+        h1: h1
+          ? {
+              fs: getComputedStyle(h1).fontSize,
+              fw: getComputedStyle(h1).fontWeight,
+              lh: getComputedStyle(h1).lineHeight,
+              color: getComputedStyle(h1).color,
+            }
+          : null,
+        subtitle: sub
+          ? {
+              fs: getComputedStyle(sub).fontSize,
+              color: getComputedStyle(sub).color,
+            }
+          : null,
+        emailInput: inputCensus(em),
+        pwInput: inputCensus(pw),
+        signIn: signIn && btnCs && btnR
+          ? {
+              w: Math.round(btnR.width),
+              h: Math.round(btnR.height),
+              radius: btnCs.borderRadius,
+              fs: btnCs.fontSize,
+              fw: btnCs.fontWeight,
+              bg: btnCs.backgroundColor,
+              color: btnCs.color,
+            }
+          : null,
+        logo: logo
+          ? {
+              w: Math.round(logo.getBoundingClientRect().width),
+              h: Math.round(logo.getBoundingClientRect().height),
+              alt: (logo.getAttribute("alt") || "").slice(0, 20),
+            }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The card's geometry: the max-w-md wrapper (448) + rounded-2xl (16px)
+    // + the inline white/95 background — byte-identical on both sides.
+    expect(census!.card).toEqual({
+      w: 448,
+      radius: "16px",
+      bg: "rgba(255, 255, 255, 0.95)",
+    });
+    // The h1's typography family (the sm:text-3xl state — 30/700/36) —
+    // the color was v7-pinned, the fs/fw/lh never were.
+    expect(census!.h1).toEqual({
+      fs: "30px",
+      fw: "700",
+      lh: "36px",
+      color: "rgb(15, 23, 42)",
+    });
+    // The subtitle: 16px slate-500 (the color v7-pinned, the fs never).
+    expect(census!.subtitle).toEqual({
+      fs: "16px",
+      color: "rgb(100, 116, 139)",
+    });
+    // The input pair: 48px controls, rounded-xl (12px), 14px text, the
+    // v7-pinned slate-200 border.
+    expect(census!.emailInput).toEqual({
+      h: 48,
+      radius: "12px",
+      fs: "14px",
+      border: "1px rgb(226, 232, 240)",
+    });
+    expect(census!.pwInput).toEqual({
+      h: 48,
+      radius: "12px",
+      fs: "14px",
+      border: "1px rgb(226, 232, 240)",
+    });
+    // The Sign in button's full chrome: the content width 448 − 2×40
+    // (md:px-10) = 368, h 48, rounded-xl, 14px/500, solid slate-900.
+    expect(census!.signIn).toEqual({
+      w: 368,
+      h: 48,
+      radius: "12px",
+      fs: "14px",
+      fw: "500",
+      bg: "rgb(15, 23, 42)",
+      color: "rgb(255, 255, 255)",
+    });
+    // The logo image: 96x96 (the sm:h-24 sm:w-24 state), the alt text.
+    expect(census!.logo).toEqual({
+      w: 96,
+      h: 96,
+      alt: "ZeroBudget logo",
+    });
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});
