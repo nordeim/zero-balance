@@ -1411,3 +1411,156 @@ test.describe("calculator scrim + summary-text census at 390 (v73 — plan F4)",
     await restoreRent(page);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v81 — plan F4 (docs/remediation-plan-v81.md): the calculator dialog's
+// HEADER family + Add Item button + SCRIM chrome census at 1280x800 — the
+// never-pinned axes. The v53 F2 pin holds the panel/header/chip/close/
+// totalCard/row/addBtn GEOMETRY at 390; the v59 F1 pin the panel +
+// totalCard chrome + closeBtn/hdrBorder at 1280; the v66 F3 pin the
+// row-height FAMILY at 1280 (the panel body); the v73 F4 pin the scrim +
+// summary-text at 390 — the title/desc TYPOGRAPHY, the addBtn CHROME, and
+// the SCRIM were never pinned at the pair viewport.
+//
+// Measured live on BOTH sites (arbit-v81.sh — the v59-era pair's third
+// re-run, byte-identical on every axis; the VLM pair vlm-shots-v81.sh +
+// clone-vlmshots-v81.sh + vlm-compare-v81.mjs — the login twin IDENTICAL
+// with zero style flags, the calculator twin's three flags all
+// DOM-arbitrated to documented classes: the will-update span the v66
+// DATA-CONDITIONAL class, the "hover buttons missing" the POINTER-POSITION
+// perception class [actionsAtRest opacity 0 / btnCount 2 on BOTH sides],
+// the "row height shorter" a VLM MISREAD [the row 720×102 byte-identical]):
+//   the title (DialogTitle): 18px / 700 / lh 28px / rgb(26, 58, 46)
+//   the desc (DialogDescription): 14px / lh 20px / rgb(107, 114, 128)
+//   the Add Item button: 110×32 / radius 6px / 12px / 500 / white
+//   the scrim: bg rgba(26, 58, 46, 0.5) / blur(8px) / 1280×800
+// Every pinned axis is STATIC dialog chrome (none depends on the
+// line-item data) — the pin rides the v59 read-only EMPTY-state
+// discipline (hover → Calculate → census → Close, no fixture writes).
+// ---------------------------------------------------------------------------
+test.describe("calculator header + addBtn + scrim census at 1280 (v81 — plan F4)", () => {
+  test("the title/desc typography + the addBtn chrome + the scrim — the never-pinned axes", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate(() => {
+      // The panel: the calculator dialog itself (the v59 finder).
+      const panel = [...document.querySelectorAll('[role="dialog"]')].find((d) =>
+        (d.textContent || "").includes("Rent Calculator"),
+      ) as HTMLElement | undefined;
+      if (!panel) return null;
+      // The scrim: the fixed full-viewport overlay (the clone's Radix
+      // sibling — the v73 finder widened for the 1280 viewport).
+      const scrim = [...document.querySelectorAll("div")]
+        .filter((d) => {
+          const s = getComputedStyle(d);
+          const r = d.getBoundingClientRect();
+          return (
+            s.position === "fixed" &&
+            parseInt(s.zIndex || "0") >= 50 &&
+            r.width >= 1200 &&
+            r.height >= 700 &&
+            s.backgroundColor &&
+            s.backgroundColor !== "rgba(0, 0, 0, 0)"
+          );
+        })
+        .pop() as HTMLElement | undefined;
+      // The title: the leaf whose text is exactly the category-adaptive
+      // heading (the h2 DialogTitle).
+      const title = [...panel.querySelectorAll("h2, h3, h1, div, span")].find(
+        (e) => (e.textContent || "").trim() === "Rent Calculator" && e.children.length === 0,
+      ) as HTMLElement | undefined;
+      // The desc: the leaf matching the category-adaptive subtitle.
+      const desc = [...panel.querySelectorAll("p, div, span")].find(
+        (e) => /Break down your rent into individual items/i.test((e.textContent || "").trim()) && e.children.length === 0,
+      ) as HTMLElement | undefined;
+      // The Add Item button (the orange-gradient CTA).
+      const addBtn = [...panel.querySelectorAll("button")].find((b) =>
+        /^add item$/i.test((b.textContent || "").trim()),
+      ) as HTMLButtonElement | undefined;
+      const tcs = title ? getComputedStyle(title) : null;
+      const dcs = desc ? getComputedStyle(desc) : null;
+      const acs = addBtn ? getComputedStyle(addBtn) : null;
+      const ar = addBtn ? addBtn.getBoundingClientRect() : null;
+      const ss = scrim ? getComputedStyle(scrim) : null;
+      const sr = scrim ? scrim.getBoundingClientRect() : null;
+      return {
+        title: tcs
+          ? { fs: tcs.fontSize, fw: tcs.fontWeight, lh: tcs.lineHeight, color: tcs.color }
+          : null,
+        desc: dcs
+          ? { fs: dcs.fontSize, lh: dcs.lineHeight, color: dcs.color }
+          : null,
+        addBtn: acs && ar
+          ? {
+              w: Math.round(ar.width),
+              h: Math.round(ar.height),
+              radius: acs.borderRadius,
+              fs: acs.fontSize,
+              fw: acs.fontWeight,
+              color: acs.color,
+            }
+          : null,
+        scrim: ss && sr
+          ? {
+              bg: ss.backgroundColor,
+              blur: ss.backdropFilter,
+              w: Math.round(sr.width),
+              h: Math.round(sr.height),
+            }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The title's typography family (text-lg font-bold + the inline
+    // forestDark): the v53 390 pin's {fs, fw, color} twin with the
+    // NEVER-pinned lh axis, at the pair viewport.
+    expect(census!.title).toEqual({
+      fs: "18px",
+      fw: "700",
+      lh: "28px",
+      color: "rgb(26, 58, 46)",
+    });
+    // The desc's typography family (text-sm + the inline gray): the
+    // v73 390 family's desktop twin.
+    expect(census!.desc).toEqual({
+      fs: "14px",
+      lh: "20px",
+      color: "rgb(107, 114, 128)",
+    });
+    // The Add Item button's chrome (zb-btn-add zb-btn-add-sm): the
+    // v53 390 family's desktop twin — the radius never pinned before.
+    expect(census!.addBtn).toEqual({
+      w: 110,
+      h: 32,
+      radius: "6px",
+      fs: "12px",
+      fw: "500",
+      color: "rgb(255, 255, 255)",
+    });
+    // The scrim (the .zb-modal-overlay forest overlay): the v73 390
+    // family's desktop twin — the full-viewport fixed overlay.
+    expect(census!.scrim).toEqual({
+      bg: "rgba(26, 58, 46, 0.5)",
+      blur: "blur(8px)",
+      w: 1280,
+      h: 800,
+    });
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+
+    // Read-only close — no fixture restore needed (the empty state;
+    // no line items touched, the Rent amount never recalculated).
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+  });
+});

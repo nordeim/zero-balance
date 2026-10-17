@@ -4172,3 +4172,101 @@ rotation ledger — the third consecutive agreement).
    screenshot diffs after any workspace reset, and pixel-arbitrate
    them (crop pairs, DATE-TEXT-ONLY verdicts), never a full-page VLM
    verdict.
+
+
+## v81 — the login + calculator pair's third re-run (the preserved workspace)
+
+The v81 iteration (docs/remediation-plan-v81.md): the re-run cycle's
+next-oldest candidate — the ledger-verified queue (the v80 plan's v81
+suggestion AGREEING with the rotation ledger: the v59-era login +
+calculator pair [the login view + the calculator dialog at desktop
+1280], last re-shot v75, the oldest remaining by LAST RE-SHOT DATE
+[v75 < v76 < v77 < v78 < v79 < v80]; the pair's THIRD re-run [v59 ->
+v66 -> v75 -> v81] — the FOURTH consecutive queue/ledger agreement),
+plus the axe watch at its re-check point (NO DRIFT — 4.14.0, no 5.x,
+the v68 dedupe holds) and the 75th standing checks (ref-standing-v75.sh
++ standing-checks-v75.sh, version-bumped from v74 — version-bump-only
+diffs verified).
+
+The probe series (the v75 lineage, version-bumped):
+- vlm-shots-v81.sh + login-shots-v81.sh — the REFERENCE side (login
+  on the first attempt; the calculator via the Rent-card hover +
+  Calculate click; the parked pointer at (5,5); read-only).
+- clone-vlmshots-v81.sh + clone-login-shots-v81.sh — the CLONE side
+  (the with-server :3200 parity server; the calculator twin adds the
+  matching "Contents Insurance" $25 monthly line item through the real
+  UI then FULLY restores the fixture — the delete + Rent's $1850
+  re-edit + the "$2235.00" page-total verify).
+- vlm-compare-v81.mjs — the VLM pairwise (the login twin IDENTICAL
+  with zero style flags; the calculator twin DIFFERENT with three
+  flags, every one DOM-arbitrated to a documented class).
+- arbit-v81.sh + login-census-ref-v81.sh — the both-sides census (the
+  v75 axes re-measured: the panel/scrim/title/desc/close/totalCard/
+  nameH4/row/pillRow/pill1/amountP/addBtn chrome all BYTE-IDENTICAL;
+  the login census re-run after the cold-session race).
+
+The findings:
+1. The LOGIN pair: IDENTICAL, zero style flags — zero drift since v75
+   on the VLM layer. The both-sides census byte-identical on every
+   axis; the card's 0px-width border computed-color (the ref's
+   slate-200 form vs the clone's border token) and the shadow's
+   transparent lead-layer count are the v66 computed-form INVISIBLE
+   class.
+2. The CALCULATOR pair: DIFFERENT with three flags — (a) the
+   "extra will-update line" the v66 DATA-CONDITIONAL class
+   (hasWillUpdateSpan ref false [its Rent natively $25.00 === its
+   line-item total] vs clone true [opened-at $1850]); (b) the "hover
+   action buttons missing in the clone" the POINTER-POSITION
+   perception class — the reference's shot is taken with the pointer
+   still inside the dialog after the Calculate click, the clone's
+   after the parked-pointer move: the DOM census (actionsAtRest
+   opacity 0 / btnCount 2) is BYTE-IDENTICAL on both sides; (c) the
+   "row height shorter in the clone" a VLM MISREAD — the row measures
+   720x102 BYTE-IDENTICAL on both sides.
+3. NO NEW GAP — the iteration is PIN-ONLY: the calculator dialog's
+   header family + Add Item button + scrim census at 1280 (the
+   never-pinned axes: the title's typography [18px/700/lh 28px/
+   rgb(26,58,46) — the v53 390 pin's {fs,fw,color} twin completed
+   with the never-pinned lh], the desc's family [14px/lh 20px/
+   rgb(107,114,128) — the v73 390 family's desktop twin], the
+   addBtn's chrome [110x32/radius 6px/12px/500/white — the radius
+   never pinned at any viewport], the scrim [rgba(26,58,46,0.5)/
+   blur(8px)/1280x800 — the v73 390 family's desktop twin]) — every
+   pinned axis STATIC dialog chrome, the pin riding the v59 read-only
+   EMPTY-state discipline (hover -> Calculate -> census -> Close, no
+   fixture writes). The pin-sanity mutation: the DialogTitle's
+   lg:text-xl (calculator-dialog.tsx:127) FAILS at exactly the
+   title.fs axis ("18px" -> "20px") — cascade-free by construction
+   (inert at 390 — the v53 h2/header pins untouched; the v59 pin
+   asserts no title-dependent axis, the panel.y invariant holds for
+   any height; the v66 height family lives in the panel body; the
+   full calculator.spec.ts under the mutation: 15 green, only the
+   v81 pin red).
+4. The screenshots 16/16 BYTE-IDENTICAL — the twelfth consecutive
+   fully-identical set (the same-day regeneration against the
+   preserved db, no calendar rollover; the seedcheck exact).
+
+**The v81 lessons:**
+1. THE STATIC-CHROME READ-ONLY PIN: a dialog pin whose every axis is
+   static chrome (title/desc/addBtn/scrim — none data-dependent) can
+   ride the read-only EMPTY state, eliminating the fixture
+   add/restore burden of the with-row pins (the v66/v73 discipline)
+   — the empty state measures the same values the 1-row census
+   measured.
+2. THE POINTER-PHASE PERCEPTION CLASS: a screenshot pair taken at
+   different pointer phases (pre-park vs post-park) makes
+   hover-revealed chrome appear on one side only — the DOM census
+   (actionsAtRest opacity) is the arbiter, not the pixels.
+3. THE 0px-WIDTH BORDER COMPUTED-COLOR: a borderless surface's 0px
+   border still carries a computed color (the ref's slate-200 form vs
+   the clone's border token) — an INVISIBLE computed-form class,
+   never a parity gap.
+
+The v82 queue (suggestions — verify against the rotation ledger
+before executing): (1) the re-run cadence rotates to the next-oldest
+candidate after this pair (the v60-era networth + drill-down pair
+[the networth view + the dashboard drill-down EXPANDED at 1280], last
+re-shot v76 — now the oldest remaining), (2) the axe-core watch at
+its next re-check point (only a 5.x wrapper changes the calculus),
+(3) the deferred reference-write censuses (unchanged — out of bounds
+under the v46 read-only rule).
