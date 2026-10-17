@@ -3073,3 +3073,147 @@ test.describe("breakdown section-icon glyph + donut label chrome census at 1280 
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// v77 — plan F4: the Budget Guidelines card's interior-TEXT family + the
+// quick-action icons' viewBox census at 1280 (the pair viewport). The v61
+// F2 pin covers the card's box chrome + the FIRST tile + the STRETCH
+// contract; the v51 F4 pin covers the tiles' text family at 390 ONLY.
+// The never-pinned axes here: the header's lh + tracking, the tiles 2/3
+// (Wants/Savings) chrome, ALL three tiles' label/pct/desc TEXT chrome at
+// 1280 (the one-line-desc h-78 arithmetic — the v51 mobile twin's
+// 94/94/78 contrast), and the quick-action icons' viewBox (the v76
+// glyph-pin family's quick-action extension). The values are the
+// arbit-v77.sh census's own measurements, byte-identical on both sides.
+// The label leaf is the tile's FIRST span, the pct the LAST (no wrapper
+// ambiguity in the guidelines tiles — the v61 label lesson's
+// quick-action-only trap, re-confirmed by the v77 census delta).
+// ---------------------------------------------------------------------------
+test.describe("Budget Guidelines interior-text + quick-action icon viewBox census at 1280 (v77 — plan F4)", () => {
+  test("the header typography + the three tiles' full chrome + the icons' viewBox", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("Budget Guidelines")).toBeVisible();
+    const census = await page.evaluate(() => {
+      const heading = [...document.querySelectorAll("h1, h2, h3, div, span")].find(
+        (x) => (x.textContent || "").trim() === "Budget Guidelines" && x.children.length === 0,
+      ) as HTMLElement | undefined;
+      if (!heading) return null;
+      let card = heading as HTMLElement;
+      while (card.parentElement) {
+        const cs = getComputedStyle(card);
+        if (cs.boxShadow !== "none" && cs.borderRadius !== "0px" && card.querySelector("p")) break;
+        card = card.parentElement as HTMLElement;
+      }
+      const header = heading.parentElement as HTMLElement;
+      const tiles = [...card.querySelectorAll("div")].filter((d) => {
+        const cs = getComputedStyle(d);
+        const r = d.getBoundingClientRect();
+        return (
+          cs.borderRadius === "8px" && r.height > 40 && r.height < 200 &&
+          d.querySelector("span, p") && cs.backgroundColor !== "rgba(0, 0, 0, 0)" && d !== card
+        );
+      }) as HTMLElement[];
+      const qas = [...document.querySelectorAll("button")].filter(
+        (b) => /^Add (Income|Savings|Expense)$/.test((b.textContent || "").trim()),
+      ) as HTMLElement[];
+      return {
+        header: {
+          pad: getComputedStyle(header).padding,
+          fs: getComputedStyle(heading).fontSize,
+          fw: getComputedStyle(heading).fontWeight,
+          color: getComputedStyle(heading).color,
+          lh: getComputedStyle(heading).lineHeight,
+          tracking: getComputedStyle(heading).letterSpacing,
+        },
+        tileCount: tiles.length,
+        tiles: tiles.map((t) => {
+          const cs = getComputedStyle(t);
+          const r = t.getBoundingClientRect();
+          const label = t.querySelector("span") as HTMLElement | null;
+          const pct = [...t.querySelectorAll("span")].pop() as HTMLElement | undefined;
+          const desc = t.querySelector("p") as HTMLElement | null;
+          return {
+            w: Math.round(r.width),
+            h: Math.round(r.height),
+            radius: cs.borderRadius,
+            pad: cs.padding,
+            bg: cs.backgroundColor,
+            border: cs.borderTopColor,
+            label: label
+              ? {
+                  text: (label.textContent || "").trim().slice(0, 10),
+                  fs: getComputedStyle(label).fontSize,
+                  fw: getComputedStyle(label).fontWeight,
+                  color: getComputedStyle(label).color,
+                }
+              : null,
+            pct: pct
+              ? {
+                  text: (pct.textContent || "").trim().slice(0, 8),
+                  fs: getComputedStyle(pct).fontSize,
+                  fw: getComputedStyle(pct).fontWeight,
+                  color: getComputedStyle(pct).color,
+                }
+              : null,
+            desc: desc
+              ? {
+                  fs: getComputedStyle(desc).fontSize,
+                  color: getComputedStyle(desc).color,
+                  lh: getComputedStyle(desc).lineHeight,
+                }
+              : null,
+          };
+        }),
+        qaIcons: qas.map((b) => {
+          const svg = b.querySelector("svg") as SVGElement | null;
+          return svg ? svg.getAttribute("viewBox") || "" : null;
+        }),
+      };
+    });
+    expect(census).not.toBeNull();
+    // The header's full typography — the lh (leading-none) + tracking
+    // (tracking-tight) never pinned before v77.
+    expect(census!.header).toEqual({
+      pad: "24px",
+      fs: "16px",
+      fw: "600",
+      color: "rgb(26, 58, 46)",
+      lh: "16px",
+      tracking: "-0.4px",
+    });
+    // The three tiles' full census at 1280 (the v51 F4 family's desktop
+    // twin — the one-line descs at the 418px width, h 78 each; the mobile
+    // twin's 94/94/78 two-line arithmetic is the v51 pin's own).
+    expect(census!.tileCount).toBe(3);
+    const expectedTiles = [
+      {
+        w: 418, h: 78, radius: "8px", pad: "16px",
+        bg: "rgb(255, 247, 245)", border: "rgb(252, 221, 213)",
+        label: { text: "Needs", fs: "16px", fw: "500", color: "rgb(224, 122, 59)" },
+        pct: { text: "~50%", fs: "14px", fw: "400", color: "rgb(224, 122, 59)" },
+        desc: { fs: "12px", color: "rgb(107, 114, 128)", lh: "16px" },
+      },
+      {
+        w: 418, h: 78, radius: "8px", pad: "16px",
+        bg: "rgb(240, 247, 251)", border: "rgb(212, 233, 245)",
+        label: { text: "Wants", fs: "16px", fw: "500", color: "rgb(59, 126, 161)" },
+        pct: { text: "~30%", fs: "14px", fw: "400", color: "rgb(59, 126, 161)" },
+        desc: { fs: "12px", color: "rgb(107, 114, 128)", lh: "16px" },
+      },
+      {
+        w: 418, h: 78, radius: "8px", pad: "16px",
+        bg: "rgb(245, 249, 240)", border: "rgb(223, 236, 208)",
+        label: { text: "Savings", fs: "16px", fw: "500", color: "rgb(143, 188, 63)" },
+        pct: { text: "~20%", fs: "14px", fw: "400", color: "rgb(143, 188, 63)" },
+        desc: { fs: "12px", color: "rgb(107, 114, 128)", lh: "16px" },
+      },
+    ];
+    census!.tiles.forEach((t, i) => {
+      expect(t).toEqual(expectedTiles[i]);
+    });
+    // The quick-action icons' viewBox — the v76 glyph-pin family's
+    // quick-action extension (the w/h/color are the v61 F3 pin's own).
+    expect(census!.qaIcons).toEqual(["0 0 24 24", "0 0 24 24", "0 0 24 24"]);
+  });
+});

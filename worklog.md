@@ -71,6 +71,32 @@ and `docs/remediation-plan-v76.md`.
 
 ---
 
+## Session 111 — Parity iteration v77: the re-run cycle's next-oldest candidate (the v61-era dashboard pair's second re-run) + the axe watch (NO DRIFT) + the Budget Guidelines interior-text family + quick-action icon viewBox pin (PIN-ONLY) (2026-10-17)
+
+**Goal:** the session-183 v77 queue — corrected by the rotation ledger (the v76 plan's suggestion named the mobile 390 twins [last re-shot v69], but the cadence's own oldest-first rule points at the v61-era pair [last re-shot v68] — the mobile twins become the v78 candidate), plus the axe-core watch at its re-check point and the 71st standing checks. **PIN-ONLY for src/ — no production-code change; +1 e2e = 280.** The formal narrative: `docs/session_184.md`; the plan: `docs/remediation-plan-v77.md`.
+
+**The environment preserved** (no reset this session): the workspace survived the boundary intact — `main @ 9d694b3` (v76 shipped + the session_183 transcript), node_modules + `.env` (DATABASE_URL="file:../db/custom.db", db/ at the repo root) + `db/custom.db` + chromium-1243 all verified, no orphaned servers, the seedcheck confirming the exact seed before any flow ran.
+
+**The baseline chain FULLY GREEN as-shipped** (no F0 finding — the v76 lesson applied by construction: `npm run build`, the standalone static + public copies verified): lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap) · 279 e2e ✓ (98 + 64 + 119 chunks = 278 chromium + 3 setups — the exact documented v76 state) · 35/35 smoke ✓.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0, no nested engine dir), the engine-contract pin GREEN standalone (2 passed).
+
+**The 71st standing checks ALL GREEN:** the mobile menu VERIFIED WORKING (the 71st consecutive time — `hitIsBurgerChild:true`, the sheet opens + closes on nav, the nav landmark present); the reference's four bugs ALL live [toast-blocker, sheet-trap `overlayCount:1`, no-landmark, the 464px /networth overflow]; the data census UNCHANGED (the 71st clean drift check); the SEO pair live; zero overflow at 390 on all five clone views.
+
+**The re-run pair (the dashboard FULL-PAGE at desktop 1280x800 — the Budget Guidelines card + the quick-action row below the fold):** the VLM verdict **IDENTICAL, ZERO style flags** — the LAYOUT/STYLE section explicitly empty; every reported delta a documented data/identity class (the seed figures, the v56 root-URL active-nav, the avatar letter) — matching the v68 re-run's own IDENTICAL verdict. The both-sides census (arbit-v77.sh — the v75 convention, the v61 qa-census axes re-measured): the guidelines card **byte-identical on every axis with ZERO drift since v61** (the card 468×348 — the STRETCH-fix natural height holding 16 iterations later; the header 24px/16px/600/forestDark/lh 16px/tracking −0.4px; the body 0px 24px 24px; the three tiles 418×78 with the tint+border pairs + label 16/500/type + pct 14/400/type + desc 12/gray/lh 16px — the shadow's transparent lead layers the v66 computed-form class); the quick-action row byte-identical on every axis (the grid 960/3×304/gap 24; the cards 304×90/16px/24px; the tiles 40×40; the icons 20×20 + viewBox 0 0 24 24; the plus 16/0.5) — the label fw/color delta the v61 wrapper-vs-leaf lesson re-learned (the census's bare finder catching the clone's row WRAPPER span; the v61 F3 pin's LEAF finder measures the leaf byte-identical, GREEN in the baseline), the grid mt (ref 0px vs clone 32px) the margin-structure class with the rendered cross-row gap byte-identical (340, cardBottom 1122, gridTop 1462 BOTH sides). The seedcheck exact after. **NO NEW GAP.**
+
+**The v77 pin (+1 e2e = 280):** the Budget Guidelines card's interior-TEXT family + the quick-action icons' viewBox census at 1280 (tests/e2e/dashboard.spec.ts — the never-pinned axes: the header's lh 16px + tracking −0.4px, the tiles 2/3 chrome, ALL three tiles' label/pct/desc TEXT chrome at 1280 [the v51 F4 family's desktop twin — the one-line-desc h-78 arithmetic], the quick-action icons' viewBox [the v76 glyph family's extension] — the arbitration's own measured values) — GREEN on first run; the pin-sanity mutation (the tile label's `font-medium` → `font-normal` at dashboard-view.tsx:848) verified to FAIL at exactly the three tiles' label.fw axes (fw 500→400), then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines).
+
+**The full chain re-run GREEN:** lint → typecheck → 108 unit → `npm run build` → 280 e2e (99 + 64 + 119 chunks = 279 chromium + 3 setups) → 35/35 smoke. The screenshots 16/16 BYTE-IDENTICAL — the eighth consecutive fully-identical set (the same-day regeneration, no calendar rollover).
+
+**The docs alignment:** D1 AGENTS.md (the v77 paragraph), D2 CLAUDE.md (280 + the v77 pin clause), D3 README.md (the counts + the v77 plan-table row), D4 zero-balance_SKILL.md (Session 112 audit row + the state lines), D5 the PAD's v1.1.34 revision block, D6 the probe README's v77 section, D7 session_184.md + this entry.
+
+**The probe lessons:** (1) THE TARGET-SELECTION LESSON — verify a queue suggestion against the rotation ledger before executing it: the v76 plan's v77 queue named the mobile twins while the ledger's own oldest-first rule pointed at the v61-era pair (a queue suggestion is a hint, not a commitment; the ledger is the truth); (2) THE v61 WRAPPER-VS-LEAF LABEL LESSON re-confirmed live — the quick-action label's wrapper span still reads fw 400/rgb(10,10,10) under a bare textContent finder while the leaf measures byte-identical: keep pinning the LEAF.
+
+---
+
+---
+
 ## Session 110 — Parity iteration v76: the re-run cycle's next-oldest candidate (the v60-era networth + drill-down pair's second re-run) + the axe watch (NO DRIFT) + the breakdown section-icon chip glyph + donut label chrome pin (PIN-ONLY) (2026-10-17)
 
 **Goal:** the session-181 v76 queue's first item — the re-run cadence rotating past the v75 login+calculator pair to the next-oldest candidate (the v60-era networth + drill-down pair, last re-shot v67 — the oldest remaining standing pair), plus the axe-core watch at its re-check point and the 70th standing checks. **PIN-ONLY for src/ — no production-code change; +1 e2e = 279.** The formal narrative: `docs/session_182.md`; the plan: `docs/remediation-plan-v76.md`.

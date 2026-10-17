@@ -3811,3 +3811,84 @@ the F0 standalone-static-copy environment lesson.
    (the hero-stat-tile trend icon, dashboard-view.tsx:619) stayed GREEN
    because the pin never measured that icon; the corrected mutation (the
    section icon at :316) failed at exactly the pinned axis.
+
+## v77 — the re-run cycle's next-oldest candidate (the v61-era dashboard pair's second re-run) + the Budget Guidelines interior-text family + quick-action icon viewBox pin (PIN-ONLY)
+
+The session-183 v77 cycle: the re-run cadence rotating past the v76
+networth+drill-down pair to the next-oldest candidate — the v61-era pair
+(the dashboard FULL-PAGE at desktop 1280, last re-shot v68) — plus the
+axe watch at its re-check point, the 71st standing checks, and the
+target-selection correction (the v76 plan's v77 queue named the mobile
+390 twins [last re-shot v69], but the cadence's own oldest-first rule —
+the v74 "OLDEST candidate" convention, ordering by LAST RE-SHOT DATE —
+points at the v61-era pair [v68 < v69]; the mobile twins become the v78
+candidate).
+
+**The probes:**
+- `vlm-shots-v77.sh` — the reference side: the DASHBOARD at desktop
+  1280x800 FULL-PAGE (the login-retry loop; the parked pointer at
+  (5,5); read-only — the v46 rule).
+- `clone-vlmshots-v77.sh` — the clone side, the same shot inside
+  with-server.sh (the :3200 standalone parity server).
+- `vlm-compare-v77.mjs` — the VLM pairwise (the v68 prompt lineage —
+  the guidelines + quick-action focus).
+- `arbit-v77.sh` — the both-sides DOM census (the v75 convention: the
+  IDENTICAL verdict's census, the v61 qa-census axes re-measured): PART
+  G (the guidelines card: the card/header/body/tiles with the
+  label/pct/desc chrome), PART Q (the quick-action row: the grid/cards
+  with the tile/icon/label/plus chrome + the icons' viewBox), PART X
+  (the cross-row gap) + the seedcheck at the end.
+- `ref-standing-v71.sh` / `standing-checks-v71.sh` — the 71st standing
+  checks (version-bumped from v70).
+- The v77 pin (tests/e2e/dashboard.spec.ts): the Budget Guidelines
+  card's interior-TEXT family + the quick-action icons' viewBox census
+  at 1280 — the never-pinned axes (the header's lh 16px + tracking
+  -0.4px, the tiles 2/3 chrome, ALL three tiles' label/pct/desc text
+  chrome at 1280 [the v51 F4 family's desktop twin], the icons'
+  viewBox [the v76 glyph family's extension]). GREEN on first run. The
+  pin-sanity mutation (the tile label's font-medium -> font-normal at
+  dashboard-view.tsx:848) verified to FAIL at exactly the three tiles'
+  label.fw axes (fw 500->400), then restored (the standalone REBUILD as
+  a SEPARATE command; git diff src/ = 0 lines).
+
+**The v77 findings:**
+
+1. The VLM verdict **IDENTICAL, ZERO style flags** — the LAYOUT/STYLE
+   section explicitly empty (the guidelines card + the quick-action
+   cards visually identical on every axis); every reported delta a
+   documented data/identity class (the seed figures, the v56 root-URL
+   active-nav, the avatar letter). Matches the v68 re-run's own
+   IDENTICAL verdict — zero drift since v68 on the VLM layer.
+2. The both-sides census byte-identical on every axis with ZERO drift
+   since v61: the guidelines card 468x348 (the STRETCH-fix natural
+   height holding 16 iterations later), the header
+   24px/16px/600/forestDark/lh 16px/tracking -0.4px, the three tiles
+   418x78 with the tint+border pairs + label 16/500/type + pct
+   14/400/type + desc 12/gray/lh 16px; the quick-action grid
+   960/3x304/gap 24, the cards 304x90/16px/24px, the tiles 40x40, the
+   icons 20x20 + viewBox 0 0 24 24, the plus 16/0.5. The three deltas
+   all documented classes: the card shadow's transparent lead layers
+   (the v66 computed-form class — the visible layers byte-identical);
+   the quick-action label's fw/color under the census's bare finder
+   (the v61 wrapper-vs-leaf lesson — the v61 F3 pin's LEAF finder
+   measures the leaf byte-identical); the grid mt 0-vs-32px (the
+   margin-structure class — the rendered cross-row gap 340
+   byte-identical on BOTH sides, cardBottom 1122/gridTop 1462).
+3. The screenshots 16/16 byte-identical — the eighth consecutive
+   fully-identical set (the same-day regeneration, no calendar
+   rollover since the v75 re-baseline).
+
+**The v77 lessons:**
+1. THE TARGET-SELECTION LESSON: verify a queue suggestion against the
+   rotation ledger before executing it — the v76 plan's v77 queue named
+   the mobile 390 twins (last re-shot v69) while the ledger's own
+   oldest-first rule pointed at the v61-era pair (last re-shot v68).
+   A queue suggestion is a hint, not a commitment; the ledger is the
+   truth.
+2. THE v61 WRAPPER-VS-LEAF LABEL LESSON re-confirmed live: the
+   quick-action label's WRAPPER span still reads fw 400/rgb(10,10,10)
+   under a bare textContent finder while the reference's first match is
+   the leaf (fw 500/rgb(26,58,46)) — the DOM shapes differ, the leaf
+   chrome does not. Keep pinning the LEAF (the exact text + zero
+   element children), and expect the wrapper delta to reappear in any
+   census that forgets the finder discipline.
