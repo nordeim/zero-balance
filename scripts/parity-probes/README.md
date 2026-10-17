@@ -3560,3 +3560,57 @@ a mobile-390 twin.
    not the screenshot: the bg color, the computed opacity, and the
    backdrop-filter are three separate axes (all byte-identical here) —
    the VLM's "lighter" read tracked none of them.
+
+## v74 — the re-run cycle's OLDEST candidate (the v58-era savings pair's second re-run) + the savings goal-card's interior-text + hidden-h1 pin (PIN-ONLY)
+
+The session-178 v74 cycle: with the NEW-pair program complete (v73), the
+cadence rotates to the re-run cycle's OLDEST candidate — the v58-era
+savings pair, last re-shot v65, the only pre-v70 pair not re-run since —
+plus the axe watch at its re-check point and the 68th standing checks.
+
+**The probes:**
+- `vlm-shots-v74.sh` — the reference side: the savings view at desktop
+  1280x800, FULL-PAGE (the fresh sweep; login-retry loop; the parked
+  pointer at (5,5)).
+- `clone-vlmshots-v74.sh` — the clone side, the same shot inside
+  with-server.sh (the :3200 standalone parity server).
+- `vlm-compare-v74.mjs` — the VLM pairwise (the savings-view prompt).
+- `arbit-v74.sh` — the both-sides /savings DOM census at 1280 (the v43
+  rule: every VLM flag DOM-verified before it counts): the header row
+  (h1/subtitle/Add button), the grid (template/gap/w/childCount), the
+  card chrome, the h4 title + the amount (the amount matched by the
+  `text-2xl` CLASS — see the lessons below), the footer (the
+  DATA-CONDITIONAL childCount axis) + its children's chrome + icons, the
+  badge row + every badge's full chrome (the classification color maps),
+  the docSW — plus the db-seedcheck-v68.cjs seedcheck at the end.
+- `ref-standing-v68.sh` / `standing-checks-v68.sh` — the 68th standing
+  checks (version-bumped from v67).
+- The v74 pin (tests/e2e/items.spec.ts): the savings goal-card's
+  interior-text chrome + the hidden app-shell h1 census at 1280 — the
+  never-pinned axes (the h4 title's lh + the 1280 state of the v51 pin's
+  390-only family; the amount's lh + 1280 state; the hidden first-in-DOM
+  h1 "ZeroBalance" — the v65-documented surface, pinned for the first
+  time). GREEN on first run. The pin-sanity mutation (the amount's
+  `text-2xl` → `text-xl`) verified to FAIL at exactly the cardAmount
+  axis, then restored (the standalone REBUILD as a SEPARATE command;
+  git diff src/ = 0 lines).
+
+**The v74 lessons:**
+1. The amount's dollar-prefixed textContent is matched by the `text-2xl`
+   CLASS, never by text — the v64 dollar rule's census corollary: a
+   literal `$` inside a double-quoted bash census string expands against
+   bash's own positional parameters (`$4` in `[$0-9,]` silently empties),
+   so the class-based finder is the only safe detector for
+   dollar-prefixed text.
+2. The md-hidden-subtree census: an element inside a `display:none`
+   SUBTREE keeps its OWN computed display ("block" for an h1) while
+   rendering zero-size boxes (w 0/h 0 — getBoundingClientRect on a
+   no-layout subtree returns zeros). The v65 note's "hidden zero-size"
+   mechanism: assert w/h 0, never display "none", for md-hidden
+   subtrees — the ancestor carries the display:none, the descendant
+   reports its own.
+3. A pre-pin probe beats a wrong assertion: the pin's first draft
+   asserted `display === "none"` for the hidden h1; the live h1probe
+   (with-server + one eval) returned display "block"/w 0/h 0 and
+   corrected the pin BEFORE the RED/GREEN cycle — the mutation check
+   only validates the axes you actually assert.

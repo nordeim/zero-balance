@@ -2534,6 +2534,106 @@ test.describe("the savings goal-card census at 1280 (v58 — plan F1)", () => {
   });
 });
 
+// v74 F4 (docs/remediation-plan-v74.md): the savings goal-card's
+// INTERIOR-TEXT chrome at 1280 + the hidden app-shell h1 — the re-run
+// cycle's OLDEST candidate (the v58-era savings pair's second re-run,
+// after v65) surfaced the never-pinned axes: the h4 title + the amount
+// are pinned at 390 ONLY (the v51 F3 pin covers fs/fw/color; the lh and
+// the 1280 state never), and the HIDDEN first-in-DOM h1 "ZeroBalance"
+// (the app-shell mobile header's h1, sidebar.tsx:234, text-xl font-bold,
+// display:none at 1280) is documented in the v65 notes but pinned
+// nowhere. Measured BYTE-IDENTICAL on BOTH sites via arbit-v74.sh (the
+// both-sides /savings census at 1280). Read-only (the logged-in
+// storageState, the seeded Investments card — the v58 pin's own style).
+test.describe("savings goal-card interior-text + hidden app-shell h1 census at 1280 (v74 — plan F4)", () => {
+  test("the h4 title + amount chrome (the lh family) + the hidden ZeroBalance h1 (v74 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/savings");
+    await expect(page.getByText("Investments").first()).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      // The h4 title (the card's colored-dot row heading) + the amount
+      // (the text-2xl p — formatMoney's dollar-prefixed string, matched
+      // by CLASS never text: the v64 dollar rule's census corollary).
+      const h4 = card.querySelector("h4");
+      const amtP = [...card.querySelectorAll("p")].find(
+        (p) => typeof p.className === "string" && /text-2xl/.test(p.className),
+      );
+      // The hidden first-in-DOM h1 "ZeroBalance" — the app-shell mobile
+      // topbar's h1 (the header carries md:hidden; at 1280 the subtree is
+      // out of layout — the h1 keeps its OWN display (block) but renders
+      // ZERO-SIZE (w 0 / h 0 — the v65 note's "hidden zero-size"), while
+      // getComputedStyle still reports its computed family).
+      const hiddenH1 = document.querySelector("h1");
+      const grab = (el: Element | null | undefined, extra: string[] = []) => {
+        if (!el) return null;
+        const cs = getComputedStyle(el);
+        const out: Record<string, unknown> = {
+          fs: cs.fontSize,
+          fw: cs.fontWeight,
+          color: cs.color,
+        };
+        if (extra.includes("lh")) out.lh = cs.lineHeight;
+        if (extra.includes("text")) out.text = (el.textContent || "").trim().slice(0, 20);
+        return out;
+      };
+      return {
+        cardTitle: grab(h4, ["lh"]),
+        cardAmount: grab(amtP, ["lh"]),
+        hiddenH1: grab(hiddenH1, ["text"]),
+        hiddenH1Box: hiddenH1
+          ? {
+              w: Math.round(hiddenH1.getBoundingClientRect().width),
+              h: Math.round(hiddenH1.getBoundingClientRect().height),
+              display: getComputedStyle(hiddenH1).display,
+            }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The h4 title's full chrome at 1280 — the v51 pin's 390 family
+    // (fs/fw/color) plus the never-pinned lh, byte-identical on both
+    // sides' savings goal cards.
+    expect(census!.cardTitle).toEqual({
+      fs: "16px",
+      fw: "600",
+      lh: "24px",
+      color: "rgb(26, 58, 46)",
+    });
+    // The amount's full chrome at 1280 — the savings blue accent
+    // (rgb(59,126,161)), the 24/700/32 family.
+    expect(census!.cardAmount).toEqual({
+      fs: "24px",
+      fw: "700",
+      lh: "32px",
+      color: "rgb(59, 126, 161)",
+    });
+    // The hidden first-in-DOM h1 "ZeroBalance" — the app-shell mobile
+    // topbar's h1: at 1280 the md:hidden header puts the subtree out of
+    // layout, so the h1 renders ZERO-SIZE (w 0 / h 0 — the v65 note's
+    // "hidden zero-size" mechanism; its own display stays "block" — the
+    // VISIBLE h1 is the v65-pinned contract), its computed chrome
+    // 20px/700/forestDark, byte-identical on both sides (the
+    // v65-documented surface, pinned for the first time).
+    expect(census!.hiddenH1).toEqual({
+      text: "ZeroBalance",
+      fs: "20px",
+      fw: "700",
+      color: "rgb(26, 58, 46)",
+    });
+    expect(census!.hiddenH1Box).toEqual({ w: 0, h: 0, display: "block" });
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});
+
 // v70 F4 (docs/remediation-plan-v70.md): the EXPENSES view's filter card
 // at desktop 1280 — the last never-census'd filter-card variant (the v38
 // S2 pin covered the /savings instance, the v64 pin the /income variant,
