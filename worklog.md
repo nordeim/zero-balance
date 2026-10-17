@@ -71,7 +71,32 @@ and `docs/remediation-plan-v78.md`,
 and `docs/remediation-plan-v79.md`,
 and `docs/remediation-plan-v80.md`,
 and `docs/remediation-plan-v81.md`,
-and `docs/remediation-plan-v82.md`.
+and `docs/remediation-plan-v82.md`,
+and `docs/remediation-plan-v83.md`.
+
+---
+
+## Session 118 — Parity iteration v83: the re-run cycle's next-oldest candidate (the v61-era dashboard pair's third re-run) + the axe watch (NO DRIFT) + the cross-row vertical-rhythm census pin (PIN-ONLY) (2026-10-18)
+
+**Goal:** the v83 queue — the ledger-verified target (the v82 plan's suggestion agreeing with the rotation ledger: the v61-era dashboard pair [the dashboard FULL-PAGE at desktop 1280 — the below-the-fold Budget Guidelines card + the quick-action row], last re-shot v77, is the oldest remaining candidate [v77 < v78 < v79 < v80 < v81 < v82]; the pair's THIRD re-run [v61 → v68 → v77 → v83] — the sixth consecutive queue/ledger agreement) + the axe-core watch + the 77th standing checks. PIN-ONLY for src/ — no production-code change; +1 e2e = 286.
+
+**The environment REBUILT (the reset path — the third consecutive reset-boundary)**: the workspace had been reset — `git clone` landed at `main @ 7b28990` (v82 shipped + the session_195 transcript), the tree clean; node_modules reinstalled (354 packages), chromium-1243 reinstalled, `.env` rewritten (DATABASE_URL="file:../db/custom.db", db/ at the repo root — the polluting shell DATABASE_URL handled via the npm scripts' `env -u` discipline), `prisma generate` + `npm run db:push` + `npm run db:seed` re-run, the seedcheck exact (7 items / rent 1850 / expenses 2235 / 0 line items / 3 assets / 2 liabilities) before any flow ran. The codebase audit (per the user's review request): the recent v81/v82 commits verified PIN-ONLY as documented; the production seams (auth, db-path, the SEO pair, the Tailwind v4 mitigations in globals.css, the three test tiers) re-audited clean — no new findings; the repo's `skills/` folder excluded from checking/testing/compilation throughout (the eslint + tsconfig excludes verified).
+
+**The baseline chain FULLY GREEN as-shipped on the rebuilt workspace**: lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap prerendered) · 285 e2e ✓ (101 + 108 + 78 chunk executions = 287 total = 285 unique tests in 23 files — the exact documented v82 state) · 35/35 smoke ✓.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (no 5.x exists), the lockfile holding the v68 dedupe state, the engine-contract pin GREEN standalone (2 passed).
+
+**The 77th standing checks ALL GREEN:** the mobile menu VERIFIED WORKING (the 77th consecutive time — `hitIsBurgerChild:true`, the sheet opens + closes on nav, the nav landmark present); the reference's four bugs ALL live [toast-blocker, sheet-trap `overlayCount:1`, no-landmark, the 464px /networth overflow]; the data census UNCHANGED (the 77th clean drift check); the SEO pair live on both sides; zero overflow at 390 on all five clone views.
+
+**The re-run pair (the dashboard FULL-PAGE at desktop 1280x800):** the DASHBOARD verdict **IDENTICAL** — the two v61-era target surfaces (the Budget Guidelines card + the quick-action row) identical on every reported chrome axis; the only deltas the seed classes + the documented non-chrome classes (the v56 SUPERSET nav state, the user-identity avatar, the Base44 platform overlay). The both-sides census (arbit-v83.sh — the v75 convention, the census runs regardless of the verdict; the v77 census axes re-measured): **the v77 census values REPRODUCED EXACTLY — zero drift since v77 on every axis** (PART G the guidelines card byte-identical modulo the v66 transparent-shadow class; PART Q the quick-action row byte-identical modulo the v77 mt-mechanism class [ref mt 0 vs clone 32px, the rendered gap IDENTICAL at 340] + the v61 label-finder wrapper class [the clone's LEAF carries the identical 500/rgb(26,58,46)]; PART X cardBottom 1122 / gridTop 1462 / gap 340 both sides). **NO NEW GAP.**
+
+**The v83 pin (+1 e2e = 286):** the dashboard's CROSS-ROW vertical-rhythm census at 1280 (tests/e2e/dashboard.spec.ts — the never-pinned PART X family: the guidelines card's BOTTOM [1122 — the cumulative upstream rhythm], the quick-action grid's TOP [1462], the RENDERED cross-row gap [340 — the byte-identical both-sides parity axis], the grid's OWN mt [32px — the v51 F5 390 axis's desktop twin]) — GREEN on first run; the pin-sanity mutation (the quick-action grid's `mt-8` → `mt-8 lg:mt-6` at dashboard-view.tsx:993, applied by LINE NUMBER — the stat row's identical class string at :954 untouched) verified to FAIL at exactly the pin's own axes (mt 32→24, gridTop 1462→1454, gap 340→332; cardBottom 1122 unchanged) — cascade-free by construction (viewport-scoped: the 390/640 families untouched; the v61 F3 grid expectation carries no mt axis; the quick-action grid the LAST child of the view; the full dashboard.spec.ts under the mutation: 38 green, only the v83 pin red) — then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines; 39/39 green after).
+
+**The full chain re-run GREEN:** lint → typecheck → 108 unit → `npm run build` → 286 e2e (102 + 108 + 78 chunk executions = 288 total = 286 unique tests) → 35/35 smoke. The screenshots **16/16 BYTE-IDENTICAL** (the fourteenth consecutive fully-identical set — the same-day seed + the same-day shots, the v82 same-day-seed law; the seedcheck exact).
+
+**The docs alignment:** D1 AGENTS.md (the v83 paragraph), D2 CLAUDE.md (286 + the v83 pin clause), D3 README.md (the counts + the v83 plan-table row), D4 zero-balance_SKILL.md (Session 118 audit row + the state lines), D5 the PAD's v1.1.40 revision block, D6 the probe README's v83 section, D7 session_197.md + this entry.
+
+**The v83 lessons:** (1) THE FULL-CENSUS REPRODUCTION — an IDENTICAL verdict still gets the both-sides census, and a census that reproduces the prior cycle's values exactly is the strongest zero-drift proof; (2) THE IDENTICAL-STRING LINE MUTATION — when two source lines carry identical class strings, apply pin-sanity mutations by LINE NUMBER, never by string replace; (3) THE MT-MECHANISM vs RENDERED-GAP DISTINCTION — a differing mechanism axis with byte-identical rendered geometry is a mechanism class, not a parity gap: pin the RENDERED axis.
 
 ---
 

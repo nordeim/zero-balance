@@ -3311,3 +3311,76 @@ test.describe("breakdown card mobile svg + chart-absence + width census at 390 (
     ]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v83 — plan F4: the dashboard's CROSS-ROW vertical-rhythm census at 1280
+// (the pair viewport). The v83 re-run pair's pin: the never-pinned PART X
+// family — the vertical rhythm ACROSS the two below-the-fold rows (the
+// guidelines card → the quick-action grid). The v61 F2 pin holds the
+// guidelines card's box chrome + the STRETCH contract (cardH 348,
+// cardBottom−lastTileBottom 24–25, rowH 656); the v61 F3 pin holds the
+// quick-action grid's {display/template/gap/w} + the cards' chrome; the
+// v77 pin holds the interior-text family; the v51 F5 pin holds the grid's
+// mt "32px" at 390 ONLY. The never-pinned axes here: the guidelines
+// card's BOTTOM (1122 — the cumulative upstream rhythm), the grid's TOP
+// (1462), the RENDERED cross-row GAP (340 — the byte-identical both-sides
+// parity axis: the reference achieves the same 340 through its own wrapper
+// structure; the clone through the wrapper stretch 308 + the grid's mt-8
+// 32px), and the grid's OWN mt at 1280 (the v51 F5 390 axis's desktop
+// twin). The values are the arbit-v83.sh PART X census's own measurements,
+// byte-identical on both sides.
+// ---------------------------------------------------------------------------
+test.describe("the dashboard cross-row vertical-rhythm census at 1280 (v83 — plan F4)", () => {
+  test("the guidelines card's bottom + the quick-action grid's top + the rendered gap + the grid's mt", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("Budget Guidelines")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const heading = [...document.querySelectorAll("h1, h2, h3, div, span")].find(
+        (x) => (x.textContent || "").trim() === "Budget Guidelines" && x.children.length === 0,
+      );
+      if (!heading) return null;
+      // The guidelines card (the v61 F2 walk: shadow + radius + a <p>).
+      let card = heading as HTMLElement;
+      while (card.parentElement) {
+        const cs = getComputedStyle(card);
+        if (cs.boxShadow !== "none" && cs.borderRadius !== "0px" && card.querySelector("p")) break;
+        card = card.parentElement as HTMLElement;
+      }
+      // The quick-action grid: the parent of the Add Income button.
+      const btn = [...document.querySelectorAll("button")].find((b) =>
+        (b.textContent || "").trim() === "Add Income",
+      );
+      if (!btn) return null;
+      const grid = btn.parentElement as HTMLElement;
+      const rG = grid.getBoundingClientRect();
+      const rC = card.getBoundingClientRect();
+      return {
+        cardBottom: Math.round(rC.bottom),
+        gridTop: Math.round(rG.top),
+        gap: Math.round(rG.top - rC.bottom),
+        gridMt: getComputedStyle(grid).marginTop,
+      };
+    });
+    expect(census, "the cross-row census finder (the guidelines heading + the Add Income button)").not.toBeNull();
+    if (!census) throw new Error("cross-row census found no card or grid");
+
+    // The guidelines card's BOTTOM — the cumulative upstream rhythm
+    // (the hero + breakdown + stat rows + the guidelines row's own
+    // 656 stretch, all upstream-pinned — this is their sum).
+    expect(census.cardBottom).toBe(1122);
+
+    // The quick-action grid's TOP — cardBottom 1122 + the wrapper
+    // stretch 308 + the grid's mt-8 32px.
+    expect(census.gridTop).toBe(1462);
+
+    // The RENDERED cross-row gap — the byte-identical both-sides parity
+    // axis (the reference's own wrapper mechanism produces the same 340).
+    expect(census.gap).toBe(340);
+
+    // The grid's OWN mt at 1280 — the v51 F5 390 axis's desktop twin
+    // (the clone's mechanism axis).
+    expect(census.gridMt).toBe("32px");
+  });
+});

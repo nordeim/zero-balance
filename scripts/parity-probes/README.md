@@ -4378,3 +4378,85 @@ FULL-PAGE at desktop 1280], last re-shot v77 — now the oldest
 remaining), (2) the axe-core watch at its next re-check point (only a
 5.x wrapper changes the calculus), (3) the deferred reference-write
 censuses (unchanged — out of bounds under the v46 read-only rule).
+
+## v83 — the dashboard pair's third re-run (the rebuilt workspace)
+
+The third reset-boundary workspace (git clone at main @ 7b28990, the v82
+shipped state + the session_195 transcript): node_modules reinstalled
+(354 packages), chromium-1243 reinstalled, `.env` rewritten
+(DATABASE_URL=file:../db/custom.db, db/ at the repo root), db:generate +
+db:push + db:seed re-run, the seedcheck exact before any flow. The
+baseline chain FULLY GREEN as-shipped (lint -> typecheck -> 108 unit ->
+build -> 285 e2e [101+108+78 chunk executions = 287 total] -> 35/35
+smoke — the exact documented v82 state). The queue: the v82 plan's v83
+suggestion — the v61-era DASHBOARD pair (the FULL-PAGE at desktop
+1280, last re-shot v77, now the oldest remaining [v77 < v78 < v79 <
+v80 < v81 < v82]) — agreeing with the rotation ledger (the SIXTH
+consecutive agreement); the pair's THIRD re-run (v61 -> v68 -> v77 ->
+v83).
+
+**The probes:**
+- ref-standing-v77.sh + standing-checks-v77.sh — the 77th standing
+  checks (version-bumped from v76 — version-bump-only diffs): the
+  mobile menu verified working the 77th consecutive time; the
+  reference's four bugs ALL live; the data census the 77th clean drift
+  check; the SEO pair live on both sides.
+- vlm-shots-v83.sh + clone-vlmshots-v83.sh + vlm-compare-v83.mjs —
+  the re-run pair (login on the first attempt both sides, the parked
+  pointer at (5,5), read-only on the reference): the DASHBOARD verdict
+  IDENTICAL — the two v61-era target surfaces (the Budget Guidelines
+  card + the quick-action row) identical on every reported chrome
+  axis; the only deltas the seed classes + the v56 SUPERSET nav class
+  + the user-identity avatar + the platform-chrome overlay.
+- arbit-v83.sh — the both-sides census (the v77 axes re-measured; the
+  v75 convention: the census runs regardless of the verdict): the v77
+  census values REPRODUCED EXACTLY — zero drift since v77 on every
+  axis (PART G the guidelines card byte-identical modulo the v66
+  transparent-shadow class; PART Q the quick-action row byte-identical
+  modulo the v77 mt-mechanism class [ref mt 0 vs clone 32px, the
+  rendered gap IDENTICAL at 340 — the wrapper stretch 308 + mt-8 32
+  arithmetic] + the v61 label-finder wrapper class [the clone's LEAF
+  carries the identical 500/rgb(26,58,46), pinned green by the v61 F3
+  leaf-span finder]; PART X cardBottom 1122 / gridTop 1462 / gap 340
+  on both sides).
+
+**The pin:** the dashboard's CROSS-ROW vertical-rhythm census at 1280
+(tests/e2e/dashboard.spec.ts — the never-pinned PART X family: the
+guidelines card's BOTTOM [1122 — the cumulative upstream rhythm], the
+quick-action grid's TOP [1462], the RENDERED cross-row gap [340 — the
+byte-identical both-sides parity axis], the grid's OWN mt [32px — the
+v51 F5 390 axis's desktop twin]) — GREEN on first run; the pin-sanity
+mutation the quick-action grid's mt-8 -> mt-8 lg:mt-6
+(dashboard-view.tsx:993 — the QUICK-ACTION grid only; the stat row's
+identical class string at :954 untouched): FAILS at exactly the pin's
+own axes (mt 32->24, gridTop 1462->1454, gap 340->332; cardBottom
+1122 unchanged), cascade-free by construction (the lg: variant inert
+below 1024px — the v51 F5 390 mt pin + the 390 card y-positions
+2751/2865/2979 + the v42 F2 640 scrollHeight 3029 all green under the
+mutation; the v61 F3 grid expectation carries no mt axis; the
+quick-action grid the LAST child of the dashboard view — no
+downstream cascade; the full dashboard.spec.ts under the mutation: 38
+green, only the v83 pin red), then restored (the standalone REBUILD as
+a SEPARATE command; git diff src/ = 0 lines; 39/39 green after).
+
+**The v83 lessons:**
+1. THE FULL-CENSUS REPRODUCTION: when a re-run pair returns an
+   IDENTICAL verdict, the both-sides census STILL runs (the v75
+   convention) — and when it reproduces the PRIOR cycle's census
+   values EXACTLY (every PART G/Q/X axis matching v77's own numbers,
+   two cycles later), cite the full-census reproduction as the
+   standing pair's zero-drift proof; the verdict alone is weaker
+   evidence than the verdict + the census.
+2. THE IDENTICAL-STRING LINE MUTATION: when two source lines carry
+   IDENTICAL class strings (the stat row and the quick-action grid
+   both `mt-8 grid grid-cols-1 gap-6 md:grid-cols-3`), a pin-sanity
+   mutation must be applied by LINE NUMBER (sed '993s/...'), never by
+   string replace — a bare replace hits both lines and turns a
+   single-axis mutation into an uninterpretable multi-surface break.
+3. THE MT-MECHANISM vs RENDERED-GAP DISTINCTION: a census axis that
+   differs between the sites (the grid's mt: ref 0px vs clone 32px)
+   while the RENDERED geometry is byte-identical (the gap 340) is a
+   MECHANISM class, not a parity gap — pin the RENDERED axis (the
+   gap/positions), never the mechanism axis alone; the mechanism axis
+   may accompany it only as the clone's own twin of an
+   already-pinned family (the v51 F5 390 mt pin's desktop twin).
