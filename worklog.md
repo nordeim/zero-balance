@@ -65,9 +65,35 @@ and `docs/remediation-plan-v72.md`,
 and `docs/remediation-plan-v73.md`,
 and `docs/remediation-plan-v74.md`,
 and `docs/remediation-plan-v75.md`,
-and `docs/remediation-plan-v76.md`.
+and `docs/remediation-plan-v76.md`,
+and `docs/remediation-plan-v77.md`,
+and `docs/remediation-plan-v78.md`.
 
 ---
+
+---
+
+## Session 113 — Parity iteration v78: the re-run cycle's next-oldest candidate (the mobile 390 twins' second re-run) + the axe watch (NO DRIFT) + the breakdown card's mobile svg family + chart-absence + width census pin (PIN-ONLY) (2026-10-17)
+
+**Goal:** the v78 queue — the ledger-verified target (the v77 plan's suggestion agreeing with the rotation ledger this time: the mobile 390 twins [the networth + dashboard full-page pair, last re-shot v69] are the oldest remaining candidate [v69 < v70 items < v74-v77]; the v77 target-selection lesson applied — the queue suggestion verified against the ledger before commitment, no correction needed), plus the axe-core watch at its re-check point and the 72nd standing checks. **PIN-ONLY for src/ — no production-code change; +1 e2e = 281.** The formal narrative: `docs/session_186.md`; the plan: `docs/remediation-plan-v78.md`.
+
+**The environment preserved** (no reset this session): the workspace survived the boundary intact — `main @ 67e988b` (v77 shipped + the session_185 transcript via git pull), node_modules + `.env` (DATABASE_URL="file:../db/custom.db", db/ at the repo root) + `db/custom.db` + chromium-1243 all verified, no orphaned servers, the seedcheck confirming the exact seed (7 items / rent 1850 / expenses 2235 / 0 line items / 3 assets / 2 liabilities) before any flow ran.
+
+**The baseline chain FULLY GREEN as-shipped** (no F0 finding — the v76 lesson applied by construction: `npm run build`, the standalone static + public copies verified): lint ✓ · typecheck ✓ · 108/108 unit ✓ · build ✓ (robots + sitemap) · 280 e2e ✓ (99 + 102 + 81 chunks = 279 chromium + 3 setups — the exact documented v77 state) · 35/35 smoke ✓.
+
+**The axe watch NO DRIFT:** npm-latest `@axe-core/playwright` 4.14.0 (only 4.14.1 rc/next prereleases; no 5.x exists), the lockfile holding the v68 dedupe state (the wrapper 4.14.0 + ONE hoisted axe-core 4.14.0, no nested engine dir), the engine-contract pin GREEN standalone (2 passed).
+
+**The 72nd standing checks ALL GREEN:** the mobile menu VERIFIED WORKING (the 72nd consecutive time — `hitIsBurgerChild:true`, the sheet opens + closes on nav, the nav landmark present); the reference's four bugs ALL live [toast-blocker, sheet-trap `overlayCount:1`, no-landmark, the 464px /networth overflow]; the data census UNCHANGED (the 72nd clean drift check); the SEO pair live; zero overflow at 390 on all five clone views.
+
+**The re-run pair (BOTH mobile 390x844 full-page twins):** the networth verdict DIFFERENT with every flag a documented class (the stat tiles side-by-side vs stacked the v41 mobile-superset class; the asset groups the seed-data class; the Base44 overlay the platform chrome; the avatar the user-identity class — matching the v69 re-run's own flag set exactly); the dashboard verdict DIFFERENT with every flag a documented class (the subtitle wrap point the v62 width-delta class — the reference's own 395px docSW overflow shifts its wrap by one word, the chrome byte-identical; the progress-bar length the pct data class; the black tooltip the Base44 platform chrome; the donut proportions the seed-data class). The both-sides census (arbit-v78.sh — the v75 convention, the v69 census axes re-measured): the networth medallion 64×64 + trend icon 32×32 + tiles h 84 + grid gap 16px BYTE-IDENTICAL (the deltas all the v41 mobile-superset class — the reference's card 432/docSW 464/fixed 2-col tiles 176×84/medallion clipping at right 416 vs the clone's card 358/docSW 390/1-col tiles 294×84/medallion fitting at right 342 — zero drift since the v69/v63 censuses); the dashboard subtitle chrome BYTE-IDENTICAL + the breakdown card's height + svg families BYTE-IDENTICAL (h 324, svgCount 7, the first-four svgs [16×16, 14×14, 16×16, 14×14], rechartsWrappers 0, pieSectors 0 on BOTH sides — no donut in the breakdown card anywhere, the v69 disproof class) + the 5px width family delta (card 363 vs 358, H3 313 vs 308, DIV 313×238 vs 308×238) the reference's own docSW-395 overflow class (the heights byte-identical). **NO NEW GAP.**
+
+**The v78 pin (+1 e2e = 281):** the Net Zero Breakdown card's mobile svg family + chart-absence + width census at 390 (tests/e2e/dashboard.spec.ts — the never-pinned axes: the card's w 358 [the v44 F2a pin covers the heights only], the svg family svgCount 7 with the full size census [16,14,16,14,16,14,16] [the three section icons + the three collapsed chevrons + the net-balance icon — never pinned at any viewport], the chart-absence contract rechartsWrappers 0 + pieSectors 0 [the v69 donut-invention lesson's regression guard], the children's width family H3 308×20 + DIV 308×238) — GREEN on first run; the pin-sanity mutation (the collapsed section chevron's `h-3.5 w-3.5` → `h-4 w-4` at dashboard-view.tsx:339) verified to FAIL at exactly the three chevron axes (14 → 16, the section row h 48 governed by the 32px chip — the v44/v76 pins untouched), then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines).
+
+**The full chain re-run GREEN:** lint → typecheck → 108 unit → `npm run build` → 281 e2e (99 + 102 + 81 chunks = 280 chromium + 3 setups; one transient head-parity flake re-verified GREEN in-chunk) → 35/35 smoke. The screenshots 16/16 BYTE-IDENTICAL — the ninth consecutive fully-identical set (the same-day regeneration, no calendar rollover).
+
+**The docs alignment:** D1 AGENTS.md (the v78 paragraph), D2 CLAUDE.md (281 + the v78 pin clause), D3 README.md (the counts + the v78 plan-table row), D4 zero-balance_SKILL.md (Session 113 audit row + the state lines), D5 the PAD's v1.1.35 revision block, D6 the probe README's v78 section, D7 session_186.md + this entry.
+
+**The probe lessons:** (1) THE LEDGER-VERIFIED QUEUE — when the queue suggestion and the rotation ledger agree, say so explicitly in the plan (the v77 target-selection lesson's positive case: the verification step ran the same way, the outcome was agreement; the discipline is the check, not the correction); (2) THE v69 CHART-PRESENCE LESSON NOW HAS ITS REGRESSION GUARD — the breakdown card's rechartsWrappers/pieSectors counts are pinned at 390, so the VLM's invented-donut class can no longer resurface un-arbitrated (the pin fails if a chart ever appears in the breakdown card).
 
 ---
 

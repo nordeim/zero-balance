@@ -3892,3 +3892,87 @@ candidate).
    chrome does not. Keep pinning the LEAF (the exact text + zero
    element children), and expect the wrapper delta to reappear in any
    census that forgets the finder discipline.
+
+## v78 — the mobile 390 twins' second re-run + the breakdown card's
+## mobile svg + chart-absence + width pin (session-186)
+
+The session-185 v78 cycle: the re-run cadence rotating to the
+next-oldest candidate — the mobile 390 twins (the networth + dashboard
+full-page pair, last re-shot v69) — plus the axe watch at its re-check
+point (NO DRIFT — only a 5.x wrapper changes the calculus, the
+engine-contract pin guarding the toolchain), the 72nd standing checks,
+and the ledger-verified queue (the v77 plan's v78 suggestion agreeing
+with the rotation ledger this time: v69 < v70 items < v74-v77, the
+oldest remaining by LAST RE-SHOT DATE — the v77 target-selection lesson
+applied: the queue suggestion verified against the ledger before
+commitment, no correction needed).
+
+**The probes:**
+- `vlm-shots-v78.sh` — the reference side: BOTH mobile 390x844
+  full-page twins (the login-retry loop; the parked pointer at (5,5);
+  read-only — the v46 rule).
+- `clone-vlmshots-v78.sh` — the clone side, the same shots inside
+  with-server.sh (the :3200 standalone parity server).
+- `vlm-compare-v78.mjs` — the VLM pairwise (the v69 prompt lineage —
+  the networth + dashboard mobile focus).
+- `arbit-v78.sh` — the both-sides DOM census (the v75 convention: the
+  census runs regardless of the verdict; the v69 census axes
+  re-measured): the networth summary-card family (the card/stat
+  grid/tiles/medallion/trend icon) + the dashboard subtitle wrap (the
+  Range-walk line bucketing) + the breakdown/spending cards' chart
+  census (the recharts-wrapper/pie-sector counts).
+- `ref-standing-v72.sh` / `standing-checks-v72.sh` — the 72nd standing
+  checks (version-bumped from v71).
+- The v78 pin (tests/e2e/dashboard.spec.ts): the Net Zero Breakdown
+  card's mobile svg family + chart-absence + width census at 390 — the
+  never-pinned axes (the card w 358 [the v44 F2a pin covers the heights
+  only], the svg family svgCount 7 with the full size census
+  [16,14,16,14,16,14,16], the chart-absence contract rechartsWrappers 0
+  + pieSectors 0 [the v69 donut-invention lesson's regression guard],
+  the children's width family H3 308x20 + DIV 308x238). GREEN on first
+  run. The pin-sanity mutation (the collapsed section chevron's
+  h-3.5 w-3.5 -> h-4 w-4 at dashboard-view.tsx:339) verified to FAIL at
+  exactly the three chevron axes (14 -> 16, the section row h 48
+  governed by the 32px chip), then restored (the standalone REBUILD as
+  a SEPARATE command; git diff src/ = 0 lines).
+
+**The v78 findings:**
+
+1. BOTH mobile twins' VLM verdicts DIFFERENT with every flag a
+   documented class — the networth pair: the stat tiles side-by-side
+   (ref) vs stacked (clone) the v41 mobile-superset class; the asset
+   groups the seed-data class; the "Edit with Base44" overlay the
+   platform chrome; the avatar the user-identity class (matching the
+   v69 re-run's own flag set exactly). The dashboard pair: the subtitle
+   wrap point the v62 width-delta class; the progress-bar length the
+   pct data class; the black tooltip the Base44 platform chrome; the
+   donut proportions the seed-data class.
+2. The both-sides census — the chrome BYTE-IDENTICAL on every axis
+   with zero drift since the v69/v63 censuses: the networth medallion
+   64x64 + trend icon 32x32 + tiles h 84 + grid gap 16px (the deltas
+   all the v41 mobile-superset class: the reference's card 432/docSW
+   464/fixed 2-col tiles 176x84/medallion clipping at right 416 vs the
+   clone's card 358/docSW 390/1-col tiles 294x84/medallion fitting at
+   right 342); the dashboard subtitle chrome (fs 16/fw 400/
+   rgb(107,114,128)/lh 24px, the P h 48, the block h 92, 2 lines) +
+   the breakdown card's h 324 + svgCount 7 + the first-four svgs
+   [16x16, 14x14, 16x16, 14x14] + rechartsWrappers 0 + pieSectors 0 on
+   BOTH sides (no donut in the breakdown card anywhere — the v69
+   disproof class); the 5px width family delta (card 363 vs 358, H3
+   313 vs 308, DIV 313x238 vs 308x238) the reference's own docSW-395
+   overflow class (the heights byte-identical).
+3. The screenshots 16/16 byte-identical — the ninth consecutive
+   fully-identical set (the same-day regeneration, no calendar
+   rollover).
+
+**The v78 lessons:**
+1. THE LEDGER-VERIFIED QUEUE: when the queue suggestion and the
+   rotation ledger agree, say so explicitly in the plan (the v77
+   target-selection lesson's positive case — the verification step ran
+   the same way, the outcome was agreement; the discipline is the
+   check, not the correction).
+2. The v69 chart-presence lesson now has its regression guard: the
+   breakdown card's rechartsWrappers/pieSectors counts are PINNED at
+   390 — the VLM's invented-donut class can no longer resurface
+   un-arbitrated in a future re-run (the pin fails if a chart ever
+   appears in the breakdown card).

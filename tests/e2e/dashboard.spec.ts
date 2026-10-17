@@ -3217,3 +3217,97 @@ test.describe("Budget Guidelines interior-text + quick-action icon viewBox censu
     expect(census!.qaIcons).toEqual(["0 0 24 24", "0 0 24 24", "0 0 24 24"]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v78 — plan F4: the Net Zero Breakdown card's mobile SVG family +
+// chart-absence + width census at 390 (the mobile-twins re-run pair's
+// pin). The v44 F2a pin covers the card's HEIGHTS at 390 (324 collapsed /
+// 441 / 495 expanded + the section/indent/cat geometry); the v76 pin the
+// section icon chip at 1280; the v62 pin the subtitle block; the v49/v50/
+// v51 families the donut legend / hero / stats / guidelines / quick
+// actions. The NEVER-pinned axes here (the arbit-v78.sh census's own
+// measurements, byte-identical on BOTH sides at 390x844): the card's
+// WIDTH 358 (the 390 − 2×16 page-padding arithmetic), the SVG FAMILY —
+// svgCount 7 with the full size census [16,14,16,14,16,14,16] (the three
+// section icons h-4 w-4 + the three collapsed chevrons h-3.5 w-3.5 + the
+// net-balance icon h-4 w-4) — the CHART-ABSENCE contract
+// (rechartsWrappers 0 + pieSectors 0: no donut exists in the breakdown
+// card on EITHER side — the v69 donut-invention lesson's regression
+// guard; the VLM claimed a "faint circle behind the text" that the DOM
+// disproved), and the children's width family (the H3 308×20 + the
+// content DIV 308×238 — the 358 − 2×1 border − 2×24 p-6 arithmetic).
+// The card finder is the arbitration's own: the 'Net Zero Breakdown'
+// leaf heading → the 6-parent radius/white walk.
+// ---------------------------------------------------------------------------
+test.describe("breakdown card mobile svg + chart-absence + width census at 390 (v78 — plan F4)", () => {
+  test("the card's mobile box + the svg size family + the no-donut contract + the children widths", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("Net Zero Breakdown")).toBeVisible();
+    // Let the collapsed drill-down settle (the expansion state is the
+    // default collapsed surface the arbitration measured).
+    await expect(page.getByText("+$2065.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The arbitration's own card finder: the heading leaf, then the
+      // 6-parent radius/white walk (arbit-v78.sh's DASH_CENSUS).
+      const bd = [...document.querySelectorAll("h1, h2, h3, h4")].find(
+        (e) => (e.textContent || "").trim() === "Net Zero Breakdown",
+      );
+      if (!bd) return null;
+      let card: HTMLElement | null = bd as HTMLElement;
+      for (let i = 0; i < 6; i++) {
+        card = card!.parentElement as HTMLElement | null;
+        if (!card) break;
+        const s = getComputedStyle(card);
+        if ((s.borderRadius && s.borderRadius !== "0px") || s.backgroundColor === "rgb(255, 255, 255)") break;
+      }
+      if (!card) return null;
+      const cr = card.getBoundingClientRect();
+      const svgs = [...card.querySelectorAll("svg")].map((s) => {
+        const r = s.getBoundingClientRect();
+        return { w: Math.round(r.width), h: Math.round(r.height) };
+      });
+      return {
+        docSW: document.documentElement.scrollWidth,
+        card: { w: Math.round(cr.width), h: Math.round(cr.height) },
+        svgCount: svgs.length,
+        svgs: svgs.map((s) => [s.w, s.h] as [number, number]),
+        rechartsWrappers: card.querySelectorAll(".recharts-wrapper").length,
+        pieSectors: card.querySelectorAll(".recharts-pie-sector").length,
+        children: [...card.children].map((c) => {
+          const r = c.getBoundingClientRect();
+          return { tag: c.tagName, w: Math.round(r.width), h: Math.round(r.height) };
+        }),
+      };
+    });
+    expect(census, "the breakdown card finder (the heading leaf → the radius/white walk)").not.toBeNull();
+    if (!census) throw new Error("breakdown census found no card");
+
+    // The card's mobile box — the arbitration's own measured values
+    // (the w never pinned at 390; the h re-asserts the v44 contract).
+    expect(census.docSW).toBe(390);
+    expect(census.card).toEqual({ w: 358, h: 324 });
+
+    // The SVG FAMILY — svgCount 7 with the full size census: the three
+    // section icons (16×16) + the three collapsed chevrons (14×14) + the
+    // net-balance icon (16×16), in DOM order.
+    expect(census.svgCount).toBe(7);
+    expect(census.svgs).toEqual([
+      [16, 16], [14, 14], [16, 16], [14, 14], [16, 16], [14, 14], [16, 16],
+    ]);
+
+    // The CHART-ABSENCE contract — no recharts wrapper, no pie sector
+    // inside the breakdown card on EITHER side (the v69 lesson's guard:
+    // a chart-presence claim needs this census, never a screenshot read).
+    expect(census.rechartsWrappers).toBe(0);
+    expect(census.pieSectors).toBe(0);
+
+    // The children's width family — the H3 (308×20) + the content DIV
+    // (308×238): the 358 − 2×1 border − 2×24 p-6 arithmetic.
+    expect(census.children).toEqual([
+      { tag: "H3", w: 308, h: 20 },
+      { tag: "DIV", w: 308, h: 238 },
+    ]);
+  });
+});
