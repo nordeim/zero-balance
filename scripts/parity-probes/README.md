@@ -4891,3 +4891,129 @@ next re-check point (only a 5.x wrapper changes the calculus), (3) the
 deferred reference-write censuses (unchanged) + the login card's pad
 family + logo radius pin (the pair-arbit-v87.sh values recorded in the
 v87 plan's F4 — the pair's fifth re-run).
+
+## v88 — the networth + drill-down pair's fourth re-run (the fresh-clone workspace)
+
+The v88 iteration (docs/remediation-plan-v88.md): the re-run cycle's
+next-oldest candidate — the ledger-verified queue (the v87 plan's v88
+suggestion AGREEING with the rotation ledger: the v82-era networth +
+drill-down pair [the networth view + the dashboard drill-down EXPANDED
+at desktop 1280], last re-shot v82, the oldest remaining by LAST
+RE-SHOT DATE [v82 < v83 < v84 < v85 < v86 < v87]; the pair's FOURTH
+re-run [v60 -> v67 -> v76 -> v82 -> v88] — the ELEVENTH consecutive
+queue/ledger agreement), plus the axe watch at its re-check point (NO
+DRIFT — 4.14.0, no 5.x, the v68 dedupe holds) and the 82nd standing
+checks (ref-standing-v82.sh + standing-checks-v82.sh, version-bumped
+from v81 across the three token families — version-bump-only diffs
+verified).
+
+The workspace REBUILT (the fresh-clone path, the v86 precedent): the
+workspace had been reset — git clone at main @ 154ac6a, the tree clean;
+npm ci (354 packages, the four approved install scripts); .env written
+(DATABASE_URL=file:../db/custom.db, db/ at the repo root, db:generate +
+db:push + db:seed); chromium-1243 installed; the paramiko ssh shim
+deployed outside the repo; the seedcheck exact before any flow.
+
+The probe series (the v82 lineage, sed-derived with the version +
+session-name + tmp-dir substitutions — the /tmp/vlm82 -> /tmp/vlm88
+bare-number family caught by the grep verification, the v84 lesson's
+second face; the headers history-corrected to the fourth re-run):
+- vlm-shots-v88.sh — the REFERENCE side (login on the first attempt;
+  the drill-down expanded via the Total Income section + first category
+  clicks; the parked pointer at (5,5); read-only — the v46 rule).
+- clone-vlmshots-v88.sh — the CLONE side (the with-server :3200 parity
+  server; the same expansion clicks; no fixture writes).
+- vlm-compare-v88.mjs — the VLM pairwise (the networth twin IDENTICAL
+  with the only style flag the Base44 overlay; the drill-down twin
+  DIFFERENT with seven flags, every one DOM-arbitrated to a documented
+  class).
+- arbit-v88.sh — the both-sides census (the v82 axes re-measured:
+  PART A the drill-down census [nav highlight, avatar, progress fill,
+  donut labels, stat trend icons], PART B the networth summary-card
+  family; the census runs regardless of the verdict — the v75
+  convention).
+- stat-divider-arbit-v88.sh — the dedicated one-shot both-sides census
+  for the VLM's NEW flag ("the stat-card footer divider lines missing
+  in the reference") — the v87 close-arbit precedent applied to a
+  divider-visibility claim.
+
+The findings:
+1. The NETWORTH pair: IDENTICAL — the only layout/style flag the
+   reference's "Edit with Base44" overlay (the platform-chrome class);
+   every other delta the seed classes. The PART B census REPRODUCES the
+   v82 census values EXACTLY — zero drift on every axis (the card/
+   headRow/label/figure/medallion/statGrid/statTile/ratioFooter
+   families byte-identical; the labelBlock width 304-vs-357 the
+   standing DATA-CONDITIONAL width class; the heights byte-identical).
+2. The DRILL-DOWN pair: DIFFERENT with seven flags, every one
+   DOM-arbitrated to a documented class — the nav highlight the v56
+   SUPERSET class; the avatar the user-identity class; the progress
+   fill the pct x 568 DATA class (fillW 173-vs-357 on the
+   byte-identical 568x12 track — the v60 arbitration's own values
+   REPRODUCED EXACTLY, five re-runs later, the v82
+   census-arithmetic-reproduction lesson's standing case); the donut
+   percentage-labels claim the v60 PERCEPTION class re-arbitrated live
+   (the reference DOES render its labels — count 4, 16px, black, 3
+   sectors, 0 lines, the chrome byte-identical, the texts each site's
+   own data); the expanded-content/counts/proportions the seed-data
+   classes; the Base44 overlay the platform-chrome class.
+3. **THE CYCLE'S NEW FLAG — the "stat-card footer divider lines present
+   in the clone but missing in the reference" a VLM MISREAD**, disproven
+   by the dedicated one-shot both-sides census (stat-divider-arbit-v88.sh):
+   the divider renders BYTE-IDENTICALLY on BOTH sides — the count row
+   {h 20 / w 254 / flex / gap 8px / center / 14px / rgb(10,10,10)} with
+   the rowChildTags [SPAN, DIV, svg]; the divider {DIV, h 1, bg
+   rgb(229,231,227), flexGrow 1} on every card; the trend icons 16x16
+   with the per-type colors (lime/blue/orange). The only delta the
+   itemsText ("1 item" vs "2 items") — the seed-data class. The VLM
+   read the faint 1px rgb(229,231,227) line's VISIBILITY difference as
+   presence/absence — the divider twin of the v84 divider-misread
+   lesson.
+4. NO NEW CLONE GAP — the iteration is PIN-ONLY: the stat-card
+   COUNT-ROW + DIVIDER census at 1280 (the never-pinned families: the
+   count row's full chrome + the h-px flex-1 divider [never pinned at
+   ANY viewport] + the trend icon's per-type color trilogy — the
+   stat-card twin of the v80/v85 per-type-dot trilogy; the divider's
+   WIDTH excluded as the flex-1 data-conditional remainder, the v82
+   convention). The pin-sanity mutation: the divider's h-px ->
+   h-px lg:h-0.5 (dashboard-view.tsx:618) FAILS at exactly the
+   divider.height axis ("1px" -> "2px") — cascade-free BY CONSTRUCTION
+   (the flex items-center row's height stays the text's 20px line box;
+   the card height 210 unchanged — the v40 F1 bands green; 39 green
+   under the mutation, only the v88 pin red; restored 40/40 green).
+5. The screenshots 16/16 BYTE-IDENTICAL — the same-day-seed
+   byte-identity law (the fresh seed planted and the shots taken on
+   the same calendar day reproduce the committed set byte-for-byte).
+
+**The v88 lessons:**
+1. THE DIVIDER-VISIBILITY MISREAD: a VLM claim that a FAINT element
+   (a 1px line in a near-background color) is "missing" on one side is
+   cheapest to disprove with a dedicated both-sides census of that
+   element's computed chrome — the v84 divider-misread twin, now with
+   the trend-icon per-type trilogy as the bonus census axes. The
+   visibility-of-faint-chrome is NOT a parity axis; the computed style
+   is.
+2. THE FINDER/ASSERTION DECOUPLING: the census finder must NEVER
+   filter on the axis it is about to assert — the first v88 pin draft
+   found the divider by its <=1px height (the very axis the pin
+   asserts), so the pin-sanity mutation (h 2px) made the finder return
+   null and the failure diff read as "null vs object" instead of the
+   clean "1px vs 2px". The structural finder (the middle child that is
+   neither the text span nor the svg) keeps the element findable under
+   the mutation and the failure diff reads as the axis alone — the v87
+   name-independent-finder lesson's finder-twin.
+3. THE SED TMP-DIR TOKEN FAMILY: the sed derivation needs the
+   BARE-NUMBER tmp-dir family TOO (/tmp/vlm82 -> /tmp/vlm88 — "vlm82"
+   contains no "v82" substring) — the v84 lesson's second face,
+   grep-caught before any probe ran against the stale directory.
+
+The v89 queue (suggestions — verify against the rotation ledger
+before executing): (1) the re-run cadence rotates to the next-oldest
+candidate after this pair (the v83-era DASHBOARD pair [the dashboard
+FULL-PAGE at desktop 1280 — the below-the-fold Budget Guidelines card
++ the quick-action row], last re-shot v83 — now the oldest remaining
+[v83 < v84 < v85 < v86 < v87 < v88]; the pair's FOURTH re-run [v61 ->
+v68 -> v77 -> v83 -> v89]), (2) the axe-core watch at its next
+re-check point (only a 5.x wrapper changes the calculus), (3) the
+deferred reference-write censuses (unchanged — out of bounds under the
+v46 read-only rule).

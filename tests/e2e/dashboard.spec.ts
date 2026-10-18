@@ -3384,3 +3384,154 @@ test.describe("the dashboard cross-row vertical-rhythm census at 1280 (v83 — p
     expect(census.gridMt).toBe("32px");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v88 — plan F4 (docs/remediation-plan-v88.md): the stat cards' COUNT-ROW
+// + DIVIDER census at 1280.
+//
+// The v88 arbitration (arbit-v88.sh + stat-divider-arbit-v88.sh, the
+// v82-era pair's fourth re-run) measured a never-pinned family: the stat
+// card count row's full chrome + the h-px flex-1 DIVIDER between the
+// "N items" text and the trend icon + the trend icon's per-type color.
+// The v51 F2 pin holds the stats row at 390 only (the countRow fs/gap/
+// color — never the divider, never the row's display/alignItems/height,
+// never the trend icon's color); the v40 F1 pin holds the 1280 geometry
+// bands + the role/tabindex census — never the count-row chrome;
+// grep-verified: NO spec asserts the stat-card divider's height/bg/
+// flexGrow at ANY viewport. The v88 cycle's own context: the VLM flagged
+// the divider as "missing in the reference" — the stat-divider-arbit-v88.sh
+// both-sides census disproved the claim (the divider renders
+// BYTE-IDENTICALLY on both sides: {DIV, h 1px, bg rgb(229,231,227),
+// flexGrow 1} on every card — a VLM MISREAD of the faint 1px line's
+// visibility). The divider's WIDTH is EXCLUDED (the flex-1
+// data-conditional remainder — the v82 labelBlock-width convention).
+//
+// Every pinned axis STATIC chrome (the row's classes and the divider's
+// height/flex/background unconditional; the trend colors per-card
+// constants); the pin rides the plain authenticated dashboard view on
+// the e2e seed — read-only, no fixture writes.
+// ---------------------------------------------------------------------------
+interface StatRowCensus {
+  title?: string;
+  itemsText?: string;
+  err?: string;
+  row?: { h: number; display: string; gap: string; alignItems: string; fs: string; color: string };
+  divider?: { tag: string; h: string; bg: string; flexGrow: string } | null;
+  trend?: { w: number; h: number; color: string } | null;
+}
+interface StatCardsCensus {
+  cards: number;
+  rows: StatRowCensus[];
+  docSW: number;
+}
+test.describe("stat-card count-row + divider census at 1280 (v88 — plan F4)", () => {
+  test("the count row's chrome + the h-px divider + the trend icon's per-type colors — the never-pinned family", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+    await expect(page.getByText("Net Zero Breakdown")).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate((): StatCardsCensus => {
+      // The three stat cards: rounded-2xl cards with a "Total X" h3 +
+      // svgs (the geometry + text-content finder — the v87
+      // name-independent-finder lesson; never class or name selectors).
+      const cards = [...document.querySelectorAll("div")].filter((d) => {
+        if (!d.className || typeof d.className !== "string") return false;
+        if (!d.className.includes("rounded-2xl")) return false;
+        const h3s = [...d.querySelectorAll("h3")];
+        const hasTitle = h3s.some((h) =>
+          /^(Total Income|Total Savings|Total Expenses)/i.test((h.textContent || "").trim()),
+        );
+        const r = d.getBoundingClientRect();
+        return hasTitle && r.width > 200 && r.width < 500 && r.height > 150 && d.querySelectorAll("svg").length > 0;
+      });
+      if (cards.length < 3)
+        return { cards: cards.length, rows: [], docSW: document.documentElement.scrollWidth };
+      return {
+        cards: cards.length,
+        rows: cards.slice(0, 3).map((card) => {
+          const title = ([...card.querySelectorAll("h3")].find((h) => /^Total /i.test((h.textContent || "").trim())) || {}).textContent;
+          // The count row: the flex row containing the "N items" text leaf.
+          const itemsText = [...card.querySelectorAll("span, p")].find(
+            (e) => /^\d+ items?$/.test((e.textContent || "").trim()) && e.children.length === 0,
+          );
+          if (!itemsText) return { title, err: "no items text" };
+          const row = (itemsText.closest("div.flex") || itemsText.parentElement) as HTMLElement;
+          const rr = row.getBoundingClientRect();
+          const rcs = getComputedStyle(row);
+          // The divider: the structural middle child — not the items-text
+          // span, not the trend svg (the finder never filters on the
+          // height axis it is about to assert — the v87 lesson).
+          const kids = [...row.children] as HTMLElement[];
+          const divider = kids.find((k) => k !== itemsText && k.tagName !== "svg") || null;
+          const trendSvg = row.querySelector("svg");
+          const dcs = divider ? getComputedStyle(divider) : null;
+          return {
+            title,
+            itemsText: (itemsText.textContent || "").trim(),
+            row: {
+              h: Math.round(rr.height),
+              display: rcs.display,
+              gap: rcs.gap,
+              alignItems: rcs.alignItems,
+              fs: rcs.fontSize,
+              color: rcs.color,
+            },
+            divider: divider
+              ? {
+                  tag: divider.tagName,
+                  h: dcs!.height,
+                  bg: dcs!.backgroundColor,
+                  flexGrow: dcs!.flexGrow,
+                }
+              : null,
+            trend: trendSvg
+              ? {
+                  w: Math.round(trendSvg.getBoundingClientRect().width),
+                  h: Math.round(trendSvg.getBoundingClientRect().height),
+                  color: getComputedStyle(trendSvg).color,
+                }
+              : null,
+          };
+        }),
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    expect(census.cards).toBe(3);
+
+    // The three count rows' chrome — byte-identical on both sides (the
+    // stat-divider-arbit-v88.sh census): the 20px text line box, the
+    // flex/8px/center rhythm, text-sm 14px, the inherited #0a0a0a.
+    for (const row of census.rows) {
+      expect(row.err).toBeUndefined();
+      expect(row.row).toEqual({
+        h: 20,
+        display: "flex",
+        gap: "8px",
+        alignItems: "center",
+        fs: "14px",
+        color: "rgb(10, 10, 10)",
+      });
+      // The divider — the never-pinned family: the 1px flex-1 line in
+      // the border token color (the WIDTH excluded — the flex-1
+      // data-conditional remainder, the v82 convention).
+      expect(row.divider).toEqual({
+        tag: "DIV",
+        h: "1px",
+        bg: "rgb(229, 231, 227)",
+        flexGrow: "1",
+      });
+    }
+
+    // The trend icons: 16×16 with the per-type color trilogy (the
+    // income lime / savings blue / expenses orange — the v80/v85
+    // per-type-dot trilogy's stat-card twin, never pinned before).
+    expect(census.rows[0]!.trend).toEqual({ w: 16, h: 16, color: "rgb(143, 188, 63)" });
+    expect(census.rows[1]!.trend).toEqual({ w: 16, h: 16, color: "rgb(59, 126, 161)" });
+    expect(census.rows[2]!.trend).toEqual({ w: 16, h: 16, color: "rgb(224, 122, 59)" });
+
+    // The no-overflow guard on the same surface.
+    expect(census.docSW).toBe(1280);
+  });
+});
