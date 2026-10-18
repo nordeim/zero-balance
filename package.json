@@ -61,5 +61,11 @@
   },
   "trustedDependencies": [
     "unrs-resolver"
-  ]
+  ],
+  "allowScripts": {
+    "@prisma/client@6.11.1": true,
+    "@prisma/engines@6.11.1": true,
+    "prisma@6.11.1": true,
+    "unrs-resolver@1.12.2": true
+  }
 }

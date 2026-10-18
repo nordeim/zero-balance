@@ -4685,3 +4685,94 @@ src/ = 0 lines; 38/38 green after).
    v79 census values EXACTLY on every axis — the fifth consecutive
    zero-drift re-run after v81/v82/v83/v84's own zero-drift results;
    the rotation cadence's value compounds with each verified cycle.
+
+## v86 — the v80-era savings pair's fourth re-run (the RESET workspace — the fresh-clone path)
+
+The v86 cycle (`docs/remediation-plan-v86.md`; the formal narrative
+`docs/session_206.md`): the ledger-verified queue (the v85 plan's
+suggestion agreeing with the rotation ledger — the NINTH consecutive
+agreement) pointed at the v80-era SAVINGS pair (the savings view at
+desktop 1280, last re-shot v80 — the oldest remaining [v80 < v81 < v82
+< v83 < v84 < v85]); the pair's FOURTH re-run [v58 → v65 → v74 → v80 →
+v86]. The workspace RESET (the fresh-clone path, exercised once before
+in v80): git clone at main @ 0d20198, npm ci + the four approved
+install scripts, .env written, db/ pushed + seeded, chromium-1243
+installed — the baseline chain FULLY GREEN as-shipped (290 e2e chunk
+executions = 288 unique = the documented v85 state). The probes this
+cycle: the v86 series derived from the v80 series via sed (vlm-shots +
+clone-vlmshots + vlm-compare + arbit — the version + session-name +
+tmp-dir substitutions, the headers history-corrected to the fourth
+re-run), ref-standing-v80.sh + standing-checks-v80.sh (the 80th
+standing checks — version-bumped from v79 with the bare-number
+session-name token family TOO), wrapper-arbit-v86.sh (the pin's own
+one-shot both-sides census), and pixel-diff-v86.mjs + crop-diff-v86.mjs
++ vlm-arbit-crop-v86.mjs (the screenshot DATE-class arbitration).
+
+**The verdict: IDENTICAL — the pair's FIRST non-DIFFERENT verdict in
+its five-shot history** (v58 → v65 → v74 → v80 → v86): the VLM's own
+flag list confined to the expected data/identity classes (the subtitle
+counts, the card figures/names/badges, the avatar letter), zero
+layout/style flags to arbitrate. The census STILL RUN per the v75
+convention (arbit-v86.sh) — and it reproduced the v80 census values
+EXACTLY, zero drift on every axis (the header, the grid 960/16px/~309
+template, the card box with the v70b wrap class [ref 200 vs clone 230],
+the titleRow with the savings blue dot, the amount leaf, the footer +
+badge chrome with the v58 DATA-CONDITIONAL + v57 wrap classes, the
+docSW 1280). NO NEW GAP — the v86 iteration PIN-ONLY.
+
+The v86 pin (tests/e2e/items.spec.ts, +1 e2e = 289): the savings
+goal-card's SUBTITLE-P + HEADER-ROW + WRAPPER-THIRD-LEG census at 1280
+— the never-pinned families measured byte-identical on both sides by
+wrapper-arbit-v86.sh first (the v84/v85 one-shot precedent): the
+subtitle P's full chrome {h 20 / fs 14px / lh 20px / rgb(107,114,128)
+/ mt 0 — the 1280 state of the v51 F3 390-only family, the reference's
+"Home Savings" vs the clone's "Index Funds" the data class}, the
+with-subtitle arithmetic (the titleRow's mb 4px + the headerRow
+{flex/space-between/flex-start/h 48/mb 12px} — the 48 = 24 + 4 + 20
+twin of the 390 Rent-card family, never pinned at 1280), and the
+wrapper's savings paddingRight-0 THIRD LEG (completing the v85
+pr-conditional trilogy: expenses 96px / income 0 / savings 0 — the pr
+scoped to expenses only, now verified on all three types). GREEN on
+first run.
+
+**The v86 lessons:**
+1. THE TAILWIND V4 RATIO-LINE-HEIGHT TRAP: `text-sm` computes
+   `line-height: var(--tw-leading, var(--text-sm--line-height))` where
+   `--text-sm--line-height` is stored as the UNITLESS RATIO
+   calc(1.25 / 0.875) ≈ 1.42857 — so ANY font-size override (even a
+   pure `lg:[font-size:15px]` arbitrary property that touches nothing
+   else) proportionally scales the line-height (20px → 21.43px) and the
+   element's box (20 → 21), cascading into every height-governed pin
+   (the v80 savings heights measured 254 under the candidate). A
+   font-size axis CANNOT be isolated via Tailwind classes — when the
+   pin family is typography, mutate a GEOMETRY axis (alignItems /
+   justify) or a type-conditional class instead, and verify the
+   cascade-freedom EMPIRICALLY (the full spec file under the mutation)
+   before believing the construction argument.
+2. THE NARROWED-CONTENT WRAP CASCADE: a padding-widening mutation (the
+   v85 type-scoped pattern's conditional extension: expense-only pr-24
+   → non-income pr-24) narrows the wrapper's content box (269px →
+   137px) — and a text that fits at the OLD width can WRAP at the new
+   one (the Emergency Fund h4, ~125px at 16px/600, wrapped +24), after
+   which the 1-row grid STRETCHES both cards to the taller natural
+   (254) and every card-height pin cascades. The pr-narrowing family is
+   only safe when EVERY text on the surface stays single-line at the
+   narrowed width — check the LONGEST text, not the first card's.
+3. THE IDENTICAL-VERDICT CENSUS: a VLM IDENTICAL verdict does NOT
+   retire the both-sides census (the v75 convention holds regardless of
+   the verdict) — the census remains the authority (this cycle's census
+   reproduced the v80 values exactly, the pair's first IDENTICAL
+   verdict riding the same zero-drift evidence). The verdict is a
+   signal; the census is the record.
+4. THE THIRD TOKEN FAMILY: the standing-checks version bump needs the
+   bare-number session-name tokens too (ref79 → ref80 / clone79 →
+   clone80 — "79" never matches "v79" as a substring); the v84
+   substitution-gap lesson now has three token families to check: the
+   version (v79), the ordinal (79th), and the bare session numbers.
+5. THE BENIGN-NOISE SCREENSHOT CLASS: a screenshot diff that is
+   ±1-channel gradient rounding in a solid-color band (no text, no
+   layout, both crops VLM-read identical — the 08-calculator band this
+   cycle: 1077 px over 55×74, every differing pixel exactly one R-unit)
+   is RASTERIZATION-NOISE, not a regression: pixel-locate it, dump the
+   actual channel deltas, and classify it as its own benign class next
+   to DATE-TEXT-ONLY — the regenerated set still ships.

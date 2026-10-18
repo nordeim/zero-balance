@@ -3278,3 +3278,123 @@ test.describe("expense-card content-wrapper + orange-dot titleRow census at 1280
     expect(income!.docSW).toBe(1280);
   });
 });
+
+// v86 F4 (docs/remediation-plan-v86.md): the v80-era savings pair's FOURTH
+// re-run (v58 → v65 → v74 → v80 → v86) found NO NEW GAP — the VLM verdict
+// IDENTICAL for the first time in the pair's five-shot history (every
+// called-out delta the expected data/identity classes, zero layout/style
+// flags), and the both-sides census reproducing the v80 values exactly
+// (zero drift). This pin locks the re-run's never-pinned axes at 1280:
+// the savings goal-card's SUBTITLE P full chrome (the 1280 state of the
+// v51 F3 390-only family — the fs/color held at 390, the lh + the box +
+// the mt NEVER, and no 1280 subtitle pin anywhere on any view), the
+// with-subtitle ARITHMETIC (the titleRow's mb-1 4px + the header row's own
+// geometry — the 48 = 24 + 4 + 20 twin of the 390 Rent-card family, never
+// pinned at 1280), and the WRAPPER's savings paddingRight-0 THIRD LEG
+// (completing the v85 conditional trilogy: expenses pr-24 / income 0 /
+// savings 0 — the pr scoped to expenses only, now verified on all three
+// types). The pin's expected values are the wrapper-arbit-v86.sh census's
+// own measured values, byte-identical on both sides' savings views at
+// 1280x800 (the reference's Emergency Fund "Home Savings" vs the clone's
+// Investments "Index Funds" — the TEXT the data class, the CHROME the
+// pin).
+test.describe("savings goal-card subtitle + header-row + wrapper third-leg census at 1280 (v86 — plan F4)", () => {
+  test("the subtitle P's full chrome + the with-subtitle arithmetic + the savings pr-0 control (v86 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/savings");
+    await expect(page.getByText("Investments").first()).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      const h4 = card.querySelector("h4");
+      if (!h4 || !h4.parentElement || !h4.parentElement.parentElement) return null;
+      // titleRow = the h4's parent (the dot + title line); the WRAPPER =
+      // the titleRow's parent (the flex-1 column — NO pr on savings, the
+      // conditional's third leg — the wrapper-arbit-v86.sh walk).
+      const row = h4.parentElement as HTMLElement;
+      const wrapper = row.parentElement as HTMLElement;
+      // The SUBTITLE P: the wrapper's P child (the v71 F4 conditional —
+      // rendered only for a non-empty subcategory; the seeded
+      // Investments card carries "Index Funds").
+      const subP = [...wrapper.children].find((ch) => ch.tagName === "P") as
+        | HTMLElement
+        | undefined;
+      const headerRow = wrapper.parentElement as HTMLElement;
+      const rcs = getComputedStyle(row);
+      const wcs = getComputedStyle(wrapper);
+      const hrs = getComputedStyle(headerRow);
+      const pcs = subP ? getComputedStyle(subP) : null;
+      return {
+        wrapper: {
+          display: wcs.display,
+          flexGrow: wcs.flexGrow,
+          paddingRight: wcs.paddingRight,
+        },
+        subtitle: subP
+          ? {
+              h: Math.round(subP.getBoundingClientRect().height),
+              fs: pcs!.fontSize,
+              lh: pcs!.lineHeight,
+              color: pcs!.color,
+              mt: pcs!.marginTop,
+            }
+          : null,
+        titleRowMb: rcs.marginBottom,
+        headerRow: {
+          display: hrs.display,
+          justify: hrs.justifyContent,
+          alignItems: hrs.alignItems,
+          h: Math.round(headerRow.getBoundingClientRect().height),
+          mb: hrs.marginBottom,
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The WRAPPER's savings third leg — the pr conditional's last
+    // uncovered type: the plain flex-1 block column, paddingRight 0
+    // (with the v85 pin's expenses 96px + income 0px legs, the
+    // conditional is now pinned on ALL THREE types; a pr leaking to
+    // savings flips this axis).
+    expect(census!.wrapper).toEqual({
+      display: "block",
+      flexGrow: "1",
+      paddingRight: "0px",
+    });
+
+    // The SUBTITLE P's full chrome at 1280 — the 1280 state of the v51
+    // F3 390-only family: text-sm's 14px/20px pair, the gray
+    // rgb(107,114,128), the lh-governed 20px box, no top margin (the
+    // spacing comes from the titleRow's mb-1). A broken text-sm, a
+    // changed gray, or a stray margin flips these axes.
+    expect(census!.subtitle).toEqual({
+      h: 20,
+      fs: "14px",
+      lh: "20px",
+      color: "rgb(107, 114, 128)",
+      mt: "0px",
+    });
+
+    // The with-subtitle ARITHMETIC at 1280 — the header row's own
+    // geometry, never pinned at any viewport: flex/space-between/
+    // items-start with h 48 (24 titleRow + 4 mb-1 + 20 P) and the
+    // mb-3 12px rhythm below. The titleRow's own mb is the 4px
+    // (mb-1) — the dot+title row to subtitle spacing.
+    expect(census!.titleRowMb).toBe("4px");
+    expect(census!.headerRow).toEqual({
+      display: "flex",
+      justify: "space-between",
+      alignItems: "flex-start",
+      h: 48,
+      mb: "12px",
+    });
+
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});
