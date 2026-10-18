@@ -4776,3 +4776,118 @@ first run.
    is RASTERIZATION-NOISE, not a regression: pixel-locate it, dump the
    actual channel deltas, and classify it as its own benign class next
    to DATE-TEXT-ONLY — the regenerated set still ships.
+
+## v87 — the login + calculator pair's fourth re-run (the preserved workspace)
+
+The v87 iteration (docs/remediation-plan-v87.md): the re-run cycle's
+next-oldest candidate — the ledger-verified queue (the v86 plan's v87
+suggestion AGREEING with the rotation ledger: the v81-era login +
+calculator pair [the login view + the calculator dialog at desktop
+1280], last re-shot v81, the oldest remaining by LAST RE-SHOT DATE
+[v81 < v82 < v83 < v84 < v85 < v86]; the pair's FOURTH re-run [v59 ->
+v66 -> v75 -> v81 -> v87] — the TENTH consecutive queue/ledger
+agreement), plus the axe watch at its re-check point (NO DRIFT — 4.14.0,
+no 5.x, the v68 dedupe holds) and the 81st standing checks
+(ref-standing-v81.sh + standing-checks-v81.sh, version-bumped from v80
+across the three token families — version-bump-only diffs verified).
+
+The probe series (the v81 lineage, sed-derived with the version +
+session-name/tmp-dir substitutions, the headers history-corrected to
+the fourth re-run):
+- login-shots-v87.sh + vlm-shots-v87.sh — the REFERENCE side (login on
+  the first attempt; the calculator via the Rent-card hover + Calculate
+  click; the parked pointer at (5,5); read-only).
+- clone-login-shots-v87.sh + clone-vlmshots-v87.sh — the CLONE side
+  (the with-server :3200 parity server; the calculator twin adds the
+  matching "Contents Insurance" $25 monthly line item through the real
+  UI then FULLY restores the fixture — the delete + Rent's $1850
+  re-edit + the "$2235.00" page-total verify).
+- vlm-compare-v87.mjs — the VLM pairwise (the login twin IDENTICAL
+  with zero style flags, the third consecutive; the calculator twin
+  DIFFERENT with the SAME three flag-set classes as v75/v81).
+- arbit-v87.sh + login-census-ref-v87.sh — the both-sides census (the
+  v81 axes re-measured: panel/scrim/title/desc/totalCard/nameH4/row/
+  pillRow/pill1/amountP/addBtn chrome all BYTE-IDENTICAL — zero drift).
+- close-arbit-v87.sh — the NEW one-shot button-inventory probe (the
+  arbitration follow-up: the arbit census's close-button finder
+  returned no match on the REF side this run — the probe dumps every
+  button in the ref's panel with aria-label/textContent/geometry).
+- pair-arbit-v87.sh — the supplemental one-shot census for the pin's
+  own axes (the v84/v85/v86 precedent): the calculator close's full
+  chrome + the login card's pad family + the logo's own radius,
+  measured byte-identical on both sides.
+
+The findings:
+1. The LOGIN pair: IDENTICAL, zero style flags — zero drift since v75
+   on the VLM layer (the third consecutive IDENTICAL). The both-sides
+   census byte-identical on every axis; the card's 0px-width border
+   computed-color and the shadow's transparent lead-layer count the v66
+   computed-form INVISIBLE class.
+2. The CALCULATOR pair: DIFFERENT with the SAME three flags as v75/v81
+   — (a) the "extra will-update line" the v66 DATA-CONDITIONAL class
+   (hasWillUpdateSpan ref false vs clone true); (b) the "hover action
+   buttons missing in the clone" the POINTER-POSITION perception class
+   (actionsAtRest {opacity 0, btnCount 2} BYTE-IDENTICAL); (c) the
+   "row height shorter" a VLM MISREAD (the row 720x102 BYTE-IDENTICAL).
+3. **THE NEW REFERENCE-SIDE OBSERVATION — the reference's calculator
+   close button LOST its accessible name**: the v81 census found the
+   ref's close by aria-label/text; the v87 census's name-based finder
+   returns no match, and close-arbit-v87.sh's inventory shows the
+   button with aria:"" and txt:"" (a bare SVG x). The CHROME is
+   unchanged and byte-identical (36x36/radius 6px/transparent/0px
+   border). The clone retains aria-label="Close" — the superset
+   behavior, already functionally pinned by every calculator.spec.ts
+   interaction (getByRole name:"Close"). NO clone gap — PIN-ONLY.
+4. NO NEW CLONE GAP — the iteration is PIN-ONLY: the calculator
+   CLOSE-BUTTON chrome census at 1280 (the never-pinned axes: the
+   close's radius "6px" / bg rgba(0,0,0,0) / borderTopWidth "0px" /
+   display "flex" — the v49/v53/v59 pins hold {w,h} geometry only, no
+   spec asserted the calculator close's radius/bg/border at ANY
+   viewport; the 0px-border computed-COLOR excluded — the v66 INVISIBLE
+   class), the pin riding the v59/v81 read-only EMPTY-state discipline.
+   The pin-sanity mutation: the close's rounded-md ->
+   rounded-md lg:rounded-lg (calculator-dialog.tsx:127 header area,
+   line 138) FAILS at exactly the close.radius axis ("6px" -> "8px") —
+   cascade-free BY CONSTRUCTION (border-radius never affects w/h — the
+   v49/v53/v59 geometry pins green under it by construction; the full
+   calculator.spec.ts under the mutation: 16 green, only the v87 pin
+   red).
+5. The screenshots 16/16 BYTE-IDENTICAL — the same-db regeneration law
+   (the preserved v86-cycle db + same-day shots reproduce the committed
+   set byte-for-byte, even the v86 rasterization-noise file
+   08-calculator: no re-seed, no pixel arbitration needed).
+
+**The v87 lessons:**
+1. THE NAME-INDEPENDENT FINDER: the reference's ACCESSIBLE NAMES are
+   not stable contracts — the ref's calculator close button lost its
+   aria-label between v81 and v87 while its chrome stayed
+   byte-identical. Census finders for REFERENCE-side elements must use
+   GEOMETRY + POSITION + TEXT-CONTENT filters (the 36x36 header-area
+   button), never name-based selectors alone — and a census axis that
+   silently goes MISSING (the finder's no-match) is itself a finding to
+   arbitrate with a dedicated inventory probe, not a failure to paper
+   over.
+2. THE REFERENCE-REGRESSION CLASS: a reference-side a11y regression
+   (the name loss) is NOT a clone parity gap — the clone's retained
+   accessible name is the SUPERSET behavior (the v56 family), already
+   functionally pinned by the role-based interactions; the census
+   records the observation, the pin records the chrome, no production
+   change.
+3. THE SAME-DB REGENERATION LAW: when the workspace is PRESERVED (no
+   re-seed), the screenshot regeneration reproduces the committed set
+   byte-for-byte (16/16 this cycle — including the prior cycle's
+   rasterization-noise file, which is byte-stable against the same db
+   and rendering pipeline). The DATE-TEXT-ONLY and noise classes appear
+   only after a FRESH seed — prefer the same-db regeneration when the
+   seed state is already exact (the seedcheck gate) and no fixture
+   drift occurred.
+
+The v88 queue (suggestions — verify against the rotation ledger
+before executing): (1) the re-run cadence rotates to the next-oldest
+candidate after this pair (the v82-era networth + drill-down pair [the
+networth view + the dashboard drill-down EXPANDED at 1280], last
+re-shot v82 — now the oldest remaining), (2) the axe-core watch at its
+next re-check point (only a 5.x wrapper changes the calculus), (3) the
+deferred reference-write censuses (unchanged) + the login card's pad
+family + logo radius pin (the pair-arbit-v87.sh values recorded in the
+v87 plan's F4 — the pair's fifth re-run).

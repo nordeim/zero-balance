@@ -1564,3 +1564,100 @@ test.describe("calculator header + addBtn + scrim census at 1280 (v81 — plan F
     await expect(dialog).toBeHidden();
   });
 });
+
+// ---------------------------------------------------------------------------
+// v87 — plan F4 (docs/remediation-plan-v87.md): the calculator dialog's
+// CLOSE-BUTTON chrome census at 1280.
+//
+// The v87 arbitration (arbit-v87.sh + pair-arbit-v87.sh + the
+// close-arbit-v87.sh button-inventory probe, the v81-era pair's fourth
+// re-run) measured a never-pinned family: the close button's chrome
+// beyond the v59 {36, 36} geometry — the radius, the background, the
+// border-width, the display. The v59 F1 pin holds the {w, h} at 1280
+// only; the v49 F3 pin the {36, 36} at 640; the v53 F2 pin the {29, 36}
+// at 390 — the radius/bg/border/display were never pinned at ANY
+// viewport. Measured BYTE-IDENTICAL on both sites: 36×36 / radius 6px
+// (rounded-md) / bg rgba(0,0,0,0) / borderTopWidth 0px / display flex.
+//
+// The cycle's own context: the REFERENCE's calculator close button lost
+// its accessible name this cycle (aria-label and text both empty — the
+// × now a bare SVG; the v81 census still found it by name) while its
+// CHROME stayed byte-identical. The clone retains aria-label="Close"
+// (the superset behavior — exercised by every dialog interaction in
+// this file). The 0px-border computed-COLOR axis is EXCLUDED from the
+// pin (the v66 computed-form INVISIBLE class — the width pinned, never
+// the color).
+//
+// Every pinned axis STATIC chrome (the close button's classes are
+// unconditional); the pin rides the v59/v81 read-only EMPTY-state
+// discipline (hover → Calculate → census → Close — no fixture writes,
+// the Rent amount never recalculated, no line items touched).
+// ---------------------------------------------------------------------------
+test.describe("calculator close-button chrome census at 1280 (v87 — plan F4)", () => {
+  test("the close button's radius + bg + border-width + display — the never-pinned family", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate(() => {
+      const panel = [...document.querySelectorAll('[role="dialog"]')].find((d) =>
+        (d.textContent || "").includes("Rent Calculator"),
+      ) as HTMLElement | undefined;
+      if (!panel) return null;
+      // The close button: the accessible-name finder (the clone's
+      // aria-label="Close" — the name-independent fallback below finds
+      // it by geometry + header position on either side's DOM).
+      const btns = [...panel.querySelectorAll("button")];
+      const close =
+        btns.find((b) => (b.getAttribute("aria-label") || "") === "Close") ||
+        btns.find((b) => {
+          const r = b.getBoundingClientRect();
+          return (
+            Math.abs(r.width - 36) < 3 &&
+            Math.abs(r.height - 36) < 3 &&
+            r.top < panel.getBoundingClientRect().top + 80 &&
+            !/^add item$/i.test((b.textContent || "").trim())
+          );
+        });
+      if (!close) return { close: null };
+      const cs = getComputedStyle(close);
+      const r = close.getBoundingClientRect();
+      return {
+        close: {
+          w: Math.round(r.width),
+          h: Math.round(r.height),
+          radius: cs.borderRadius,
+          bg: cs.backgroundColor,
+          borderTopWidth: cs.borderTopWidth,
+          display: cs.display,
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The close button's full chrome: the v59 geometry family's chrome
+    // completion at the pair viewport (36×36 re-affirmed; the radius
+    // 6px = rounded-md; the transparent bg; the 0px border width — the
+    // computed COLOR the excluded INVISIBLE class; the flex display).
+    expect(census!.close).toEqual({
+      w: 36,
+      h: 36,
+      radius: "6px",
+      bg: "rgba(0, 0, 0, 0)",
+      borderTopWidth: "0px",
+      display: "flex",
+    });
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+
+    // Read-only close — no fixture restore needed (the empty state).
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+  });
+});
