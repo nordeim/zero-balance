@@ -4575,3 +4575,113 @@ git diff src/ = 0 lines; 28/28 green after).
    axes flip while every 1280 pin stays green; the mutation's own
    failure diff (fs 14->12, h 20->16, w 156->134) reads as exactly
    the label sub-family, proving the pin's axis ownership.
+
+## v85 — the v79-era items pair's fourth re-run (the preserved workspace)
+
+The preserved-workspace path (git pull at main @ 3f92b87, the v84
+shipped state + the session_202 transcript; no reset): node_modules in
+place, chromium-1243 in place, `.env` verified
+(DATABASE_URL=file:../db/custom.db, db/ at the repo root), the
+seedcheck exact before any flow (7 items / rent 1850 / expenses 2235 /
+0 line items / 3 assets / 2 liabilities). The baseline chain FULLY
+GREEN as-shipped (lint -> typecheck -> 108 unit -> build -> 289 e2e
+chunk executions [102+104+83 — the same total as the documented v84
+102+108+79] -> 35/35 smoke). The queue: the v84 plan's v85 suggestion —
+the v79-era ITEMS pair (the income + expenses view pair at desktop
+1280x800, last re-shot v79, now the oldest remaining [v79 < v80 < v81 <
+v82 < v83 < v84]) — agreeing with the rotation ledger (the EIGHTH
+consecutive agreement); the pair's FOURTH re-run (v57 -> v64 -> v70 ->
+v79 -> v85).
+
+**The probes:**
+- ref-standing-v79.sh + standing-checks-v79.sh — the 79th standing
+  checks (version-bumped from v78 — version-bump-only diffs verified
+  after normalizing the version tokens): the mobile menu verified
+  working the 79th consecutive time; the reference's four bugs ALL
+  live (toast-blocker, sheet-trap, no-landmark, the 464px /networth
+  overflow); the data census the 79th clean drift check; the SEO pair
+  live on both sides.
+- vlm-shots-v85.sh + clone-vlmshots-v85.sh + vlm-compare-v85.mjs —
+  the re-run pair (sed-derived from the v79 series with BOTH the
+  version substitutions AND the session-name/tmp-dir substitutions —
+  the v84 lesson applied; grep-verified clean of old strings; the
+  header comments history-corrected to the fourth re-run): login on
+  the first attempt both sides, the parked pointer at (5,5), read-only
+  on the reference. Both verdicts DIFFERENT: the PAIR 1 (income) flags
+  the user-identity + seed-data classes + ONE NEW FLAG (the "Edit with
+  Base44" FAB claimed present in Image 2 — the CLONE); the PAIR 2
+  (expenses) flags the v57 DATA-CONDITIONAL chips + the Recurring-wrap
+  + the user-identity + the seed classes — matching the v79 re-run's
+  own flag-set classes exactly.
+- base44-fab-arbit-v85.sh + crop-fab-v85.mjs +
+  vlm-arbit-fabcrop-v85.mjs — the ONE-FLAG two-step arbitration for
+  the v85 income pair's NEW flag: (1) the DOM census on BOTH sides at
+  1280 finds ZERO Base44 elements on either side (the platform FAB
+  renders outside the queryable body text — the platform's iframe
+  chrome, invisible to a textContent walk); (2) the PIXEL census crops
+  the bottom-right 340x100 of both full-page shots and counts dark
+  pixels: the REFERENCE's crop carries 6585 dark px (the black
+  ~150x40 FAB), the clone's 0 (solid white); the SINGLE-IMAGE VLM
+  reads of the two crops confirm it (the reference crop: the black
+  "Edit with Base44" button with the orange icon and the x close; the
+  clone crop: nothing). Verdict: the VLM's claim is an
+  IMAGE-ATTRIBUTION SWAP — the FAB is the reference's own
+  platform-chrome, exactly the documented class since v57.
+- arbit-v85.sh — the both-sides census (the v79 axes re-measured; the
+  v75 convention): the v79 census values REPRODUCED EXACTLY — zero
+  drift on every axis (the avatar chrome 36x36/9999px/14px-600/white/
+  rgb(143,188,63); the grid 960/16px/309.328 template; the card
+  309/20px/12px/border with the h 200-vs-230 v70b wrap class; the
+  titleRow gap/dot/dotBg per type; the amount leaf + per-type accents;
+  the footer + badge chrome; both filter-card variants; the docSW
+  1280).
+- wrapper-arbit-v85.sh — the pin's own supplemental both-sides census
+  (the v84 ratio-divider precedent): the EXPENSE-ONLY content wrapper
+  family measured for the first time on both sides at 1280 — the
+  wrapper {display block / flexGrow 1 / paddingRight 96px} on expenses
+  and {0px} on income (the conditional control), the titleRow's FULL
+  geometry {flex/center/8px/h 24 + the 8x8/9999px dot in the expenses
+  orange + the h4 16px/600/rgb(26,58,46)}, the hover action row
+  {top 247/right 696/opacity 0/gap 8px} — all byte-identical on both
+  sides; the subtitle null-vs-Streaming the subtitle-CONDITIONAL class
+  (the v71 F4 idiom).
+
+**The pin:** the expense-card content-wrapper + orange-dot titleRow
+census at 1280 (tests/e2e/items.spec.ts — the never-pinned families:
+the expenses-conditional pr-24 wrapper — the ONLY pr-24 in src — with
+its income paddingRight-0 control; the titleRow's full geometry with
+the expenses orange dot's FIRST pin anywhere [completing the v80
+savings blue twin's per-type trilogy] and the h4's forestDark color,
+never pinned on any item-card title) — GREEN on first run; the
+pin-sanity mutation the wrapper's pr-24 -> pr-20 (item-card.tsx:119,
+applied by LINE NUMBER): FAILS at exactly the wrapper.paddingRight
+axis ("96px" -> "80px" — the failure diff reads as the wrapper
+sub-family alone), cascade-free by construction (the titleRow family
+content-governed; the amount/badge/footer rows wrapper-external
+siblings; the action row absolute; the income/savings wrappers
+pr-free; the 390 subtitle texts single-line at both paddings; the full
+items.spec.ts under the mutation: 37 green, only the v85 pin red), then
+restored (the standalone REBUILD as a SEPARATE command; git diff
+src/ = 0 lines; 38/38 green after).
+
+**The v85 lessons:**
+1. THE IMAGE-ATTRIBUTION SWAP: a VLM pairwise verdict can SWAP which
+   image an element belongs to (the v85 income pair's FAB flag claimed
+   the reference's platform chrome was in the clone). The disproof is
+   the two-step arbitration: the DOM census (does the element exist in
+   either DOM at all?) + the PIXEL crop census with SINGLE-IMAGE VLM
+   reads (one image per call — no image-order confusion possible).
+   Never trust a pairwise verdict's image attribution for a
+   presence/absence claim; the census is the authority.
+2. THE TYPE-SCOPED MUTATION: the shared-component cascade problem
+   (one card component across three views — any dot/row/h4 mutation
+   flips every view's pins) is dodged by mutating the ONE type-scoped
+   class in the component (the expenses-conditional pr-24): the
+   mutation flips only the expenses wrapper's axis while the
+   income/savings pins stay green by construction — the coverage-map
+   discipline (v80's responsive-variant dodge) has a type-conditional
+   twin.
+3. THE FOURTH-RUN STABILITY: the pair's fourth re-run reproduces the
+   v79 census values EXACTLY on every axis — the fifth consecutive
+   zero-drift re-run after v81/v82/v83/v84's own zero-drift results;
+   the rotation cadence's value compounds with each verified cycle.

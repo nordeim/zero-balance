@@ -3151,3 +3151,130 @@ test.describe("savings goal-card height-twins + title-row geometry + card chrome
     expect(census!.docSW).toBe(1280);
   });
 });
+
+// v85 F4 (docs/remediation-plan-v85.md): the v79-era items pair's FOURTH
+// re-run (v57 → v64 → v70 → v79 → v85) found NO NEW GAP (every census
+// delta a documented class — the seed counts/data, the v57
+// DATA-CONDITIONAL chips + Recurring wrap, the user identity; the one NEW
+// VLM flag — the "Edit with Base44" FAB claimed present in the CLONE —
+// disproven as an IMAGE-ATTRIBUTION SWAP by the two-step arbitration: the
+// DOM census finds no Base44 element on either side, the pixel census
+// locates the dark FAB pixels in the REFERENCE shot's corner only, and
+// the single-image VLM reads confirm it — the platform-chrome class on
+// the reference) and this pin locks the re-run's never-pinned axes at
+// 1280: the EXPENSE-ONLY content wrapper (the pr-24 family — the room
+// reserved for the hover action row, never censused before
+// wrapper-arbit-v85.sh measured it byte-identical on both sides), the
+// expenses TITLE ROW's full geometry (the orange dot's FIRST pin anywhere
+// — TYPE_COLORS.expense on the dot, completing the v80 savings blue
+// twin's per-type trilogy; the h4's forestDark color, never pinned on
+// any item-card title), and the income twin's paddingRight-0 control
+// (the conditional's other leg — the pr scoped to expenses only, on both
+// sides). The pin's expected values are the wrapper-arbit-v85.sh
+// census's own measured values, byte-identical on both sides' items
+// views at 1280x800.
+test.describe("expense-card content-wrapper + orange-dot titleRow census at 1280 (v85 — plan F4)", () => {
+  test("the wrapper's pr family + the titleRow's full geometry + the income pr-0 control (v85 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Entertainment" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      const h4 = card.querySelector("h4");
+      if (!h4 || !h4.parentElement || !h4.parentElement.parentElement) return null;
+      // titleRow = the h4's parent (the dot + title line); the WRAPPER =
+      // the titleRow's parent (the flex-1 pr-24 column on expenses — the
+      // wrapper-arbit-v85.sh walk).
+      const row = h4.parentElement as HTMLElement;
+      const wrapper = row.parentElement as HTMLElement;
+      const rcs = getComputedStyle(row);
+      const wcs = getComputedStyle(wrapper);
+      const dot = [...row.querySelectorAll("div,span")].find((d) => {
+        const b = d.getBoundingClientRect();
+        return b.width > 0 && b.width <= 12 && b.height > 0 && b.height <= 12;
+      });
+      return {
+        wrapper: {
+          display: wcs.display,
+          flexGrow: wcs.flexGrow,
+          paddingRight: wcs.paddingRight,
+        },
+        titleRow: {
+          display: rcs.display,
+          alignItems: rcs.alignItems,
+          gap: rcs.gap,
+          h: Math.round(row.getBoundingClientRect().height),
+          dotW: dot ? Math.round(dot.getBoundingClientRect().width) : null,
+          dotH: dot ? Math.round(dot.getBoundingClientRect().height) : null,
+          dotRadius: dot ? getComputedStyle(dot).borderRadius : null,
+          dotBg: dot ? getComputedStyle(dot).backgroundColor : null,
+          h4Fs: getComputedStyle(h4).fontSize,
+          h4Fw: getComputedStyle(h4).fontWeight,
+          h4Color: getComputedStyle(h4).color,
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The WRAPPER's pr family — the expenses-conditional pr-24 (the
+    // hover action row's reserved room): display block, flex-1, 96px
+    // right padding. A broken conditional — the pr leaking to
+    // income/savings or dropping from expenses — flips these axes.
+    expect(census!.wrapper).toEqual({
+      display: "block",
+      flexGrow: "1",
+      paddingRight: "96px",
+    });
+
+    // The TITLE ROW's full geometry at 1280 — the orange twin's first
+    // pin: flex/center/8px/h 24 with the 8×8 fully-round dot in the
+    // expenses orange (TYPE_COLORS.expense on the DOT — the v79 pin
+    // holds the same color on the amount leaf) and the h4 at 16px/600
+    // in rgb.forestDark.
+    expect(census!.titleRow).toEqual({
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      h: 24,
+      dotW: 8,
+      dotH: 8,
+      dotRadius: "9999px",
+      dotBg: "rgb(224, 122, 59)",
+      h4Fs: "16px",
+      h4Fw: "600",
+      h4Color: "rgb(26, 58, 46)",
+    });
+
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+
+    // The income twin's paddingRight control — the conditional's other
+    // leg: the pr is scoped to expenses ONLY (both sides measured 0 on
+    // the income wrapper — the plain flex-1 column).
+    await page.goto("/income");
+    await expect(page.getByText("Freelance").first()).toBeVisible();
+    const income = await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("div")].find(
+        (d) => typeof d.className === "string" && d.className.includes("grid-cols-3"),
+      );
+      if (!grid) return null;
+      const card = grid.children[0] as HTMLElement;
+      const h4 = card.querySelector("h4");
+      if (!h4 || !h4.parentElement || !h4.parentElement.parentElement) return null;
+      const wrapper = h4.parentElement.parentElement as HTMLElement;
+      return {
+        paddingRight: getComputedStyle(wrapper).paddingRight,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(income).not.toBeNull();
+    expect(income!.paddingRight).toBe("0px");
+    expect(income!.docSW).toBe(1280);
+  });
+});
