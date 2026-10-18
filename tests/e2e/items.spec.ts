@@ -3398,3 +3398,182 @@ test.describe("savings goal-card subtitle + header-row + wrapper third-leg censu
     expect(census!.docSW).toBe(1280);
   });
 });
+
+// v91 F4 (docs/remediation-plan-v91.md): the v85-era items pair's FIFTH
+// re-run (v57 → v64 → v70 → v79 → v85 → v91) found NO NEW GAP (every
+// census axis byte-identical — the arbit-v91 two-half census reproducing
+// the v85 values exactly; every VLM flag DOM-arbitrated to the documented
+// classes: the v57 payment-chip DATA-CONDITIONAL + the Recurring
+// superset wrap, the seed-count classes, the user-identity avatar, the
+// Base44 platform-chrome FAB re-arbitrated live [fabCount 0 on both
+// sides, the v85 pixel-census class]), so the iteration deepens the
+// coverage instead: the FILTER-CARD INTERACTIVE INTERIORS at 1280 — the
+// never-pinned families. The v64 F3 / v70 F4 pins hold the filter CARD
+// + the search GEOMETRY {w/h/pad/radius/border} + the comboboxes'
+// {w/h/fs/text}; the v37 S1/S2 pins the FOCUS-state chrome; the RESTING
+// interiors — every trigger's own pad/justify/align/bg/radius/border/
+// fw/color + the chevron svg's size and color, and the search input's
+// TYPOGRAPHY {fs/fw/lh/color} — were never pinned at ANY viewport.
+// Measured BYTE-IDENTICAL on BOTH sides by the supplemental one-shot
+// census (filter-interior-arbit-v91.sh + filter-interior-clone-v91.sh,
+// the two-half controlled form); the pin's expected values are that
+// census's own measured values.
+test.describe("filter-card interactive-interior census at 1280 (v91 — plan F4)", () => {
+  test("the search input's typography + every combobox trigger's resting chrome", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    const censusOf = () =>
+      page.evaluate(() => {
+        const search = [...document.querySelectorAll("input")].find(
+          (i) => i.getBoundingClientRect().width > 100,
+        );
+        const filterCard = search
+          ? (search.closest("div.rounded-2xl") as HTMLElement | null)
+          : null;
+        if (!search || !filterCard) return null;
+        const srcs = getComputedStyle(search);
+        const inner = [...filterCard.children].find(
+          (c) => getComputedStyle(c).display === "grid",
+        );
+        return {
+          search: {
+            tag: search.tagName,
+            fs: srcs.fontSize,
+            fw: srcs.fontWeight,
+            lh: srcs.lineHeight,
+            color: srcs.color,
+            placeholder: search.getAttribute("placeholder") || "",
+            pad: srcs.padding,
+            radius: srcs.borderRadius,
+          },
+          triggers: inner
+            ? [...inner.querySelectorAll('[role="combobox"]')].map((c) => {
+                const r = c.getBoundingClientRect();
+                const cs = getComputedStyle(c);
+                const chev = c.querySelector("svg");
+                const chr = chev ? chev.getBoundingClientRect() : null;
+                return {
+                  tag: c.tagName,
+                  w: Math.round(r.width),
+                  h: Math.round(r.height),
+                  pad: cs.padding,
+                  justify: cs.justifyContent,
+                  align: cs.alignItems,
+                  bg: cs.backgroundColor,
+                  radius: cs.borderRadius,
+                  borderW: cs.borderTopWidth,
+                  borderC: cs.borderTopColor,
+                  fs: cs.fontSize,
+                  fw: cs.fontWeight,
+                  color: cs.color,
+                  text: (c.textContent || "").trim(),
+                  chevW: chr ? Math.round(chr.width) : null,
+                  chevH: chr ? Math.round(chr.height) : null,
+                  chevColor: chev ? getComputedStyle(chev).color : null,
+                };
+              })
+            : [],
+          docSW: document.documentElement.scrollWidth,
+        };
+      });
+
+    // PAIR 1 — the income variant: the spanning search + the two triggers.
+    await page.goto("/income");
+    await expect(page.getByText("2 items · $5550.00")).toBeVisible();
+    const income = await censusOf();
+    expect(income).not.toBeNull();
+
+    // The search's TYPOGRAPHY — never pinned at any viewport: text-sm's
+    // 14px/20px pair, the neutral foreground rgb(10,10,10), fw 400. The
+    // pad/radius re-affirm the v64 F3 contract on the same element.
+    expect(income!.search).toEqual({
+      tag: "INPUT",
+      fs: "14px",
+      fw: "400",
+      lh: "20px",
+      color: "rgb(10, 10, 10)",
+      placeholder: "Search income items...",
+      pad: "4px 12px 4px 40px",
+      radius: "6px",
+    });
+
+    // Every trigger's RESTING chrome — the v37 S1 pin holds the
+    // focus-state only; these interiors were never pinned. The chevron
+    // rides currentColor (rgb(10,10,10) at rest).
+    expect(income!.triggers).toHaveLength(2);
+    for (const t of income!.triggers) {
+      expect(t).toMatchObject({
+        tag: "BUTTON",
+        w: 216,
+        h: 36,
+        pad: "8px 12px",
+        justify: "space-between",
+        align: "center",
+        bg: "rgba(0, 0, 0, 0)",
+        radius: "6px",
+        borderW: "1px",
+        borderC: "rgb(229, 229, 229)",
+        fs: "14px",
+        fw: "400",
+        color: "rgb(10, 10, 10)",
+        chevW: 16,
+        chevH: 16,
+        chevColor: "rgb(10, 10, 10)",
+      });
+    }
+    expect(income!.triggers.map((t) => t.text)).toEqual([
+      "All Categories",
+      "All Frequencies",
+    ]);
+
+    // The no-overflow guard on the same surface.
+    expect(income!.docSW).toBe(1280);
+
+    // PAIR 2 — the expenses variant: the non-spanning search + the third
+    // payment-method trigger (the v70 F4 census's own structure).
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const expenses = await censusOf();
+    expect(expenses).not.toBeNull();
+
+    expect(expenses!.search).toEqual({
+      tag: "INPUT",
+      fs: "14px",
+      fw: "400",
+      lh: "20px",
+      color: "rgb(10, 10, 10)",
+      placeholder: "Search expense items...",
+      pad: "4px 12px 4px 40px",
+      radius: "6px",
+    });
+
+    expect(expenses!.triggers).toHaveLength(3);
+    for (const t of expenses!.triggers) {
+      expect(t).toMatchObject({
+        tag: "BUTTON",
+        w: 216,
+        h: 36,
+        pad: "8px 12px",
+        justify: "space-between",
+        align: "center",
+        bg: "rgba(0, 0, 0, 0)",
+        radius: "6px",
+        borderW: "1px",
+        borderC: "rgb(229, 229, 229)",
+        fs: "14px",
+        fw: "400",
+        color: "rgb(10, 10, 10)",
+        chevW: 16,
+        chevH: 16,
+        chevColor: "rgb(10, 10, 10)",
+      });
+    }
+    expect(expenses!.triggers.map((t) => t.text)).toEqual([
+      "All Categories",
+      "All Frequencies",
+      "All Payment Methods",
+    ]);
+
+    expect(expenses!.docSW).toBe(1280);
+  });
+});

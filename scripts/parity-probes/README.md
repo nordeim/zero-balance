@@ -5234,3 +5234,132 @@ remaining [v85 < v86 < v87 < v88 < v89 < v90]; the pair's FIFTH re-run
 its next re-check point (only a 5.x wrapper changes the calculus), (3)
 the deferred reference-write censuses (unchanged — out of bounds under
 the v46 read-only rule).
+
+## v91 — the items pair's fifth re-run (the two-half census + the FAB re-arbitration)
+
+The v91 iteration (docs/remediation-plan-v91.md): the re-run cycle's
+next-oldest candidate — the ledger-verified queue (the v90-era docs'
+v91 suggestion AGREEING with the rotation ledger: the v85-era ITEMS
+pair [the INCOME + EXPENSES view pair at desktop 1280x800, full-page],
+last re-shot v85, the oldest remaining [v85 < v86 < v87 < v88 < v89 <
+v90]; the pair's FIFTH re-run [v57 -> v64 -> v70 -> v79 -> v85 -> v91]
+— the FOURTEENTH consecutive queue/ledger agreement, the surface names
+verified against vlm-shots-v85.sh's own surface list before the
+derivation, no transcription error this cycle), plus the axe watch at
+its re-check point (NO DRIFT — 4.14.0 npm-latest, only rc prereleases
+beyond, no 5.x, the v68 dedupe holds) and the 85th standing checks
+(ref-standing-v85.sh + standing-checks-v85.sh, version-bumped from v84
+across the three token families — version-bump-only diffs verified by
+normalizing back and diffing clean).
+
+The workspace REBUILT (the fresh-clone path, the v86/v88/v90
+precedent): git clone at main @ 07586b7, the tree clean; the
+environment re-provisioned (npm ci 354 packages; .env written
+[DATABASE_URL="file:../db/custom.db"]; db/ at the repo root,
+db:generate + db:push + db:seed; chromium-1243; the paramiko ssh shim
+outside the repo at /home/z/my-project/bin/ssh); the seedcheck exact
+before any flow; the full baseline chain green on the first run (lint
+-> typecheck -> 108 unit -> build -> 293 e2e [127+106+62 = 295 chunk
+executions] -> 35/35 smoke).
+
+The probe series (the v85 lineage, sed-derived with the version +
+session-name + tmp-dir substitutions [vlm85 -> vlm91, refarbv85 ->
+refarbit91, clonearbv85 -> clonearbit91, v85 -> v91; the shots'
+session names refvlm85 -> refvlm91 / clonevlm85 -> clonevlm91 riding
+the vlm85 -> vlm91 family]; the headers history-corrected to the FIFTH
+re-run [v57 -> v64 -> v70 -> v79 -> v85 -> v91] + "last re-shot v85";
+the functional bodies verified version-bump-only by the normalize-back
+diff — only the intentional history-correction comment lines differ):
+- vlm-shots-v91.sh — the REFERENCE side (login on the first attempt;
+  the parked pointer at (5,5); read-only — the v46 rule).
+- clone-vlmshots-v91.sh — the CLONE side (the with-server :3200 parity
+  server).
+- vlm-compare-v91.mjs — the VLM pairwise.
+- arbit-v91.sh — the both-sides census (the v85 census axes
+  re-measured; the census runs regardless of the verdict — the v75
+  convention) — which TIMED OUT mid-run in the chromium resource
+  exhaustion (70 zombie processes; the v89-documented symptom class),
+  and was completed in the TWO-HALF controlled form:
+  - ref-arbit-v91.sh — the reference half.
+  - clone-arbit-v91.sh — the clone half (the census JS byte-identical
+    across the halves — the lines-1-215 identity verified).
+- base44-fab-arbit-v91.sh — the one-shot both-sides DOM arbitration of
+  the recurring FAB flag (the v85 precedent's own finder).
+- filter-interior-arbit-v91.sh + filter-interior-clone-v91.sh — the
+  supplemental one-shot both-sides census for the pin's own axes (the
+  v87/v88/v89/v90 precedent), BUILT TWO-HALF from the start after the
+  cycle's first exhaustion.
+
+The findings:
+1. Both verdicts DIFFERENT, every flag DOM-arbitrated to the v85
+   re-run's OWN documented classes (the v57 payment-chip
+   DATA-CONDITIONAL footer; the v57 Recurring superset wrap [the card
+   h 200-vs-230, the badgeRow h 22-vs-52]; the seed-count grids; the
+   user-identity avatar; the seed-data figures/dates/badges).
+2. The "Edit with Base44" FAB flag RECURRED with its v85-documented
+   IMAGE-ATTRIBUTION SWAP (the VLM attributing the reference's own
+   platform FAB to the clone) — re-arbitrated live by the one-shot DOM
+   census: fabCount 0 + bodyHasBase44 false on BOTH sides (the FAB
+   renders in the reference's platform iframe chrome, outside the
+   queryable body DOM; the v85 pixel census already located its pixels
+   in the reference's bottom-right crop alone).
+3. The both-sides census (the two-half form) REPRODUCES the v85 census
+   values EXACTLY — zero drift on every axis (the avatar/grid/card/
+   titleRow/amount/footer/badge/filterCard families; the docSW 1280
+   guard). NO NEW CLONE GAP — the iteration PIN-ONLY.
+4. The v91 pin (+1 e2e = 294): the filter-card INTERACTIVE-INTERIOR
+   census at 1280 (tests/e2e/items.spec.ts — the never-pinned
+   families: the search input's TYPOGRAPHY {14px/400/20px/
+   rgb(10,10,10)} + every combobox trigger's RESTING chrome {pad
+   8px 12px/space-between/center/transparent/6px/1px
+   rgb(229,229,229)/14px/400 + the chevron 16x16 currentColor} — the
+   v64/v70 pins held the geometry, the v37 pins the focus state; the
+   interiors never pinned at ANY viewport) — the pin's own axes first
+   measured byte-identical on both sides by the supplemental two-half
+   census — GREEN on first run.
+5. The pin-sanity mutation (the executed form — the viewport-scoped
+   pl-10 -> pl-10 lg:font-medium at items-view.tsx:188, by LINE
+   NUMBER; AT-lg because the pin runs at 1280): the failure diff reads
+   as the search's fw axis alone ("400" -> "500"); the full
+   items.spec.ts under the mutation reads ONLY the v91 pin red (39
+   green) — cascade-free BY CONSTRUCTION (fw never changes
+   line-height/color/geometry; no spec asserts any input's fw at any
+   viewport — the coverage grep run with BOTH the fw: long form AND
+   the Fw-suffix shorthand family, the v90 lesson applied); restored
+   (git diff src/ = 0; the standalone REBUILD via the FULL npm run
+   build; post-restore 40/40 green).
+6. The full chain re-run GREEN: lint -> typecheck -> 108 unit -> build
+   -> 294 e2e (128+106+62 = 296 chunk executions, zero flakes) ->
+   35/35 smoke; the screenshots 16/16 BYTE-IDENTICAL (the same-day-seed
+   byte-identity law on the fresh-clone seed).
+
+**The v91 lessons:**
+- THE FAB RE-ARBITRATION: the v85-documented Base44 FAB
+  image-attribution swap RECURRED (the VLM attributing the reference's
+  own platform FAB to the clone) — a documented VLM misattribution
+  class that recurs is settled by the one-shot both-sides DOM census
+  (the DOM zero + the documented pixel evidence together), without
+  re-running the v85 pixel-crop chain.
+- THE TWO-HALF CENSUS, RETROFITTED: the combined arbit script can fail
+  mid-cycle in the chromium resource exhaustion (70 zombies this
+  cycle) — the v89 two-half form (the census JS byte-identity as the
+  contract, verified by the md5 line-block diff) is the recovery, and
+  the supplemental one-shot censuses can be BUILT two-half from the
+  start when the sandbox has already shown the exhaustion once in the
+  cycle.
+- THE FULL-BUILD REBUILD DISCIPLINE: under a mutation, the standalone
+  rebuild must run the FULL npm run build (next build + the static/
+  public copy steps) — a bare `next build` leaves the standalone dir
+  without its static assets and the e2e server renders a broken page
+  (the failure surfaces as "element(s) not found", not as a style
+  diff).
+
+The v92 queue (suggestions — verify against the rotation ledger
+before executing): (1) the re-run cadence rotates to the next-oldest
+candidate after this pair (the v86-era SAVINGS pair [the savings view
+at desktop 1280x800, full-page], last re-shot v86 — now the oldest
+remaining [v86 < v87 < v88 < v89 < v90 < v91]; the pair's FIFTH re-run
+[v58 -> v65 -> v74 -> v80 -> v86 -> v92]), (2) the axe-core watch at
+its next re-check point (only a 5.x wrapper changes the calculus), (3)
+the deferred reference-write censuses (unchanged — out of bounds under
+the v46 read-only rule).
