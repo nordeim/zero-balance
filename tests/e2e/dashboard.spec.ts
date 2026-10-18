@@ -3535,3 +3535,121 @@ test.describe("stat-card count-row + divider census at 1280 (v88 — plan F4)", 
     expect(census.docSW).toBe(1280);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v89 — plan F4 (docs/remediation-plan-v89.md): the quick-action cards'
+// TRANSITION + PLUS-viewBox + the guidelines body's DISPLAY census at 1280.
+//
+// The v89 arbitration (qa-transition-arbit-v89.sh, the v83-era pair's
+// fourth re-run — the VLM verdict IDENTICAL, the both-sides census
+// reproducing the v83 values exactly) measured a never-pinned family: the
+// quick-action cards' transition chrome + the plus icons' viewBox + the
+// guidelines body's display. The v61 F3 pin holds the cards' full chrome
+// {text/w/h/radius/pad/bg/border/shadow/textAlign/tile/icon/label/plus} —
+// never the TRANSITION family; the v77 pin holds the ICONS' viewBox (the
+// first svg) — never the PLUS icons' own; the v61 F2 pin holds the
+// guidelines body's PAD — never the DISPLAY; grep-verified: NO
+// dashboard.spec.ts spec asserts the quick-action card's
+// transitionDuration/transitionProperty at ANY viewport (the items.spec.ts
+// transitionDur pins are the ITEM card's own family — a different
+// component), no spec asserts the plus svg's viewBox, and no spec asserts
+// the guidelines body's display.
+//
+// Every pinned axis STATIC chrome (the transition classes, the viewBox
+// constant, and the body's display unconditional — no data, no viewport
+// conditionals); the pin rides the plain authenticated dashboard view on
+// the e2e seed — read-only, no fixture writes, no hover state.
+// ---------------------------------------------------------------------------
+interface QaTransitionCensus {
+  cards: {
+    text: string;
+    transitionDuration: string;
+    transitionProperty: string;
+    plusViewBox: string | null;
+    plusW: number | null;
+  }[];
+  guidelinesBody: { display: string; pad: string } | null;
+  docSW: number;
+  err?: string;
+}
+test.describe("quick-action transition + plus-viewBox + guidelines-body-display census at 1280 (v89 — plan F4)", () => {
+  test("the three cards' transition chrome + the plus viewBoxes + the guidelines body display — the never-pinned family", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByRole("button", { name: "Add Income" })).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate((): QaTransitionCensus => {
+      // The three quick-action cards (the v61 F3 finder: the exact-text
+      // regex on the button trio).
+      const qas = [...document.querySelectorAll("button")].filter(
+        (b) => /^Add (Income|Savings|Expense)$/.test((b.textContent || "").trim()),
+      );
+      if (qas.length !== 3)
+        return {
+          cards: [],
+          guidelinesBody: null,
+          docSW: document.documentElement.scrollWidth,
+          err: `qa count ${qas.length}`,
+        };
+      const cards = qas.map((b) => {
+        const cs = getComputedStyle(b);
+        const svgs = [...b.querySelectorAll("svg")];
+        const plusSvg = svgs[svgs.length - 1];
+        return {
+          text: (b.textContent || "").trim(),
+          transitionDuration: cs.transitionDuration,
+          transitionProperty: cs.transitionProperty,
+          plusViewBox: plusSvg ? plusSvg.getAttribute("viewBox") || "" : null,
+          plusW: plusSvg ? Math.round(plusSvg.getBoundingClientRect().width) : null,
+        };
+      });
+      // The guidelines card (the v61 F2 walk: shadow + radius + a <p>
+      // descendant) → the body = the non-header child.
+      const heading = [...document.querySelectorAll("h1, h2, h3, div, span")].find(
+        (x) => (x.textContent || "").trim() === "Budget Guidelines" && x.children.length === 0,
+      );
+      let body: HTMLElement | null = null;
+      if (heading) {
+        let card = heading as HTMLElement;
+        while (card.parentElement) {
+          const cs = getComputedStyle(card);
+          if (cs.boxShadow !== "none" && cs.borderRadius !== "0px" && card.querySelector("p")) break;
+          card = card.parentElement as HTMLElement;
+        }
+        const header = heading.parentElement as HTMLElement;
+        body = ([...card.children].find((c) => c !== header) as HTMLElement) || null;
+      }
+      return {
+        cards,
+        guidelinesBody: body
+          ? { display: getComputedStyle(body).display, pad: getComputedStyle(body).padding }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census.err).toBeUndefined();
+    expect(census.cards.length).toBe(3);
+
+    // The three cards' transition chrome — byte-identical on both sides
+    // (the qa-transition-arbit-v89.sh census): transition-all duration-200
+    // (the reference's own resting 0.2s family on every card).
+    const expectedTexts = ["Add Income", "Add Savings", "Add Expense"];
+    census.cards.forEach((c, i) => {
+      expect(c.text).toBe(expectedTexts[i]);
+      expect(c.transitionDuration).toBe("0.2s");
+      expect(c.transitionProperty).toBe("all");
+      // The plus icons' viewBox — the v77 icon-viewBox family's plus twin
+      // (the LAST svg in the card, never pinned before v89).
+      expect(c.plusViewBox).toBe("0 0 24 24");
+      expect(c.plusW).toBe(16);
+    });
+
+    // The guidelines body's display — the v61 F2 pad family's companion
+    // axis (the pad "0px 24px 24px" re-affirming the v61 F2 pin).
+    expect(census.guidelinesBody).toEqual({ display: "block", pad: "0px 24px 24px" });
+
+    // The no-overflow guard on the same surface.
+    expect(census.docSW).toBe(1280);
+  });
+});

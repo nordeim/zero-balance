@@ -5017,3 +5017,113 @@ v68 -> v77 -> v83 -> v89]), (2) the axe-core watch at its next
 re-check point (only a 5.x wrapper changes the calculus), (3) the
 deferred reference-write censuses (unchanged — out of bounds under the
 v46 read-only rule).
+
+## v89 — the dashboard pair's fourth re-run (the preserved workspace)
+
+The v89 iteration (docs/remediation-plan-v89.md): the re-run cycle's
+next-oldest candidate — the ledger-verified queue (the v88 plan's v89
+suggestion AGREEING with the rotation ledger: the v83-era DASHBOARD
+pair [the dashboard FULL-PAGE at desktop 1280x800 — the below-the-fold
+Budget Guidelines card + the quick-action row], last re-shot v83, the
+oldest remaining by LAST RE-SHOT DATE [v83 < v84 < v85 < v86 < v87 <
+v88]; the pair's FOURTH re-run [v61 -> v68 -> v77 -> v83 -> v89] — the
+TWELFTH consecutive queue/ledger agreement), plus the axe watch at its
+re-check point (NO DRIFT — 4.14.0, no 5.x, the v68 dedupe holds) and
+the 83rd standing checks (ref-standing-v83.sh + standing-checks-v83.sh,
+version-bumped from v82 across the three token families —
+version-bump-only diffs verified by normalizing back and diffing
+clean).
+
+The workspace PRESERVED (the v87 precedent — no reset): git pull
+fast-forward 0cae166..ef681c0 (the session_214 transcript only), the
+tree clean; the environment verified in place (.env, db/ with custom.db
++ e2e.db, node_modules 354 packages, chromium-1243, the paramiko ssh
+shim); the seedcheck exact before any flow.
+
+The probe series (the v83 lineage, sed-derived with the version +
+session-name + tmp-dir substitutions [vlm83 -> vlm89, refar83 ->
+refar89, clonear83 -> clonear89 — the bare-number families caught by
+the grep verification, the v84 lesson's faces]; the headers
+history-corrected to the fourth re-run [v61 -> v68 -> v77 -> v83 ->
+v89]; the functional bodies verified version-bump-only by the
+normalize-back diff):
+- vlm-shots-v89.sh — the REFERENCE side (login on the first attempt;
+  the parked pointer at (5,5); read-only — the v46 rule).
+- clone-vlmshots-v89.sh — the CLONE side (the with-server :3200 parity
+  server; no fixture writes).
+- vlm-compare-v89.mjs — the VLM pairwise.
+- arbit-v89.sh — the both-sides census (the v83 PART G/Q/X axes
+  re-measured; the census runs regardless of the verdict — the v75
+  convention). Executed in the CONTROLLED TWO-HALF FORM after the
+  sandbox's chromium resource exhaustion aborted the combined run:
+  ref-arbit-v89.sh + clone-arbit-v89.sh, the census JS IDENTICAL to the
+  combined script's.
+- qa-transition-arbit-v89.sh — the supplemental one-shot both-sides
+  census for the pin's own axes (the v87/v88 precedent).
+
+The findings:
+1. The verdict IDENTICAL — zero style flags (the pair's SECOND
+   consecutive IDENTICAL verdict [v83 -> v89]; every VLM flag the
+   documented seed-data classes: the allocation bar 30.5%-vs-62.8%, the
+   balance $3475-vs-$2065, the stat figures, the donut proportions).
+2. The both-sides census REPRODUCES the v83 census values EXACTLY —
+   zero drift on every axis (PART G: the guidelines card
+   468x348/radius 12px/border/bg/the visible shadow layers, the header
+   pad 24px/fs 16px/fw 600/rgb(26,58,46)/lh 16px/tracking -0.4px, the
+   body pad 0px 24px 24px/display block, the three tiles 418x78 with
+   the Needs/Wants/Savings tints and the label/pct/desc chrome — the
+   ONLY delta the shadow's transparent lead-layer count [the v66
+   computed-form INVISIBLE class]; PART Q: the grid 304px x3/gap 24px/
+   w 960, the three cards 304x90/radius 16px/pad 24px/white/border/
+   the tinted tiles/the 20px icons/the labels/the 0.5-opacity pluses/
+   transition 0.2s — the grid-mt [ref 0px vs clone 32px] the v77
+   mechanism class with the RENDERED gap 340 byte-identical, the label
+   wrapper-catch the v61 lesson; PART X: cardBottom 1122/gridTop 1462/
+   gap 340 byte-identical on BOTH sides).
+3. NO NEW CLONE GAP — the iteration is PIN-ONLY: the quick-action
+   TRANSITION + PLUS-viewBox + GUIDELINES-BODY-DISPLAY census at 1280
+   (the never-pinned families: the three cards' transition
+   {transitionDuration "0.2s"/transitionProperty "all" — never pinned
+   at ANY viewport; the items.spec.ts transitionDur pins are the ITEM
+   card's own family} + the three plus icons' viewBox {0 0 24 24 — the
+   v77 icon-viewBox family's plus twin} + the guidelines body's display
+   {block — the v61 F2 pad family's companion axis} + the docSW guard).
+   The pin-sanity mutation: the card's duration-200 ->
+   duration-200 lg:duration-300 (dashboard-view.tsx:885) FAILS at
+   exactly the card.transitionDuration axis ("0.2s" -> "0.3s") —
+   cascade-free BY CONSTRUCTION (transitionDuration never affects
+   geometry — every geometry pin green; the v45 F3b hover-shadow pin
+   asserts the SETTLED layers; 40 green under the mutation, only the
+   v89 pin red; restored 41/41 green).
+4. The screenshots 16/16 BYTE-IDENTICAL — the same-day-seed
+   byte-identity law (the seed planted and the shots taken on the same
+   calendar day 2026-10-18 reproduce the committed set byte-for-byte).
+
+**The v89 lessons:**
+1. THE CHROMIUM RESOURCE-EXHAUSTION REAPING: the sandbox's
+   agent-browser chromium processes accumulate across long probe
+   sessions (66 zombie processes observed mid-cycle) until
+   fork/pthread_create fails (`Resource temporarily unavailable`) —
+   and the symptom is EMPTY eval results, NOT an error surface. The
+   fix: `pkill -f agent-browser` + a fresh AGENT_BROWSER_SESSION name
+   before the next eval. Budget a reaping step between the reference
+   and clone halves of any long combined probe.
+2. THE TWO-HALF CONTROLLED CENSUS FORM: when the combined arbit script
+   fails mid-run (the resource exhaustion above, or a transient
+   with-server boot abort — the standalone server "Aborted" once with
+   an empty log, then booted clean on the manual retry), the census's
+   reference half and clone half can run as SEPARATE scripts with the
+   IDENTICAL census JS. The both-sides census contract is the JS
+   identity (the version-bump-only functional-body diff), not the
+   single-script form — retry-first before investigating, split-second
+   if the retry fails.
+
+The v90 queue (suggestions — verify against the rotation ledger
+before executing): (1) the re-run cadence rotates to the next-oldest
+candidate after this pair (the v84-era MOBILE 390 TWINS [the login +
+dashboard mobile views, last re-shot v84] — now the oldest remaining
+[v84 < v85 < v86 < v87 < v88 < v89]; the twins' FIFTH re-run [v69 ->
+v74 -> v78 -> v84 -> v90]), (2) the axe-core watch at its next
+re-check point (only a 5.x wrapper changes the calculus), (3) the
+deferred reference-write censuses (unchanged — out of bounds under the
+v46 read-only rule).
