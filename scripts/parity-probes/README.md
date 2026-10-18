@@ -4460,3 +4460,118 @@ a SEPARATE command; git diff src/ = 0 lines; 39/39 green after).
    gap/positions), never the mechanism axis alone; the mechanism axis
    may accompany it only as the clone's own twin of an
    already-pinned family (the v51 F5 390 mt pin's desktop twin).
+
+## v84 — the mobile 390 twins' third re-run (the preserved workspace)
+
+The preserved-workspace path (git pull at main @ 2b2ba34, the v83
+shipped state + the session_199 transcript; no reset): node_modules in
+place (354 packages), chromium-1243 in place, `.env` verified
+(DATABASE_URL=file:../db/custom.db, db/ at the repo root), the
+seedcheck exact before any flow (7 items / rent 1850 / expenses 2235 /
+0 line items / 3 assets / 2 liabilities). The baseline chain FULLY
+GREEN as-shipped (lint -> typecheck -> 108 unit -> build -> 286 e2e
+[102+108+78 chunk executions = 288 total] -> 35/35 smoke — the exact
+documented v83 state). The queue: the v83 plan's v84 suggestion — the
+mobile 390 TWINS (the networth + dashboard FULL-PAGE pair at
+390x844, last re-shot v78, now the oldest remaining [v78 < v79 < v80 <
+v81 < v82 < v83]) — agreeing with the rotation ledger (the SEVENTH
+consecutive agreement); the pair's THIRD re-run (v62/v63 -> v69 -> v78
+-> v84).
+
+**The probes:**
+- ref-standing-v78.sh + standing-checks-v78.sh — the 78th standing
+  checks (version-bumped from v77 — version-bump-only diffs): the
+  mobile menu verified working the 78th consecutive time; the
+  reference's four bugs ALL live (toast-blocker, sheet-trap,
+  no-landmark, the 464px /networth overflow); the data census the 78th
+  clean drift check; the SEO pair live on both sides.
+- vlm-shots-v84.sh + clone-vlmshots-v84.sh + vlm-compare-v84.mjs —
+  the re-run pair (login on the first attempt both sides, the parked
+  pointer at (5,5), read-only on the reference): both verdicts
+  DIFFERENT with every flag DOM-arbitrated to a documented class — the
+  NETWORTH flags the v41 mobile-superset class (the tiles stacked) +
+  the seed-data class + the platform-chrome class + ONE NEW FLAG (the
+  "divider missing in the clone" claim); the DASHBOARD flags the v62
+  width-delta class (the subtitle wrap point) + the pct data class +
+  the Base44 platform-chrome class + the seed-data class — matching
+  the v78 re-run's own flag-set classes exactly (modulo the divider
+  claim).
+- arbit-v84.sh — the both-sides census (the v78 axes re-measured; the
+  v75 convention: the census runs regardless of the verdict): the v78
+  census values REPRODUCED EXACTLY — zero drift since v78 on every
+  axis (the networth medallion 64x64 + the trend icon 32x32 + the
+  tiles h 84 + the grid gap 16px byte-identical, the deltas all the
+  v41 mobile-superset class — the reference's card 432/docSW 464/
+  2-col tiles 176x84/medallion clipping at right 416 vs the clone's
+  358/390/1-col 294x84/fully-visible; the dashboard subtitle chrome
+  byte-identical — fs 16px/fw 400/rgb(107,114,128)/lh 24px, the P h
+  48, the block h 92, 2 lines — with the wrap-point delta the v62
+  width class; the breakdown card's svg family [16,14,16,14,...] +
+  chart-absence byte-identical, the heights 324/20/238 identical, the
+  widths the v62 page-width class).
+- ratio-divider-arbit-v84.sh — the ONE-SHOT both-sides arbitration for
+  the v84 networth pair's NEW flag ("the divider missing in the
+  clone"): measures the ratio footer row's computed borderTop +
+  rhythm + geometry on BOTH sides at 390. Verdict: the divider
+  renders on BOTH sides BYTE-IDENTICAL (borderTop 1px solid
+  rgba(255,255,255,0.2), mt 24/pt 24, footer h 53, label 14px/400,
+  the label box 156x20) — the only deltas the footer w (368 ref vs
+  294 clone — the v41 width class) + the footer top (417 vs 505 — the
+  stacked-tile card arithmetic). The VLM's claim is a MISREAD (the
+  perception class); the census is the authority.
+- vlm-arbit-crop-v84.mjs + pixel-diff-v84.mjs +
+  crop-diff-v84.mjs — the screenshot diff-crop arbitration
+  (the v80 discipline): the 07-add-item-modal.png diff pixel-located
+  to 229 pixels in a 7x11 CSS box, the crop pair VLM-read — the delta
+  is the modal's default-DATE field (10/17/2026 -> 10/18/2026, the
+  UTC calendar rollover between the committed shot and this
+  regeneration) — DATE-TEXT-ONLY, the chrome byte-identical.
+
+**The pin:** the networth summary card's RATIO-FOOTER census at 390
+(tests/e2e/networth.spec.ts — the never-pinned family at the mobile
+viewport: the footer's border-t family [1px/solid/
+rgba(255,255,255,0.2) — the inline style, unconditional], the
+mt-6/pt-6 rhythm [24/24], the footer h 53 [the pt 24 + the border 1 +
+the value-governed 28px ratio row], and the ratio LABEL's typography
++ box [text-sm's 14px/400 + the 156x20 line box] — the v67 F3 pin
+holds the footer's {mt, pt, borderTopW, h} at 1280 ONLY, the v4-era
+structure test the border style/color + the VALUE's 18px/700 at 1280,
+the v82 pin the label's fs at 1280) — GREEN on first run; the
+pin-sanity mutation the ratio label's text-sm -> text-xs lg:text-sm
+(net-worth-view.tsx:389, applied by LINE NUMBER — the ONLY
+className="text-sm" in the file): FAILS at exactly the pin's label
+axes (fs 14->12, h 20->16, w 156->134; the footer family GREEN — the
+row stays value-governed), cascade-free by construction (the mutation
+DESKTOP-RESTORED: at 1280 the lg: variant restores text-sm — the v82
+ratioLabel.fs pin, the v67 F3 footer arithmetic, and the v4-era
+structure test all green under the mutation; at 390 no other pin
+asserts the ratio label — the v41 F3/v63 F3 families stop at the stat
+grid/tiles/medallion/card box, the v53/v69/v14 families disjoint; the
+full networth.spec.ts under the mutation: 27 green, only the v84 pin
+red), then restored (the standalone REBUILD as a SEPARATE command;
+git diff src/ = 0 lines; 28/28 green after).
+
+**The v84 lessons:**
+1. THE DIVIDER-MISREAD DISPROOF: a VLM flag claiming a structural
+   element is MISSING ("the divider is absent in the clone") is
+   disproven cheapest by a dedicated ONE-SHOT both-sides census of
+   that element's computed chrome (ratio-divider-arbit-v84.sh) — the
+   inline-style border family measured byte-identical on both sides;
+   the flag's class is PERCEPTION, not a gap. Never accept a
+   "missing element" claim without a DOM census of the element's
+   computed presence.
+2. THE SED-SUBSTITUTION GAP: deriving a versioned probe series by sed
+   requires BOTH the version substitutions AND the session-name /
+   tmp-dir substitutions — "v78" as a SUBSTRING never matches
+   "vlm78" or "arbit78" (the l-m and a-r-b-i-t letters intervene), so
+   a bare s/v78/v84/g leaves the shots writing to the OLD /tmp dir
+   and the OLD browser session. Always grep the derived script for
+   the old version string before running it (the first v84 reference
+   run silently shot into /tmp/vlm78 and failed).
+3. THE DESKTOP-RESTORED INVERSE MUTATION: the established
+   viewport-scoped mutation pattern (base + lg: override) has an
+   INVERSE twin for MOBILE-pinned axes: mutate the BASE class and
+   RESTORE it under lg: (text-sm -> text-xs lg:text-sm) — the 390
+   axes flip while every 1280 pin stays green; the mutation's own
+   failure diff (fs 14->12, h 20->16, w 156->134) reads as exactly
+   the label sub-family, proving the pin's axis ownership.

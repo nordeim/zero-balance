@@ -2069,3 +2069,95 @@ test.describe("net worth summary card completion census at 1280 (v82 — plan F4
     expect(census.ratioLabel).toEqual({ fs: "14px" });
   });
 });
+
+test.describe("net worth ratio-footer census at 390 (v84 — plan F4)", () => {
+  // The v84 re-run pair's pin: the summary card's RATIO-FOOTER family at
+  // the 390x844 mobile viewport — the divider-arbitration census
+  // (ratio-divider-arbit-v84.sh) measured the axes byte-identical on BOTH
+  // sites after the VLM's "divider missing in the clone" flag (a misread):
+  // the footer row's border-t family (1px solid rgba(255,255,255,0.2) —
+  // the INLINE style, unconditional across viewports), the mt-6/pt-6
+  // rhythm (24/24), the footer h 53 (the pt 24 + the border 1 + the
+  // value-governed 28px ratio row — text-lg's line box governs over any
+  // label line box), and the ratio LABEL's typography + box (text-sm's
+  // 14px/400 + the 156x20 line box of the static label text).
+  //
+  // The coverage map (why every axis is never-pinned at 390): the v67 F3
+  // pin holds the footer's {mt, pt, borderTopW, h} at 1280 ONLY; the
+  // v4-era structure test the border style/color + the VALUE's 18px/700
+  // at 1280; the v82 pin the label's fs at 1280; the v41 F3 + v63 F3
+  // pins stop at the card box/figure/gridCols/tiles/medallion/card h.
+  // Every pinned axis STATIC chrome — the label text is static, the
+  // value a single-line 28px line box regardless of the ratio string
+  // ("0.21:1" and "∞:1" alike); the pin rides the plain authenticated
+  // view at 390x844.
+  test("the summary card's ratio-footer divider + label census at 390 (v84 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const label = [...document.querySelectorAll("p, span, h2, div")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      if (!label) return null;
+      const card = label.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      // The ratio label (the text-sm leaf in the border-t footer row).
+      const ratioLabel = [...card.querySelectorAll("span, p, div")].find(
+        (e) => /Asset to Liability Ratio/.test(e.textContent || "") && e.children.length === 0,
+      );
+      if (!ratioLabel) return null;
+      // The footer: walk UP from the label leaf to the border-t block.
+      let footer: HTMLElement | null = ratioLabel as HTMLElement;
+      while (footer && footer !== card) {
+        const s = getComputedStyle(footer);
+        if (parseInt(s.borderTopWidth || "0") > 0) break;
+        footer = footer.parentElement;
+      }
+      if (!footer || footer === card) return null;
+      const fcs = getComputedStyle(footer);
+      const fr = footer.getBoundingClientRect();
+      const lr = ratioLabel.getBoundingClientRect();
+      const lcs = getComputedStyle(ratioLabel);
+      return {
+        ratioFooter: {
+          mt: fcs.marginTop,
+          pt: fcs.paddingTop,
+          borderTopW: fcs.borderTopWidth,
+          borderTopS: fcs.borderTopStyle,
+          borderTopC: fcs.borderTopColor,
+          h: Math.round(fr.height),
+        },
+        ratioLabel: {
+          fs: lcs.fontSize,
+          fw: lcs.fontWeight,
+          w: Math.round(lr.width),
+          h: Math.round(lr.height),
+        },
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("networth ratio-footer census found no footer");
+
+    // The footer's border-t family — the divider the v84 VLM flag claimed
+    // missing: 1px solid rgba(255,255,255,0.2), byte-identical on both
+    // sites (the inline style, never a Tailwind v4 oklab computed form).
+    expect(census.ratioFooter).toEqual({
+      mt: "24px",
+      pt: "24px",
+      borderTopW: "1px",
+      borderTopS: "solid",
+      borderTopC: "rgba(255, 255, 255, 0.2)",
+      h: 53,
+    });
+
+    // The ratio label — text-sm's 14px/400 + the 156x20 line box (the
+    // static label text; the value beside it is the 1280-pinned 18px/700).
+    expect(census.ratioLabel).toEqual({ fs: "14px", fw: "400", w: 156, h: 20 });
+
+    // The page fits the mobile viewport (the v41 superset contract).
+    expect(census.sw).toBeLessThanOrEqual(391);
+  });
+});
