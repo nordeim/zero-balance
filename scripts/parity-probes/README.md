@@ -5118,12 +5118,119 @@ The findings:
    single-script form — retry-first before investigating, split-second
    if the retry fails.
 
-The v90 queue (suggestions — verify against the rotation ledger
+## v90 — the mobile 390 twins' fourth re-run (the fresh-clone workspace)
+
+The v90 iteration (docs/remediation-plan-v90.md): the re-run cycle's
+next-oldest candidate — the ledger-verified queue (the v89 plan's v90
+suggestion AGREEING with the rotation ledger once the v89-era docs'
+surface-name transcription error is corrected: the v84-era MOBILE 390
+TWINS [the /networth + the dashboard FULL-PAGE pair at 390x844], last
+re-shot v84, the oldest remaining [v84 < v85 < v86 < v87 < v88 < v89];
+the pair's FOURTH re-run [v62/v63 -> v69 -> v78 -> v84 -> v90] — the
+THIRTEENTH consecutive queue/ledger agreement), plus the axe watch at
+its re-check point (NO DRIFT — 4.14.0, no 5.x, the v68 dedupe holds)
+and the 84th standing checks (ref-standing-v84.sh +
+standing-checks-v84.sh, version-bumped from v83 across the three token
+families — version-bump-only diffs verified by normalizing back and
+diffing clean).
+
+The workspace REBUILT (the fresh-clone path, the v86/v88 precedent):
+git clone at main @ 0f8bec4, the tree clean; the environment
+re-provisioned (npm ci 354 packages; .env written
+[DATABASE_URL="file:../db/custom.db"]; db/ at the repo root,
+db:generate + db:push + db:seed; chromium-1243; the paramiko ssh shim
+outside the repo at /home/z/my-project/bin/ssh); the seedcheck exact
+before any flow; the full baseline chain green on the first run (lint
+-> typecheck -> 108 unit -> build -> 292 e2e [121+114+59 = 295 chunk
+executions] -> 35/35 smoke).
+
+The probe series (the v84 lineage, sed-derived with the version +
+session-name + tmp-dir substitutions [vlm84 -> vlm90, refarbit84 ->
+refarbit90, clonearbit84 -> clonearbit90, ref84 -> ref90, clone84 ->
+clone90]; the headers history-corrected to the FOURTH re-run [v62/v63
+-> v69 -> v78 -> v84 -> v90]; the functional bodies verified
+version-bump-only by the normalize-back diff — only the intentional
+history-correction comment lines differ):
+- vlm-shots-v90.sh — the REFERENCE side (login on the first attempt;
+  the parked pointer at (5,5); read-only — the v46 rule).
+- clone-vlmshots-v90.sh — the CLONE side (the with-server :3200 parity
+  server).
+- vlm-compare-v90.mjs — the VLM pairwise.
+- arbit-v90.sh — the both-sides census (the v84 census axes
+  re-measured; the census runs regardless of the verdict — the v75
+  convention; the combined script ran clean this cycle — no resource
+  exhaustion, no two-half split needed).
+- tile-interior-arbit-v90.sh — the supplemental one-shot both-sides
+  census for the pin's own axes (the v87/v88/v89 precedent).
+
+The findings:
+1. Both verdicts DIFFERENT, every flag DOM-arbitrated to the v84
+   re-run's OWN documented classes (the v41 mobile-superset stacking;
+   the medallion "larger circle" a VLM perception misread — the
+   64x64 + 32x32 chrome byte-identical, the artifact riding the
+   reference's own viewport-clipped medallion; the tab-bar alignment a
+   misread under the v53 tablist-390 pin; the v62 subtitle width-delta
+   wrap; the Base44 platform-chrome overlay; the seed-data classes).
+2. The both-sides census REPRODUCES the v84 census values EXACTLY —
+   zero drift on every axis (the summary card/statGrid/tiles/medallion/
+   trendIcon families; the subtitle chrome fs 16px/fw 400/
+   rgb(107,114,128)/lh 24px/P h 48/block h 92; the breakdown card's
+   svg family [svgCount 7, the 16/14 alternation, rechartsWrappers 0,
+   pieSectors 0] + the children heights byte-identical). NO NEW CLONE
+   GAP — the iteration PIN-ONLY.
+3. The v90 pin (+1 e2e = 293): the stat-tile INTERIOR census at 390
+   (tests/e2e/networth.spec.ts — the never-pinned families: the two
+   tiles' LABEL {P/12px/rgba(255,255,255,0.7)/mb 4px/h 16} + VALUE
+   {P/24px/700/white} interiors; the v63 F3 pin held the tile BOX
+   only) — the pin's own axes first measured byte-identical on both
+   sides by the supplemental census — GREEN on first run.
+4. THE MUTATION-AS-COVERAGE-AUDIT CATCH: the pin-sanity mutation's
+   FIRST attempt (the bare font-bold -> font-extrabold swap at
+   net-worth-view.tsx:371) cascaded to the v60 F1 pin's amtFw axis at
+   1280 — the plan's fw-token grep had MISSED the v60 pin's amtFw
+   shorthand (the tile value's fw was already pinned at 1280 all
+   along). The mutation discipline is the coverage-map audit, not just
+   the pin's sensitivity check: grep with BOTH the `fw:` and the
+   shorthand (`amtFw`-style) tokens before claiming a never-pinned
+   axis. The corrected viewport-scoped dodge (font-bold ->
+   font-bold max-lg:font-extrabold — the max-lg variant INERT at
+   >=1024px, active below) confines the flip to the pin's own viewport
+   family: only the v90 pin red under it (28 green), the failure diff
+   reads as the fw axis alone ("700" -> "800"), restored green
+   (git diff src/ = 0; post-restore 29/29).
+5. The full chain re-run GREEN: lint -> typecheck -> 108 unit -> build
+   -> 293 e2e (122+114+59 = 295 chunk executions, zero flakes) ->
+   35/35 smoke; the screenshots 16/16 BYTE-IDENTICAL (the same-day-seed
+   byte-identity law on the fresh-clone seed).
+
+**The v90 lessons:**
+- THE QUEUE-PROSE VERIFICATION LESSON: the rotation ledger's authority
+  is the PROBE LINEAGE (the shot scripts' own surface lists), never
+  the prose queue phrasing — the v89-era docs' "login + dashboard" v90
+  phrasing (and its "FIFTH re-run [v69 -> v74 -> v78 -> v84 -> v90]"
+  bracket, v74 being the savings DESKTOP pair) was a transcription
+  error caught by reading vlm-shots-v84.sh before deriving the v90
+  series. Verify the surface names AND the re-run bracket against the
+  probe scripts before every derivation; correct the record in the
+  plan.
+- THE SHORTHAND-TOKEN GREP LESSON: coverage-map greps must search the
+  ASSERTION'S VALUE TOKENS in both the long form (`fw: "700"`) and the
+  census-shorthand form (`amtFw`) — the v90 first-attempt cascade was
+  exactly a shorthand miss. When a mutation cascades, do not abandon
+  the mutation: read the cascaded pin's assertion, correct the
+  coverage map, and re-scope the mutation (the viewport-scoped dodge)
+  so the flip lands only where the new pin is the sole assertion.
+- The fresh-clone reprovisioning checklist re-verified end-to-end (npm
+  ci -> .env -> db:generate/push/seed -> chromium-1243 -> the paramiko
+  shim outside the repo -> the seedcheck exact): the full chain lands
+  on the documented state with zero flakes on the first run.
+
+The v91 queue (suggestions — verify against the rotation ledger
 before executing): (1) the re-run cadence rotates to the next-oldest
-candidate after this pair (the v84-era MOBILE 390 TWINS [the login +
-dashboard mobile views, last re-shot v84] — now the oldest remaining
-[v84 < v85 < v86 < v87 < v88 < v89]; the twins' FIFTH re-run [v69 ->
-v74 -> v78 -> v84 -> v90]), (2) the axe-core watch at its next
-re-check point (only a 5.x wrapper changes the calculus), (3) the
-deferred reference-write censuses (unchanged — out of bounds under the
-v46 read-only rule).
+candidate after this pair (the v85-era ITEMS pair [the income +
+expenses view pair at desktop 1280], last re-shot v85 — now the oldest
+remaining [v85 < v86 < v87 < v88 < v89 < v90]; the pair's FIFTH re-run
+[v57 -> v64 -> v70 -> v79 -> v85 -> v91]), (2) the axe-core watch at
+its next re-check point (only a 5.x wrapper changes the calculus), (3)
+the deferred reference-write censuses (unchanged — out of bounds under
+the v46 read-only rule).

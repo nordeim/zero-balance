@@ -2161,3 +2161,95 @@ test.describe("net worth ratio-footer census at 390 (v84 — plan F4)", () => {
     expect(census.sw).toBeLessThanOrEqual(391);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v90 — plan F4: the stat-tile INTERIOR census at 390 (the mobile-twins
+// re-run pair's pin — the pair's FOURTH re-run [v62/v63 → v69 → v78 →
+// v84 → v90]). The v41 F3 pin holds the card box/figure/chip/gridCols;
+// the v63 F3 pin the stat-tile BOX family {w/h/bg/blur/radius/pad} + the
+// grid + the card h 421 + the medallion svg; the v84 F4 pin the
+// ratio-footer family. The NEVER-pinned axes here (the
+// tile-interior-arbit-v90.sh census's own measurements, byte-identical on
+// BOTH sides at 390x844): the two tiles' LABEL family (the mb-1 text-xs P
+// with the inline color — fs 12px / rgba(255,255,255,0.7) / mb 4px / the
+// 16px glyph box) + the two tiles' VALUE family (the text-2xl font-bold
+// text-white P — fs 24px / fw 700 / white). The tile WIDTH is the v41
+// mobile-superset class (the reference's overflowing 2-col 176s vs the
+// clone's fitting 1-col 294s) — the INTERIOR typography is the contract.
+// The finder is the v63 F3 finder verbatim.
+// ---------------------------------------------------------------------------
+test.describe("stat-tile interior census at 390 (v90 — plan F4)", () => {
+  test("the summary card's stat-tile interiors — both tiles' label + value families", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const label = [...document.querySelectorAll("p, span, h2, div")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      if (!label) return null;
+      const card = label.closest("div.rounded-2xl") as HTMLElement | null;
+      if (!card) return null;
+      const assetsLabel = [...card.querySelectorAll("p, span")].find(
+        (e) => (e.textContent || "").trim() === "Total Assets",
+      );
+      const grid = assetsLabel ? (assetsLabel.closest('[class*="grid"]') as HTMLElement | null) : null;
+      if (!grid) return null;
+      const gcs = getComputedStyle(grid);
+      const tiles = [...grid.children].map((c): {
+        box: { w: number; h: number };
+        label: { tag: string; fs: string; color: string; mb: string; h: number };
+        value: { tag: string; fs: string; fw: string; color: string };
+      } | null => {
+        const tile = c as HTMLElement;
+        const tr = tile.getBoundingClientRect();
+        const ps = [...tile.querySelectorAll("p")] as HTMLElement[];
+        const [l, v] = ps;
+        if (!l || !v) return null;
+        const lcs = getComputedStyle(l);
+        const vcs = getComputedStyle(v);
+        const lr = l.getBoundingClientRect();
+        return {
+          box: { w: Math.round(tr.width), h: Math.round(tr.height) },
+          label: { tag: l.tagName, fs: lcs.fontSize, color: lcs.color, mb: lcs.marginBottom, h: Math.round(lr.height) },
+          value: { tag: v.tagName, fs: vcs.fontSize, fw: vcs.fontWeight, color: vcs.color },
+        };
+      });
+      if (tiles.some((t) => t === null)) return null;
+      return {
+        gridCols: gcs.gridTemplateColumns,
+        tiles: tiles as NonNullable<(typeof tiles)[number]>[],
+        sw: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("stat-tile interior census found no tiles");
+
+    // The grid + the tile boxes — the v63 F3 contract re-affirmed (the
+    // 1-col 294px track, the 84px tile height arithmetic).
+    expect(census.gridCols).toBe("294px");
+    expect(census.tiles).toHaveLength(2);
+    for (const t of census.tiles) {
+      expect(t.box).toEqual({ w: 294, h: 84 });
+    }
+
+    // The LABEL family — the mb-1 text-xs P with the inline 0.7 white:
+    // 12px / rgba(255,255,255,0.7) / mb 4px / the 16px glyph box, on BOTH
+    // tiles, byte-identical to the reference's own tile labels.
+    for (const t of census.tiles) {
+      expect(t.label).toEqual({
+        tag: "P", fs: "12px", color: "rgba(255, 255, 255, 0.7)", mb: "4px", h: 16,
+      });
+    }
+
+    // The VALUE family — the text-2xl font-bold text-white P: 24px / 700 /
+    // white, on BOTH tiles, byte-identical to the reference's own.
+    for (const t of census.tiles) {
+      expect(t.value).toEqual({ tag: "P", fs: "24px", fw: "700", color: "rgb(255, 255, 255)" });
+    }
+
+    // The page fits the mobile viewport (the v41 superset contract).
+    expect(census.sw).toBeLessThanOrEqual(391);
+  });
+});

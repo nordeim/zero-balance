@@ -72,7 +72,34 @@ and `docs/remediation-plan-v79.md`,
 and `docs/remediation-plan-v80.md`,
 and `docs/remediation-plan-v81.md`,
 and `docs/remediation-plan-v82.md`,
-and `docs/remediation-plan-v83.md`.
+and `docs/remediation-plan-v83.md`,
+and `docs/remediation-plan-v84.md`,
+and `docs/remediation-plan-v85.md`,
+and `docs/remediation-plan-v86.md`,
+and `docs/remediation-plan-v87.md`,
+and `docs/remediation-plan-v88.md`,
+and `docs/remediation-plan-v89.md`,
+and `docs/remediation-plan-v90.md`.
+
+---
+
+## Session 125 — Parity iteration v90: the re-run cycle's next-oldest candidate (the v84-era mobile 390 twins' fourth re-run) + the axe watch (NO DRIFT) + the stat-tile interior census pin (PIN-ONLY) (2026-10-19)
+
+**The cycle** (`docs/remediation-plan-v90.md` — the plan validated against the codebase before execution, the mutation cascade catch included; the narrative: `docs/session_218.md`): the v89 plan's v90 queue suggestion agreeing with the rotation ledger ONCE THE SURFACE-NAME TRANSCRIPTION ERROR IS CORRECTED (the THIRTEENTH consecutive agreement) — the v84-era MOBILE 390 TWINS (the /networth + the dashboard FULL-PAGE pair at 390x844, last re-shot v84, the oldest remaining [v84 < v85 < v86 < v87 < v88 < v89]; the pair's FOURTH re-run [v62/v63 → v69 → v78 → v84 → v90]; the v89-era docs' "login + dashboard" phrasing and "FIFTH re-run" bracket corrected against the v84 probe scripts themselves — the queue-prose verification lesson).
+
+**The baseline — the REBUILT fresh-clone workspace (the v86/v88 precedent)**: git clone at main @ 0f8bec4, the tree clean; the environment re-provisioned (npm ci 354 packages; .env [DATABASE_URL="file:../db/custom.db"], db/ at the repo root with db:generate + db:push + db:seed; chromium-1243; the paramiko ssh shim outside the repo); the seedcheck exact before any flow; lint → typecheck → 108 unit → build → 292 e2e (121+114+59 = 295 chunk executions = 292 unique, zero flakes on the first run) → 35/35 smoke — the exact documented v89 state. The audit clean (the v89 commit f2040a3 re-verified PIN-ONLY [19 files, +1748/-4, ZERO src/ changes]; the two commits since session-log-only; the production seams re-audited — auth, db-path, the SEO pair [prerendered by the build], the Tailwind v4 mitigations, the three test tiers; skills/ excluded throughout). The axe watch NO DRIFT (4.14.0, only rc prereleases, the v68 dedupe holds; the engine-contract pin 2 passed standalone).
+
+**F2 the 84th standing checks** (ref-standing-v84.sh + standing-checks-v84.sh, version-bumped from v83 across the three token families — version-bump-only diffs verified): the mobile menu VERIFIED WORKING (the 84th consecutive time); the reference's four bugs ALL live; the data census the 84th clean drift check; the SEO pair live on both sides.
+
+**F3 the re-run pair** (vlm-shots-v90.sh + clone-vlmshots-v90.sh + vlm-compare-v90.mjs + arbit-v90.sh — the sed derivation from the v84 series with the version + session-name + tmp-dir substitutions, the headers history-corrected to the fourth re-run; login on the first attempt both sides; the parked pointer at (5,5); read-only — the v46 rule): **both verdicts DIFFERENT with every flag DOM-arbitrated to the v84 re-run's own documented classes** (the v41 mobile-superset stacking; the medallion "larger circle" a VLM perception misread — the 64×64 + 32×32 chrome byte-identical; the tab-bar alignment a misread under the v53 pin; the v62 subtitle width-delta wrap; the Base44 platform-chrome overlay; the seed-data classes). The census — the combined arbit-v90.sh ran clean this cycle (no resource exhaustion, no two-half split needed) — REPRODUCES the v84 census values EXACTLY: zero drift on every axis (the summary card/statGrid/tiles/medallion/trendIcon families; the subtitle chrome fs 16px/fw 400/rgb(107,114,128)/lh 24px/P h 48/block h 92; the breakdown card's svg family [svgCount 7, the 16/14 alternation, rechartsWrappers 0, pieSectors 0] + the children heights byte-identical). NO NEW CLONE GAP.
+
+**F4 the v90 pin (+1 e2e = 293)**: the stat-tile INTERIOR census at 390 (tests/e2e/networth.spec.ts — the never-pinned families: the two tiles' LABEL {P/12px/rgba(255,255,255,0.7)/mb 4px/h 16} + VALUE {P/24px/700/white} interiors — the v63 F3 pin held the tile BOX only; the tile-box/grid/docSW re-affirm) — the pin's own axes first measured byte-identical on both sides by the supplemental census (tile-interior-arbit-v90.sh, the v87/v88/v89 one-shot precedent) — GREEN on first run. **THE MUTATION-AS-COVERAGE-AUDIT CATCH**: the pin-sanity mutation's FIRST attempt (the bare font-bold → font-extrabold swap at net-worth-view.tsx:371, by LINE NUMBER) cascaded to the v60 F1 pin's amtFw axis at 1280 — the plan's fw-token grep had missed the v60 pin's amtFw shorthand (the tile value's fw was already pinned at 1280 all along); the catch is the mutation discipline working as designed. The corrected viewport-scoped dodge (font-bold → font-bold max-lg:font-extrabold — the max-lg variant INERT at ≥1024px) confines the flip to below 1024px: only the v90 pin red under it (28 green, the v60 pin green; the failure diff reads as the fw axis alone "700" → "800") — then restored (the standalone REBUILD as a SEPARATE command; git diff src/ = 0 lines; the post-restore full run 29/29 green).
+
+**F5 the full chain re-run GREEN**: lint ✓ · typecheck ✓ · 108 unit ✓ · build ✓ · **293 e2e** (122+114+59 = 295 chunk executions = 293 unique tests, zero flakes) · 35/35 smoke ✓; the screenshots **16/16 BYTE-IDENTICAL** (the same-day-seed byte-identity law on the fresh-clone seed); the final seedcheck exact.
+
+**The docs alignment:** D1 AGENTS.md (the v90 paragraph + the queue-correction note), D2 CLAUDE.md (293 + the v90 pin clause), D3 README.md (the counts + the v90 plan-table row), D4 zero-balance_SKILL.md (Session 125 audit row + the state lines), D5 the PAD's v1.1.47 revision block, D6 the probe README's v90 section (the queue-prose verification lesson + the shorthand-token grep lesson + the fresh-clone reprovisioning note + the v91 queue), D7 session_218.md + this Session 125 entry.
+
+**The next queue:** the v91 cycle — the v85-era ITEMS pair (the income + expenses view pair at desktop 1280, last re-shot v85 — now the oldest remaining [v85 < v86 < v87 < v88 < v89 < v90]; the pair's FIFTH re-run [v57 → v64 → v70 → v79 → v85 → v91]); verify against the rotation ledger first, per protocol.
 
 ---
 
