@@ -1661,3 +1661,199 @@ test.describe("calculator close-button chrome census at 1280 (v87 — plan F4)",
     await expect(dialog).toBeHidden();
   });
 });
+
+// ---------------------------------------------------------------------------
+// v93 — plan F4 (docs/remediation-plan-v93.md): the calculator dialog's
+// TOTAL-CARD inner-text census at 1280x800 — the never-pinned axes.
+//
+// The v59 F1 pin holds the totalCard BOX chrome {720×90/pad/radius/
+// border} at 1280; the v66 F3 pin the row/name/pill/amount height
+// family at 1280; the v73 F4 pin the summary-text family
+// {amount/basedOn/willUpdate} at 390 ONLY; the v81 pin the title/desc/
+// addBtn/scrim at 1280; the v87 pin the close button's chrome at 1280;
+// the v2-era G-test the amount's COLOR at the default viewport — the
+// totalCard's inner-text family is never pinned at 1280 (the v73 390
+// family's DESKTOP twin) and the "Total Calculated" LABEL leaf's
+// chrome {fs/fw/lh/color} is never pinned at ANY viewport (only
+// toBeVisible + locator filters elsewhere).
+//
+// Measured live on BOTH sites (totalcard-arbit-v93.sh +
+// totalcard-clone-v93.sh — the v87-era pair's fifth re-run, the census
+// JS byte-identical across the halves [md5 49aa5547]; the reference's
+// NATIVE 1-row state read-only, the clone's added-then-fully-restored
+// twin): the label 14px/500/lh 20px/rgb(107,114,128); the amount
+// 24px/700/lh 32px/rgb(224,122,59); the basedOn 12px/lh 16px/
+// rgb(107,114,128); the topRow flex/space-between/center/mb 8px; the
+// bottomRow flex/space-between/12px/rgb(107,114,128); the totalCard
+// 720×90/16px/12px/1px solid rgb(252,221,213); the docSW 1280. The
+// will-update span the v66 DATA-CONDITIONAL class (absent on the
+// reference — its Rent natively $25.00 === its line-item total;
+// present in the pin's fixture state at 12px/400/rgb(234,88,12), the
+// v73 390 pin's own values — the family viewport-independent).
+//
+// Every pinned axis is STATIC chrome (the label/amount/basedOn/rows'
+// classes carry no responsive prefixes; the will-update span's
+// EXISTENCE is the only data-conditional, its classes unconditional);
+// the pin rides the 1-row fixture state (the v45/v66/v73 discipline —
+// Add Item "Contents Insurance" $25 through the real UI) + the same
+// cleanup (delete + close + restoreRent).
+// ---------------------------------------------------------------------------
+test.describe("calculator totalCard inner-text census at 1280 (v93 — plan F4)", () => {
+  test("the label + amount + basedOn + willUpdate + rows — the never-pinned family at the pair viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: "Add Item" }).click();
+    const lineDialog = page.getByRole("dialog", { name: "Add Line Item" });
+    await lineDialog.getByLabel("Item Name *").fill("Contents Insurance");
+    await lineDialog.getByLabel("Amount *").fill("25");
+    await lineDialog.getByRole("button", { name: "Save Item" }).click();
+    await expect(lineDialog).toBeHidden();
+    await expect(dialog.getByText("Contents Insurance")).toBeVisible();
+    await page.waitForTimeout(300);
+
+    const census = await page.evaluate(() => {
+      // The finders modeled on the v93 arbitration's own census
+      // (totalcard-arbit-v93.sh / totalcard-clone-v93.sh).
+      const panel = [...document.querySelectorAll('[role="dialog"]')].find(
+        (d) => (d.textContent || "").includes("Rent Calculator"),
+      ) as HTMLElement | null;
+      if (!panel) return null;
+      const totalCard = [...panel.querySelectorAll("div")].find(
+        (d) => getComputedStyle(d).backgroundColor === "rgb(255, 247, 245)",
+      );
+      if (!totalCard) return null;
+      const leaf = (scope: HTMLElement, test: (t: string) => boolean) =>
+        [...scope.querySelectorAll("*")].find(
+          (e) => e.children.length === 0 && test((e.textContent || "").trim()),
+        ) as HTMLElement | undefined;
+      const labelEl = leaf(totalCard, (t) => t === "Total Calculated");
+      const amountEl = leaf(totalCard, (t) => t === "$25.00");
+      const basedOnEl = leaf(totalCard, (t) => /^Based on 1 item$/.test(t));
+      const willUpdateEl = leaf(totalCard, (t) => /Will update category total/.test(t));
+      if (!labelEl || !amountEl || !basedOnEl || !willUpdateEl) return null;
+      const topRow = labelEl.parentElement as HTMLElement;
+      const bottomRow = basedOnEl.parentElement as HTMLElement;
+      const tcs = getComputedStyle(totalCard);
+      const tr = totalCard.getBoundingClientRect();
+      const s = (el: HTMLElement) => getComputedStyle(el);
+      return {
+        label: {
+          fs: s(labelEl).fontSize,
+          fw: s(labelEl).fontWeight,
+          lh: s(labelEl).lineHeight,
+          color: s(labelEl).color,
+        },
+        amount: {
+          fs: s(amountEl).fontSize,
+          fw: s(amountEl).fontWeight,
+          lh: s(amountEl).lineHeight,
+          color: s(amountEl).color,
+        },
+        basedOn: {
+          fs: s(basedOnEl).fontSize,
+          lh: s(basedOnEl).lineHeight,
+          color: s(basedOnEl).color,
+        },
+        willUpdate: {
+          fs: s(willUpdateEl).fontSize,
+          fw: s(willUpdateEl).fontWeight,
+          color: s(willUpdateEl).color,
+        },
+        topRow: {
+          display: s(topRow).display,
+          justify: s(topRow).justifyContent,
+          align: s(topRow).alignItems,
+          mb: s(topRow).marginBottom,
+        },
+        bottomRow: {
+          display: s(bottomRow).display,
+          justify: s(bottomRow).justifyContent,
+          fs: s(bottomRow).fontSize,
+          color: s(bottomRow).color,
+        },
+        totalCard: {
+          w: Math.round(tr.width),
+          h: Math.round(tr.height),
+          pad: tcs.padding,
+          radius: tcs.borderRadius,
+          border: tcs.border,
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The "Total Calculated" LABEL leaf's typography — never pinned at
+    // ANY viewport before this pin (text-sm font-medium + the inline
+    // gray token).
+    expect(census!.label).toEqual({
+      fs: "14px",
+      fw: "500",
+      lh: "20px",
+      color: "rgb(107, 114, 128)",
+    });
+    // The summary amount: the v73 390 family's desktop twin (text-2xl
+    // font-bold + the inline orangeDark token).
+    expect(census!.amount).toEqual({
+      fs: "24px",
+      fw: "700",
+      lh: "32px",
+      color: "rgb(224, 122, 59)",
+    });
+    // The "Based on 1 item" line: the v73 family's desktop twin
+    // (the text-xs gray caption).
+    expect(census!.basedOn).toEqual({
+      fs: "12px",
+      lh: "16px",
+      color: "rgb(107, 114, 128)",
+    });
+    // The conditional span: the v73 family's desktop twin (the
+    // text-[#ea580c] hint — present with the fixture, the opened-at
+    // 1850 vs the recalculated 25.00).
+    expect(census!.willUpdate).toEqual({
+      fs: "12px",
+      fw: "400",
+      color: "rgb(234, 88, 12)",
+    });
+    // The two summary rows' chrome — never pinned at any viewport.
+    expect(census!.topRow).toEqual({
+      display: "flex",
+      justify: "space-between",
+      align: "center",
+      mb: "8px",
+    });
+    expect(census!.bottomRow).toEqual({
+      display: "flex",
+      justify: "space-between",
+      fs: "12px",
+      color: "rgb(107, 114, 128)",
+    });
+    // The totalCard box re-affirm (the v59 contract at the pin's own
+    // viewport).
+    expect(census!.totalCard).toEqual({
+      w: 720,
+      h: 90,
+      pad: "16px",
+      radius: "12px",
+      border: "1px solid rgb(252, 221, 213)",
+    });
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+
+    // --- cleanup (the v53 F2b discipline): delete the row AND restore
+    // the Rent amount (the line-item mutations recalculate the parent's
+    // amount server-side — the calculator rule).
+    await dialog.getByRole("button", { name: "Delete Contents Insurance" }).click();
+    await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(dialog.getByText("Contents Insurance")).toBeHidden();
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await restoreRent(page);
+  });
+});

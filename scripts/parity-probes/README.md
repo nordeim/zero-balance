@@ -5504,3 +5504,111 @@ verified against vlm-shots-v87.sh's own header this session), (2) the
 axe-core watch at its next re-check point (only a 5.x wrapper changes
 the calculus), (3) the deferred reference-write censuses (unchanged —
 out of bounds under the v46 read-only rule).
+
+## The v93 cycle (executed 2026-10-19 — the v87-era login + calculator pair's fifth re-run)
+
+The queue's own paragraph above was EXECUTED this cycle. The probe series
+derived from the v87 lineage by the sed substitution families
+(vlm87->vlm93, login87->login93, calc87->calc93, v87->v93 — the shots'
+session names riding the families), the headers history-corrected to the
+FIFTH re-run [v59 -> v66 -> v75 -> v81 -> v87 -> v93] + "last re-shot
+v87" + the oldest-remaining bracket [v87 < v88 < v89 < v90 < v91 < v92]
++ the queue agreement ordinal TENTH -> SIXTEENTH + the suggesting plan
+v86 -> v92; the functional bodies verified version-bump-only by the
+normalize-back diff (only the intentional history-correction comment
+lines differ; the residual "87" tokens all legitimate history
+references). The new probes this cycle: vlm-shots-v93.sh +
+login-shots-v93.sh + clone-vlmshots-v93.sh + clone-login-shots-v93.sh +
+vlm-compare-v93.mjs + arbit-v93.sh + build-twohalf-v93.py (the two-half
+builder for the two-census-block arbit form — the CALC + LOGIN census
+blocks extracted once, embedded byte-identically across the halves by
+the md5 line-block contract) + ref-arbit-v93.sh + clone-arbit-v93.sh +
+totalcard-arbit-v93.sh + totalcard-clone-v93.sh (the supplemental
+one-shot, BUILT two-half from the start) + ref-standing-v87.sh +
+standing-checks-v87.sh (the 87th standing checks, version-bumped from
+the v86 pair across the three token families).
+
+The verdicts: the LOGIN pair IDENTICAL the FOURTH consecutive
+(v75/v81/v87/v93 — zero style flags, the both-sides census
+byte-identical on every axis); the CALCULATOR pair DIFFERENT with every
+flag DOM-arbitrated to the v75/v81/v87 re-runs' own documented classes
+(the v66 DATA-CONDITIONAL will-update span + its derived card-height
+note [the totalCard box itself 720x90 byte-identical]; the v75/v81/v87
+POINTER-POSITION actions perception [actionsAtRest {opacity: 0,
+btnCount: 2} byte-identical on both sides]; the seed-data figures; no
+FAB flag this cycle; the close census axis absent ref-side — the
+v87-documented lost-accessible-name observation holding, the clone's
+close census the v87 pin's own values, the clone the SUPERSET). The
+both-sides census — executed in the TWO-HALF controlled form BUILT
+two-half from the start — REPRODUCED the v87 census values EXACTLY
+(zero drift on every axis). NO NEW CLONE GAP — the v93 iteration
+PIN-ONLY.
+
+The +1 e2e pin: the totalCard INNER-TEXT census at 1280
+(tests/e2e/calculator.spec.ts — the v73 390 summary-text family's
+DESKTOP twin [the amount/basedOn/willUpdate] PLUS the "Total
+Calculated" LABEL leaf's typography — never pinned at ANY viewport —
+PLUS the two summary rows' chrome + the box re-affirm + the docSW 1280
+guard), the pin's own axes first measured byte-identical on both sides
+by the supplemental two-half census (the reference's NATIVE 1-row state
+read-only; the clone's added-then-fully-restored twin; the seedcheck
+exact after the run). The pin-sanity mutation: the viewport-scoped
+text-sm font-medium -> text-sm font-medium lg:font-semibold at
+calculator-dialog.tsx:153 (by LINE NUMBER, AT-lg because the pin runs at
+1280) — ONLY the v93 pin red (17 green under the mutation), the failure
+diff reads as the label.fw axis ALONE ("500" -> "600") — cascade-free
+BY CONSTRUCTION (the inline label's lh 20px bound by the amount's 32px
+row; the totalCard box unchanged; no spec asserts the label's computed
+styles at ANY viewport; the lg: variant inert below 1024px — every
+390/640 pin green).
+
+The screenshots: **16/16 BYTE-IDENTICAL** — the same-day-seed
+byte-identity law in its purest form (the seed planted and the shots
+taken on the same calendar day 2026-10-19, byte-for-byte reproduction,
+ZERO arbitration needed this cycle — the v92 cycle's cross-day re-seed
+needed 7 pixel-arbitrations; the same-day capture needs none).
+
+The v93 cycle's operational lessons:
+
+- THE REAPING BUDGET, BETWEEN THE HALVES, FROM THE START: the
+  clone-side shots' first run hit the chromium resource-exhaustion
+  symptom (70 zombie processes observed; the EMPTY-eval signature — no
+  error surface, the v89-documented class). The fix (pkill -f
+  agent-browser + the session-file sweep) is now budgeted as a STANDING
+  STEP between the reference and clone halves of EVERY long probe, not
+  just the recovery. CAUTION: a `bash -c` whose command string contains
+  the literal "agent-browser" self-matches the pkill pattern and dies
+  instantly (SIGTERM at launch) — run the reaping as its OWN tool call,
+  never inline in a compound command that names the pattern.
+- THE TWO-HALF CENSUS, BUILT FROM THE START, AGAIN — now for the
+  TWO-census-block form too: build-twohalf-v93.py extracts BOTH census
+  JS blocks (CALC + LOGIN) once and embeds them byte-identically across
+  the halves (the md5 line-block contract generalized from one block to
+  N blocks); the supplemental one-shots remain two-half from the start
+  (the v92 lesson holding).
+- THE SESSION-LOG-ONLY COMMIT CLASS: a pulled docs-only commit (the
+  926f193 session-log) requires ZERO re-provisioning — the npm ci
+  state, the db, the chromium, and the shim all carry over when the
+  delta touches no src/ or lockfile path; the baseline chain re-run on
+  the carried-over environment IS the shipped-state verification (the
+  tree clean at the pulled HEAD).
+- THE LABEL-FIRST FAMILY EXTENSION: when a pin family extends to a new
+  viewport (the v73 390 -> v93 1280 twin), the mutation axis should
+  target the family member never pinned at ANY viewport (the label) —
+  the viewport-twin axes are held by the 390 pin whose lg:-scoped
+  inertness keeps it green, but the label's never-pinned-anywhere
+  status makes its flip the cleanest single-axis proof that the NEW pin
+  bites.
+
+The v94 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after this pair (the v88-era NETWORTH + DRILL-DOWN pair [the NETWORTH
+view + the DASHBOARD's drill-down EXPANDED state, both desktop
+1280x800 full-page], last re-shot v88 — now the oldest remaining [v88 <
+v89 < v90 < v91 < v92 < v93]; the pair's FIFTH re-run [v60 -> v67 ->
+v76 -> v82 -> v88 -> v94] — the surface names verified against
+vlm-shots-v88.sh's own header this session), (2) the axe-core watch at
+its next re-check point (only a 5.x wrapper changes the calculus), (3)
+the deferred reference-write censuses (unchanged — out of bounds under
+the v46 read-only rule).
+
