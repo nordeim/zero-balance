@@ -3653,3 +3653,123 @@ test.describe("quick-action transition + plus-viewBox + guidelines-body-display 
     expect(census.docSW).toBe(1280);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v95 — plan F4 (docs/remediation-plan-v95.md): the quick-action row's
+// TRANSITION-TIMING family census at 1280.
+//
+// The v89-era dashboard pair's FIFTH re-run's pin: the never-pinned
+// transition-TIMING chrome — the three cards' transitionTimingFunction +
+// transitionDelay (the v89 pin holds the duration/property only), the
+// three tinted tiles' transition-transform family (the v61 F3 pin holds
+// the tile's geometry; the timing/duration never pinned at ANY viewport),
+// and the three plus icons' transition-opacity family (never pinned — the
+// v61 F3 pin holds the plus's resting opacity/color only).
+//
+// The axes first measured byte-identical on BOTH sides by the qa-timing
+// two-half census (qa-timing-arbit-v95.sh + qa-timing-clone-v95.sh, the
+// census JS md5-identical across the halves): cardTiming
+// cubic-bezier(0.4, 0, 0.2, 1) + cardDelay 0s; tile {dur 0.2s, timing
+// cubic-bezier(0.4, 0, 0.2, 1)}; plus {prop opacity, dur 0.15s, timing
+// cubic-bezier(0.4, 0, 0.2, 1), delay 0s}; docSW 1280.
+//
+// THE v4 TRANSITION-PROPERTY COMPUTED-FORM CLASS (the v95 lesson): the
+// reference (Tailwind v3) computes the tile's transitionProperty as
+// "transform" while the clone (v4) computes "transform, translate, scale,
+// rotate" — the v4 utility's expanded property list, the rendered behavior
+// identical (the tile's only animated property `scale` covered by BOTH
+// lists). The property axis is asserted in the CONTAINS form, never exact
+// (the v66 shadow lead-layer / v82 labelBlock width / v94 margin-form
+// family's newest member).
+// ---------------------------------------------------------------------------
+interface QaTimingCensus {
+  cards: {
+    text: string;
+    cardTiming: string;
+    cardDelay: string;
+    tileTransition: { prop: string; dur: string; timing: string } | null;
+    plusTransition: { prop: string; dur: string; timing: string; delay: string } | null;
+  }[];
+  docSW: number;
+  err?: string;
+}
+test.describe("quick-action transition-timing family census at 1280 (v95 — plan F4)", () => {
+  test("the three cards' timing function + delay + the tiles' and pluses' transition families — the never-pinned family", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByRole("button", { name: "Add Income" })).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate((): QaTimingCensus => {
+      // The three quick-action cards (the v61 F3 finder: the exact-text
+      // regex on the button trio).
+      const qas = [...document.querySelectorAll("button")].filter(
+        (b) => /^Add (Income|Savings|Expense)$/.test((b.textContent || "").trim()),
+      );
+      if (qas.length !== 3)
+        return {
+          cards: [],
+          docSW: document.documentElement.scrollWidth,
+          err: `qa count ${qas.length}`,
+        };
+      const cards = qas.map((b) => {
+        const cs = getComputedStyle(b);
+        const svgs = [...b.querySelectorAll("svg")];
+        const plus = svgs[svgs.length - 1] as SVGElement | undefined;
+        // The tile: the v61 F3 finder (radius 12px, the 30..60 box).
+        const tile = [...b.querySelectorAll("span, div")].find((s) => {
+          const st = getComputedStyle(s);
+          const sr = s.getBoundingClientRect();
+          return st.borderRadius === "12px" && sr.width >= 30 && sr.width <= 60 && sr.height >= 30 && sr.height <= 60;
+        }) as HTMLElement | undefined;
+        const pcs = plus ? getComputedStyle(plus) : null;
+        const tcs = tile ? getComputedStyle(tile) : null;
+        return {
+          text: (b.textContent || "").trim(),
+          cardTiming: cs.transitionTimingFunction,
+          cardDelay: cs.transitionDelay,
+          tileTransition: tcs
+            ? { prop: tcs.transitionProperty, dur: tcs.transitionDuration, timing: tcs.transitionTimingFunction }
+            : null,
+          plusTransition: pcs
+            ? { prop: pcs.transitionProperty, dur: pcs.transitionDuration, timing: pcs.transitionTimingFunction, delay: pcs.transitionDelay }
+            : null,
+        };
+      });
+      return { cards, docSW: document.documentElement.scrollWidth };
+    });
+    expect(census.err).toBeUndefined();
+    expect(census.cards.length).toBe(3);
+
+    // The three cards' timing function + delay — byte-identical on both
+    // sides (the qa-timing two-half census): Tailwind's default timing
+    // (the duration-200 family's own curve) + no delay.
+    const expectedTexts = ["Add Income", "Add Savings", "Add Expense"];
+    census.cards.forEach((c, i) => {
+      expect(c.text).toBe(expectedTexts[i]);
+      expect(c.cardTiming).toBe("cubic-bezier(0.4, 0, 0.2, 1)");
+      expect(c.cardDelay).toBe("0s");
+      // The tiles' transition-transform family — the duration + timing
+      // byte-identical; the PROPERTY in the CONTAINS form (the v95 v4
+      // computed-form class: the clone's "transform, translate, scale,
+      // rotate" superset vs the reference's "transform" — the rendered
+      // behavior identical).
+      expect(c.tileTransition).not.toBeNull();
+      expect(c.tileTransition!.prop).toContain("transform");
+      expect(c.tileTransition!.dur).toBe("0.2s");
+      expect(c.tileTransition!.timing).toBe("cubic-bezier(0.4, 0, 0.2, 1)");
+      // The pluses' transition-opacity family — all four axes
+      // byte-identical (the Tailwind default 150ms — no duration class
+      // on the plus).
+      expect(c.plusTransition).toEqual({
+        prop: "opacity",
+        dur: "0.15s",
+        timing: "cubic-bezier(0.4, 0, 0.2, 1)",
+        delay: "0s",
+      });
+    });
+
+    // The no-overflow guard on the same surface.
+    expect(census.docSW).toBe(1280);
+  });
+});
