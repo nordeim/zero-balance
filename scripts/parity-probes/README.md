@@ -5363,3 +5363,144 @@ remaining [v86 < v87 < v88 < v89 < v90 < v91]; the pair's FIFTH re-run
 its next re-check point (only a 5.x wrapper changes the calculus), (3)
 the deferred reference-write censuses (unchanged — out of bounds under
 the v46 read-only rule).
+
+## v92 — the savings pair's fifth re-run + the savings filter-interior + search-icon pin (2026-10-19)
+
+The cycle (`docs/remediation-plan-v92.md` — the plan validated against
+the codebase before execution; the narrative: `docs/session_222.md`):
+the v91-era docs' v92 queue suggestion agreeing with the rotation
+ledger — the FIFTEENTH consecutive agreement (the surface names
+verified against vlm-shots-v86.sh's own surface list before the
+derivation, the queue-prose verification lesson applied) — the v86-era
+SAVINGS pair (the savings view at desktop 1280x800, full-page, last
+re-shot v86; the pair's FIFTH re-run [v58 -> v65 -> v74 -> v80 -> v86
+-> v92]), plus the axe watch at its re-check point (NO DRIFT: 4.14.0
+npm-latest, no stable beyond, no 5.x, the v68 dedupe holds) and the
+86th standing checks (ref-standing-v86.sh + standing-checks-v86.sh,
+version-bumped from v85 across the three token families —
+version-bump-only diffs verified by normalizing back and diffing
+clean).
+
+The workspace REBUILT (the fresh-clone path, the v86/v88/v90/v91
+precedent): git clone at main @ e520a61, the tree clean; the
+environment re-provisioned (npm ci 354 packages; .env written
+[DATABASE_URL="file:../db/custom.db"]; db/ at the repo root,
+db:generate + db:push + db:seed; chromium-1243; the paramiko ssh shim
+outside the repo at /home/z/my-project/bin/ssh); the seedcheck exact
+before any flow; the full baseline chain green on the first run (lint
+-> typecheck -> 108 unit -> build -> 294 e2e [132+108+56 = 296 chunk
+executions] -> 35/35 smoke).
+
+The probe series (the v86 lineage, sed-derived with the version +
+session-name + tmp-dir substitutions [vlm86 -> vlm92, refarbit86 ->
+refarbit92, clonearbit86 -> clonearbit92, v86 -> v92; the shots'
+session names refvlm86 -> refvlm92 / clonevlm86 -> clonevlm92 riding
+the vlm86 -> vlm92 family]; the headers history-corrected to the FIFTH
+re-run [v58 -> v65 -> v74 -> v80 -> v86 -> v92] + "last re-shot v86" +
+the oldest-remaining bracket [v86 < v87 < v88 < v89 < v90 < v91] + the
+agreement ordinal NINTH -> FIFTEENTH + the suggesting plan v85 -> v91;
+the functional bodies verified version-bump-only by the normalize-back
+diff — only the intentional history-correction comment lines differ):
+- vlm-shots-v92.sh — the REFERENCE side (login on the first attempt;
+  the parked pointer at (5,5); read-only — the v46 rule).
+- clone-vlmshots-v92.sh — the CLONE side (the with-server :3200 parity
+  server).
+- vlm-compare-v92.mjs — the VLM pairwise.
+- arbit-v92.sh — the both-sides census (the v86 census axes
+  re-measured; the census runs regardless of the verdict — the v75
+  convention) — whose CLONE half aborted in the chromium resource
+  exhaustion (the v89/v91-documented symptom class), and was completed
+  in the TWO-HALF controlled form:
+  - ref-arbit-v92.sh — the reference half (derived by
+    build-twohalf-v92.py, the census JS extracted once and embedded
+    byte-identically in both halves).
+  - clone-arbit-v92.sh — the clone half (the census JS byte-identical
+    across the halves — the lines-1-153 identity verified by the md5
+    line-block diff).
+- savings-filter-arbit-v92.sh + savings-filter-clone-v92.sh — the
+  supplemental one-shot both-sides census for the pin's own axes (the
+  v87-v91 precedent), BUILT TWO-HALF from the start after the cycle's
+  first exhaustion.
+- pixel-diff-v92.mjs + crop-diff-v92.mjs + crop-analyze-v92.mjs +
+  vlm-arbit-crop-v92.mjs + crop-left-v92.mjs + vlm-left-v92.mjs — the
+  screenshot DATE-class arbitration chain (the v80/v86 discipline).
+
+The findings:
+1. The verdict DIFFERENT, every flag DOM-arbitrated to the v86 re-run's
+   OWN documented classes (the seed-count grid; the v58
+   DATA-CONDITIONAL footer + its derived internal-spacing note; the
+   seed-data figures/badges/subtexts; the user-identity avatar; no FAB
+   flag this cycle — the platform iframe chrome absent from this
+   verdict's flag set).
+2. The both-sides census (the two-half form) REPRODUCES the v86 census
+   values EXACTLY — zero drift on every axis (the header/grid/card/
+   titleRow/amount/footer/badge families; the docSW 1280 guard). NO NEW
+   CLONE GAP — the iteration PIN-ONLY.
+3. The v92 pin (+1 e2e = 295): the savings filter-interior + SEARCH-
+   ICON census at 1280 (tests/e2e/items.spec.ts — the v91 pin family's
+   THIRD variant [income + expenses pinned v91; the savings variant
+   never] PLUS the search icon's computed chrome {svg/20x20/
+   rgb(107,114,128)/absolute/left 12px} — the filter card's last
+   never-pinned element, never pinned at ANY viewport on ANY view; the
+   glyph spec holds the PATH data only, the class-string test the w-5
+   SUBSTRING only) — the pin's own axes first measured byte-identical
+   on both sides by the supplemental two-half census — GREEN on first
+   run.
+4. The pin-sanity mutation (the executed form — the viewport-scoped
+   h-5 w-5 -> h-5 w-5 lg:h-6 at items-view.tsx:181, by LINE NUMBER;
+   AT-lg because the pin runs at 1280): the failure diff reads as the
+   searchIcon.h axis alone ("20" -> "24"); the full items.spec.ts under
+   the mutation reads ONLY the v92 pin red (40 green) — cascade-free
+   BY CONSTRUCTION (the icon is absolutely positioned, out of flow —
+   no geometry moves; no spec asserts any search icon's computed w/h
+   at ANY viewport); restored (git diff src/ = 0; the standalone
+   REBUILD via the FULL npm run build; post-restore 41/41 green).
+5. The full chain re-run GREEN: lint -> typecheck -> 108 unit -> build
+   -> 295 e2e (133+108+56 = 297 chunk executions, zero flakes) ->
+   35/35 smoke; the screenshots 9/16 BYTE-IDENTICAL + 7/16
+   benign-pixel-arbitrated (6 DATE-TEXT-ONLY [03/04/05/06/07/16 — the
+   fresh seed planted 2026-10-19 vs the committed set's 2026-10-18
+   seed: the day number +1, every crop pair single-image
+   VLM-arbitrated, the chrome byte-identical] + 1 RASTERIZATION-NOISE
+   [08-calculator: every differing pixel <=4 channel units, both crops
+   VLM-read "solid gray, no text"]; the regenerated set ships per the
+   v80 discipline — the honest capture is committed).
+
+**The v92 lessons:**
+- THE TWO-HALF CENSUS, FROM THE START, AGAIN: the combined arbit
+  script's clone half aborted in the chromium resource exhaustion (the
+  v89/v91 symptom class) — the two-half form (the census JS
+  byte-identity as the contract) is the recovery, and the supplemental
+  one-shot censuses are again BUILT two-half from the start after the
+  cycle's first exhaustion; the build-twohalf-v92.py helper (the
+  census block extracted ONCE from the combined script and embedded in
+  both halves) makes the byte-identity a construction guarantee rather
+  than a hand-editing discipline.
+- THE MUTATION-FAMILY ROTATION: the v91 mutation form (the search's fw
+  axis via the view-local className) is NOT reusable on the same
+  component once its axes are pinned on the sibling views — the Input
+  instance is shared by all three items views, so an fw flip at
+  >=1024px cascades to the v91 pin (TWO pins red). The v92 mutation
+  rotates to a DIFFERENT element on the same surface — the search
+  ICON's height — whose computed chrome is asserted by NO other spec at
+  any viewport. When the pin family extends across the sibling
+  variants of a shared component, the mutation axis must move to an
+  element whose axes the earlier variants' pins do not hold.
+- THE SEED-DAY DATE-CLASS, RE-CLASSIFIED PER PIXEL: the 16-item-details
+  wide-region diff decomposed by the within-crop column-band analysis
+  into the date-text glyphs (the right band) + a sub-perceptual
+  <=4-channel noise tail (the left band, both crops VLM-read "solid
+  gray, no chrome") — the DATE-TEXT-ONLY and RASTERIZATION-NOISE
+  classes can CO-OCCUR in one file; the crop-band analysis plus the
+  targeted band reads settle it without a full-page verdict.
+
+The v93 queue (suggestions — verify against the rotation ledger
+before executing): (1) the re-run cadence rotates to the next-oldest
+candidate after this pair (the v87-era LOGIN + CALCULATOR pair [the
+calculator dialog at desktop 1280x800], last re-shot v87 — now the
+oldest remaining [v87 < v88 < v89 < v90 < v91 < v92]; the pair's FIFTH
+re-run [v59 -> v66 -> v75 -> v81 -> v87 -> v93] — the surface names
+verified against vlm-shots-v87.sh's own header this session), (2) the
+axe-core watch at its next re-check point (only a 5.x wrapper changes
+the calculus), (3) the deferred reference-write censuses (unchanged —
+out of bounds under the v46 read-only rule).

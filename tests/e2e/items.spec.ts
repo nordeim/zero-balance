@@ -3577,3 +3577,192 @@ test.describe("filter-card interactive-interior census at 1280 (v91 — plan F4)
     expect(expenses!.docSW).toBe(1280);
   });
 });
+
+// v92 F4 (docs/remediation-plan-v92.md): the v86-era savings pair's FIFTH
+// re-run (v58 → v65 → v74 → v80 → v86 → v92) found NO NEW GAP (every
+// census axis byte-identical — the arbit-v92 two-half census reproducing
+// the v86 values exactly; every VLM flag DOM-arbitrated to the documented
+// classes: the v58 DATA-CONDITIONAL footer + the derived spacing note, the
+// seed-count/seed-data classes, the user-identity avatar), so the
+// iteration deepens the coverage instead: the SAVINGS variant's
+// FILTER-CARD INTERACTIVE INTERIORS at 1280 — the v91 pin family's THIRD
+// variant (income + expenses pinned v91; the savings variant never — the
+// v38 S2 pin holds the card chrome + the search/combobox GEOMETRY at the
+// default viewport only) — PLUS the SEARCH ICON's computed chrome (the
+// filter card's last never-pinned element: the magnifier svg's
+// w/h/color/position/left never pinned at ANY viewport on ANY view; the
+// glyph-parity spec holds the PATH data only, the class-string test the
+// w-5 SUBSTRING only). Measured BYTE-IDENTICAL on BOTH sides by the
+// supplemental two-half census (savings-filter-arbit-v92.sh +
+// savings-filter-clone-v92.sh); the pin's expected values are that
+// census's own measured values.
+test.describe("savings filter-interior + search-icon census at 1280 (v92 — plan F4)", () => {
+  test("the savings variant's search census + the search icon's computed chrome + every trigger's resting chrome", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const search = [...document.querySelectorAll("input")].find(
+        (i) => i.getBoundingClientRect().width > 100,
+      );
+      const filterCard = search
+        ? (search.closest("div.rounded-2xl") as HTMLElement | null)
+        : null;
+      if (!search || !filterCard) return null;
+      const srcs = getComputedStyle(search);
+      const sr = search.getBoundingClientRect();
+      // The SEARCH ICON — the search wrapper's first svg (the magnifier:
+      // absolute / left-3 / top-1/2 / -translate-y-1/2 / h-5 w-5 / the
+      // gray inline token — the never-pinned family).
+      const wrapper = search.parentElement as HTMLElement | null;
+      const icon = wrapper ? (wrapper.querySelector("svg") as SVGElement | null) : null;
+      const ics = icon ? getComputedStyle(icon) : null;
+      const ir = icon ? icon.getBoundingClientRect() : null;
+      const inner = [...filterCard.children].find(
+        (c) => getComputedStyle(c).display === "grid",
+      );
+      const fcs = getComputedStyle(filterCard);
+      const fr = filterCard.getBoundingClientRect();
+      return {
+        search: {
+          tag: search.tagName,
+          type: search.type,
+          w: Math.round(sr.width),
+          h: Math.round(sr.height),
+          fs: srcs.fontSize,
+          fw: srcs.fontWeight,
+          lh: srcs.lineHeight,
+          color: srcs.color,
+          placeholder: search.getAttribute("placeholder") || "",
+          pad: srcs.padding,
+          radius: srcs.borderRadius,
+        },
+        searchIcon: icon
+          ? {
+              tag: icon.tagName,
+              w: Math.round(ir!.width),
+              h: Math.round(ir!.height),
+              color: ics!.color,
+              position: ics!.position,
+              left: ics!.left,
+            }
+          : null,
+        triggers: inner
+          ? [...inner.querySelectorAll('[role="combobox"]')].map((c) => {
+              const r = c.getBoundingClientRect();
+              const cs = getComputedStyle(c);
+              const chev = c.querySelector("svg");
+              const chr = chev ? chev.getBoundingClientRect() : null;
+              return {
+                tag: c.tagName,
+                w: Math.round(r.width),
+                h: Math.round(r.height),
+                pad: cs.padding,
+                justify: cs.justifyContent,
+                align: cs.alignItems,
+                bg: cs.backgroundColor,
+                radius: cs.borderRadius,
+                borderW: cs.borderTopWidth,
+                borderC: cs.borderTopColor,
+                fs: cs.fontSize,
+                fw: cs.fontWeight,
+                color: cs.color,
+                text: (c.textContent || "").trim(),
+                chevW: chr ? Math.round(chr.width) : null,
+                chevH: chr ? Math.round(chr.height) : null,
+                chevColor: chev ? getComputedStyle(chev).color : null,
+              };
+            })
+          : [],
+        filterCard: {
+          w: Math.round(fr.width),
+          h: Math.round(fr.height),
+          pad: fcs.padding,
+          radius: fcs.borderRadius,
+          bg: fcs.backgroundColor,
+          borderC: fcs.borderTopColor,
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The SEARCH's full census at 1280 on the savings variant — the v91
+    // family's third variant: text-sm's 14px/20px pair, the neutral
+    // foreground rgb(10,10,10), fw 400, the spanning 447×36 geometry +
+    // the asymmetric 40px left pad (the v38 S2 contract re-affirmed at
+    // the pin's own viewport). A broken text-sm, a changed foreground,
+    // or a geometry drift flips these axes.
+    expect(census!.search).toEqual({
+      tag: "INPUT",
+      type: "text",
+      w: 447,
+      h: 36,
+      fs: "14px",
+      fw: "400",
+      lh: "20px",
+      color: "rgb(10, 10, 10)",
+      placeholder: "Search savings items...",
+      pad: "4px 12px 4px 40px",
+      radius: "6px",
+    });
+
+    // The SEARCH ICON's computed chrome — the filter card's last
+    // never-pinned element: the magnifier svg 20×20 (h-5 w-5) in the
+    // gray rgb(107,114,128), absolutely positioned at left 12px
+    // (left-3) inside the search's relative wrapper. A broken h-5/w-5,
+    // a changed gray, or a positional drift flips these axes.
+    expect(census!.searchIcon).toEqual({
+      tag: "svg",
+      w: 20,
+      h: 20,
+      color: "rgb(107, 114, 128)",
+      position: "absolute",
+      left: "12px",
+    });
+
+    // Every trigger's RESTING chrome — the savings variant's two
+    // comboboxes (category + frequency): the same interiors contract as
+    // the v91 pin's income/expenses variants (the chevron rides
+    // currentColor at rest).
+    expect(census!.triggers).toHaveLength(2);
+    for (const t of census!.triggers) {
+      expect(t).toMatchObject({
+        tag: "BUTTON",
+        w: 216,
+        h: 36,
+        pad: "8px 12px",
+        justify: "space-between",
+        align: "center",
+        bg: "rgba(0, 0, 0, 0)",
+        radius: "6px",
+        borderW: "1px",
+        borderC: "rgb(229, 229, 229)",
+        fs: "14px",
+        fw: "400",
+        color: "rgb(10, 10, 10)",
+        chevW: 16,
+        chevH: 16,
+        chevColor: "rgb(10, 10, 10)",
+      });
+    }
+    expect(census!.triggers.map((t) => t.text)).toEqual([
+      "All Categories",
+      "All Frequencies",
+    ]);
+
+    // The filter card's own chrome re-affirm (the v38 S2 contract).
+    expect(census!.filterCard).toEqual({
+      w: 960,
+      h: 86,
+      pad: "24px",
+      radius: "16px",
+      bg: "rgb(255, 255, 255)",
+      borderC: "rgb(229, 231, 227)",
+    });
+
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});
