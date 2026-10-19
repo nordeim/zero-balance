@@ -5612,3 +5612,120 @@ its next re-check point (only a 5.x wrapper changes the calculus), (3)
 the deferred reference-write censuses (unchanged — out of bounds under
 the v46 read-only rule).
 
+
+## The v94 cycle (executed 2026-10-19 — the v88-era networth + drill-down pair's fifth re-run)
+
+The queue's own paragraph above was EXECUTED this cycle. The probe series
+derived from the v88 lineage by the sed substitution families
+(vlm88->vlm94, v88->v94, FOURTH->FIFTH, ELEVENTH->SEVENTEENTH — the
+shots' session names riding the families), the headers history-corrected
+to the FIFTH re-run [v60 -> v67 -> v76 -> v82 -> v88 -> v94] + "last
+re-shot v88" + the oldest-remaining bracket [v88 < v89 < v90 < v91 <
+v92 < v93] + the v88-era-pair (not v60-era) correction; the functional
+bodies verified version-bump-only by the normalize-back diff (only the
+intentional history-correction comment lines differ; the residual "88"
+tokens all legitimate history references). The arbit lineage's SESSION
+NAMES (refar88/clonear88) ride the "ar" token family, NOT the "v88"
+family — the first sed pass missed them; an explicit second pass
+(refar88->refar94/clonear88->clonear94) corrected the derivation before
+any execution. The new probes this cycle: vlm-shots-v94.sh +
+clone-vlmshots-v94.sh + vlm-compare-v94.mjs + arbit-v94.sh (the
+intermediate combined form, header-corrected) + build-twohalf-v94.py
+(the two-half builder — the ARBIT_A + ARBIT_B census blocks extracted
+once, embedded byte-identically across the halves by the md5
+line-block contract [a9cdcc96 / baa22974]) + ref-arbit-v94.sh +
+clone-arbit-v94.sh + build-nwsection-v94.py +
+nwsection-arbit-v94.sh + nwsection-clone-v94.sh (the supplemental
+one-shot for the v94 pin's own axes, BUILT two-half from the start —
+the census JS byte-identical by the md5 line-block diff [f8b3cabf]) +
+ref-standing-v88.sh + standing-checks-v88.sh (the 88th standing
+checks, version-bumped from the v87 pair across the three token
+families).
+
+The verdicts: BOTH pairs DIFFERENT with every flag DOM-arbitrated to
+the v82/v88 re-runs' own documented classes — the NETWORTH pair's
+flags: the avatar (the user-identity class), the "Edit with Base44"
+FAB (the platform-chrome class, RE-ARBITRATED LIVE by re-running
+base44-fab-arbit-v91.sh: fabCount 0 + bodyHasBase44 false on BOTH
+sides — the FAB lives in the reference's platform iframe chrome), and
+the seed-data figures (the 1-asset vs 3-asset groups, the ∞:1 vs
+0.21:1 ratio); the DRILL-DOWN pair's flags: the "Dashboard link
+highlighted in the clone" (the v56 SUPERSET class — the reference's
+link INERT rgb(63,63,70)/400 vs the clone's ACTIVE white/500), the
+avatar, the "progress bar longer" (the pct × 568 DATA class — fillW
+ref 173 vs clone 357 on the byte-identical 568×12 track, the v82/v88
+values REPRODUCED EXACTLY six re-runs later), the "donut percentage
+labels absent in the ref" (the v60 PERCEPTION class — the reference
+DOES render its labels: count 4, labelLineCount 0, 16px, black, 3
+sectors, the chrome byte-identical), the "'Total Expense' vs 'Total
+Expenses'" (the v82 VLM MISREAD class, re-arbitrated live by re-running
+stat-divider-arbit-v88.sh: both sides' titles "Total Income"/"Total
+Savings"/"Total Expenses" plural, byte-identical), the "divider lines
+missing in the ref" (the v88 VLM MISREAD class, re-arbitrated live by
+the same one-shot: the divider {DIV, h 1, bg rgb(229,231,227),
+flexGrow 1} byte-identical on every card), and the seed-data classes.
+The both-sides census — executed in the TWO-HALF controlled form BUILT
+two-half from the start — REPRODUCED the v88 census values EXACTLY
+(zero drift on every axis; the labelBlock's width the v82
+DATA-CONDITIONAL class [ref 304 vs clone 357 — the 48px figure's text
+length]). NO NEW CLONE GAP — the v94 iteration PIN-ONLY.
+
+The +1 e2e pin: the networth SECTION-HEADER row census at 1280
+(tests/e2e/networth.spec.ts — the tab panel's "Assets" header row,
+never pinned at ANY viewport: the row's flex chrome + the h2
+typography + the count subtitle P + the Add Asset button's chrome on
+this row + the row-to-group rhythm + the groupH3 re-affirm), the pin's
+own axes first measured byte-identical on both sides by the
+supplemental two-half census (BOTH sides read-only this cycle — the
+reference's populated Assets panel passively measured; the clone's
+seeded panel passively measured; the seedcheck exact after the run).
+The pin-sanity mutation: the viewport-scoped text-2xl font-bold ->
+text-2xl font-bold lg:font-black at net-worth-view.tsx:418 (by LINE
+NUMBER, AT-lg because the pin runs at 1280; the line-scoping keeps the
+file's OTHER text-2xl font-bold instances untouched) — ONLY the v94
+pin red (29 green under the mutation), the failure diff reads as the
+h2.fw axis ALONE ("700" -> "900") — cascade-free BY CONSTRUCTION (the
+h2's lh 32px bound by text-2xl's line-height — a font-weight flip does
+not scale it; no spec asserts the "Assets" section h2's computed
+styles at ANY viewport; lg:font-black appears NOWHERE in src/).
+
+The screenshots: **16/16 BYTE-IDENTICAL** — the same-day-seed
+byte-identity law, the SECOND consecutive pure-form cycle (the seed
+planted and the shots taken on the same calendar day 2026-10-19,
+byte-for-byte reproduction, ZERO arbitration needed).
+
+The v94 cycle's operational lessons:
+
+- THE REAPING BUDGET AS A STANDING STEP, APPLIED CLEAN: the v93
+  lesson (the between-halves reap budgeted from the start) applied as
+  a PRE-RUN + BETWEEN-HALVES step on EVERY probe this cycle — zero
+  resource-exhaustion symptoms throughout (the 70-zombie class
+  absent). The self-matching pkill caution respected via the
+  `agent[-]browser` character-class form (a bash -c whose command
+  string contains the literal "agent-browser" self-matches the pkill
+  pattern and dies instantly).
+- THE SECOND-PASS SESSION-NAME SED: the arbit lineage's session names
+  (refar88/clonear88) ride the "ar" token family, NOT the "v88"
+  version family — the first sed pass (v88->v94) missed them; the
+  explicit second pass (refar88->refar94/clonear88->clonear94)
+  corrected the derivation BEFORE any execution. Future derivations:
+  sweep for residual old tokens by SESSION-NAME pattern, not just the
+  version family.
+- THE MISREAD-CLASS LIVE RE-ARBITRATION: when a re-run cycle's VLM
+  verdict re-flags a documented MISREAD class (the v82 stat-title, the
+  v88 divider), the existing one-shot census is RE-RUN live rather
+  than re-derived — the disproven-in-advance form (the flag's class
+  already documented, the re-run the fresh evidence). The same for the
+  FAB platform-chrome class (base44-fab-arbit-v91.sh re-run).
+
+The v95 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after this pair (the v89-era DASHBOARD pair [the BUDGET GUIDELINES
+card + the QUICK-ACTION card row, both below-the-fold surfaces of the
+dashboard FULL-PAGE at desktop 1280x800], last re-shot v89 — now the
+oldest remaining [v89 < v90 < v91 < v92 < v93 < v94]; the pair's FIFTH
+re-run [v61 -> v68 -> v77 -> v83 -> v89 -> v95] — the surface names
+verified against vlm-shots-v89.sh's own header this session), (2) the
+axe-core watch at its next re-check point (only a 5.x wrapper changes
+the calculus), (3) the deferred reference-write censuses (unchanged —
+out of bounds under the v46 read-only rule).

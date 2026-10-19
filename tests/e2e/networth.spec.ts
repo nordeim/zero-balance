@@ -2253,3 +2253,195 @@ test.describe("stat-tile interior census at 390 (v90 — plan F4)", () => {
     expect(census.sw).toBeLessThanOrEqual(391);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v94 — plan F4 (docs/remediation-plan-v94.md): the networth view's
+// SECTION-HEADER row census at 1280.
+//
+// The v94 arbitration (nwsection-arbit-v94.sh + nwsection-clone-v94.sh, the
+// v88-era pair's fifth re-run) measured a never-pinned family: the tab
+// panel's "Assets" header row — the row's flex chrome, the h2's typography,
+// the count subtitle P, the Add Asset button's chrome on this row, and the
+// row→group rhythm. The v60 F1 pin holds the summary card + the tablist +
+// the type-group header + the card grid at 1280 (never the section row);
+// the v69 F3 pin the PAGE-header row at 390 (a different row); the v46 F2
+// pin the asset CARD family at 1280; the tokens.spec G2/G3 pins the Add
+// buttons' 16px Plus + the bare-shadow ambient at the DEFAULT viewport;
+// grep-verified: NO spec asserts the "Assets" section h2's computed styles
+// at ANY viewport. The block's WIDTH and the countText are EXCLUDED (the
+// countText length's data-coupled width class — the v82 labelBlock
+// convention); the group wrapper's margin-TOP form is EXCLUDED (the v3/v4
+// space-y margin-attribution computed class — the rendered gap delta 24 is
+// the parity contract, byte-identical on both sides).
+//
+// Every pinned axis STATIC chrome (the row's flex classes, the h2's
+// text-2xl font-bold + inline forestDark, the countP's bare P + inline
+// gray, the button's zb-btn-add family, the space-y-6 rhythm — all
+// unconditional); the pin rides the plain authenticated /networth view on
+// the e2e seed (the Assets tab is the DEFAULT panel) — read-only, no
+// fixture writes, no tab interactions.
+// ---------------------------------------------------------------------------
+interface NwSectionCensus {
+  row: { display: string; align: string; justify: string; h: number; w: number };
+  h2: { fs: string; fw: string; lh: string; color: string; mb: string; h: number };
+  countP: { fs: string; fw: string; lh: string; color: string } | null;
+  block: { h: number };
+  addBtn: {
+    h: number; w: number; pad: string; radius: string; fs: string; fw: string; color: string;
+    bg: string; icon: { w: number; h: number } | null;
+  } | null;
+  groupGap: { delta: number } | null;
+  groupH3: { fs: string; fw: string; lh: string; mb: string } | null;
+  docSW: number;
+}
+test.describe("networth section-header row census at 1280 (v94 — plan F4)", () => {
+  test("the section row's flex chrome + the h2 typography + the count P + the Add Asset chrome + the row-to-group rhythm (v94 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+    // The settle pattern: the count subtitle renders with the panel.
+    await expect(page.getByText("3 items · $65,300")).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate((): NwSectionCensus | null => {
+      const h2 = [...document.querySelectorAll("main h2")].find(
+        (h) => (h.textContent || "").trim() === "Assets",
+      );
+      if (!h2) return null;
+      const block = h2.parentElement as HTMLElement | null;
+      const row = block ? (block.parentElement as HTMLElement | null) : null;
+      if (!block || !row) return null;
+      const rcs = getComputedStyle(row);
+      const rr = row.getBoundingClientRect();
+      const h2cs = getComputedStyle(h2);
+      const h2r = h2.getBoundingClientRect();
+      const countP = [...block.children].find(
+        (c) => c.tagName === "P",
+      ) as HTMLElement | undefined;
+      const pcs = countP ? getComputedStyle(countP) : null;
+      const br = block.getBoundingClientRect();
+      const addBtn = [...row.querySelectorAll("button")].find((b) =>
+        /Add Asset/i.test(b.textContent || ""),
+      ) as HTMLElement | undefined;
+      const btn = addBtn
+        ? (() => {
+            const s = getComputedStyle(addBtn!);
+            const r = addBtn!.getBoundingClientRect();
+            const icon = addBtn!.querySelector("svg");
+            return {
+              h: Math.round(r.height),
+              w: Math.round(r.width),
+              pad: s.padding,
+              radius: s.borderRadius,
+              fs: s.fontSize,
+              fw: s.fontWeight,
+              color: s.color,
+              bg: (s.backgroundImage || "").replace(/\s+/g, " ").slice(0, 90),
+              icon: icon
+                ? {
+                    w: Math.round(icon.getBoundingClientRect().width),
+                    h: Math.round(icon.getBoundingClientRect().height),
+                  }
+                : null,
+            };
+          })()
+        : null;
+      const group = row.nextElementSibling as HTMLElement | null;
+      const g3 = group ? (group.querySelector("h3") as HTMLElement | null) : null;
+      const g3cs = g3 ? getComputedStyle(g3) : null;
+      return {
+        docSW: document.documentElement.scrollWidth,
+        row: {
+          display: rcs.display,
+          align: rcs.alignItems,
+          justify: rcs.justifyContent,
+          h: Math.round(rr.height),
+          w: Math.round(rr.width),
+        },
+        h2: {
+          fs: h2cs.fontSize,
+          fw: h2cs.fontWeight,
+          lh: h2cs.lineHeight,
+          color: h2cs.color,
+          mb: h2cs.marginBottom,
+          h: Math.round(h2r.height),
+        },
+        countP: pcs
+          ? { fs: pcs.fontSize, fw: pcs.fontWeight, lh: pcs.lineHeight, color: pcs.color }
+          : null,
+        block: { h: Math.round(br.height) },
+        addBtn: btn,
+        groupGap: group
+          ? { delta: Math.round(group.getBoundingClientRect().top - rr.bottom) }
+          : null,
+        groupH3: g3cs
+          ? { fs: g3cs.fontSize, fw: g3cs.fontWeight, lh: g3cs.lineHeight, mb: g3cs.marginBottom }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("section-header census found no row");
+
+    // The section header row — flex/center/space-between, h 56, the full
+    // 960 content column (byte-identical to the reference's own row).
+    expect(census.row).toEqual({
+      display: "flex",
+      align: "center",
+      justify: "space-between",
+      h: 56,
+      w: 960,
+    });
+
+    // The h2 "Assets" — text-2xl font-bold + the inline forestDark:
+    // 24px/700/lh 32px, the preflight mb 0, h 32.
+    expect(census.h2).toEqual({
+      fs: "24px",
+      fw: "700",
+      lh: "32px",
+      color: "rgb(26, 58, 46)",
+      mb: "0px",
+      h: 32,
+    });
+
+    // The count subtitle P — the bare P + the inline gray: 16px/400/lh 24px.
+    expect(census.countP).toEqual({
+      fs: "16px",
+      fw: "400",
+      lh: "24px",
+      color: "rgb(107, 114, 128)",
+    });
+
+    // The left block's height — the h2 lh 32 + the countP lh 24 arithmetic
+    // (the block's WIDTH excluded: the countText length's data-coupled
+    // class, the v82 labelBlock convention).
+    expect(census.block).toEqual({ h: 56 });
+
+    // The Add Asset button — the zb-btn-add family on this row: 36×134,
+    // 8px 16px pad, 6px radius, 14px/500 white, the forest→lime gradient,
+    // the 16px Plus icon.
+    expect(census.addBtn).toEqual({
+      h: 36,
+      w: 134,
+      pad: "8px 16px",
+      radius: "6px",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(255, 255, 255)",
+      bg: "linear-gradient(135deg, rgb(45, 90, 74), rgb(143, 188, 63))",
+      icon: { w: 16, h: 16 },
+    });
+
+    // The row → first-group rhythm — the space-y-6 rendered gap (the
+    // margin-TOP form excluded: the v3/v4 margin-attribution computed
+    // class; the rendered delta byte-identical on both sides).
+    expect(census.groupGap).toEqual({ delta: 24 });
+
+    // The first type-group header re-affirmed in the row's rhythm context —
+    // 18px/600/lh 28px/mb 12 (the v60 F1 family, the position-adjacent
+    // member).
+    expect(census.groupH3).toEqual({ fs: "18px", fw: "600", lh: "28px", mb: "12px" });
+
+    // The page fits the pair viewport.
+    expect(census.docSW).toBe(1280);
+  });
+});
