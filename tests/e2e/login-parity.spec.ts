@@ -1264,3 +1264,162 @@ test.describe("login card geometry + typography census at 1280 (v75 — plan F4)
     expect(census!.docSW).toBe(1280);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v99 — plan F4 (docs/remediation-plan-v99.md): the login card's
+// SOCIAL-LOGIN ROW census at 1280x800 — the never-pinned family. The v75
+// F4 pin walked the card/h1/subtitle/inputs/signIn/logo; the v7 G3 pin
+// holds the Google button's COLORS and the v45 F4 pin its HOVER shadow;
+// the auth.spec pins hold the OR divider's PRESENCE per state — but the
+// OR divider's computed chrome (the "or" text's typography + tracking +
+// padding + the rule line) and the Google button's GEOMETRY/typography
+// (w/h/radius/fs/lh/pad/gap + the svg glyph) were never pinned at ANY
+// viewport in ANY spec.
+//
+// Measured live on BOTH sites (social-arbit-v99.sh + social-clone-v99.sh
+// via build-social-v99.py — the census JS byte-identical across the
+// halves, the md5 line-block contract d7add89b; the logged-out /login
+// surface needs no session — READ-ONLY passive navigation):
+//   the google button: {w 368, h 54, radius 12px, fs 16px, fw 500,
+//             lh 24px, color rgb(51,65,85), bg white,
+//             border 1px rgb(226,232,240), pad 14px 20px, gap 12px,
+//             svg 20x20} — the w-full content row (448 − 2×40 md:px-10)
+//             + the py-3.5/px-5 + text-[16px]/font-medium family
+//   the "or" text: {fs 12px, fw 500, color rgb(100,116,139), lh 16px,
+//             uppercase, ls 0.6px, pad 0px 12px, bg white, h 16, w 43}
+//   the rule: exactly ONE hairline {h 1px, bg rgb(226,232,240), w 368}
+//             (DIV on the reference, SPAN on the clone — the inert tag
+//             construct class; the pin asserts chrome + count, not tag)
+//   the rhythm: the OR-text center 32px below the google bottom (the
+//             my-6 margin + the 16px row's half)
+// Every axis is DATA-INDEPENDENT (the static logged-out surface) — the
+// v98 data-independent-panel strength class: the census values assert
+// directly.
+// ---------------------------------------------------------------------------
+test.describe("login social-row census at 1280 (v99 — plan F4)", () => {
+  test("the OR divider + the Google button + the row rhythm (the never-pinned family)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The finders modeled on the v99 arbitration's own census
+      // (social-arbit-v99.sh / social-clone-v99.sh).
+      const form = document.querySelector("form");
+      if (!form) return null;
+      let card: HTMLElement | null = form;
+      while (card && card !== document.body) {
+        const c = getComputedStyle(card);
+        if (
+          parseFloat(c.borderRadius) > 8 &&
+          c.backgroundColor !== "rgba(0, 0, 0, 0)" &&
+          card.getBoundingClientRect().width > 300 &&
+          card.getBoundingClientRect().width < 700
+        )
+          break;
+        card = card.parentElement;
+      }
+      if (!card || card === document.body) return null;
+      // THE GOOGLE BUTTON (the card's only Google-texted button).
+      const g = [...card.querySelectorAll("button")].find((b) =>
+        /Continue with Google/i.test(b.textContent || ""),
+      );
+      if (!g) return null;
+      const gs = getComputedStyle(g);
+      const gr = g.getBoundingClientRect();
+      const svg = g.querySelector("svg");
+      const sr = svg ? svg.getBoundingClientRect() : null;
+      // THE OR DIVIDER TEXT: any leaf element whose trimmed text is "or".
+      const orEl = [...card.querySelectorAll("span,p,div,h1,h2,h3,h4,button")]
+        .filter((e) => e.children.length === 0)
+        .find((e) => /^or$/i.test((e.textContent || "").trim()));
+      if (!orEl) return null;
+      const os = getComputedStyle(orEl);
+      const orr = orEl.getBoundingClientRect();
+      // THE RULE LINES: every element <= 2px tall, wider than 150px, with
+      // a non-transparent bg, inside the card.
+      const rules = [...card.querySelectorAll("*")]
+        .filter((e) => {
+          const r = e.getBoundingClientRect();
+          const s = getComputedStyle(e);
+          return r.width > 150 && r.height > 0 && r.height <= 2 && s.backgroundColor !== "rgba(0, 0, 0, 0)";
+        })
+        .map((e) => {
+          const s = getComputedStyle(e);
+          const r = e.getBoundingClientRect();
+          return { h: s.height, bg: s.backgroundColor, w: Math.round(r.width) };
+        });
+      return {
+        google: {
+          w: Math.round(gr.width),
+          h: Math.round(gr.height),
+          radius: gs.borderRadius,
+          fs: gs.fontSize,
+          fw: gs.fontWeight,
+          lh: gs.lineHeight,
+          color: gs.color,
+          bg: gs.backgroundColor,
+          border: gs.borderTopWidth + " " + gs.borderTopColor,
+          pad: gs.padding,
+          gap: gs.columnGap,
+          svgW: sr ? Math.round(sr.width) : 0,
+          svgH: sr ? Math.round(sr.height) : 0,
+        },
+        orText: {
+          fs: os.fontSize,
+          fw: os.fontWeight,
+          color: os.color,
+          lh: os.lineHeight,
+          tt: os.textTransform,
+          ls: os.letterSpacing,
+          pad: os.padding,
+          bg: os.backgroundColor,
+          h: Math.round(orr.height),
+          w: Math.round(orr.width),
+        },
+        rules,
+        rhythm: Math.round(orr.y + orr.height / 2 - gr.bottom),
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The Google button's full resting chrome — the geometry/typography
+    // axes the v7 G3 (colors) + v45 F4 (hover shadow) pins never held.
+    expect(census!.google).toEqual({
+      w: 368,
+      h: 54,
+      radius: "12px",
+      fs: "16px",
+      fw: "500",
+      lh: "24px",
+      color: "rgb(51, 65, 85)",
+      bg: "rgb(255, 255, 255)",
+      border: "1px rgb(226, 232, 240)",
+      pad: "14px 20px",
+      gap: "12px",
+      svgW: 20,
+      svgH: 20,
+    });
+    // The "or" text — the divider's computed chrome (never pinned before
+    // in any spec, any viewport).
+    expect(census!.orText).toEqual({
+      fs: "12px",
+      fw: "500",
+      color: "rgb(100, 116, 139)",
+      lh: "16px",
+      tt: "uppercase",
+      ls: "0.6px",
+      pad: "0px 12px",
+      bg: "rgb(255, 255, 255)",
+      h: 16,
+      w: 43,
+    });
+    // The rule line: exactly ONE hairline, the slate-200 1px full row.
+    expect(census!.rules).toEqual([{ h: "1px", bg: "rgb(226, 232, 240)", w: 368 }]);
+    // The rhythm: the OR-text center 32px below the google bottom (the
+    // my-6 24px margin + the 16px row's half).
+    expect(census!.rhythm).toBe(32);
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});

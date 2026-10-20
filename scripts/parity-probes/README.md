@@ -6215,13 +6215,130 @@ The operational lessons (the D6 section):
   .next/standalone server) — a mutation run against the stale build
   reads green and proves nothing.
 
-The v99 queue (suggestions — verify against the rotation ledger before
+## v99 — the login + calculator pair's sixth re-run + the login social-row pin (2026-10-20)
+
+The cycle (`docs/remediation-plan-v99.md` — the plan validated against
+the codebase before execution; the narrative: `docs/session_239.md`):
+the v98-era docs' v99 queue suggestion agreeing with the rotation
+ledger (the TWENTY-SECOND consecutive agreement) — the v93-era LOGIN +
+CALCULATOR pair (the LOGIN view + the CALCULATOR dialog at desktop
+1280x800, last re-shot v93, now the oldest remaining
+[v93 < v94 < v95 < v96 < v97 < v98]; the pair's SIXTH re-run
+[v59 -> v66 -> v75 -> v81 -> v87 -> v93 -> v99], the surface names
+verified against vlm-shots-v93.sh's own header before the derivation).
+
+The baseline — the CARRIED-OVER workspace (the session-log-only commit
+class: pulled to main @ 74a206e; the two commits since the v98 push
+08cc3cf verified session-log-only [session_237 + session_238 — ZERO
+src/ or lockfile deltas], the v98 fresh-clone environment carries over
+unchanged): seedcheck exact; lint/typecheck/108 unit/build green
+(robots + sitemap prerendered); 301 e2e in three chunks
+(114+99+90 = 303 executions = 301 unique) with ONE first-run timing
+flake (the not-found head-parity test at the 15-file chunk's tail —
+clean on the single-spec re-run AND the full-chunk re-run, the
+documented v96-era timing-artifact class); 35/35 smoke. The production
+seams re-audited (auth, db-path, the SEO pair, the Tailwind v4
+mitigations, the three test tiers; skills/ excluded).
+
+The probe series (derive-v99-series.py, persisted — the generic swaps
+then the exact-fragment history corrections; the ONE first-run MISS
+[the clone-login header's "the re-run\n# cycle's" line break] caught by
+the derive script's own hit/miss report and fixed before any probe
+executed):
+- vlm-shots-v99.sh + login-shots-v99.sh — the REFERENCE side (login on
+  the first attempt; the parked pointer at (5,5); read-only).
+- clone-vlmshots-v99.sh + clone-login-shots-v99.sh — the CLONE side
+  (the "Contents Insurance" $25 line-item pairing through the real UI +
+  the FULL restore: delete + confirm + restore $1850 + the
+  "3 items · $2235.00" re-read; the first run hit a 300s tool timeout
+  on a hung agent-browser call — the re-run discipline; the seedcheck
+  exact after).
+- vlm-compare-v99.mjs — the VLM pairwise (calculator DIFFERENT, login
+  IDENTICAL).
+- arbit-v99.sh — the both-sides census, executed as ref-arbit-v99.sh +
+  clone-arbit-v99.sh (the TWO-HALF controlled form, BUILT two-half from
+  the start via build-twohalf-v99.py — the CALC + LOGIN census JS
+  blocks byte-identical across the halves, md5 e1092d12 / 9e5a52d2).
+- closebtn-arbit-v99.sh — the one-shot REFERENCE close-button GEOMETRIC
+  census (the arbitration for the census's own finder artifact — see
+  the lessons).
+- social-arbit-v99.sh + social-clone-v99.sh — the supplemental one-shot
+  two-half census for the pin's own axes (build-social-v99.py, the
+  census JS byte-identical, md5 d7add89b; both sides read-only passive
+  navigation — the logged-out /login surface needs no session).
+
+The verdicts: the CALCULATOR pair DIFFERENT — every flag
+DOM-arbitrated to a documented class (the "Will update category total"
+line the SEED-DATA class [hasWillUpdateSpan false-vs-true: the
+reference's own Rent $25.00 EQUALS its calculated total; the clone's
+Rent $1850 vs the recalculated $25.00 shows the note — the v73
+DATA-CONDITIONAL class]; the reference-row-shows-hover-buttons flags
+the RESTING-PARITY class [actionsAtRest opacity 0 / btnCount 2
+byte-identical — the VLM caught the reference's row post-pointer, the
+v43 rule applied]); the LOGIN pair IDENTICAL (zero flags). The
+two-half census REPRODUCES the v87/v93 census values EXACTLY — zero
+drift on every axis. NO NEW CLONE GAP — the v99 iteration PIN-ONLY.
+
+The v99 pin (+1 e2e = 302): the login card's SOCIAL-LOGIN ROW census
+at 1280 (tests/e2e/login-parity.spec.ts — the family-extension survey
+applied to the LOGIN surface's social row: the v75 F4 pin walked
+card/h1/subtitle/inputs/signIn/logo; the v7 G3 pin holds the Google
+button's COLORS + the v45 F4 pin its HOVER shadow + the auth.spec pins
+the OR divider's PRESENCE — the OR divider's computed chrome and the
+Google button's geometry/typography were NEVER pinned at ANY viewport
+in ANY spec, the coverage-map grep across all 24 specs). The pin's own
+axes first measured byte-identical on both sides by the supplemental
+two-half census: the Google button {w 368, h 54, radius 12px, fs 16px,
+fw 500, lh 24px, color rgb(51,65,85), bg white, border 1px
+rgb(226,232,240), pad 14px 20px, gap 12px, svg 20x20}; the "or" text
+{fs 12px, fw 500, color rgb(100,116,139), lh 16px, uppercase, ls
+0.6px, pad 0px 12px, bg white, h 16, w 43}; the single rule {1px,
+rgb(226,232,240), w 368}; the googleToOr rhythm 32; docSW 1280. Every
+axis DATA-INDEPENDENT (the static logged-out surface — the v98
+data-independent-panel strength class). The pin-sanity mutation
+(rounded-xl -> rounded-lg at login-card.tsx:172, by LINE NUMBER — the
+line carries exactly one rounded-xl): ONLY the v99 pin red (29 green)
+AFTER the standalone REBUILD (the v98 mutation-rebuild discipline — the
+first run against the stale build read green and proved nothing), the
+failure diff reads as the google radius axis alone ("12px" -> "8px") —
+cascade-free BY CONSTRUCTION; restored (git diff src/ = 0; the REBUILD;
+the post-restore full run 30/30 green).
+
+The F5 full chain re-run GREEN: lint -> typecheck -> 108 unit ->
+build -> 302 e2e (114+100+90 = 304 chunk executions = 302 unique
+tests, zero flakes) -> 35/35 smoke; the screenshots **16/16
+BYTE-IDENTICAL** (the same-day-seed byte-identity law — the
+carried-over workspace's seed and the shots on one calendar day, no
+fresh re-seed, no midnight crossing).
+
+The operational lessons (the D6 section):
+- THE UNLABELLED-TRIGGER FINDER CLASS, EXTENDED (the v98 lesson's
+  second sighting): the two-half census's OWN close-button finder
+  (aria-label/text) matched the clone's labelled Radix button but NOT
+  the reference's TEXTLESS SVG button — the supplemental GEOMETRIC
+  probe (closebtn-arbit-v99.sh: the header-band button census) is the
+  arbitration form, reading the reference's close button byte-identical
+  {36x36, radius 6px, bg transparent, border 0}. Any future census
+  finder for reference-side chrome must be geometric or
+  labelled-on-both-sides from the start.
+- THE SOCIAL-BLOCK-ABOVE-THE-FORM ORDER (a measurement note): the
+  reference's login card renders the Google + OR block ABOVE the
+  email/password form (signInToGoogle -358 on BOTH sides) — the clone's
+  GoogleBlock-before-AuthForm order (login-card.tsx:583-584) is the
+  parity-correct one; the rhythm axes' sign is the tell.
+- THE CENSUS-TAG CONSTRUCT CLASS (a pin-strength note): the OR rule
+  renders as DIV on the reference and SPAN on the clone with
+  byte-identical chrome — pins on such elements assert the COMPUTED
+  chrome + the geometric count, never the tag name.
+
+The v100 queue (suggestions — verify against the rotation ledger before
 executing): (1) the re-run cadence rotates to the next-oldest candidate
-after the savings pair (the v93-era LOGIN + CALCULATOR pair [the login
-view + the calculator card pair at desktop 1280x800], last re-shot v93 —
-now the oldest remaining [v93 < v94 < v95 < v96 < v97 < v98]; the
-pair's re-run bracket to be verified against vlm-shots-v93.sh's own
-header before the derivation), (2) the axe-core watch at its next
-re-check point (only a 5.x wrapper changes the calculus), (3) the
-deferred reference-write censuses (unchanged — out of bounds under the
-v46 read-only rule).
+after the login + calculator pair (the v94-era NETWORTH + DRILL-DOWN
+pair [the networth view + the dashboard drill-down EXPANDED state, both
+desktop 1280x800 full-page], last re-shot v94 — now the oldest
+remaining [v94 < v95 < v96 < v97 < v98 < v99]; the pair's SIXTH re-run
+bracket [v60 -> v67 -> v76 -> v82 -> v88 -> v94 -> v100] to be verified
+against vlm-shots-v94.sh's own header before the derivation), (2) the
+axe-core watch at its next re-check point (only a 5.x wrapper changes
+the calculus), (3) the deferred reference-write censuses (unchanged —
+out of bounds under the v46 read-only rule).
