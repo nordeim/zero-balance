@@ -3892,3 +3892,138 @@ test.describe("filter listbox panel + option-resting interior census at 1280 (v9
     expect(census!.docSW).toBe(1280);
   });
 });
+
+// v98 F4 (docs/remediation-plan-v98.md): the v92-era savings pair's SIXTH
+// re-run (v58 → v65 → v74 → v80 → v86 → v92 → v98) found NO NEW GAP (the
+// arbit-v98 two-half census reproducing the v86/v92 values exactly; every
+// VLM flag DOM-arbitrated to the documented classes: the v57
+// DATA-CONDITIONAL footer, the seed-count/seed-data classes, the
+// user-identity avatar), so the iteration deepens the coverage instead:
+// the goal-card ACTION-MENU PANEL + MENUITEM-RESTING interior at 1280 —
+// the v97 missing-middle lesson applied to the ACTION layer. The tokens
+// G5/G9 pins hold the menu ITEM's COLOR family (editRest rgb(10,10,10) /
+// deleteColor rgb(220,38,38) / the focus-state bg) and the CONTENT's
+// border-COLOR on the income view; the v35 S1 pin the keyboard contract —
+// but the menu PANEL's GEOMETRY (bg/radius/shadow/min-w/overflow/z/w/h)
+// and the menuitem's RESTING interior (fs/fw/pad/radius/lh/h) were never
+// pinned at ANY viewport in ANY spec (the coverage-map grep across all 24
+// specs). Measured BYTE-IDENTICAL on BOTH sides via the supplemental
+// two-half census (menu-arbit-v98.sh + menu-clone-v98.sh, the md5
+// line-block contract 0f83b786):
+//   panel {bg white / radius 6px / border 1px rgb(229,229,229) /
+//          minW 128px / overflow hidden / z 50 / pos static / w 128 / h 74}
+//   the shadow-md VISIBLE layers byte-identical (the full string's
+//   zero-layer lead count differs ref-vs-clone — the documented v3/v4
+//   shadow-construct class, the v37 O1 note)
+//   item0 {fs 14px / fw 400 / color rgb(10,10,10) / pad 6px 8px /
+//          radius 4px / lh 20px / h 32}
+// The panel w/h + itemCount (2) are DATA-INDEPENDENT (both sides render
+// exactly the Edit+Delete pair — 2×32 item + 2×4 pad + 2×1 border = 74),
+// so unlike the v97 pin's clone-only guards these axes assert the
+// cross-side-verified values directly. The clone-only aria-label
+// ("Actions for …" — the a11y superset; the reference's trigger is
+// unlabelled) is the pin's locator.
+test.describe("goal-card action-menu panel + menuitem-resting interior census at 1280 (v98 — plan F4)", () => {
+  test("the ellipsis menu's panel chrome + the first menuitem's resting interior", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    // Hover the card so the hover-revealed trigger is at full opacity,
+    // then open the menu (Playwright's click carries the full native
+    // pointer sequence the reference's React tree requires — the v98
+    // pointer-event lesson, satisfied by construction here).
+    const card = page.locator("main .group", { hasText: "Emergency Fund" }).first();
+    await card.hover();
+    const trigger = page.getByRole("button", { name: "Actions for Emergency Fund" });
+    await trigger.click({ force: true });
+    const menu = page.locator('[role="menu"]');
+    await expect(menu).toBeVisible();
+    // Settle past the animate-in window (fade/zoom ~150ms) so the
+    // transform-scaled getBoundingClientRect readings are at rest.
+    await page.waitForTimeout(700);
+
+    const census = await page.evaluate(() => {
+      const m = document.querySelector('[role="menu"]');
+      if (!m) return null;
+      const cs = getComputedStyle(m);
+      const r = m.getBoundingClientRect();
+      const item = m.querySelector('[role="menuitem"]');
+      const ics = item ? getComputedStyle(item) : null;
+      const ir = item ? item.getBoundingClientRect() : null;
+      return {
+        panel: {
+          bg: cs.backgroundColor,
+          radius: cs.borderRadius,
+          borderWidth: cs.borderWidth,
+          borderColor: cs.borderColor,
+          shadow: cs.boxShadow,
+          minW: cs.minWidth,
+          overflow: cs.overflow,
+          z: cs.zIndex,
+          pos: cs.position,
+          w: Math.round(r.width),
+          h: Math.round(r.height),
+        },
+        item0: ics
+          ? {
+              fs: ics.fontSize,
+              fw: ics.fontWeight,
+              color: ics.color,
+              pad: ics.padding,
+              radius: ics.borderRadius,
+              lh: ics.lineHeight,
+              h: ir ? Math.round(ir.height) : null,
+            }
+          : null,
+        itemCount: m.querySelectorAll('[role="menuitem"]').length,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The PANEL chrome — the rounded-md/border-input/bg-popover/
+    // min-w-[8rem]/p-1 family, byte-identical to the reference's panel.
+    // The w/h are data-independent (the structural Edit+Delete pair).
+    expect(census!.panel).toMatchObject({
+      bg: "rgb(255, 255, 255)",
+      radius: "6px",
+      borderWidth: "1px",
+      borderColor: "rgb(229, 229, 229)",
+      minW: "128px",
+      overflow: "hidden",
+      z: "50",
+      pos: "static",
+      w: 128,
+      h: 74,
+    });
+
+    // The shadow-md VISIBLE layers (byte-identical to the reference's) —
+    // asserted via containment per the v37 O1 v3/v4-construct precedent
+    // (the zero-layer leads differ across the tailwind generations;
+    // every lead is invisible by construction).
+    expect(census!.panel.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 4px 6px -1px");
+    expect(census!.panel.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 2px 4px -2px");
+
+    // The first menuitem's RESTING interior — the text-sm/rounded-sm/
+    // px-2 py-1.5 family (the G5/G9 pins hold the COLOR family; this
+    // holds the resting GEOMETRY).
+    expect(census!.item0).toEqual({
+      fs: "14px",
+      fw: "400",
+      color: "rgb(10, 10, 10)",
+      pad: "6px 8px",
+      radius: "4px",
+      lh: "20px",
+      h: 32,
+    });
+
+    // The structural Edit+Delete pair (both sides' menus carry exactly 2
+    // items) + the no-overflow guard on the same surface.
+    expect(census!.itemCount).toBe(2);
+    expect(census!.docSW).toBe(1280);
+
+    // Close the menu (leave the surface clean).
+    await page.keyboard.press("Escape");
+  });
+});
