@@ -3766,3 +3766,129 @@ test.describe("savings filter-interior + search-icon census at 1280 (v92 — pla
     expect(census!.docSW).toBe(1280);
   });
 });
+
+test.describe("filter listbox panel + option-resting interior census at 1280 (v97 — plan F4)", () => {
+  test("the popover panel's chrome + the viewport pad + the first option's resting interior", async ({ page }) => {
+    // The v97 family-extension survey walked the filter select's
+    // COMPONENT LAYERS: the v91 pin holds the TRIGGER's resting chrome,
+    // the v36 S2 pin the OPTION's focus-state family — the PANEL
+    // container between them (bg/radius/border/shadow/max-h/overflow/z
+    // + the viewport's 4px pad) and the option's RESTING interior
+    // (fs/fw/color/pad/radius/h) were never pinned at ANY viewport in
+    // ANY spec. Measured byte-identical on BOTH sites via the
+    // supplemental two-half census (listbox-arbit-v97.sh +
+    // listbox-clone-v97.sh, the md5 line-block contract 34c916da):
+    //   panel {bg white / radius 6px / border 1px rgb(229,229,229) /
+    //          maxH 384px / overflow hidden / z 50 / pos relative / w 218}
+    //   the shadow-md VISIBLE layers byte-identical (the full string's
+    //   zero-layer lead count differs ref-vs-clone — the documented
+    //   v3/v4 shadow-construct class, the v37 O1 note: every lead is a
+    //   0px-spread shadow, invisible by construction)
+    //   viewport {pad 4px / display block}
+    //   opt0 {fs 14px / fw 400 / color rgb(23,23,23) /
+    //         pad 6px 32px 6px 8px / radius 4px / h 32}
+    // The panel h (106) + optCount (3) are the CLONE's own data-dependent
+    // values (the reference's 2-option stack reads h 74 — the seed-data
+    // class), asserted here as the clone's own regression guards.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/income");
+    await expect(page.getByText("Freelance").first()).toBeVisible();
+
+    const trigger = page.getByRole("combobox", { name: "Filter by category" });
+    await trigger.click();
+    const listbox = page.locator('[role="listbox"]');
+    await expect(listbox).toBeVisible();
+    // Settle past the animate-in window (fade/zoom ~150ms) so the
+    // transform-scaled getBoundingClientRect readings are at rest.
+    await page.waitForTimeout(700);
+
+    const census = await page.evaluate(() => {
+      const lb = document.querySelector('[role="listbox"]');
+      if (!lb) return null;
+      const cs = getComputedStyle(lb);
+      const r = lb.getBoundingClientRect();
+      const vp =
+        lb.querySelector("[data-radix-select-viewport]") ||
+        [...lb.children].find((c) => getComputedStyle(c).padding === "4px");
+      const vcs = vp ? getComputedStyle(vp) : null;
+      const opt = lb.querySelector('[role="option"]');
+      const ocs = opt ? getComputedStyle(opt) : null;
+      const or = opt ? opt.getBoundingClientRect() : null;
+      return {
+        panel: {
+          bg: cs.backgroundColor,
+          radius: cs.borderRadius,
+          borderWidth: cs.borderWidth,
+          borderColor: cs.borderColor,
+          shadow: cs.boxShadow,
+          maxH: cs.maxHeight,
+          overflow: cs.overflow,
+          z: cs.zIndex,
+          pos: cs.position,
+          w: Math.round(r.width),
+          h: Math.round(r.height),
+        },
+        viewport: vcs ? { pad: vcs.padding, display: vcs.display } : null,
+        opt0: ocs
+          ? {
+              fs: ocs.fontSize,
+              fw: ocs.fontWeight,
+              color: ocs.color,
+              pad: ocs.padding,
+              radius: ocs.borderRadius,
+              h: or ? Math.round(or.height) : null,
+            }
+          : null,
+        optCount: lb.querySelectorAll('[role="option"]').length,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The PANEL chrome — the rounded-md/border-input/bg-popover/
+    // max-h-96 family, byte-identical to the reference's panel.
+    expect(census!.panel).toMatchObject({
+      bg: "rgb(255, 255, 255)",
+      radius: "6px",
+      borderWidth: "1px",
+      borderColor: "rgb(229, 229, 229)",
+      maxH: "384px",
+      overflow: "hidden",
+      z: "50",
+      pos: "relative",
+      w: 218,
+    });
+
+    // The shadow-md VISIBLE layers (byte-identical to the reference's) —
+    // asserted via containment per the v37 O1 v3/v4-construct precedent
+    // (the zero-layer leads differ across the tailwind generations;
+    // every lead is invisible by construction).
+    expect(census!.panel.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 4px 6px -1px");
+    expect(census!.panel.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 2px 4px -2px");
+
+    // The VIEWPORT — the p-1 family (the option stack's 4px inset).
+    expect(census!.viewport).toEqual({ pad: "4px", display: "block" });
+
+    // The first option's RESTING interior — the text-sm family with the
+    // check-slot's 32px right pad (the v36 S2 pin holds the FOCUS state;
+    // this holds the resting chrome).
+    expect(census!.opt0).toEqual({
+      fs: "14px",
+      fw: "400",
+      color: "rgb(23, 23, 23)",
+      pad: "6px 32px 6px 8px",
+      radius: "4px",
+      h: 32,
+    });
+
+    // The CLONE's own data-dependent guards (never cross-side axes —
+    // the seed-data class rule): the 3-option stack [All Categories,
+    // Freelance, Salary] and its panel h arithmetic (3×32 + 2×4
+    // viewport pad + 2×1 border = 106).
+    expect(census!.optCount).toBe(3);
+    expect(census!.panel.h).toBe(106);
+
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});
