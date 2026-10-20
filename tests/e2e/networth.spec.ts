@@ -2445,3 +2445,121 @@ test.describe("networth section-header row census at 1280 (v94 — plan F4)", ()
     expect(census.docSW).toBe(1280);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v96 (docs/remediation-plan-v96.md) — the MOBILE 390 twins' fifth re-run
+// pair (the /networth + the dashboard FULL-PAGE at 390x844, last re-shot
+// v90). The FAMILY-EXTENSION pin (the v93 label-first lesson): the
+// summary card's HEAD-ROW text chrome at 390 — the figure's fw + color
+// are pinned at 640 (v41 F2: 48px/700) and 1280 (v60 F1: the full
+// family) but NEVER at 390 (the v41 F3 pin holds figureFont fs only);
+// the label's family is pinned at 1280 only; the figure's FIT contract
+// (the v96 figclip arbitration's own axes — the NEW clipped-figure VLM
+// flag disproven by the Range-walk textRect vs the padding-aware
+// content box) is never pinned at ANY viewport. The pin's own axes
+// first measured byte-identical on BOTH sides by the supplemental
+// two-half census (headrow-arbit-v96.sh + headrow-clone-v96.sh, the
+// census JS md5 519ef222): the label {14px/400/rgba(255,255,255,0.8)/
+// mb 8/h 20} + the figure fw 700/white + the flush-left start
+// (textLeftOverhang 0) + figureScrolls false — all byte-identical
+// across sides; the card w + the figure fs + the text metrics are the
+// documented v41/seed-data classes (the pin asserts the clone's own
+// deterministic values).
+// ---------------------------------------------------------------------------
+test.describe("summary card head-row typography + figure-fit census at 390 (v96 — plan F4)", () => {
+  test("the figure's fw/color family at 390 + the label family + the in-bounds fit contract (the v96 figclip arbitration)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+    await expect(page.getByText("-$245,950.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The supplemental census's own finder (the NW_CENSUS gradient-card
+      // finder + the label leaf + the largest-$-font figure walk).
+      const cards = [...document.querySelectorAll("main div, div")].filter((d) => {
+        const s = getComputedStyle(d);
+        return d.getBoundingClientRect().height > 100 && d.getBoundingClientRect().width > 200
+          && s.backgroundImage && s.backgroundImage.includes("linear-gradient");
+      });
+      const card = cards.find((c) => c.getBoundingClientRect().width < 500) || cards[0];
+      if (!card) return null;
+      const cr = card.getBoundingClientRect();
+      const cs = getComputedStyle(card);
+      const label = [...card.querySelectorAll("p, span")].find(
+        (e) => (e.textContent || "").trim() === "Total Net Worth" && e.children.length === 0,
+      );
+      let fig: HTMLElement | null = null;
+      let figFs = 0;
+      for (const el of card.querySelectorAll("h1,h2,h3,p,span,div")) {
+        const s = getComputedStyle(el);
+        const fs = parseFloat(s.fontSize);
+        const t = (el.textContent || "").trim();
+        if (!t || t.length > 40) continue;
+        if (/^[-]?\s*[$]/.test(t) && fs > figFs) { fig = el as HTMLElement; figFs = fs; }
+      }
+      if (!fig || !label) return null;
+      const fr = fig.getBoundingClientRect();
+      const fcs = getComputedStyle(fig);
+      const lcs = getComputedStyle(label);
+      const range = document.createRange();
+      range.selectNodeContents(fig);
+      const tr = range.getBoundingClientRect();
+      const padL = parseFloat(cs.paddingLeft);
+      const padR = parseFloat(cs.paddingRight);
+      const contentL = cr.left + padL;
+      const contentR = cr.right - padR;
+      return {
+        card: { w: Math.round(cr.width), padL, padR },
+        label: { fs: lcs.fontSize, fw: lcs.fontWeight, color: lcs.color, mb: lcs.marginBottom, h: Math.round(label.getBoundingClientRect().height) },
+        figure: {
+          text: (fig.textContent || "").trim(),
+          fs: fcs.fontSize, fw: fcs.fontWeight, color: fcs.color, lh: fcs.lineHeight,
+          el: { x: Math.round(fr.x), h: Math.round(fr.height) },
+          textRect: { x: Math.round(tr.x), w: Math.round(tr.width) },
+        },
+        fit: {
+          textLeftOverhang: Math.round(contentL - tr.x),
+          textRightMargin: Math.round(contentR - tr.right),
+          figureScrolls: fig.scrollWidth > fig.clientWidth,
+          docSW: document.documentElement.scrollWidth,
+        },
+      };
+    });
+    expect(census, "the head-row census finder (the gradient card + the label leaf + the figure walk)").not.toBeNull();
+    if (!census) throw new Error("head-row census found no card");
+
+    // The figure's typography family at 390 — the fw/color NEVER pinned at
+    // this tier before (the 640/1280 tiers hold them; the v41 F3 pin holds
+    // the fs only). 24px/700/white at lh 32 (the text-2xl responsive tier —
+    // the superset fix #6 family).
+    expect(census.figure.text).toBe("-$245,950.00");
+    expect(census.figure.fs).toBe("24px");
+    expect(census.figure.fw).toBe("700");
+    expect(census.figure.color).toBe("rgb(255, 255, 255)");
+    expect(census.figure.lh).toBe("32px");
+    expect(census.figure.el.x).toBe(48);
+    expect(census.figure.el.h).toBe(32);
+    expect(census.figure.textRect.x).toBe(48);
+
+    // The label's family at 390 — pinned at 1280 only before (the v60-era
+    // tier); the text-sm family is viewport-independent.
+    expect(census.label).toEqual({
+      fs: "14px", fw: "400", color: "rgba(255, 255, 255, 0.8)", mb: "8px", h: 20,
+    });
+
+    // The FIT contract — the v96 figclip arbitration's own axes (the NEW
+    // clipped-figure VLM flag disproven): the text starts flush at the
+    // content-left (zero overhang) and ends INSIDE the content-right; the
+    // figure never scrolls; the page never overflows.
+    expect(census.fit.textLeftOverhang).toBe(0);
+    expect(census.fit.textRightMargin).toBeGreaterThanOrEqual(0);
+    expect(census.fit.figureScrolls).toBe(false);
+    expect(census.fit.docSW).toBe(390);
+
+    // The card box re-affirm (the v41 arithmetic: 358 = 390 − 2×16, the
+    // 32px pad) — the content-box anchors the fit contract.
+    expect(census.card.w).toBe(358);
+    expect(census.card.padL).toBe(32);
+    expect(census.card.padR).toBe(32);
+  });
+});
