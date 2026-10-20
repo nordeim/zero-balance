@@ -6342,3 +6342,145 @@ against vlm-shots-v94.sh's own header before the derivation), (2) the
 axe-core watch at its next re-check point (only a 5.x wrapper changes
 the calculus), (3) the deferred reference-write censuses (unchanged —
 out of bounds under the v46 read-only rule).
+
+## v100 — the networth + drill-down pair's sixth re-run + the tablist→section-row junction pin (2026-10-20)
+
+The cycle (`docs/remediation-plan-v100.md` — the plan validated against
+the codebase before execution; the narrative: `docs/session_242.md`):
+the v99-era docs' v100 queue suggestion agreeing with the rotation
+ledger (the TWENTY-THIRD consecutive agreement) — the v94-era NETWORTH
++ DRILL-DOWN pair (the NETWORTH view + the DASHBOARD's drill-down
+EXPANDED state at desktop 1280x800, last re-shot v94, now the oldest
+remaining [v94 < v95 < v96 < v97 < v98 < v99]; the pair's SIXTH re-run
+[v60 -> v67 -> v76 -> v82 -> v88 -> v94 -> v100], the surface names
+verified against vlm-shots-v94.sh's own header before the derivation —
+the queue-prose verification lesson applied).
+
+The baseline — the FRESH-CLONE workspace (the sandbox reset — the
+v86/v88/v90/v91/v92/v98 precedent): git clone at main @ fd06b78; npm
+install; `.env` written (DATABASE_URL="file:../db/custom.db"); db/
+re-seeded (the seedcheck exact); chromium-1243 installed for the pinned
+@playwright/test 1.63.0 (the cache's 1200 build belongs to a different
+playwright generation); the tool-results dir re-created for
+with-server.sh; the two commits since the v99 push 4b0b6aa (b43db6f +
+fd06b78) audited session-log-only (session_240 + session_241 — ZERO
+src/ or lockfile deltas). Seedcheck exact; lint/typecheck/108
+unit/build green (robots + sitemap prerendered); 302 e2e (108+116+83 =
+307 chunk executions = 302 unique, zero flakes on the FIRST run);
+35/35 smoke. The production seams re-audited (auth, db-path, the SEO
+pair, the Tailwind v4 mitigations, the three test tiers; skills/
+excluded).
+
+The probe series (derive-v100-series.py, persisted — the generic swaps
+then the exact-fragment history corrections [last-re-shot v88 → v94,
+FIFTH → SIXTH, the re-run bracket extension, the oldest-remaining
+bracket, the agreement ordinal SEVENTEENTH → TWENTY-THIRD, the
+census-axes reference v88 → v94]; every correction verified applied by
+the derive script's own hit/miss report — zero misses this cycle;
+bash -n + node --check clean on all four; zero residual old tokens,
+the legitimate v60/v67/v75/v82 pin-provenance tokens whitelisted by
+context):
+- vlm-shots-v100.sh + clone-vlmshots-v100.sh — the reference + clone
+  FULL-PAGE shots (login on the first attempt both sides; the parked
+  pointer at (5,5); read-only — the v46 rule holds).
+- vlm-compare-v100.mjs — the VLM pairwise (networth IDENTICAL,
+  drill-down DIFFERENT).
+- ref-arbit-v100.sh + clone-arbit-v100.sh — the both-sides census,
+  BUILT two-half from the start via build-twohalf-v100.py (the TWO
+  census JS blocks [ARBIT_A 90 lines + ARBIT_B 111 lines]
+  byte-identical across the halves, md5 50e0cbf2 / cb3afbfc).
+- derive-standing-v100.py — the 94th standing-checks derivation
+  (ref-standing-v94.sh + standing-checks-v94.sh from the v93 pair
+  across the THREE token families, version-bump-only verified by the
+  normalize-back diff).
+- nwjunction-arbit-v100.sh + nwjunction-clone-v100.sh — the
+  supplemental two-half census for the pin's own axes
+  (build-nwjunction-v100.py, the census JS byte-identical, md5
+  5f124436; both sides read-only passive navigation).
+
+The verdicts: the NETWORTH pair IDENTICAL — zero layout/style flags
+(only the expected data classes + the platform-chrome FAB); the
+DRILL-DOWN pair DIFFERENT (the documented re-run class) — every flag
+DOM-arbitrated to a documented class: the nav-highlight the v56
+SUPERSET class (the reference's root-route bug marks NO nav item
+active at /; the census: INERT rgb(63,63,70)/fw 400 on the reference
+vs ACTIVE rgb(255,255,255)/fw 500 on the clone — the deliberate
+superset delta, NOT a drift); the avatar U-vs-D the user-identity
+class (the VLM's "P" misread of the clone's "D" the v43 perception
+rule); the Edit-with-Base44 FAB the platform-chrome class (fabCount 0
++ bodyHasBase44 false on BOTH sides — the FAB never renders in the app
+DOM); the donut-labels the v60 perception class (the census proving
+the reference's own labels ARE in its DOM: count 4, texts
+["92.3%4.6%3.1%", "92.3%", "4.6%", "3.1%"], labelLineCount 0, labelFs
+16px, labelFill rgb(0,0,0), sectors 3 — the chrome byte-identical to
+the clone's; the reference's own seed data renders its three labels
+OVERLAPPING and illegible to the VLM, the clone's well-separated); the
+slice proportions the seed-data class. The two-half census REPRODUCES
+the v88/v94 census values EXACTLY — zero drift on every axis. NO NEW
+CLONE GAP — the v100 iteration PIN-ONLY.
+
+The v100 pin (+1 e2e = 303): the networth TABLIST→SECTION-ROW junction
+census at 1280 (tests/e2e/networth.spec.ts — the FAMILY-EXTENSION
+pattern, the v94 missing-middle lesson applied to the networth view's
+INTER-BLOCK RHYTHM: the v41 F2 pin [640] walks the UPPER rhythm only,
+the v60 F1 pin [1280] the summary card + tablist interiors, the v94 F4
+pin the section row's own chrome + the row-to-group rhythm — the
+JUNCTION between them [the tablist bottom → the section row top gap,
+the TabsContent's mt-6] NEVER pinned at ANY viewport in ANY spec, the
+coverage-map grep across all 24 specs). The pin's own axes first
+measured byte-identical on both sides by the supplemental two-half
+census: the tablist {w 448, h 36, bottom 525, template "220px 220px",
+maxW "448px", pad "4px"}; the section row {top 549, h 56, w 960,
+display flex, justify space-between}; the junction {gap 24}; the
+continuation {groupH3 fs 18px/fw 600/mb 12px; rowToGroup 24}; docSW
+1280. Every axis DATA-INDEPENDENT (the structural chrome — the v98
+data-independent-panel strength class). The pin-sanity mutation (mt-6
+-> mt-8 at net-worth-view.tsx:415, by LINE NUMBER — the line carries
+EXACTLY ONE mt-6; the line-scoping keeps the liabilities TabsContent's
+own mt-6 at line 479 untouched): ONLY the v100 pin red (31 green)
+AFTER the standalone REBUILD (the v98 mutation-rebuild discipline),
+the failure diff reads as the junction position family alone
+(sectionRow.top 549 -> 557 — the direct y-consequence of the 24 -> 32
+gap; no width/height/chrome axis touched) — cascade-free BY
+CONSTRUCTION; restored (git diff src/ = 0; the REBUILD; the
+post-restore full file run 32/32 green).
+
+The ship full chain re-run GREEN: lint -> typecheck -> 108 unit ->
+build -> 303 e2e (105+105+95 = 305 chunk executions = 303 unique
+tests — 302 spec tests + the setup test re-run per chunk, three
+disjoint file splits; zero flakes) -> 35/35 smoke; the screenshots
+**16/16 BYTE-IDENTICAL** (the same-day-seed byte-identity law — the
+fresh-clone workspace's same-day re-seed and the shots on one calendar
+day, no midnight crossing).
+
+The operational lessons (the D6 section):
+- THE REAPING BUDGET AS THE STANDING STEP (the v89/v91 symptom class,
+  re-confirmed): the clone census half's FIRST run read EMPTY output —
+  65 stale chromium processes from the reference half's sessions;
+  after the reap the identical script ran clean. The two-half form is
+  necessary but not sufficient — the reaping BETWEEN halves is
+  load-bearing on this sandbox.
+- THE CLEAN-PARENTHETICAL DERIVATION (a derivation-quality note): the
+  v94-era headers' "the v89-era pair covered by v90" parenthetical
+  carried an internally-confused rotation framing (decoded via the
+  v83/v88/v89 headers: "the vN-era pair covered by vM" = the pair
+  re-shot at vM); the v100 headers use the clean form ("the v94-era
+  pair last re-shot v94 — now the oldest remaining [v94 < v95 < …]") —
+  future derivations should carry the clean form forward.
+- THE JUNCTION-COMPLETE RHYTHM MAP (a coverage-map note): the networth
+  view's inter-block rhythm is now FULLY pinned — headerToCard 32 +
+  cardToTablist 32 (v41 F2, 640) + tablistToSection 24 (the v100 pin,
+  1280) + rowToGroup 24 + groupToGrid 12 (v94 F4, 1280) — the
+  family-extension survey should walk the JUNCTIONS between pinned
+  blocks, not just the blocks' interiors.
+
+The v101 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after the networth + drill-down pair (the v95-era DASHBOARD pair [the
+dashboard view + …, both desktop 1280x800 full-page], last re-shot v95 —
+now the oldest remaining [v95 < v96 < v97 < v98 < v99 < v100]; the
+pair's SIXTH re-run bracket to be verified against vlm-shots-v95.sh's
+own header before the derivation), (2) the axe-core watch at its next
+re-check point (only a 5.x wrapper changes the calculus), (3) the
+deferred reference-write censuses (unchanged — out of bounds under the
+v46 read-only rule).

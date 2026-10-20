@@ -2563,3 +2563,118 @@ test.describe("summary card head-row typography + figure-fit census at 390 (v96 
     expect(census.card.padR).toBe(32);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v100 (docs/remediation-plan-v100.md) — the re-run pair's SIXTH cycle (the
+// v94-era NETWORTH + DRILL-DOWN pair). The FAMILY-EXTENSION pin (the v94
+// missing-middle lesson applied to the INTER-BLOCK RHYTHM): the TABLIST→
+// SECTION-ROW junction — the TabsContent's mt-6 gap. The v41 F2 pin (640)
+// walks the UPPER rhythm only (headerToCard 32 + cardToTablist 32 — the two
+// mb-8 gaps above the tablist); the v60 F1 pin (1280) walks the summary
+// card + tablist interiors (no rhythm axes); the v94 F4 pin walks the
+// section row's own chrome + the row-to-group rhythm (the space-y-6 INSIDE
+// the TabsContent) — the JUNCTION between them was NEVER pinned at ANY
+// viewport in ANY spec (zero specs assert any TabsContent margin; the only
+// mt-6 assertions in the suite are the summary card's ratio footer — a
+// different element). The pin's own axes first measured byte-identical on
+// BOTH sides by the supplemental two-half census (nwjunction-arbit-v100.sh +
+// nwjunction-clone-v100.sh via build-nwjunction-v100.py, the census JS md5
+// 5f124436): tablist {448/36/bottom 525/220px 220px/448px/4px} + sectionRow
+// {top 549/56/960/flex/space-between} + junction {gap 24} + the continuation
+// families — every axis DATA-INDEPENDENT (the structural chrome; the v98
+// data-independent-panel strength class: the cross-side-verified values
+// assert directly).
+// ---------------------------------------------------------------------------
+test.describe("networth tablist→section-row junction census at 1280 (v100 — plan F4)", () => {
+  test("the junction's gap + the anchor geometry — the TabsContent's mt-6 family, never pinned before (v100 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+    // The settle pattern: the section row renders with the panel.
+    await expect(page.getByText("3 items · $65,300")).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const census = await page.evaluate(() => {
+      // THE TABLIST (the Assets/Liabilities trigger row — the v60 finder).
+      const tablist = document.querySelector('[role="tablist"]');
+      if (!tablist) return null;
+      const tl = tablist.getBoundingClientRect();
+      const tcs = getComputedStyle(tablist);
+      // THE SECTION ROW (the v94 finder: the Assets h2 → block → row).
+      const h2 = [...document.querySelectorAll("main h2")].find(
+        (h) => (h.textContent || "").trim() === "Assets",
+      );
+      if (!h2) return null;
+      const block = h2.parentElement as HTMLElement | null;
+      const row = block ? (block.parentElement as HTMLElement | null) : null;
+      if (!block || !row) return null;
+      const rr = row.getBoundingClientRect();
+      const rcs = getComputedStyle(row);
+      // The first type-group continuation (the v94 families re-measured).
+      const group = row.nextElementSibling as HTMLElement | null;
+      const g3 = group ? (group.querySelector("h3") as HTMLElement | null) : null;
+      const g3cs = g3 ? getComputedStyle(g3) : null;
+      return {
+        tablist: {
+          w: Math.round(tl.width),
+          h: Math.round(tl.height),
+          bottom: Math.round(tl.bottom),
+          template: tcs.gridTemplateColumns,
+          maxW: tcs.maxWidth,
+          pad: tcs.padding,
+        },
+        sectionRow: {
+          top: Math.round(rr.top),
+          h: Math.round(rr.height),
+          w: Math.round(rr.width),
+          display: rcs.display,
+          justify: rcs.justifyContent,
+        },
+        // THE JUNCTION: the tablist's bottom → the section row's top (the
+        // TabsContent's mt-6 — the never-pinned axis).
+        junction: { gap: Math.round(rr.top - tl.bottom) },
+        groupH3: g3cs
+          ? { fs: g3cs.fontSize, fw: g3cs.fontWeight, mb: g3cs.marginBottom }
+          : null,
+        rowToGroup: group
+          ? { gap: Math.round(group.getBoundingClientRect().top - rr.bottom) }
+          : null,
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("junction census found no tablist/row");
+
+    // The tablist anchor — the v60 F1 family re-anchored in the junction
+    // context (byte-identical on both sites, the nwjunction census).
+    expect(census.tablist).toEqual({
+      w: 448,
+      h: 36,
+      bottom: 525,
+      template: "220px 220px",
+      maxW: "448px",
+      pad: "4px",
+    });
+
+    // The section-row anchor — the v94 F4 family re-anchored.
+    expect(census.sectionRow).toEqual({
+      top: 549,
+      h: 56,
+      w: 960,
+      display: "flex",
+      justify: "space-between",
+    });
+
+    // THE JUNCTION — the never-pinned axis: the TabsContent's mt-6 gap
+    // (the tablist bottom 525 → the section row top 549).
+    expect(census.junction).toEqual({ gap: 24 });
+
+    // The continuation families re-measured in the junction context (the
+    // v94 F4 values — the rhythm map now junction-complete).
+    expect(census.groupH3).toEqual({ fs: "18px", fw: "600", mb: "12px" });
+    expect(census.rowToGroup).toEqual({ gap: 24 });
+
+    // The page fits the pair viewport.
+    expect(census.docSW).toBe(1280);
+  });
+});
