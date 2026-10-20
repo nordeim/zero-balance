@@ -6484,3 +6484,157 @@ own header before the derivation), (2) the axe-core watch at its next
 re-check point (only a 5.x wrapper changes the calculus), (3) the
 deferred reference-write censuses (unchanged — out of bounds under the
 v46 read-only rule).
+## The v101 cycle (executed 2026-10-20 — the v95-era dashboard pair's sixth re-run)
+
+The queue's own paragraph above was EXECUTED this cycle. The rotation
+ledger verified FIRST (the queue-prose verification lesson): the
+vlm-shots-v95.sh header read "the DASHBOARD at desktop 1280x800,
+FULL-PAGE, last re-shot v89 — now the oldest remaining [v89 < v90 < v91
+< v92 < v93 < v94]; the pair's FIFTH re-run [v61 → v68 → v77 → v83 →
+v89 → v95]" — the SIXTH re-run bracket [v61 → v68 → v77 → v83 → v89 →
+v95 → v101] constructed from it, the TWENTY-FOURTH consecutive
+queue/ledger agreement. The two commits since the v100 push (1a5c5bb +
+840e25c) audited session-log-only (session_243.md + session_244.md —
+zero src/ or lockfile deltas).
+
+The probe series derived from the v95 lineage by the persisted
+derive-v101-series.py (the generic swaps [refvlm95→refvlm101,
+clonevlm95→clonevlm101, refar95→refar101, clonear95→clonear101,
+/tmp/vlm95→/tmp/vlm101, v95→v101] then the exact-fragment history
+corrections [last-re-shot v89→v95, FIFTH→SIXTH, the bracket extension,
+the oldest-remaining bracket v95<v96<v97<v98<v99<v100, the agreement
+ordinal EIGHTEENTH→TWENTY-FOURTH, the previous-verdict reference
+v89→v95, "after v89-v94"→"after v95-v100", the census-axes drift-check
+baseline→v95] — every correction's hit/miss REPORTED by the script
+itself, ZERO misses; the line-count-preservation check green on all
+four files so build-twohalf-v101.py inherits the v95 line boundaries;
+bash -n + node --check clean; the residual check clean with the
+era-asymmetric whitelist). The new probes this cycle: vlm-shots-v101.sh
++ clone-vlmshots-v101.sh + vlm-compare-v101.mjs + arbit-v101.sh (the
+intermediate combined form, header-corrected) + build-twohalf-v101.py
+(the two-half builder — the THREE census blocks [ARBIT_G/ARBIT_Q/
+ARBIT_X] extracted once, embedded byte-identically across the halves by
+the md5 line-block contract [b500dd29 / da04e995 / 7a381755 — the v95
+census blocks verbatim]) + ref-arbit-v101.sh + clone-arbit-v101.sh +
+build-spending-v101.py + spending-arbit-v101.sh +
+spending-clone-v101.sh (the supplemental two-half census for the v101
+pin's own axes, BUILT two-half from the start — the census JS
+byte-identical by the md5 line-block contract [7e6a13c3 — 48 lines]) +
+derive-standing-v101.py + ref-standing-v95.sh + standing-checks-v95.sh
+(the 95th standing checks, version-bumped from the v94 pair across the
+three token families). The reaping budget applied as the standing step
+between every half; login on the first attempt both sides; the parked
+pointer at (5,5); read-only — the v46 rule holds.
+
+The verdict: IDENTICAL — ZERO style flags on the pair's own target
+surfaces (the Budget Guidelines card and the Quick Action cards both
+"visually identical" per the VLM's own targeted analysis) — the FOURTH
+consecutive IDENTICAL verdict for this pair [v83 → v89 → v95 → v101].
+The only flags the documented standing classes: the seed-data figures
+(the allocation bar 30.5%-vs-62.8%, the balance $3475-vs-$2065, the
+stat figures, the donut proportions), the root-URL active-nav highlight
+(the v56 SUPERSET class), and the avatar "U" vs "D" (the user-identity
+class).
+
+The both-sides census — executed in the TWO-HALF controlled form BUILT
+two-half from the start — REPRODUCED the v89/v95 census values EXACTLY
+(zero drift on every axis): PART G the guidelines card 468x348/radius
+12px/border/bg/the header pad 24px/fs 16px/fw 600/rgb(26,58,46)/lh
+16px/tracking -0.4px/the body pad 0px 24px 24px/the three tiles 418x78
+with the Needs/Wants/Savings tints and the label/pct/desc chrome — the
+only delta the shadow's transparent lead-layer count (the v66
+computed-form INVISIBLE class); PART Q the grid 304px x3/gap 24px/w
+960/the three cards 304x90/radius 16px/pad 24px/white/border/the
+40x40 tinted tiles/the 20px icons/the labels/the 0.5-opacity pluses/
+transition 0.2s — the TWO census deltas both documented classes (the
+grid mt [ref 0px vs clone 32px — the rendered gap IDENTICAL at 340, the
+v77 mechanism class] and the label finder's wrapper catch [ref leaf
+500/rgb(26,58,46) vs clone wrapper 400/rgb(10,10,10) — the v61 label
+lesson: the clone's LEAF span carries the identical chrome, pinned
+green by the v61 F3 pin]); PART X cardBottom 1122/gridTop 1462/gap 340
+on BOTH sides, byte-identical. NO NEW CLONE GAP — the v101 iteration
+PIN-ONLY.
+
+The v101 pin (+1 e2e = 304): the spending+guidelines 2-COL ROW's grid
++ the Spending Breakdown card's own box/header census at 1280
+(tests/e2e/dashboard.spec.ts — the FAMILY-EXTENSION pattern, the v100
+junction-walk lesson applied to the 2-col row: the v61 F2 pin walks the
+row ONLY for rowH 656 [the stretch contract] + the guidelines card's
+own box, the v77 pin the guidelines card's interior text, the v83 F4 pin
+the card-level cross-row gap — the ROW'S OWN GRID CHROME [the
+"468px 468px" template, the 24px column gap, the 960 width, the two
+children's 468 widths] and the SPENDING CARD'S OWN BOX + HEADER [the
+card radius/border/bg/shadow, the title's typography, the subtitle's
+chrome, the title→subtitle rhythm, the body's pt-0 contract] NEVER
+pinned at ANY viewport in ANY spec — the coverage-map grep across all
+24 specs: zero "468px 468px" template matches, zero spending-card
+radius/border/shadow assertions, the subtitle only visibility-asserted,
+the only columnGap census the v61 F3 quick-action grid's own). The
+pin's own axes first measured byte-identical on BOTH sides by the
+supplemental two-half census (spending-arbit-v101.sh +
+spending-clone-v101.sh via build-spending-v101.py, the census JS
+byte-identical by the md5 line-block contract [7e6a13c3]; both sides
+READ-ONLY login + passive navigation — the v46 rule holds; the
+seedcheck exact after the clone half): the row {display grid, template
+"468px 468px", colGap 24px, w 960}; the two children [{w 468, block},
+{w 468, block}]; the card {w 468, radius 12px, border
+rgb(229,231,227), bg white + the visible shadow pair — the lead-layer
+count the v66 INVISIBLE class}; the header {pad 24px} + the title
+{fs 16px, fw 600, color rgb(26,58,46), lh 16px, tracking -0.4px} + the
+subtitle {text "Needs vs Wants vs Savings", fs 14px, fw 400, color
+rgb(107,114,128), lh 20px, top 6 — the space-y-1.5 rhythm}; the body
+{pad "0px 24px 24px" — the pt-0 contract}; the docSW 1280 guard. Every
+axis DATA-INDEPENDENT (the structural chrome + the fixed header texts;
+the data-locked heights stay with the v61 F2 pin's own rowH contract)
+— the v98 data-independent-panel strength class. The pin-sanity
+mutation (the SpendingBreakdownCard's rounded-xl → rounded-2xl at
+src/components/budget/dashboard-view.tsx:695, by LINE NUMBER — the line
+carries EXACTLY ONE rounded-xl; the line-scoping keeps the
+BudgetGuidelinesCard's own rounded-xl at line 832 untouched): ONLY the
+v101 pin red (42 green) AFTER the standalone REBUILD (the v98
+mutation-rebuild discipline), the failure diff reads as the card radius
+axis ALONE ("12px" → "16px") — cascade-free BY CONSTRUCTION
+(border-radius never changes the layout box — the v99 precedent), then
+restored (git diff src/ = 0; the REBUILD; the post-restore full file
+run 43/43 green).
+
+The ship full chain re-run GREEN: lint -> typecheck -> 108 unit ->
+build -> 304 e2e (116+92+98 = 306 chunk executions = 304 unique tests
+— 303 spec tests + the setup test re-run per chunk, three disjoint
+file splits; zero flakes) -> 35/35 smoke; the screenshots **16/16
+BYTE-IDENTICAL** (the same-day-seed byte-identity law — the
+fresh-clone workspace's same-day re-seed and the shots on one calendar
+day, no midnight crossing).
+
+The operational lessons (the D6 section):
+- THE RESIDUAL-CHECK ASYMMETRY (a derivation-quality note): the v101
+  residual whitelist must tolerate the NEW-era v95 tokens the history
+  corrections introduce ("the v95-era" / "re-shot v95" / "since v95" /
+  "after v95-v100") while still flagging the OLD v89-era/FIFTH/
+  EIGHTEENTH tokens — the whitelist is era-asymmetric by construction
+  and must be re-derived per cycle, never copied blindly from the
+  previous cycle's script.
+- THE CUMULATIVE-PIN COUPLING (a mutation-selection note): the
+  dashboard's cumulative y-position pins (the v83 F4 cardBottom 1122 /
+  gridTop 1462; the v56 F1 hero children y 136) make ANY inter-row
+  margin mutation NON-cascade-free — the mutation-selection for
+  dashboard-surface pins must target box-chrome axes (radius/border/
+  typography), never the inter-row rhythm, unless the cumulative pins
+  are re-baselined in the same change.
+- THE LEFT-COLUMN COMPLETION (a coverage-map note): the 2-col row's
+  coverage is now COMPLETE — the row's own grid chrome + BOTH columns'
+  cards (the guidelines card by v61 F2/v77, the spending card by the
+  v101 pin) + the cross-row junction by v83 F4 — the family-extension
+  survey on a two-column row must walk BOTH columns' boxes, not just
+  the arbitrarily-chosen first.
+
+The v102 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after the dashboard pair (the v96-era MOBILE 390 twins pair [the five
+views' mobile surfaces at 390x844], last re-shot v96 — now the oldest
+remaining [v96 < v97 < v98 < v99 < v100 < v101]; the pair's SIXTH
+re-run bracket to be verified against vlm-shots-v96.sh's own header
+before the derivation), (2) the axe-core watch at its next re-check
+point (only a 5.x wrapper changes the calculus), (3) the deferred
+reference-write censuses (unchanged — out of bounds under the v46
+read-only rule).

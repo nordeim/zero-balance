@@ -3773,3 +3773,161 @@ test.describe("quick-action transition-timing family census at 1280 (v95 — pla
     expect(census.docSW).toBe(1280);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v101 — plan F4 (docs/remediation-plan-v101.md): the spending+guidelines
+// 2-COL ROW's grid + the Spending Breakdown card's own box/header census
+// at 1280 (the pair viewport). The never-pinned family (the coverage-map
+// grep across all 24 specs: zero "468px 468px" template matches, zero
+// spending-card radius/border/shadow assertions, the subtitle only
+// visibility-asserted at line ~106, the only columnGap census the v61 F3
+// quick-action grid's own): the v61 F2 pin walks the row ONLY for rowH 656
+// (the stretch contract) + the guidelines card's own box; the v77 pin the
+// guidelines card's interior text; the v83 F4 pin the card-level cross-row
+// gap — but the ROW'S OWN GRID CHROME (the lg:grid-cols-2 template, the
+// 24px column gap, the 960 width, the two children's 468 widths) and the
+// SPENDING CARD'S OWN BOX + HEADER (the card radius/border/bg/shadow, the
+// title's typography, the subtitle's chrome, the title→subtitle rhythm,
+// the body's pt-0 contract) were NEVER pinned at ANY viewport in ANY
+// spec. The values are the supplemental two-half census's own measurements
+// (spending-arbit-v101.sh + spending-clone-v101.sh via
+// build-spending-v101.py, the census JS byte-identical by the md5
+// line-block contract [7e6a13c3]) — byte-identical on BOTH sides; every
+// axis DATA-INDEPENDENT (the structural chrome + the fixed header texts;
+// the data-locked heights stay with the v61 F2 pin's own rowH contract —
+// the v98 data-independent-panel strength class).
+// ---------------------------------------------------------------------------
+test.describe("the spending+guidelines 2-col row grid + the spending card's box/header census at 1280 (v101 — plan F4)", () => {
+  test("the row's grid chrome + the two children + the card's box + the header block + the body-pad contract", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByText("Spending Breakdown")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // THE SPENDING CARD: the leaf title → the bordered card walk (the
+      // v61 F2 pattern: shadow + radius + a <p> descendant).
+      const title = [...document.querySelectorAll("h1, h2, h3, h4, div, span, p")].find(
+        (e) => (e.textContent || "").trim() === "Spending Breakdown" && e.children.length === 0,
+      ) as HTMLElement | undefined;
+      if (!title) return null;
+      let card = title as HTMLElement;
+      while (card.parentElement) {
+        const cs = getComputedStyle(card);
+        if (cs.boxShadow !== "none" && cs.borderRadius !== "0px" && card.querySelector("p")) break;
+        card = card.parentElement as HTMLElement;
+      }
+      const csC = getComputedStyle(card);
+      const rC = card.getBoundingClientRect();
+      // THE HEADER BLOCK (the title's parent) + the subtitle <p>.
+      const header = title.parentElement as HTMLElement;
+      const subtitle = header.querySelector("p") as HTMLElement | null;
+      const rT = title.getBoundingClientRect();
+      // THE BODY (the card's non-header child — the p-6 pt-0 contract).
+      const body = [...card.children].find((c) => c !== header) as HTMLElement | undefined;
+      // THE ROW: the ancestor 2-col grid (the v61 F2 walk).
+      let row = card.parentElement as HTMLElement | null;
+      while (row) {
+        const cls = (row.className || "").toString();
+        if (/grid-cols-2/.test(cls) && row.children.length === 2) break;
+        row = row.parentElement as HTMLElement | null;
+      }
+      if (!row) return null;
+      const csR = getComputedStyle(row);
+      const rR = row.getBoundingClientRect();
+      return {
+        docSW: document.documentElement.scrollWidth,
+        card: {
+          w: Math.round(rC.width),
+          radius: csC.borderRadius,
+          border: csC.borderTopColor,
+          bg: csC.backgroundColor,
+          shadow: csC.boxShadow,
+        },
+        header: { pad: getComputedStyle(header).padding },
+        title: {
+          fs: getComputedStyle(title).fontSize,
+          fw: getComputedStyle(title).fontWeight,
+          color: getComputedStyle(title).color,
+          lh: getComputedStyle(title).lineHeight,
+          tracking: getComputedStyle(title).letterSpacing,
+        },
+        subtitle: subtitle
+          ? {
+              text: (subtitle.textContent || "").trim(),
+              fs: getComputedStyle(subtitle).fontSize,
+              fw: getComputedStyle(subtitle).fontWeight,
+              color: getComputedStyle(subtitle).color,
+              lh: getComputedStyle(subtitle).lineHeight,
+              // THE TITLE→SUBTITLE RHYTHM (the space-y-1.5) — the
+              // subtitle's top minus the title's bottom.
+              top: Math.round(subtitle.getBoundingClientRect().top - rT.bottom),
+            }
+          : null,
+        body: body ? { pad: getComputedStyle(body).padding } : null,
+        row: {
+          display: csR.display,
+          template: csR.gridTemplateColumns,
+          colGap: csR.columnGap,
+          w: Math.round(rR.width),
+        },
+        children: [...row.children].map((k) => {
+          const kr = k.getBoundingClientRect();
+          return { w: Math.round(kr.width), display: getComputedStyle(k).display };
+        }),
+      };
+    });
+    expect(census, "the spending-row census finder (the leaf title + the 2-col row walk)").not.toBeNull();
+    if (!census) throw new Error("spending-row census found no card or row");
+
+    // THE ROW'S OWN GRID CHROME — never pinned before v101 (the
+    // lg:grid-cols-2 2-equal-track template + the gap-6 column gap +
+    // the 960 cap arithmetic).
+    expect(census.row).toEqual({
+      display: "grid",
+      template: "468px 468px",
+      colGap: "24px",
+      w: 960,
+    });
+    // The two children: the spending card + the stretched guidelines
+    // wrapper — both 468 (the (960−24)/2 arithmetic).
+    expect(census.children).toEqual([
+      { w: 468, display: "block" },
+      { w: 468, display: "block" },
+    ]);
+    // The SPENDING CARD's own box — the v61 F2 guidelines-box twin (the
+    // left column's card): radius/border/bg byte-identical both sides;
+    // the shadow's VISIBLE pair (the clone's transparent lead layers —
+    // the v66 computed-form INVISIBLE class).
+    expect(census.card.w).toBe(468);
+    expect(census.card.radius).toBe("12px");
+    expect(census.card.border).toBe("rgb(229, 231, 227)");
+    expect(census.card.bg).toBe("rgb(255, 255, 255)");
+    expect(census.card.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 3px 0px");
+    expect(census.card.shadow).toContain("rgba(0, 0, 0, 0.1) 0px 1px 2px -1px");
+    // The header block: the pad + the title's full typography (the v77
+    // guidelines-header twin — the lh + tracking included).
+    expect(census.header.pad).toBe("24px");
+    expect(census.title).toEqual({
+      fs: "16px",
+      fw: "600",
+      color: "rgb(26, 58, 46)",
+      lh: "16px",
+      tracking: "-0.4px",
+    });
+    // The subtitle: the fixed text + the chrome + the title→subtitle
+    // rhythm (the space-y-1.5 = 6px).
+    expect(census.subtitle).toEqual({
+      text: "Needs vs Wants vs Savings",
+      fs: "14px",
+      fw: "400",
+      color: "rgb(107, 114, 128)",
+      lh: "20px",
+      top: 6,
+    });
+    // The BODY PAD contract: the pt-0 (the header's own p-6 bottom
+    // provides the header→body separation).
+    expect(census.body!.pad).toBe("0px 24px 24px");
+    // The no-overflow guard on the same surface.
+    expect(census.docSW).toBe(1280);
+  });
+});
