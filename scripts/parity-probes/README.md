@@ -6638,3 +6638,132 @@ before the derivation), (2) the axe-core watch at its next re-check
 point (only a 5.x wrapper changes the calculus), (3) the deferred
 reference-write censuses (unchanged — out of bounds under the v46
 read-only rule).
+
+## The v102 cycle (executed 2026-10-21 — the v96-era mobile 390 twins' sixth re-run)
+
+The queue's own paragraph above was EXECUTED this cycle. The probe series
+derived from the v96 lineage by derive-v102-series.py (the PERSISTED
+derivation script — the generic swaps [refvlm96->refvlm102,
+clonevlm96->clonevlm102, refarbit96->refarbit102, clonearbit96->
+clonearbit102, /tmp/vlm96->/tmp/vlm102, v96->v102] followed by the
+exact-fragment history corrections [the queue source "the v95 plan's own
+suggestion"->"the v101 plan's own suggestion", the last-re-shot version
+v90->v96, FIFTH->SIXTH, the re-run bracket extension + the
+oldest-remaining bracket v96 < v97 < v98 < v99 < v100 < v101, the re-runs'
+verdict note v84/v90->v84/v90/v96, the census-axes provenance "The v90
+census axes"->"The v96 census axes"], every correction verified applied —
+zero misses this cycle; zero residual old tokens across all four files;
+bash -n + node --check clean; the line-count-preservation check green on
+all four — the two-half builder inherits the v96 line boundaries). The
+new probes this cycle: vlm-shots-v102.sh + clone-vlmshots-v102.sh +
+vlm-compare-v102.mjs + arbit-v102.sh (the intermediate combined form,
+header-corrected) + build-twohalf-v102.py (the two-half builder — the TWO
+census blocks [NW_CENSUS 42 lines / DASH_CENSUS 87 lines] extracted once,
+embedded byte-identically across the halves by the md5 line-block
+contract [82cf8a43 / 85e4ec7e]) + ref-arbit-v102.sh + clone-arbit-v102.sh
++ derive-standing-v102.py (the persisted standing derivation — the 96th
+pair, version-bump-only verified by the normalize-back diff) +
+ref-standing-v96.sh + standing-checks-v96.sh + headgap-arbit-v102.sh (the
+NEW top-header-spacing flag's one-shot arbitration — the topbar/h1/gap
+census on BOTH sides) + build-mobjunction-v102.py + mobjunction-arbit-
+v102.sh + mobjunction-clone-v102.sh (the supplemental two-half census for
+the v102 pin's own axes — the census JS byte-identical by the md5
+line-block contract [83a04c0e]; the doubled-brace spot check clean).
+
+The verdicts: BOTH DIFFERENT (the pair's documented verdict class — the
+same flag-set classes as the v84/v90/v96 re-runs) with every flag
+DOM-arbitrated: the stat-tile side-by-side-vs-stacked the v41
+mobile-superset class (the census: statGrid cols ref "175.828px
+175.844px" 2-col vs clone "294px" 1-col, the gap 16px IDENTICAL, the
+tiles ref 176x84 vs clone 294x84 — the h 84 byte-identical); the subtitle
+"third line" + the top-header-spacing flags BOTH VLM MISREADS (the
+census: the clone's subtitle P h 48 = exactly 2 DOM lines, the
+Range-walk buckets at tops 123/147, the chrome byte-identical; the
+headgap one-shot census: topbar {h 28, bottom 44, static} + h1 {h 36,
+top 77, fs 30px, fw 700, lh 36px} + gapTopbarToH1 33 + gapH1ToCard 56 —
+BYTE-IDENTICAL across sides, the flags artifacts of comparing the
+reference's 464-wide full-page image against the clone's 390-wide); the
+wrap-point delta itself the v62 width-delta class; the tab-bar alignment
+the v47/v53 divergence class (the reference's own 432-wide list inside
+its 464-overflow page; the clone's 358-wide in-bounds list with the
+identical "175px 175px" grid — pinned green by the v53 F1 pin); the
+figure + trend-icon flags the seed-data classes (the v82
+DATA-CONDITIONAL width class + the trend direction; the medallion 64x64
++ trendIcon 32x32 byte-identical per the census); the "Edit with Base44"
+FAB the platform-chrome class; the progress-bar + donut flags the
+seed-data classes. The two-half census REPRODUCES the v96 values EXACTLY
+— zero drift on every axis (the networth card/statGrid/tiles/medallion/
+trendIcon families with docSW ref 464 / clone 390; the dashboard subtitle
+chrome + the 2-DOM-lines bucketing + the breakdown card's h 324/svgCount
+7/the 16-14 alternation + the spendingCard finder's same div-heading
+fallback string on BOTH sides). NO NEW CLONE GAP.
+
+The standing-script timing artifact: NONE this cycle (the census clean
+on the FIRST read, no render-race — the v96-era settle discipline holds).
+
+The DATE-class screenshot arbitration (the v96 form, re-confirmed): the
+cycle crosses the calendar-day boundary against the committed set (the
+v101-era shots Oct 20 UTC; the regeneration Oct 21 00:1x UTC) — the Add
+Item form's default date (budget-item-dialog.tsx:83, todayIso(), computed
+at RENDER time) rolls "2026-10-20" -> "2026-10-21" and the
+07-add-item-modal shot differs by exactly the two day digits: the
+pixel-diff localization (the inline PIL diff this cycle, the v96
+pixel-diff-v96.py form) localizes the delta to a 15x22px region at
+x=1552 (the v75 acceptance form: width <= 48, height <= 40, x > 1000 —
+the date field in the dialog's form column at the 2x DPR shot); the
+other 15 shots byte-identical; the committed set updated with the new
+07 shot (the date-class delta documented, never a regression).
+
+The v102 pin (tests/e2e/networth.spec.ts, +1 -> 305): the networth
+MOBILE junctions census at 390 — the card->tablist gap 32 (the summary
+card's mb-8) + the assets tablist->section gap 24 (the assets
+TabsContent's mt-6, re-anchored at the mobile viewport) + the LIABILITIES
+panel's OWN junction 24 (its own mt-6 — never pinned at ANY viewport in
+ANY spec; the coverage-map grep: the only cardToTablist assertion the
+v41 F2 pin's own at 640, the only tablist-to-section junction assertion
+the v100 pin's own at 1280 on the ASSETS tab) + the tablist {h 36, pad
+4px} + both section rows {h 56, flex, space-between} anchors + the
+docSW 390 guard — measured byte-identical on both sides first (the
+mobjunction two-half census, md5 83a04c0e); the mutation mt-6 -> mt-8 at
+net-worth-view.tsx:479 (line-scoped — the assets mt-6 at line 415 AND
+the ratio footer's at line 385 untouched) verified single-axis (ONLY the
+v102 pin red, 32 green, after the standalone REBUILD; the liabilities
+junction axis alone [24 -> 32]).
+
+The operational lessons (the D6 section):
+- THE REFERENCE TAB-SWITCH INTERACTION CLASS (a census-finder note): the
+  reference's Radix-style TabsTrigger ignores a bare DOM `.click()` —
+  the aria-selected state never flips and the panel never swaps (the
+  first liabilities-pass attempt read "no liabilities h2 after click"
+  for exactly this reason); the FULL pointer-event sequence
+  (pointerdown + mousedown + pointerup + mouseup + click) is
+  load-bearing on the reference side (the clone responds to both).
+  Future censuses that switch tabs on the reference must dispatch the
+  full sequence — or use the Playwright locator click in the pin itself
+  (which dispatches the full family natively).
+- THE FORK-RETRY EXHAUSTION RE-CONFIRMED (a reaping-budget note): the
+  clone census half's first run this cycle hit `bash: fork: retry:
+  Resource temporarily unavailable` and read EMPTY output even after a
+  routine pkill — the THOROUGH reaping (pkill -9 on chromium AND chrome
+  AND agent-browser AND the standalone server + a 5s settle) was needed
+  before the clean retry; the two-half form remains necessary but not
+  sufficient — the reaping must be thorough between halves on this
+  sandbox.
+- THE SECOND-PANEL COVERAGE RULE (a coverage-map note): a tabbed view's
+  junction coverage is complete only when BOTH panels' junctions are
+  pinned — the assets panel's junction (the v100 pin at 1280) and the
+  liabilities panel's own (the v102 pin at 390); the family-extension
+  survey on a tabbed surface must walk EVERY panel's junction, not just
+  the default tab's (the same both-columns lesson as the v101 2-col
+  row).
+
+The v103 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after the mobile twins (the v97-era ITEMS pair [the INCOME + EXPENSES
+view pair at desktop 1280x800], last re-shot v97 — now the oldest
+remaining [v97 < v98 < v99 < v100 < v101 < v102]; the pair's SEVENTH
+re-run bracket [v57 -> v64 -> v70 -> v79 -> v85 -> v91 -> v97 -> v103]
+to be verified against vlm-shots-v97.sh's own header before the
+derivation), (2) the axe-core watch at its next re-check point (only a
+5.x wrapper changes the calculus), (3) the deferred reference-write
+censuses (unchanged — out of bounds under the v46 read-only rule).

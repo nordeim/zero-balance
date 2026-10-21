@@ -2678,3 +2678,182 @@ test.describe("networth tablist→section-row junction census at 1280 (v100 — 
     expect(census.docSW).toBe(1280);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v102 (docs/remediation-plan-v102.md) — the re-run pair's SIXTH cycle (the
+// v96-era MOBILE 390 twins pair). The FAMILY-EXTENSION pin (the v100
+// junction-walk lesson applied to the MOBILE viewport + the SECOND panel's
+// own junction): the MOBILE junctions at 390 — the card→tablist gap (the
+// summary card's mb-8) + the tablist→section gap (the ASSETS TabsContent's
+// mt-6) + the LIABILITIES panel's OWN junction (its own mt-6 — never pinned
+// at ANY viewport in ANY spec). The v69 F3 pin (390) walks the header
+// row→card gap only; the v41 F2 pin (640) the UPPER rhythm at 640; the v53
+// F1 pin (390) the tablist's own chrome; the v94 F4 pin (1280) the section
+// row + the row-to-group rhythm; the v100 F4 pin (1280) the ASSETS junction
+// — the MOBILE junctions and the SECOND panel's junction were NEVER pinned
+// (the coverage-map grep: zero junction assertions at 390; zero
+// liabilities-panel junction assertions at any viewport). The pin's own
+// axes first measured byte-identical on BOTH sides by the supplemental
+// two-half census (mobjunction-arbit-v102.sh + mobjunction-clone-v102.sh
+// via build-mobjunction-v102.py, the census JS md5 83a04c0e): the gaps
+// {32, 24, 24} + the tablist {h 36, pad 4px} + the rows {h 56, flex,
+// space-between} — every axis DATA-INDEPENDENT (the structural margins and
+// chrome; the v98 data-independent-panel strength class). The reference-side
+// pointerdown lesson: the reference's Radix-style trigger ignores a bare
+// DOM click — the Playwright locator click (the full pointer family
+// natively) is the load-bearing form.
+// ---------------------------------------------------------------------------
+test.describe("networth mobile junctions census at 390 (v102 — plan F4)", () => {
+  test("the card→tablist gap + the assets tablist→section gap + the LIABILITIES panel's own junction — never pinned before (v102 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+    // The settle pattern: the tablist + the Assets section render with the panel.
+    await expect(page.getByRole("tab", { name: /Assets/i })).toBeVisible();
+    await page.waitForTimeout(400);
+
+    // ---- The ASSETS-side junction walk (the gradient card → tablist →
+    // the Assets h2 → block → row — the NW_CENSUS/v94/v100 finders). ----
+    const census = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll("main div, div")].filter(
+        (d) => {
+          const s = getComputedStyle(d);
+          return (
+            d.getBoundingClientRect().height > 100 &&
+            d.getBoundingClientRect().width > 200 &&
+            s.backgroundImage &&
+            s.backgroundImage.includes("linear-gradient")
+          );
+        },
+      );
+      const card = cards.find(
+        (c) => c.getBoundingClientRect().width < 500,
+      ) as HTMLElement | undefined;
+      const tablist = document.querySelector('[role="tablist"]');
+      const h2 = [...document.querySelectorAll("main h2")].find(
+        (h) => (h.textContent || "").trim() === "Assets",
+      );
+      if (!card || !tablist || !h2) return null;
+      const block = h2.parentElement as HTMLElement | null;
+      const row = block ? (block.parentElement as HTMLElement | null) : null;
+      if (!block || !row) return null;
+      const cr = card.getBoundingClientRect();
+      const tl = tablist.getBoundingClientRect();
+      const tcs = getComputedStyle(tablist);
+      const rr = row.getBoundingClientRect();
+      return {
+        card: { w: Math.round(cr.width), bottom: Math.round(cr.bottom) },
+        tablist: {
+          w: Math.round(tl.width),
+          h: Math.round(tl.height),
+          bottom: Math.round(tl.bottom),
+          template: tcs.gridTemplateColumns,
+          pad: tcs.padding,
+        },
+        // THE JUNCTION 1: the summary card bottom → tablist top (the
+        // card's mb-8 — never pinned at 390 before this pin).
+        cardToTablist: { gap: Math.round(tl.top - cr.bottom) },
+        sectionRow: {
+          top: Math.round(rr.top),
+          h: Math.round(rr.height),
+          display: getComputedStyle(row).display,
+          justify: getComputedStyle(row).justifyContent,
+        },
+        // THE JUNCTION 2: the tablist bottom → the ASSETS section row top
+        // (the assets TabsContent's mt-6 — pinned at 1280 only before).
+        tablistToSection: { gap: Math.round(rr.top - tl.bottom) },
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("mobile junction census found no card/tablist/row");
+
+    // The card + tablist anchors — the in-bounds mobile column (the
+    // reference's own card/tablist are 432 wide inside its 464-overflow
+    // page, its documented bug; every non-width axis byte-identical).
+    expect(census.card.w).toBe(358);
+    expect(census.tablist).toEqual({
+      w: 358,
+      h: 36,
+      bottom: 658,
+      template: "175px 175px",
+      pad: "4px",
+    });
+
+    // THE JUNCTION 1 — the never-pinned axis at this viewport: the
+    // summary card's mb-8 (32px) between the card's bottom and the
+    // tablist's top.
+    expect(census.cardToTablist).toEqual({ gap: 32 });
+
+    // THE JUNCTION 2 — the assets TabsContent's mt-6 (24px), re-anchored
+    // at the mobile viewport (the v100 pin holds it at 1280).
+    expect(census.tablistToSection).toEqual({ gap: 24 });
+    expect(census.sectionRow.h).toBe(56);
+    expect(census.sectionRow.display).toBe("flex");
+    expect(census.sectionRow.justify).toBe("space-between");
+
+    // ---- THE LIABILITIES PASS: switch to the SECOND panel (the Playwright
+    // locator click — the full pointer-event family natively; the
+    // reference-side pointerdown lesson) and measure ITS OWN junction. ----
+    await page.getByRole("tab", { name: /Liabilities/i }).click();
+    await expect(
+      page.getByRole("heading", { name: "Liabilities", exact: true }),
+    ).toBeVisible();
+    await page.waitForTimeout(400);
+
+    const liab = await page.evaluate(() => {
+      const tablist = document.querySelector('[role="tablist"]');
+      const h2b = [...document.querySelectorAll("main h2")].find(
+        (h) => (h.textContent || "").trim() === "Liabilities",
+      );
+      if (!tablist || !h2b) return null;
+      const blockB = h2b.parentElement as HTMLElement | null;
+      const rowB = blockB
+        ? (blockB.parentElement as HTMLElement | null)
+        : null;
+      if (!blockB || !rowB) return null;
+      const tl = tablist.getBoundingClientRect();
+      const rrb = rowB.getBoundingClientRect();
+      const rcsb = getComputedStyle(rowB);
+      return {
+        tablistBottom: Math.round(tl.bottom),
+        row: {
+          top: Math.round(rrb.top),
+          h: Math.round(rrb.height),
+          w: Math.round(rrb.width),
+          display: rcsb.display,
+          justify: rcsb.justifyContent,
+        },
+        // THE JUNCTION 3: the tablist bottom → the LIABILITIES section row
+        // top (the LIABILITIES TabsContent's OWN mt-6 — the never-pinned
+        // axis at ANY viewport before this pin).
+        liabJunction: { gap: Math.round(rrb.top - tl.bottom) },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(liab).not.toBeNull();
+    if (!liab) throw new Error("liabilities junction census found no tablist/row");
+
+    // THE JUNCTION 3 — the never-pinned axis: the LIABILITIES
+    // TabsContent's own mt-6 (24px — byte-identical to the reference's
+    // measured 24 per the mobjunction two-half census).
+    expect(liab.liabJunction).toEqual({ gap: 24 });
+
+    // The liabilities section row — the v94 family at the mobile viewport
+    // (the in-bounds column: the reference's own row is 432 wide inside
+    // its 464-overflow page — its documented bug).
+    expect(liab.row).toEqual({
+      top: 682,
+      h: 56,
+      w: 358,
+      display: "flex",
+      justify: "space-between",
+    });
+
+    // The tablist anchor unchanged by the panel swap.
+    expect(liab.tablistBottom).toBe(658);
+
+    // The page fits the mobile viewport (the superset invariant — the
+    // reference reads 464, its own documented overflow bug).
+    expect(liab.docSW).toBe(390);
+  });
+});
