@@ -6900,3 +6900,108 @@ before the derivation), (2) the axe-core watch at its next re-check
 point (only a 5.x wrapper changes the calculus), (3) the deferred
 reference-write censuses (unchanged — out of bounds under the v46
 read-only rule).
+
+## The v104 cycle (executed 2026-10-21 — the v98-era savings pair's seventh re-run)
+
+The queue's own paragraph above was EXECUTED this cycle. The probe series
+derived from the v98 lineage by derive-v104-series.py (the PERSISTED
+derivation script — the generic swaps [refvlm98->refvlm104,
+clonevlm98->clonevlm104, refarbit98->refarbit104, clonearbit98->
+clonearbit104, /tmp/vlm98->/tmp/vlm104, v98->v104] followed by the
+exact-fragment history corrections [the last-re-shot version v92->v98,
+the era marker v92-era->v98-era, SIXTH->SEVENTH, the re-run bracket
+extension v58->...->v92->v98->v104, the oldest-remaining list bumped to
+the current era {v98 < v99 < v100 < v101 < v102 < v103}, the plan
+attribution v97->v103, the agreement count TWENTY-FIRST->
+TWENTY-SEVENTH, and the v98-era pin-candidate provenance note kept
+historical], every correction verified applied — zero misses this
+cycle; zero residual old tokens across all four files; bash -n + node
+--check clean; the line-count-preservation check green on all four —
+the two-half builder inherits the v98 line boundaries). The new probes
+this cycle: vlm-shots-v104.sh + clone-vlmshots-v104.sh +
+vlm-compare-v104.mjs + arbit-v104.sh (the intermediate combined form,
+header-corrected) + build-twohalf-v104.py (the two-half builder — the
+ONE census block [SV_CENSUS_JS 153 lines] extracted once, embedded
+byte-identically across the halves by the md5 line-block contract
+[891ab9b6]) + ref-arbit-v104.sh + clone-arbit-v104.sh +
+derive-standing-v104.py (the persisted standing derivation — the 98th
+pair, version-bump-only verified by the normalize-back diff) +
+ref-standing-v98.sh + standing-checks-v98.sh + brand-arbit-v104.sh (the
+v104 pin's own one-shot both-sides census — the base44-fab/userfooter
+one-shot pattern applied to the rail's TOP family).
+
+The verdict: DIFFERENT (the pair's documented verdict class) with every
+flag DOM-arbitrated: the "Card Footer Layout" the v57
+DATA-CONDITIONAL class (the footer childCount 1-vs-2 — the clone's
+"Brokerage" chip; the reference RENDERS payment chips when data carries
+them per the v97 income-card evidence); the "Card Grid" the seed-count
+class (grid childCount 1 vs 2); the header-subtitle + card-contents
+flags the seed-data classes (the reference's 1 savings item vs the
+clone's 2-item dev seed); the avatar the user-identity class; the
+"Edit with Base44" FAB NOT FLAGGED this cycle — the THIRD documented
+form (unflagged platform chrome, no attribution either way, no
+arbitration needed for an unflagged family). The two-half census
+(SV_CENSUS_JS 153 lines, md5 891ab9b6) REPRODUCES the v98 census values
+EXACTLY — zero drift on every axis (the h1/grid/card/titleRow/amount/
+footer/badge families; the card h 200-vs-230 the v57/v70b
+Recurring-wrap class; the clone template's last-column sub-pixel the
+column-distribution rounding noise WITHIN the documented 309.328px
+family; the docSW 1280 guard) — NO NEW CLONE GAP.
+
+The v104 pin (+1 e2e = 307): the rail's TOP brand-block subtitle/row
+census at 1280 (tests/e2e/nav-geometry.spec.ts) — the row {flex,
+center, gap 12px} + the h2 {18px/700/lh 28px/rgb(26,58,46)} + the
+"Budget Planner" subtitle {12px/400/rgb(45,90,74)} + the tile
+40x40/12px + the icon 24x24 context controls; the family never pinned
+beyond the v7 G4 tile/icon/h2-size axes (the coverage-map grep across
+all 23 specs: the only "Budget Planner" assertion the mobile sheet's
+VISIBILITY check). Measured byte-identical on BOTH sides via the
+one-shot census brand-arbit-v104.sh. The pin-sanity mutation
+(text-xs -> text-sm at sidebar.tsx:48, line-number-scoped — the
+section label's line 61 + the user-footer subtitle's line 129
+untouched): ONLY the v104 pin red (9 green) at the subtitle.fs axis
+ALONE ("12px" -> "14px"; the pin deliberately omits the subtitle's
+line-height — text-sm moves fs AND lh, a two-axis failure diff), after
+the standalone REBUILD; the v36 nav-pitch band headroom measured live
+(navY[0] 145 + the worst-case 4px shift = 149 < 150 — the band
+survives); restored, rebuilt, post-restore 10/10 green.
+
+The ship chain: 307 e2e zero flakes (126+90+57+37 = 310 chunk
+executions across the four-chunk auditable split = 307 unique); the
+seedcheck exact; the screenshots 16/16 BYTE-IDENTICAL (the same-day
+regeneration — both the v103 committed set and this cycle's capture on
+Oct 21 UTC, the fresh seed's date offsets anchoring identically, no
+midnight crossing — the v97 precedent).
+
+### D6 — the operational lessons this cycle
+
+- THE REFERENCE RAIL IS A DIV (a finder note): the brand one-shot's
+  first run returned `{err: "no h2"}` on the reference — the `aside h2`
+  finder assumed the reference's rail was an `<aside>` like the
+  clone's; the reference's rail is a DIV. The v103 userfooter finder
+  already carried the geometric fallback chain (aside OR the
+  180-320px-wide 700px-tall left-anchored div) — the lesson: every
+  cross-side rail finder must use the fallback-chain form, never a
+  bare `aside` selector.
+- THE UNFLAGGED-FAB CYCLE (a VLM-arbitration note): the v104 pairwise
+  report omitted the "Edit with Base44" FAB entirely — after the
+  inverted (v85/v91/v103-PAIR1) and non-inverted (v97/v103-PAIR2)
+  attribution forms, the THIRD form (no flag at all) is now documented;
+  future cycles expect any of the three forms without surprise, and an
+  unflagged platform-chrome family needs no arbitration.
+- THE SUBTITLE-LH EXCLUSION (a pin-design note): the pin deliberately
+  omits the subtitle's line-height axis because the chosen mutation
+  (`text-xs` -> `text-sm`) moves fs AND lh together — asserting both
+  would make the mutation's failure diff two-axis; the single-axis
+  discipline prefers the fs axis alone (the lh implicitly covered by
+  the row-height arithmetic in the headroom analysis).
+
+The v105 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after the savings pair (the v99-era LOGIN + CALCULATOR pair, last
+re-shot v99 — now the oldest remaining [v99 < v100 < v101 < v102 <
+v103 < v104]; the pair's re-run bracket to be verified against
+vlm-shots-v99.sh's own header before the derivation), (2) the axe-core
+watch at its next re-check point (only a 5.x wrapper changes the
+calculus), (3) the deferred reference-write censuses (unchanged — out
+of bounds under the v46 read-only rule).

@@ -322,3 +322,104 @@ test.describe("rail user-footer tile census at 1280 (v103 — plan F4)", () => {
     });
   });
 });
+
+// v104 — plan F4: the rail's TOP brand-block family, never census'd as a
+// whole. The v7 G4 pin holds the tile/icon/h2 size+weight ONLY; the h2's
+// color + line-height, the subtitle P's computed chrome ("Budget Planner" —
+// only the mobile sheet's VISIBILITY check anywhere), and the brand ROW's
+// flex chrome were never pinned at ANY viewport in ANY spec. Measured
+// byte-identical on BOTH sides via the one-shot census brand-arbit-v104.sh
+// (the base44-fab/userfooter pattern; the reference's rail is a DIV — the
+// census's fallback-chain finder, a live discovery this cycle).
+test.describe("rail brand-block subtitle + row census at 1280 (v104 — plan F4)", () => {
+  test("the brand row chrome + the h2 color/lh + the Budget Planner subtitle (v104 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const rail = document.querySelector("aside");
+      if (!rail) return null;
+      const h2 = [...rail.querySelectorAll("h2")].find(
+        (h) => (h.textContent || "").trim() === "ZeroBalance",
+      );
+      if (!h2) return null;
+      // the TEXT COLUMN: the h2's parent (the tile's next sibling)
+      const col = h2.parentElement;
+      // the TILE: the column's previous sibling (the v7 G4 finder)
+      const tile = col?.previousElementSibling ?? null;
+      // the ROW: the column's parent (the flex row: tile + column)
+      const row = col?.parentElement ?? null;
+      // the SUBTITLE: the column's only P
+      const sub = col?.querySelector("p") ?? null;
+      const h2cs = getComputedStyle(h2);
+      const scs = sub ? getComputedStyle(sub) : null;
+      const rcs = row ? getComputedStyle(row) : null;
+      const icon = tile?.querySelector("svg") ?? null;
+      return {
+        h2: {
+          fs: h2cs.fontSize,
+          fw: h2cs.fontWeight,
+          lh: h2cs.lineHeight,
+          color: h2cs.color,
+        },
+        subtitle: sub
+          ? {
+              text: (sub.textContent || "").trim().slice(0, 24),
+              fs: scs!.fontSize,
+              fw: scs!.fontWeight,
+              color: scs!.color,
+            }
+          : null,
+        row: row
+          ? {
+              display: rcs!.display,
+              align: rcs!.alignItems,
+              gap: rcs!.gap,
+            }
+          : null,
+        col: col ? { display: getComputedStyle(col).display } : null,
+        tile: tile
+          ? {
+              w: Math.round(tile.getBoundingClientRect().width),
+              h: Math.round(tile.getBoundingClientRect().height),
+              radius: getComputedStyle(tile).borderRadius,
+            }
+          : null,
+        icon: icon
+          ? {
+              w: getComputedStyle(icon).width,
+              h: getComputedStyle(icon).height,
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The brand ROW: the reference's own flex row (tile + text column).
+    expect(census!.row).toEqual({
+      display: "flex",
+      align: "center",
+      gap: "12px",
+    });
+    // The H2: the v7 G4 axes (fs/fw) strengthened with the never-pinned
+    // color + line-height.
+    expect(census!.h2).toEqual({
+      fs: "18px",
+      fw: "700",
+      lh: "28px",
+      color: "rgb(26, 58, 46)",
+    });
+    // The SUBTITLE: the never-pinned static copy pair.
+    expect(census!.subtitle).toEqual({
+      text: "Budget Planner",
+      fs: "12px",
+      fw: "400",
+      color: "rgb(45, 90, 74)",
+    });
+    // The context controls: the v7 G4 geometry re-walked (the tile +
+    // the icon + the column's block display).
+    expect(census!.col).toEqual({ display: "block" });
+    expect(census!.tile).toEqual({ w: 40, h: 40, radius: "12px" });
+    expect(census!.icon).toEqual({ w: "24px", h: "24px" });
+  });
+});
