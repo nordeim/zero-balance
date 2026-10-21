@@ -189,3 +189,136 @@ test.describe("per-route document titles (v12 — plan G2)", () => {
     await expect(page).toHaveTitle("ZeroBudget");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v103 — plan F4 (docs/remediation-plan-v103.md): the rail's bottom
+// USER-FOOTER tile census at 1280 — the never-census'd family. The v79 F4
+// pin (items.spec) covers the AVATAR's own chrome (the round 1-2 char
+// element INSIDE the tile); the mobile sheet asserts only the TEXTS'
+// visibility; the tile's own box + the name/subtitle typography + the
+// border-t wrapper are pinned NOWHERE else at ANY viewport. Measured
+// byte-identical on BOTH sides via userfooter-arbit-v103.sh (the one-shot
+// both-sides DOM census): the tile 223×60 / radius 8px / pad 12px / bg
+// rgb(245,248,245) / flex center gap 12px; the wrapper border-t 1px
+// rgb(229,231,227) / pad 16px / gap 8px; the name "Budget Pro" 14px/500/
+// rgb(26,58,46) ellipsis; the subtitle "Track your finances" 12px/400/
+// rgb(45,90,74) ellipsis. The h 60 = pad 12×2 + avatar 36. Pin-sanity:
+// sidebar.tsx:116 rounded-lg → rounded-xl fails tile.radius ALONE
+// (cascade-free BY CONSTRUCTION — border-radius never changes the layout
+// box; the nav links' own rounded-lg at line 79 + the burger's at line 227
+// untouched by the line-number scoping).
+// ---------------------------------------------------------------------------
+
+test.describe("rail user-footer tile census at 1280 (v103 — plan F4)", () => {
+  test("the border-t wrapper + the tinted tile + the name/subtitle chrome (v103 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/income");
+    await expect(page.getByText("2 items · $5550.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      const rail = document.querySelector("aside");
+      if (!rail) return null;
+      // the avatar — the v79 finder (the round 1-2 char element in the rail)
+      const avatar = [...rail.querySelectorAll("div,span,button")].find((el) => {
+        const r = el.getBoundingClientRect();
+        const cs = getComputedStyle(el);
+        const t = (el.textContent || "").trim();
+        return (
+          r.width >= 30 &&
+          r.width <= 45 &&
+          Math.abs(r.width - r.height) < 3 &&
+          parseFloat(cs.borderRadius) > 100 &&
+          t.length >= 1 &&
+          t.length <= 2
+        );
+      });
+      if (!avatar) return null;
+      // the TILE — the avatar's nearest ancestor with a visible bg + radius
+      let tile: HTMLElement | null = avatar.parentElement;
+      for (let i = 0; i < 4 && tile; i++) {
+        const cs = getComputedStyle(tile);
+        if (cs.backgroundColor !== "rgba(0, 0, 0, 0)" && parseFloat(cs.borderRadius) > 0) break;
+        tile = tile.parentElement;
+      }
+      if (!tile) return null;
+      const tcs = getComputedStyle(tile);
+      const tr = tile.getBoundingClientRect();
+      // the WRAPPER — the tile's parent (the border-t p-4 block)
+      const wrap = tile.parentElement;
+      if (!wrap) return null;
+      const wcs = getComputedStyle(wrap);
+      // the text leaves — the tile's childless text elements (>2 chars)
+      const texts = [...tile.querySelectorAll("p,span,div")].filter((el) => {
+        const t = (el.textContent || "").trim();
+        return t.length > 2 && el.children.length === 0;
+      });
+      const leaf = (el: Element) => {
+        const cs = getComputedStyle(el);
+        return {
+          text: (el.textContent || "").trim().slice(0, 24),
+          fs: cs.fontSize,
+          fw: cs.fontWeight,
+          color: cs.color,
+          truncate: cs.textOverflow,
+        };
+      };
+      return {
+        tile: {
+          w: Math.round(tr.width),
+          h: Math.round(tr.height),
+          radius: tcs.borderRadius,
+          pad: tcs.padding,
+          bg: tcs.backgroundColor,
+          display: tcs.display,
+          align: tcs.alignItems,
+          gap: tcs.gap,
+        },
+        wrapper: {
+          borderTop: `${wcs.borderTopWidth} ${wcs.borderTopColor}`,
+          pad: wcs.padding,
+          gap: wcs.gap,
+          display: wcs.display,
+        },
+        avatarW: Math.round(avatar.getBoundingClientRect().width),
+        name: texts[0] ? leaf(texts[0]) : null,
+        sub: texts[1] ? leaf(texts[1]) : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The tinted tile: the reference's own 245,248,245 rounded-lg p-3 card.
+    expect(census!.tile).toEqual({
+      w: 223,
+      h: 60,
+      radius: "8px",
+      pad: "12px",
+      bg: "rgb(245, 248, 245)",
+      display: "flex",
+      align: "center",
+      gap: "12px",
+    });
+    // The wrapper: the border-t p-4 block at the rail's bottom.
+    expect(census!.wrapper).toEqual({
+      borderTop: "1px rgb(229, 231, 227)",
+      pad: "16px",
+      gap: "8px",
+      display: "flex",
+    });
+    // The avatar's geometry control (the v79 F4 pin's own element — re-walked).
+    expect(census!.avatarW).toBe(36);
+    // The name + subtitle: the static copy pair, truncate chrome live.
+    expect(census!.name).toEqual({
+      text: "Budget Pro",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(26, 58, 46)",
+      truncate: "ellipsis",
+    });
+    expect(census!.sub).toEqual({
+      text: "Track your finances",
+      fs: "12px",
+      fw: "400",
+      color: "rgb(45, 90, 74)",
+      truncate: "ellipsis",
+    });
+  });
+});

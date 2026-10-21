@@ -6767,3 +6767,136 @@ to be verified against vlm-shots-v97.sh's own header before the
 derivation), (2) the axe-core watch at its next re-check point (only a
 5.x wrapper changes the calculus), (3) the deferred reference-write
 censuses (unchanged — out of bounds under the v46 read-only rule).
+
+## The v103 cycle (executed 2026-10-21 — the v97-era items pair's seventh re-run)
+
+The queue's own paragraph above was EXECUTED this cycle. The probe series
+derived from the v97 lineage by derive-v103-series.py (the PERSISTED
+derivation script — the generic swaps [refvlm97->refvlm103,
+clonevlm97->clonevlm103, refarbit97->refarbit103, clonearbit97->
+clonearbit103, /tmp/vlm97->/tmp/vlm103, v97->v103] followed by the
+exact-fragment history corrections [the last-re-shot version v91->v97,
+SIXTH->SEVENTH, the re-run bracket extension + the other-pairs list
+bumped to the current era {savings v98, login+calculator v99,
+networth+drill-down v100, dashboard v101, mobile twins v102}], every
+correction verified applied — zero misses this cycle; zero residual old
+tokens across all four files; bash -n + node --check clean; the
+line-count-preservation check green on all four — the two-half builder
+inherits the v97 line boundaries). The new probes this cycle:
+vlm-shots-v103.sh + clone-vlmshots-v103.sh + vlm-compare-v103.mjs +
+arbit-v103.sh (the intermediate combined form, header-corrected) +
+build-twohalf-v103.py (the two-half builder — the ONE census block
+[CENSUS_JS 193 lines] extracted once, embedded byte-identically across
+the halves by the md5 line-block contract [b55dcd29]; the
+doubled-brace spot check clean) + ref-arbit-v103.sh + clone-arbit-
+v103.sh + derive-standing-v103.py (the persisted standing derivation —
+the 97th pair, version-bump-only verified by the normalize-back diff) +
+ref-standing-v97.sh + standing-checks-v97.sh + base44-fab-arbit-v103.sh
+(the FAB one-shot re-arbitration, derived from the v97 twin) +
+userfooter-arbit-v103.sh (the v103 pin's own one-shot both-sides census
+— the base44-fab one-shot pattern applied to the rail's bottom family)
++ diff-shots-v103.mjs + diff-shots-v103-bands.mjs (the fresh-seed
+DATE-class screenshot arbitration — the bbox + the row-band
+decomposition; NOTE the pngjs dependency loaded via createRequire from
+the /tmp/pngtools scratch install, NOT a repo dependency — PIN-ONLY
+preserved).
+
+The verdicts: BOTH DIFFERENT (the pair's documented verdict class — the
+same flag-set classes as the v91/v97 re-runs) with every flag
+DOM-arbitrated: the avatar U-vs-D the user-identity class (the chrome
+byte-identical: 36x36 / 9999px / 14px / 600 / white / rgb(143,188,63));
+the "Edit with Base44" FAB the platform-chrome class with the INVERTED
+attribution form on PAIR 1 (the VLM attributed the FAB to the CLONE /
+image 2 — the v85/v91-documented class; re-arbitrated live by
+base44-fab-arbit-v103.sh: fabCount 0 + bodyHasBase44 false on BOTH
+sides, the FAB lives in the reference's platform iframe chrome outside
+the queryable body DOM) and the NON-inverted form on PAIR 2 (attributed
+to the reference — the v97 form) IN THE SAME COMPARISON RUN — both
+forms documented, both arbitrate identically, neither surprising; the
+payment-method footer chips the v57 DATA-CONDITIONAL class (the census:
+the reference's own income card's footer childCount 2 with the "Bank
+Account" chip + icon — it RENDERS chips when data carries them; its
+expense items ship none, childCount 1 — while the clone's carry them);
+the header stats + the card grids (the reference's 3+1 two-row vs the
+clone's 3 one-row — the seed-count class) + the card contents the
+seed-data classes; the "Recurring" 4th badge the DATA-CONDITIONAL class.
+The two-half census REPRODUCES the v97 values EXACTLY — zero drift on
+every axis (the avatar chrome; the grid/card chrome [960/16px/309.328
+family; card 309/pad 20/radius 12/border rgb(229,231,227); card h
+200-vs-230 the v70b-decomposed class; the income template's last-column
+sub-pixel the rounding-noise class]; the titleRow/amount/footer/badge
+chrome [the expenses footer childCount the v57 class; the badgeRow h
+22-vs-52 the v57 wrap class]; the filter-card both variants [the
+v64/v70 contract: the income 447-spanning/3-child/2-combobox form + the
+expenses 216/4-child/3-combobox form]; the docSW 1280 guard). NO NEW
+CLONE GAP.
+
+The standing-script timing artifact: NONE this cycle (the census clean
+on the FIRST read, no render-race).
+
+The DATE-class screenshot arbitration (the fresh-seed form, the
+v86/v80/v92 precedent): the FRESH-CLONE workspace re-seeded the db on
+Oct 21 while the committed set carried the carried-over-era dates —
+every isoDate offset rolled +1 day, so SIX shots differ (03-income,
+04-expenses, 05-savings, 06-networth, 08-calculator, 16-item-details —
+exactly the v92 fresh-clone cycle's own file list, the same mechanism).
+The pixel-band arbitration (diff-shots-v103.mjs + diff-shots-v103-
+bands.mjs): every delta decomposes into TEXT-ROW bands (h 19 glyph rows
+at 2x DPR — the card date footers; the 06 shot a single 13x19 glyph;
+the 08 shot the calculator's date-field region; the 16 shot the sheet's
+fact-row block + one 24px row) — ZERO structural bands (no full-width
+bands, no container-boundary diffs, no layout shift); the 306-e2e chain
+green in the same cycle independently confirms no layout regression;
+the committed set updated with the regenerated shots (the date-class
+deltas documented, never regressions).
+
+The v103 pin (tests/e2e/nav-geometry.spec.ts, +1 -> 306): the rail's
+bottom USER-FOOTER tile census at 1280 — the border-t wrapper
+{borderTop 1px rgb(229,231,227), pad 16px, gap 8px} + the tinted tile
+{223x60, radius 8px, pad 12px, bg rgb(245,248,245), flex center gap
+12px} + the avatar w 36 control + the name {"Budget Pro" 14px/500/
+rgb(26,58,46) ellipsis} + the subtitle {"Track your finances" 12px/400/
+rgb(45,90,74) ellipsis} — the FAMILY-EXTENSION survey found the family
+never census'd at ANY viewport (the v79 F4 pin covers the avatar INSIDE
+the tile; the mobile sheet asserts only the texts' visibility; the
+coverage-map grep across all 23 spec files: zero tile-chrome assertions)
+— measured byte-identical on both sides first (the one-shot census
+userfooter-arbit-v103.sh); the mutation rounded-lg -> rounded-xl at
+sidebar.tsx:116 (line-scoped — the nav links' own rounded-lg at line 79
++ the mobile burger's own at line 227 untouched) verified single-axis
+(ONLY the v103 pin red, 8 green, after the standalone REBUILD; the tile
+radius axis alone ["8px" -> "12px"]).
+
+The operational lessons (the D6 section):
+- THE CHUNK-SPLIT SELF-AUDIT (a baseline-chain note): the Playwright
+  file-filter argument is a PATH REGEX — "items.spec.ts" does NOT match
+  "item-details.spec.ts" (nor does "networth.spec.ts" match
+  "networth-error.spec.ts"); a chunk split copied from prose can
+  silently drop a spec file from the baseline run. Derive the per-chunk
+  file lists from `ls tests/e2e/*.spec.ts` explicitly and SUM the
+  per-file `playwright test --list` counts against the authoritative
+  total before declaring the chain green — the v103 four-chunk form
+  (117+96+85+10 = 308 = 305 unique) is the auditable split.
+- THE ONE-SHOT CENSUS FORM FOR SMALL FAMILIES (a probe-form note): the
+  user-footer arbitration ran as a single both-sides script (the
+  base44-fab pattern) rather than the two-half split — legitimate for
+  SMALL censuses (one element family, one eval per side) where the
+  chromium-exhaustion budget is not in play; the two-half form remains
+  the default for the multi-view census series (the v92..v95 lesson).
+- THE INVERTED-FAB ATTRIBUTION IS A STANDING CLASS (a VLM-arbitration
+  note): the v103 PAIR 1 attributed the "Edit with Base44" FAB to the
+  CLONE (image 2) while PAIR 2 attributed it to the reference — in the
+  SAME comparison run; both forms are documented (v85/v91 inverted, v97
+  non-inverted) and both arbitrate identically (fabCount 0 +
+  bodyHasBase44 false on BOTH sides). Future cycles expect EITHER form
+  without surprise; the one-shot census is the answer in both cases.
+
+The v104 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after the items pair (the v98-era SAVINGS pair, last re-shot v98 — now
+the oldest remaining [v98 < v99 < v100 < v101 < v102 < v103]; the pair's
+re-run bracket to be verified against vlm-shots-v98.sh's own header
+before the derivation), (2) the axe-core watch at its next re-check
+point (only a 5.x wrapper changes the calculus), (3) the deferred
+reference-write censuses (unchanged — out of bounds under the v46
+read-only rule).
