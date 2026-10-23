@@ -167,3 +167,113 @@ test.describe("mobile layout geometry", () => {
     expect(desktop!.gap).toBe(32);
   });
 });
+
+// v108 — the MOBILE TOPBAR's interior junction census at 390 (plan F4):
+// the never-pinned family. The v7 G5 pin (mobile-navigation.spec.ts) holds
+// the burger's box + icon color; the session-5 pins above hold the topbar's
+// box GEOMETRY (h <= 65, x 0, full width, inside main) + the hamburger
+// radius/icon CLASS + the brand CLASS — but the header's own chrome (pad
+// 24/16, border-b 1px rgb(229,231,227), bg white, h 61), the interior
+// row's flex chrome (flex/center/gap 16px), the burger's POSITION (the
+// px-6/py-4 rhythm), and the brand h1's COMPUTED chrome (fs 20px/fw 700/
+// lh 28px/forestDark) were never asserted at ANY viewport in ANY spec.
+// Measured byte-identical on BOTH sides via the one-shot
+// topbar-arbit-v108.sh census (the reference's own values: the panel-left
+// glyph form documented since remediation-plan-v3/v7).
+test.describe("mobile topbar interior census at 390 (v108 — plan F4)", () => {
+  test("the header chrome + the row flex + the burger position + the brand computed chrome (the never-pinned family)", async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(page.getByRole("heading", { name: "Budget Dashboard" })).toBeVisible();
+    const census = await page.evaluate(() => {
+      const btn = [...document.querySelectorAll("button")].find((b) =>
+        (b.querySelector("svg")?.getAttribute("class") || "").includes("panel-left"),
+      );
+      if (!btn) return null;
+      const header = btn.closest("header");
+      if (!header) return null;
+      const row = header.firstElementChild as HTMLElement;
+      const brand = row.lastElementChild as HTMLElement;
+      const icon = btn.querySelector("svg");
+      const hcs = getComputedStyle(header);
+      const rcs = getComputedStyle(row);
+      const bcs = getComputedStyle(btn);
+      const ics = icon ? getComputedStyle(icon) : null;
+      const br = btn.getBoundingClientRect();
+      const bc = getComputedStyle(brand);
+      return {
+        docSW: document.documentElement.scrollWidth,
+        header: {
+          h: Math.round(header.getBoundingClientRect().height),
+          padX: hcs.paddingLeft,
+          padY: hcs.paddingTop,
+          borderBW: hcs.borderBottomWidth,
+          borderBColor: hcs.borderBottomColor,
+          bg: hcs.backgroundColor,
+        },
+        row: {
+          display: rcs.display,
+          align: rcs.alignItems,
+          gap: rcs.columnGap,
+          h: Math.round(row.getBoundingClientRect().height),
+          childCount: row.children.length,
+        },
+        burger: {
+          x: Math.round(br.x),
+          y: Math.round(br.y),
+          w: Math.round(br.width),
+          h: Math.round(br.height),
+          radius: bcs.borderRadius,
+        },
+        icon: ics ? { w: ics.width, h: ics.height, color: ics.color } : null,
+        brand: {
+          text: (brand.textContent || "").trim(),
+          fs: bc.fontSize,
+          fw: bc.fontWeight,
+          lh: bc.lineHeight,
+          color: bc.color,
+        },
+      };
+    });
+    expect(census).not.toBeNull();
+    // The header's own chrome — the py-4/px-6/border-b arithmetic
+    // (h 61 = 16 + 28 + 16 + 1 border). The header's w stays unpinned
+    // (the reference reads 395 — its own documented dashboard overflow;
+    // the clone pins the docSW guard below instead).
+    expect(census!.header.h).toBe(61);
+    expect(census!.header.padX).toBe("24px");
+    expect(census!.header.padY).toBe("16px");
+    expect(census!.header.borderBW).toBe("1px");
+    expect(census!.header.borderBColor).toBe("rgb(229, 231, 227)");
+    expect(census!.header.bg).toBe("rgb(255, 255, 255)");
+    // The interior row's flex chrome — the never-pinned gap-4 rhythm.
+    expect(census!.row.display).toBe("flex");
+    expect(census!.row.align).toBe("center");
+    expect(census!.row.gap).toBe("16px");
+    expect(census!.row.h).toBe(28);
+    expect(census!.row.childCount).toBe(2);
+    // The burger's position — the px-6/py-4 junction arithmetic (the
+    // first child's x/y; the brand's x-position stays UNPINNED per the
+    // v107 xInRow lesson — position arithmetic co-moves with row
+    // mutations, so pinning it would break the single-axis discipline).
+    expect(census!.burger.x).toBe(24);
+    expect(census!.burger.y).toBe(16);
+    expect(census!.burger.w).toBe(28);
+    expect(census!.burger.h).toBe(28);
+    expect(census!.burger.radius).toBe("8px");
+    // The icon glyph — the computed 16×16 box + the near-black stroke
+    // (the v7 G5 pin holds w/color; this adds the h + the family context).
+    expect(census!.icon!.w).toBe("16px");
+    expect(census!.icon!.h).toBe("16px");
+    expect(census!.icon!.color).toBe("rgb(10, 10, 10)");
+    // The brand's COMPUTED chrome — the session-5 pin's class-only
+    // text-xl/font-bold assertions never pinned the computed values.
+    expect(census!.brand.text).toBe("ZeroBalance");
+    expect(census!.brand.fs).toBe("20px");
+    expect(census!.brand.fw).toBe("700");
+    expect(census!.brand.lh).toBe("28px");
+    expect(census!.brand.color).toBe("rgb(26, 58, 46)");
+    // The superset invariant: the clone fits at 390 (the reference reads
+    // 395 — its own documented dashboard overflow, the R-bug family).
+    expect(census!.docSW).toBe(390);
+  });
+});

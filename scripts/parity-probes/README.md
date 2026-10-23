@@ -7152,15 +7152,76 @@ screenshots 9/16 byte-identical + seven fresh-seed deltas arbitrated
   pinning them would break the single-axis mutation discipline; keep
   them census-documented, pin-unasserted.
 
-The v108 queue (suggestions — verify against the rotation ledger before
+### The v108 cycle (Session 143) — the v102-lineage derivation
+
+- `derive-v108-series.py` (persisted) — the v108 series derived from the
+  v102 lineage: vlm-shots-v108.sh + clone-vlmshots-v108.sh +
+  vlm-compare-v108.mjs + arbit-v108.sh; the generic swaps + the EIGHT
+  exact-fragment history corrections (the queue source v101-plan ->
+  v107-plan, last-re-shot v96->v102, the oldest-remaining bracket
+  bumped as TWO single-line halves [the v102 compare header wraps it
+  across lines 4-5], SIXTH->SEVENTH, the bracket extension v96->v102
+  ->v108, the re-runs' verdict note v84/v90/v96->v84/v90/v96/v102, the
+  census-axes provenance v96->v102) — 8/8 on the FIRST run, zero
+  residuals, line-count-preserving on all four (60/47/68/219).
+- `build-twohalf-v108.py` — the two-half builder (NW_CENSUS 42 +
+  DASH_CENSUS 87 lines, md5 82cf8a43/85e4ec7e — the v102 census blocks
+  VERBATIM, the blocks themselves version-free): ref-arbit-v108.sh +
+  clone-arbit-v108.sh, the census JS byte-identical across the halves.
+- `derive-standing-v108.py` — the 102nd standing pair
+  (ref-standing-v102.sh + standing-checks-v102.sh) from the v101 pair,
+  the THREE token families (the ordinal token's suffix flip
+  101st->102nd), normalize-back verified version-bump-only.
+- `base44-fab-arbit-v108.sh` — the ONE-SHOT both-sides arbitration for
+  the cycle's TWO disproven claims: the FAB census (fabCount 0 +
+  bodyHasBase44 false on both sides — the v97/v103 standing disproof
+  form, run because a FAB flag WAS raised) EXTENDED with the burger
+  glyph census (rect + accessibleName + svgClass + pathD + stroke) —
+  BOTH sides byte-identical {24,16,28x28} panel-left 'Toggle Sidebar'.
+- `topbar-arbit-v108.sh` — the ONE-SHOT both-sides census of the
+  MOBILE TOPBAR's interior junction family (the v108 pin's own axes
+  measured byte-identical on both sides before the pin): the header
+  {h 61, pad 24/16, border-b 1px rgb(229,231,227), bg white} + the row
+  {flex/center/gap 16/h 28/childCount 2} + the burger {24/16/28x28/
+  8px} + the icon {16x16, rgb(10,10,10)} + the brand {ZeroBalance,
+  20px/700/28px/rgb(26,58,46)}.
+
+### D6 — the operational lessons this cycle (v108)
+
+- THE NPM-CI PROVISIONING RULE (a fresh-clone note): a startup
+  module-resolution crash on a LOCKFILE-PINNED package (eslint's
+  `Cannot find module '.../zod/v4/index.cjs'` — 59 of 840 files
+  installed, the v4/ subdirectory absent while zod 4.6.5's own exports
+  map references it) means the LOCAL extraction is corrupt, NOT the
+  lockfile: verify the installed file count against the registry
+  tarball (`npm pack zod@4.6.5` -> 840 files) and fix with `npm ci`
+  (the clean lockfile-exact reinstall, integrity re-verified on every
+  package) — never a version change.
+- THE GLYPH-MISREAD ARBITRATION (a VLM-flag note): a VLM presence/
+  absence claim about an ICON is arbitrated by the svg FINGERPRINT
+  (class + pathD + stroke + rect + accessibleName), not by re-asking
+  the VLM — the v108 'hamburger missing in Image 2' claim died on the
+  byte-identical panel-left fingerprints (the reference's OWN toggle
+  is the 28x28 panel-left button documented since v3/v7; no 3-line
+  hamburger exists on either side). The VLM's second run did not even
+  raise the flag — the non-determinism itself the second form of the
+  class.
+- THE WRAPPED-BRACKET CORRECTION FORM (a derive-script note): when a
+  probe header wraps the oldest-remaining bracket across lines (the
+  v102 compare's `[v96 < v97 <` + `v98 < v99 < v100 < v101]`), correct
+  it as TWO single-line fragments rather than one multi-line fragment
+  — each half gets its own per-file hit count, keeping the
+  single-line-safe discipline (the v107 lesson's applied form).
+
+The v109 queue (suggestions — verify against the rotation ledger before
 executing): (1) the re-run cadence rotates to the next-oldest candidate
-after the v101-era DASHBOARD pair (the v102-era MOBILE TWINS pair — BOTH
-mobile 390x844 full-page twins: (1) the /NETWORTH view (the v63-era
-pair's surface) and (2) the DASHBOARD (the v62-era mobile twin's
-surface), last re-shot v102 — now the oldest remaining
-[v102 < v103 < v104 < v105 < v106 < v107]; the pair's SEVENTH re-run
-bracket [v62/v63 -> v69 -> v78 -> v84 -> v90 -> v96 -> v102 -> v108] to
-be verified against vlm-shots-v102.sh's own header before the
-derivation), (2) the axe-core watch at its next re-check point (only a
-5.x wrapper changes the calculus), (3) the deferred reference-write
-censuses (unchanged — out of bounds under the v46 read-only rule).
+after the v102-era MOBILE TWINS pair (the v103-era ITEMS pair — the
+INCOME + EXPENSES view pair at desktop 1280x800 FULL-PAGE, the
+v57-era items pair's surfaces, last re-shot v103 — now the oldest
+remaining [v103 < v104 < v105 < v106 < v107 < v108]; the pair's
+EIGHTH re-run bracket [v57 -> v64 -> v70 -> v79 -> v85 -> v91 -> v97 ->
+v103 -> v109] to be verified against vlm-shots-v103.sh's own header
+before the derivation), (2) the axe-core watch at its next re-check
+point (only a 5.x wrapper changes the calculus), (3) the deferred
+reference-write censuses (unchanged — out of bounds under the v46
+read-only rule).
