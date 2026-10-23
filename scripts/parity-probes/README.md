@@ -7051,12 +7051,58 @@ screenshots 9/16 byte-identical + seven fresh-seed deltas arbitrated
   with d <= 3 and no ASCII-map structure is rounding noise, never a
   clone gap.
 
-The v106 queue (suggestions — verify against the rotation ledger before
+### The v106 cycle (Session 141) — the v100-lineage derivation
+
+- `derive-v106-series.py` (persisted) — the v106 series derived from the
+  v100 lineage: vlm-shots-v106.sh + clone-vlmshots-v106.sh +
+  vlm-compare-v106.mjs + arbit-v106.sh; the generic swaps + the
+  exact-fragment history corrections (era v94-era->v100-era, last-re-shot
+  v94->v100, SIXTH->SEVENTH, the bracket extension ...v100 -> v106, the
+  TWENTY-THIRD->TWENTY-NINTH agreement ordinal, the census-axes reference)
+  — zero misses, zero residuals, line-count-preserving on all four.
+- `build-twohalf-v106.py` — the two-half builder (ARBIT_A 90 + ARBIT_B 111
+  lines, md5 457438e8/0b895e19): ref-arbit-v106.sh + clone-arbit-v106.sh,
+  the census JS byte-identical across the halves.
+- `derive-standing-v106.py` — the 100th standing pair (ref-standing-v100.sh
+  + standing-checks-v100.sh) from the v99 pair, the THREE token families,
+  normalize-back verified version-bump-only.
+- `nw-facts-arbit-v106.sh` — the ONE-SHOT both-sides census of the networth
+  ASSET CARD's FACTS-ROW interior family (the v106 pin's own axes measured
+  byte-identical on both sides before the pin). Finder lessons: the
+  "Updated" text is a BARE TEXT NODE beside the svg — no element leaf
+  carries it alone, so anchor the row finder on the row div whose
+  textContent STARTS WITH "Updated" (a /Updated/ substring match returns
+  the space-y-2 WRAPPER first — pre-order traversal); the facts wrapper is
+  the Updated row's parentElement, never a walk-up loop (a 12px+svg
+  predicate overshoots to the card body).
+
+### D6 — the operational lessons this cycle (v106)
+
+- THE TEXT-LAYER MISREAD CLASS (a VLM-arbitration note): the VLM can
+  misread a word's inflection ("Total Expense" vs the DOM's "Total
+  Expenses") — a flag class the v43 rule now covers at the TEXT layer:
+  when a VLM flag claims a WORD-level difference, read the reference's
+  live DOM for the exact string before counting the flag; the DOM is the
+  authority at every layer, glyph-level AND word-level.
+- THE QUEUE-PROSE VS LINEAGE NAMING (a rotation-ledger note): session
+  prose may name the re-run pair by ONE of its surfaces ("the v100-era
+  DASHBOARD pair" for the pair whose second surface IS the dashboard's
+  drill-down EXPANDED state); the probe lineage's own header (which
+  surfaces, which bracket) remains the authority — derive from the
+  header, note the prose in the plan.
+- THE SINGLE-DIMENSION ICON MUTATION FORM (a pin-design note): the
+  cleanest icon-family mutation changes ONE dimension only
+  (h-3 w-3 -> h-3 w-3.5: the W axis alone); the row height stays at the
+  text line box (max(16, 14) = 16) so no row-height axis cascades —
+  single-axis BY CONSTRUCTION, the v92 W-only form's sibling.
+
+The v107 queue (suggestions — verify against the rotation ledger before
 executing): (1) the re-run cadence rotates to the next-oldest candidate
-after the LOGIN + CALCULATOR pair (the v100-era DASHBOARD pair, last
-re-shot v100 — now the oldest remaining [v100 < v101 < v102 < v103 <
-v104 < v105]; the pair's re-run bracket to be verified against
-vlm-shots-v100.sh's own header before the derivation), (2) the axe-core
-watch at its next re-check point (only a 5.x wrapper changes the
-calculus), (3) the deferred reference-write censuses (unchanged — out
-of bounds under the v46 read-only rule).
+after the NETWORTH + DRILL-DOWN pair (the v101-era DASHBOARD pair — the
+BUDGET GUIDELINES card + the QUICK-ACTION row at desktop 1280x800
+full-page, last re-shot v101 — now the oldest remaining
+[v101 < v102 < v103 < v104 < v105 < v106]; the pair's re-run bracket to
+be verified against vlm-shots-v101.sh's own header before the
+derivation), (2) the axe-core watch at its next re-check point (only a
+5.x wrapper changes the calculus), (3) the deferred reference-write
+censuses (unchanged — out of bounds under the v46 read-only rule).

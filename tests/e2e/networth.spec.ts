@@ -2857,3 +2857,118 @@ test.describe("networth mobile junctions census at 390 (v102 — plan F4)", () =
     expect(liab.docSW).toBe(390);
   });
 });
+
+test.describe("networth asset-card facts-row interior census at 1280 (v106 — plan F4)", () => {
+  test("the facts wrapper + both rows' flex chrome + the 12×12 icon family + the space-y-2 rhythm (the never-pinned family)", async ({ page }) => {
+    // The v106 F4 pin (remediation-plan-v106.md): the v46 F2 pin holds the
+    // facts WRAPPER's {font, color} + the value→facts mb-4 gap; the rows'
+    // OWN interiors — the per-row flex chrome, the 12×12 icon family, the
+    // row heights, and the space-y-2 vertical rhythm — were never pinned
+    // at ANY viewport in ANY spec. Measured byte-identical on BOTH sides
+    // by the one-shot census (nw-facts-arbit-v106.sh: the reference's own
+    // "Savings Account" card vs the clone's "Share Portfolio" — every
+    // axis data-independent; the texts each site's own seed).
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/networth");
+    await expect(page.getByText("Total Net Worth")).toBeVisible();
+    // The settle pattern: wait for the first seeded card before probing.
+    const firstCard = page.locator("div.rounded-xl").filter({ hasText: "Share Portfolio" }).first();
+    await expect(firstCard).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The first asset card: rounded-xl + an h4 + a 24px/700 value (the
+      // v46 census's own finder family — NOT the summary card).
+      const cards = [...document.querySelectorAll("div")].filter((d) => {
+        if (typeof d.className !== "string") return false;
+        if (!d.className.includes("rounded-xl")) return false;
+        const h4 = d.querySelector("h4");
+        const val = [...d.querySelectorAll("p")].find((p) => {
+          const pcs = getComputedStyle(p);
+          return pcs.fontSize === "24px" && pcs.fontWeight === "700";
+        });
+        return !!h4 && !!val;
+      });
+      if (!cards.length) return null;
+      const card = cards[0] as HTMLElement;
+      // The Updated ROW: text starts with "Updated" + a 12px svg sibling.
+      const updated = [...card.querySelectorAll("div")].find((e) => {
+        const t = (e.textContent || "").trim();
+        return t.startsWith("Updated") && e.querySelector("svg") && getComputedStyle(e).fontSize === "12px";
+      });
+      if (!updated) return null;
+      const wrapper = updated.parentElement;
+      if (!wrapper) return null;
+      const wcs = getComputedStyle(wrapper);
+      const rows = [...wrapper.children].filter((c) => c.tagName === "DIV") as HTMLElement[];
+      const rowCensus = rows.map((row) => {
+        const rcs = getComputedStyle(row);
+        const svg = row.querySelector("svg");
+        const sr = svg ? svg.getBoundingClientRect() : null;
+        const scs = svg ? getComputedStyle(svg) : null;
+        return {
+          display: rcs.display,
+          align: rcs.alignItems,
+          gap: rcs.gap,
+          h: Math.round(row.getBoundingClientRect().height),
+          mt: rcs.marginBlockStart,
+          iconW: sr ? Math.round(sr.width) : null,
+          iconH: sr ? Math.round(sr.height) : null,
+          iconColor: scs ? scs.color : null,
+          iconViewBox: svg ? svg.getAttribute("viewBox") : null,
+        };
+      });
+      return {
+        wrapper: {
+          display: wcs.display,
+          fs: wcs.fontSize,
+          color: wcs.color,
+          h: Math.round(wrapper.getBoundingClientRect().height),
+          rowCount: rows.length,
+        },
+        rows: rowCensus,
+      };
+    });
+    expect(census).not.toBeNull();
+    if (!census) throw new Error("facts census found no card");
+
+    // The wrapper — the v46 pin's own family extended to the geometry
+    // (block layout, the 40 = 16 + 8 + 16 arithmetic of two rows + the
+    // 8px rhythm).
+    expect(census.wrapper).toEqual({
+      display: "block",
+      fs: "12px",
+      color: "rgb(107, 114, 128)",
+      h: 40,
+      rowCount: 2,
+    });
+
+    // The institution row — flex/center/8px, h 16, mt 0, the 12×12
+    // Building2 icon inheriting the wrapper's gray via currentColor.
+    expect(census.rows[0]).toEqual({
+      display: "flex",
+      align: "center",
+      gap: "8px",
+      h: 16,
+      mt: "0px",
+      iconW: 12,
+      iconH: 12,
+      iconColor: "rgb(107, 114, 128)",
+      iconViewBox: "0 0 24 24",
+    });
+
+    // The Updated row — the same chrome PLUS the 8px rhythm (the v3
+    // space-y-2 margin-top semantics restored by globals.css — the
+    // trap-log family holding on a networth surface).
+    expect(census.rows[1]).toEqual({
+      display: "flex",
+      align: "center",
+      gap: "8px",
+      h: 16,
+      mt: "8px",
+      iconW: 12,
+      iconH: 12,
+      iconColor: "rgb(107, 114, 128)",
+      iconViewBox: "0 0 24 24",
+    });
+  });
+});
