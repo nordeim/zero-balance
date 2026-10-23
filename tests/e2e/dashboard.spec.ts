@@ -3931,3 +3931,149 @@ test.describe("the spending+guidelines 2-col row grid + the spending card's box/
     expect(census.docSW).toBe(1280);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v107 — plan F4: the quick-action card's INTERIOR flex-row census at 1280
+// (the pair viewport). The qarow one-shot census (qarow-arbit-v107.sh)
+// measured the family byte-identical on both sites: the row {flex/center/
+// gap 12px/h 40/childCount 3}, the tile {flex/center/center/40×40/radius
+// 12px}, the icon {20×20, offsets 10/10 — the (40−20)/2 centering
+// arithmetic}, the label leaf {16px/500/forestDark}, the plus {16/16/0.5}.
+// THE STRUCTURAL-FINDER LESSON (the v107 DIV-vs-SPAN finding): the
+// reference's row/tile are DIVs while the clone's are SPANs — identical
+// computed chrome, different tags — so the finders walk POSITIONALLY
+// (firstElementChild children order), never by tag; the label leaf finder
+// is the v61 leaf lesson generalized TAG-AGNOSTIC (exact text + zero
+// element children, any tag). The v61 F3 pin holds the card/tile/icon/
+// label/plus BOX chrome; THIS pin adds the interior row's own flex/gap
+// centering + the tile's flex centering + the icon's centering offsets —
+// never pinned at ANY viewport before. The label's xInRow (52) and the
+// plus's xInRow (238) stay census-documented but UNPINNED (position
+// arithmetic a future layout change could co-move with unrelated axes —
+// the pin holds the structural chrome, the single-axis discipline
+// protected by construction).
+// ---------------------------------------------------------------------------
+test.describe("the quick-action card interior flex-row census at 1280 (v107 — plan F4)", () => {
+  test("the row's flex/gap centering + the tile's flex centering + the icon's centering offsets (the never-pinned family)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/dashboard");
+    await expect(page.getByRole("button", { name: "Add Income" })).toBeVisible();
+    const census = await page.evaluate(() => {
+      const qas = [...document.querySelectorAll("button")].filter(
+        (b) => /^Add (Income|Savings|Expense)$/.test((b.textContent || "").trim()),
+      ) as HTMLElement[];
+      if (qas.length !== 3) return null;
+      const cards = qas.map((b) => {
+        // STRUCTURAL walk (the v107 DIV-vs-SPAN lesson): positional
+        // children — never a tag match.
+        const row = b.firstElementChild as HTMLElement | null;
+        const rcs = row ? getComputedStyle(row) : null;
+        const rr = row ? row.getBoundingClientRect() : null;
+        const tile = row ? (row.firstElementChild as HTMLElement | null) : null;
+        const tcs = tile ? getComputedStyle(tile) : null;
+        const tr = tile ? tile.getBoundingClientRect() : null;
+        const svgs = row ? ([...row.querySelectorAll("svg")] as SVGElement[]) : [];
+        const icon = svgs[0];
+        const ir = icon ? icon.getBoundingClientRect() : null;
+        const plus = svgs[svgs.length - 1];
+        const pr = plus ? plus.getBoundingClientRect() : null;
+        // THE TAG-AGNOSTIC LEAF LABEL (the v61 lesson generalized): the
+        // exact text + zero element children — any tag.
+        const label = row
+          ? [...row.querySelectorAll("*")].find(
+              (e) =>
+                /^Add (Income|Savings|Expense)$/.test((e.textContent || "").trim()) &&
+                e.children.length === 0,
+            )
+          : undefined;
+        const lcs = label ? getComputedStyle(label) : null;
+        return {
+          text: (b.textContent || "").trim(),
+          row:
+            rcs && rr
+              ? {
+                  display: rcs.display,
+                  align: rcs.alignItems,
+                  gap: rcs.gap,
+                  h: Math.round(rr.height),
+                  childCount: row!.children.length,
+                }
+              : null,
+          tile:
+            tcs && tr
+              ? {
+                  display: tcs.display,
+                  align: tcs.alignItems,
+                  justify: tcs.justifyContent,
+                  w: Math.round(tr.width),
+                  h: Math.round(tr.height),
+                  radius: tcs.borderRadius,
+                }
+              : null,
+          icon:
+            icon && ir && tr
+              ? {
+                  w: Math.round(ir.width),
+                  h: Math.round(ir.height),
+                  offX: Math.round(ir.x - tr.x),
+                  offY: Math.round(ir.y - tr.y),
+                  color: getComputedStyle(icon).color,
+                }
+              : null,
+          label: lcs ? { fs: lcs.fontSize, fw: lcs.fontWeight, color: lcs.color } : null,
+          plus:
+            plus && pr
+              ? {
+                  w: Math.round(pr.width),
+                  h: Math.round(pr.height),
+                  opacity: getComputedStyle(plus).opacity,
+                }
+              : null,
+        };
+      });
+      return { cards, docSW: document.documentElement.scrollWidth };
+    });
+    expect(census).not.toBeNull();
+    // The three cards (identical interior chrome; the icon accent trio).
+    const expected = [
+      { text: "Add Income", accent: "rgb(143, 188, 63)" },
+      { text: "Add Savings", accent: "rgb(59, 126, 161)" },
+      { text: "Add Expense", accent: "rgb(224, 122, 59)" },
+    ];
+    census!.cards.forEach((c, i) => {
+      const e = expected[i]!;
+      expect(c.text).toBe(e.text);
+      // The row: the flex/gap-12 centering (the never-pinned interior).
+      expect(c.row).toEqual({
+        display: "flex",
+        align: "center",
+        gap: "12px",
+        h: 40,
+        childCount: 3,
+      });
+      // The tile: the flex centering (display/align/justify + the box).
+      expect(c.tile).toEqual({
+        display: "flex",
+        align: "center",
+        justify: "center",
+        w: 40,
+        h: 40,
+        radius: "12px",
+      });
+      // The icon: the (40−20)/2 centering offsets — never pinned before.
+      expect(c.icon).toEqual({
+        w: 20,
+        h: 20,
+        offX: 10,
+        offY: 10,
+        color: e.accent,
+      });
+      // The label leaf chrome (the tag-agnostic leaf — the v61 lesson).
+      expect(c.label).toEqual({ fs: "16px", fw: "500", color: "rgb(26, 58, 46)" });
+      // The plus box + opacity (the xInRow anchor stays census-only).
+      expect(c.plus).toEqual({ w: 16, h: 16, opacity: "0.5" });
+    });
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});

@@ -7096,13 +7096,71 @@ screenshots 9/16 byte-identical + seven fresh-seed deltas arbitrated
   text line box (max(16, 14) = 16) so no row-height axis cascades —
   single-axis BY CONSTRUCTION, the v92 W-only form's sibling.
 
-The v107 queue (suggestions — verify against the rotation ledger before
+### The v107 cycle (Session 142) — the v101-lineage derivation
+
+- `derive-v107-series.py` (persisted) — the v107 series derived from the
+  v101 lineage: vlm-shots-v107.sh + clone-vlmshots-v107.sh +
+  vlm-compare-v107.mjs + arbit-v107.sh; the generic swaps + the NINE
+  exact-fragment history corrections (era v95-era->v101-era, last-re-shot
+  v95->v101, SIXTH->SEVENTH, the bracket extension ...v101 -> v107, the
+  oldest-remaining list bumped to the current era, the TWENTY-FOURTH->
+  THIRTIETH agreement ordinal, the re-proves window v95-v100->v101-v106,
+  the arbit verdict reference v95->v101, the drift-re-check v95->v101)
+  — 9/9 on the FIRST run, zero residuals, line-count-preserving on all
+  four (57/42/45/258).
+- `build-twohalf-v107.py` — the two-half builder (ARBIT_G 61 + ARBIT_Q 58
+  + ARBIT_X 25 lines, md5 b500dd29/da04e995/7a381755 — the v101 census
+  blocks VERBATIM, the blocks themselves version-free): ref-arbit-v107.sh
+  + clone-arbit-v107.sh, the census JS byte-identical across the halves.
+- `derive-standing-v107.py` — the 101st standing pair (ref-standing-v101.sh
+  + standing-checks-v101.sh) from the v100 pair, the THREE token families
+  (note the ordinal token's suffix flip 100th->101st), normalize-back
+  verified version-bump-only.
+- `qarow-arbit-v107.sh` — the ONE-SHOT both-sides census of the
+  quick-action card's INTERIOR FLEX-ROW family (the v107 pin's own axes
+  measured byte-identical on both sides before the pin). THE
+  STRUCTURAL-FINDER LESSON: the reference's row/tile are DIVs while the
+  clone's are SPANs — identical computed chrome, different tags — so the
+  finders walk POSITIONALLY (the row = the button's firstElementChild;
+  the tile = the row's firstElementChild; the icon = the row's first
+  svg; the plus = the row's last svg), NEVER by tag; the label leaf
+  finder is the v61 leaf lesson generalized TAG-AGNOSTIC (the exact
+  text + zero element children, any tag — a div on the reference, a
+  span on the clone).
+
+### D6 — the operational lessons this cycle (v107)
+
+- THE STRUCTURAL-FINDER RULE (a census-finder note): when a family's DOM
+  tags differ across sites (DIV vs SPAN — the computed-chrome class),
+  walk POSITIONALLY (firstElementChild children order), never by tag;
+  generalize leaf finders tag-agnostically (exact text + zero element
+  children, any tag) — the v61 leaf lesson's next form. A tag-matched
+  finder silently returns null on one side and manufactures a false
+  gap.
+- THE LINE-BREAK FRAGMENT HAZARD (a derive-script note): history-
+  correction fragments must be SINGLE-LINE-SAFE — probe headers wrap at
+  ~78 chars, so a fragment spanning a line break ("the\n# v95-era pair",
+  "SIXTH\n# re-run", "after\n# v95-v100", "The v95\n# verdict") never
+  matches; cut each correction fragment to the unbroken span ("v95-era
+  pair", "SIXTH", "v95-v100", "The v95") and verify per-file hit counts
+  so a miss fails the derivation rather than shipping a stale header.
+- THE UNPINNED POSITION-ARITHMETIC AXES (a pin-design note): the census
+  may measure position arithmetic byte-identical (the label's 40+12
+  junction x = 52; the plus's right-edge anchor = 238), but the PIN
+  holds the STRUCTURAL chrome only — position axes co-move with
+  unrelated mutations (gap-3 -> gap-4 moves the label's x too), so
+  pinning them would break the single-axis mutation discipline; keep
+  them census-documented, pin-unasserted.
+
+The v108 queue (suggestions — verify against the rotation ledger before
 executing): (1) the re-run cadence rotates to the next-oldest candidate
-after the NETWORTH + DRILL-DOWN pair (the v101-era DASHBOARD pair — the
-BUDGET GUIDELINES card + the QUICK-ACTION row at desktop 1280x800
-full-page, last re-shot v101 — now the oldest remaining
-[v101 < v102 < v103 < v104 < v105 < v106]; the pair's re-run bracket to
-be verified against vlm-shots-v101.sh's own header before the
+after the v101-era DASHBOARD pair (the v102-era MOBILE TWINS pair — BOTH
+mobile 390x844 full-page twins: (1) the /NETWORTH view (the v63-era
+pair's surface) and (2) the DASHBOARD (the v62-era mobile twin's
+surface), last re-shot v102 — now the oldest remaining
+[v102 < v103 < v104 < v105 < v106 < v107]; the pair's SEVENTH re-run
+bracket [v62/v63 -> v69 -> v78 -> v84 -> v90 -> v96 -> v102 -> v108] to
+be verified against vlm-shots-v102.sh's own header before the
 derivation), (2) the axe-core watch at its next re-check point (only a
 5.x wrapper changes the calculus), (3) the deferred reference-write
 censuses (unchanged — out of bounds under the v46 read-only rule).
