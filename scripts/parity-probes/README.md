@@ -6996,12 +6996,67 @@ midnight crossing — the v97 precedent).
   discipline prefers the fs axis alone (the lh implicitly covered by
   the row-height arithmetic in the headroom analysis).
 
-The v105 queue (suggestions — verify against the rotation ledger before
+### The v105 cycle (Session 140 — 2026-10-23, PIN-ONLY, +1 e2e = 308)
+
+The queue verified against vlm-shots-v99.sh's own header before the
+derivation (the TWENTY-EIGHTH consecutive queue/ledger agreement): the
+v99-era LOGIN + CALCULATOR pair — the CALCULATOR dialog + the /login
+view at desktop 1280x800, the pair's SEVENTH re-run
+[v59 -> v66 -> v75 -> v81 -> v87 -> v93 -> v99 -> v105]. The series
+derived via derive-v105-series.py (six files: the calculator pair + the
+login pair + the compare + the arbit; the generic swaps + the
+exact-fragment history corrections, zero misses, line-count-preserving);
+the census built two-half from the start via build-twohalf-v105.py
+(CALC 61 + LOGIN 36 lines, md5 e1092d12/9e5a52d2 — the v99 blocks
+verbatim); the standing pair derived v98->v99 via
+derive-standing-v105.py (version-bump-only verified). The verdicts:
+CALCULATOR DIFFERENT (every flag DOM-arbitrated — the "Will update
+category total" line the SEED-DATA class [hasWillUpdateSpan false-vs-
+true: the reference's own Rent $25.00 equals its calculated total]; the
+hover-state flag the RESTING-STATE parity class [actionsAtRest
+identical]; the amount-alignment flag the consequence class) + LOGIN
+IDENTICAL (the FAB the unflagged platform-chrome third form). The
+census reproduces the v99 values exactly — NO NEW CLONE GAP. The +1
+pin: the login auth-mode action row census at 1280 (login-parity.spec.ts
+— the row {flex, center, space-between, gap 0px, w 368, h 20} + the
+forgot context + the signup-side button + the "Sign up" emphasis span;
+measured byte-identical both sides via moderow-arbit-v105.sh, the
+one-shot form on the logged-out surface; mutation font-medium ->
+font-semibold at login-card.tsx:381 line-scoped — the span.fw axis
+alone). The ship: 308 e2e zero flakes (311 chunk executions); the
+screenshots 9/16 byte-identical + seven fresh-seed deltas arbitrated
+(the +2-day roll; the blur-rounding class discovered — see the lessons).
+
+### D6 — the operational lessons this cycle (v105)
+
+- THE MODE-SWITCHER BUTTON CLASS (a finder note): the v105 login
+  census's `links` array came back EMPTY on BOTH sides — the login's
+  auth-mode switchers ("Forgot password?" / "Need an account? Sign
+  up") are BUTTONS on both sides, not anchors; any future census that
+  wants the mode-switcher family must find them among `form button` by
+  text, never `a[href]`.
+- THE SPAN-FW MUTATION FORM (a pin-design note): the chosen mutation
+  (`font-medium` -> `font-semibold` on the emphasis span) moves fw
+  ALONE — unlike the fs mutations of prior cycles (which drag lh and
+  inherited fs with them), a font-weight change on a leaf span is
+  single-axis BY CONSTRUCTION, the cleanest mutation form yet; future
+  cycles prefer it when the family carries a fw axis.
+- THE BLUR-ROUNDING DELTA CLASS (a screenshot-arbitration note): the
+  backdrop-blur(8px) scrim regions can show ±1-3 RGB rounding drift
+  between capture sessions (the GPU blur compositing's rounding) —
+  localized near the dialog panel edges, glyph-free, structure-free.
+  The v105 arbitration discipline: decompose every "wide band" by its
+  MAX PER-PIXEL DELTA first — glyph rolls read d 400-700, rounding
+  drift reads d <= 3; only the former are text changes. A wide band
+  with d <= 3 and no ASCII-map structure is rounding noise, never a
+  clone gap.
+
+The v106 queue (suggestions — verify against the rotation ledger before
 executing): (1) the re-run cadence rotates to the next-oldest candidate
-after the savings pair (the v99-era LOGIN + CALCULATOR pair, last
-re-shot v99 — now the oldest remaining [v99 < v100 < v101 < v102 <
-v103 < v104]; the pair's re-run bracket to be verified against
-vlm-shots-v99.sh's own header before the derivation), (2) the axe-core
+after the LOGIN + CALCULATOR pair (the v100-era DASHBOARD pair, last
+re-shot v100 — now the oldest remaining [v100 < v101 < v102 < v103 <
+v104 < v105]; the pair's re-run bracket to be verified against
+vlm-shots-v100.sh's own header before the derivation), (2) the axe-core
 watch at its next re-check point (only a 5.x wrapper changes the
 calculus), (3) the deferred reference-write censuses (unchanged — out
 of bounds under the v46 read-only rule).

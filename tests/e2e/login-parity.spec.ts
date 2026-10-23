@@ -1423,3 +1423,107 @@ test.describe("login social-row census at 1280 (v99 — plan F4)", () => {
     expect(census!.docSW).toBe(1280);
   });
 });
+
+test.describe("login auth-mode action row census at 1280 (v105 — plan F4)", () => {
+  test("the action row + the forgot context + the signup-side button + the emphasis span (the never-pinned family)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The finders modeled on the v105 arbitration's own one-shot
+      // census (moderow-arbit-v105.sh). The mode switchers are BUTTONS
+      // on both sides — never a[href] (the v105 finder lesson).
+      const form = document.querySelector("form");
+      if (!form) return null;
+      const forgot = [...form.querySelectorAll("button")].find((b) =>
+        /Forgot password\?/i.test((b.textContent || "").trim()),
+      );
+      const signup = [...form.querySelectorAll("button")].find((b) =>
+        /Need an account\?/i.test((b.textContent || "").trim()),
+      );
+      if (!forgot || !signup) return null;
+      // The ROW: the buttons' common ancestor (the walk-up finder).
+      let row: HTMLElement | null = forgot.parentElement;
+      while (row && row !== document.body && !row.contains(signup)) row = row.parentElement;
+      if (!row || row === document.body) return null;
+      const rcs = getComputedStyle(row);
+      const fcs = getComputedStyle(forgot);
+      const scs = getComputedStyle(signup);
+      const span = signup.querySelector("span");
+      const spcs = span ? getComputedStyle(span) : null;
+      return {
+        row: {
+          display: rcs.display,
+          align: rcs.alignItems,
+          justify: rcs.justifyContent,
+          gap: rcs.gap,
+          w: Math.round(row.getBoundingClientRect().width),
+          h: Math.round(row.getBoundingClientRect().height),
+        },
+        forgot: {
+          text: (forgot.textContent || "").trim().slice(0, 24),
+          fs: fcs.fontSize,
+          lh: fcs.lineHeight,
+          fw: fcs.fontWeight,
+          color: fcs.color,
+          h: Math.round(forgot.getBoundingClientRect().height),
+        },
+        signup: {
+          text: (signup.textContent || "").trim().slice(0, 32),
+          fs: scs.fontSize,
+          lh: scs.lineHeight,
+          fw: scs.fontWeight,
+          color: scs.color,
+          h: Math.round(signup.getBoundingClientRect().height),
+        },
+        span: span
+          ? {
+              text: (span.textContent || "").trim().slice(0, 16),
+              fs: spcs!.fontSize,
+              fw: spcs!.fontWeight,
+              color: spcs!.color,
+            }
+          : null,
+      };
+    });
+    expect(census).not.toBeNull();
+    // The action row's flex chrome (the sm:flex-row sm:gap-0 state at
+    // 1280) — never pinned at ANY viewport in ANY spec before v105.
+    expect(census!.row).toEqual({
+      display: "flex",
+      align: "center",
+      justify: "space-between",
+      gap: "0px",
+      w: 368,
+      h: 20,
+    });
+    // The forgot-side context controls — the v7 {fs, lh, h, color} set
+    // re-walked + the NEW fw axis.
+    expect(census!.forgot).toEqual({
+      text: "Forgot password?",
+      fs: "14px",
+      lh: "20px",
+      fw: "500",
+      color: "rgb(100, 116, 139)",
+      h: 20,
+    });
+    // The signup-side button — the family's primary target: its computed
+    // chrome was never asserted anywhere despite 8+ click usages.
+    expect(census!.signup).toEqual({
+      text: "Need an account? Sign up",
+      fs: "14px",
+      lh: "20px",
+      fw: "400",
+      color: "rgb(100, 116, 139)",
+      h: 20,
+    });
+    // The "Sign up" emphasis span (font-medium text-[#334155]).
+    expect(census!.span).toEqual({
+      text: "Sign up",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(51, 65, 85)",
+    });
+  });
+});
