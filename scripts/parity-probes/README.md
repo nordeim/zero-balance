@@ -7368,3 +7368,80 @@ calculus), (3) the npm-audit watch at its re-check point (the NEW
 standing audit step — only a new advisory in the next/zod ranges
 changes the calculus), (4) the deferred reference-write censuses
 (unchanged — out of bounds under the v46 read-only rule).
+
+## The v111 cycle (the v105-era LOGIN + CALCULATOR pair's EIGHTH re-run — Session 146)
+
+The re-run cadence's next-oldest candidate: the v105-era LOGIN +
+CALCULATOR pair (the LOGIN view + the CALCULATOR dialog at desktop
+1280x800, last re-shot v105 — now the oldest remaining [v105 < v106 <
+v107 < v108 < v109 < v110]; the pair's EIGHTH re-run bracket [v59 -> v66
+-> v75 -> v81 -> v87 -> v93 -> v99 -> v105 -> v111]; the THIRTY-FOURTH
+consecutive queue/ledger agreement — the surface names verified against
+vlm-shots-v105.sh's own header before the derivation). PIN-ONLY for
+src/; the cycle's standing items: the axe watch (NO DRIFT — 4.14.0
+holds, the v68 dedupe verified), the npm-audit watch at its second
+re-check (0 vulnerabilities — the v110 bump holds [next 16.4.3 + zod
+4.6.7]), the 105th standing checks (ALL GREEN — the mobile menu the
+105th consecutive green; the reference's four bugs all live; the census
+clean on the first read). The verdicts: CALCULATOR DIFFERENT (every
+flag DOM-arbitrated to a documented class — the "Will update category
+total" note the SEED-DATA class [ref hasWillUpdateSpan false: its own
+Rent $25.00 equals its calculated total]; the hover-action row the
+RESTING-STATE parity class [actionsAtRest {opacity 0, btnCount 2}
+identical both sides]; the row-height flag their consequence) + LOGIN
+IDENTICAL (the v105 precedent — the verdict-variation form). The
+two-half census (CALC_CENSUS_JS 61 lines md5 e1092d12 + LOGIN_CENSUS_JS
+36 lines md5 9e5a52d2 — the v99/v105 census blocks VERBATIM,
+source-to-source verified) reproduces the v105 values exactly — NO NEW
+CLONE GAP. The +1 pin (tests/e2e/calculator.spec.ts): the calculator's
+LINE-ITEMS SECTION HEADER ROW at 1280 — the row {flex/center/
+space-between/mb 16px/mt 0px/h 32/w 720/childCount 2} + the "Line
+Items" h3 {16px/600/rgb(26,58,46)/lh 24px/h 24/margin 0px} + the
+junction (h3CenterY === rowCenterY) + the addBtn context {110x32} —
+never pinned at ANY viewport in ANY spec (zero "Line Items"
+assertions across all 24 specs; the v81 addBtn pin + the v66 height
+family + the v93 totalCard census all live on DIFFERENT elements),
+measured byte-identical both sides via the one-shot
+sectionrow-arbit-v111.sh, mutation-verified single-axis AND
+cascade-free (font-semibold -> font-bold at calculator-dialog.tsx:171
+line-scoped — the ONLY bare font-semibold line in the file; the
+nameH4's mb-1 font-semibold at line 210 untouched; only the v111 pin
+red at sectionH3.fw alone [600 -> 700] after the standalone REBUILD).
+The ship chain: 314 e2e zero flakes (76+80+79+82 = 317 executions =
+314 unique); 35/35 smoke; the screenshots 16/16 byte-identical (the
+same-day-seed law); the dev evidence re-captured + VLM-verified.
+
+- THE PROVISIONING LESSON (a fresh-workspace note): a fresh sandbox's
+  playwright browser cache can hold only an OLDER pin's binaries
+  (chromium-1200 + chromium_headless_shell-1200 here) while
+  `npx playwright install chromium --dry-run` happily REPORTS the
+  current pin's install location — the dry-run is a location report,
+  NEVER an existence proof. The first chunk failed 74/75 with
+  "Executable doesn't exist at .../chromium_headless_shell-1243"
+  (the headless suite runs the headless-SHELL binary, not the full
+  chromium). THE CHECKLIST RULE: verify the cache DIRECTLY
+  (`ls /home/z/.cache/ms-playwright/` for BOTH `chromium-<pin>` AND
+  `chromium_headless_shell-<pin>`) before the first e2e run; the
+  full `npx playwright install chromium` downloads BOTH binaries.
+- THE ONE-SHOT CENSUS COMMAND FORM (a census-note addendum): opening
+  a hover-revealed control needs the vlm-shots form — mouse-move to
+  the button center FIRST (the hover state holds), then mouse-down +
+  mouse-up; the bare `agent-browser click` command can drop the
+  hover-revealed button before the press lands (the first
+  sectionrow-arbit run read "no panel" on exactly this), and a census
+  passed into `with-server.sh bash -s` must travel as an ENV VARIABLE
+  (the quoted heredoc never expands the parent's shell variables).
+
+The v112 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after the v105-era LOGIN + CALCULATOR pair (the v106-era NETWORTH +
+drill-down-DASHBOARD pair — the desktop 1280x800 FULL-PAGE NETWORTH
+view + the DASHBOARD's drill-down EXPANDED state, last re-shot v106 —
+now the oldest remaining [v106 < v107 < v108 < v109 < v110 < v111]; the
+pair's EIGHTH re-run bracket [v60 -> v67 -> v76 -> v82 -> v88 -> v94 ->
+v100 -> v106 -> v112] to be verified against vlm-shots-v106.sh's own
+header before the derivation), (2) the axe-core watch at its next
+re-check point (only a 5.x wrapper changes the calculus), (3) the
+npm-audit watch at its re-check point (only a new advisory in the
+next/zod ranges changes the calculus), (4) the deferred reference-write
+censuses (unchanged — out of bounds under the v46 read-only rule).

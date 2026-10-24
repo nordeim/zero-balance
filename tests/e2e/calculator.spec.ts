@@ -1857,3 +1857,127 @@ test.describe("calculator totalCard inner-text census at 1280 (v93 — plan F4)"
     await restoreRent(page);
   });
 });
+
+test.describe("calculator Line-Items section-header row census at 1280 (v111 — plan F4)", () => {
+  test("the section row + the 'Line Items' h3 — the never-pinned family at the pair viewport", async ({ page }) => {
+    // The dialog's SECTION ROW between the v93-pinned totalCard and the
+    // items: the row's flex chrome + the h3's computed typography — zero
+    // "Line Items" assertions across all 24 specs before this pin (the
+    // coverage map); the addBtn is CONTEXT ONLY (the v81 pin holds its
+    // full chrome). Measured byte-identical on both sides by the v111
+    // one-shot census (sectionrow-arbit-v111.sh) BEFORE the pin.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/expenses");
+    await expect(page.getByText("3 items · $2235.00")).toBeVisible();
+    const rent = page.locator("div.rounded-xl").filter({ hasText: "Rent" }).first();
+    await rent.hover();
+    await rent.getByRole("button", { name: "Calculate" }).click();
+    const dialog = page.getByRole("dialog", { name: "Rent Calculator" });
+    await expect(dialog).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The finders modeled on the v111 arbitration's own census
+      // (sectionrow-arbit-v111.sh): the panel by the v45 chain, the h3
+      // STRUCTURALLY (exact text, childless — never by tag alone), the
+      // row by the walk-up to the nearest flex ancestor carrying the
+      // Add Item button (the rendered chrome is the axis, never the
+      // DOM shape — the v72 structural class).
+      const panel = [...document.querySelectorAll('[role="dialog"]')].find(
+        (d) => (d.textContent || "").includes("Rent Calculator"),
+      ) as HTMLElement | null;
+      if (!panel) return null;
+      const h3 = [...panel.querySelectorAll("h1,h2,h3,h4,div,span,p")].find(
+        (e) => (e.textContent || "").trim() === "Line Items" && e.children.length === 0,
+      ) as HTMLElement | undefined;
+      if (!h3) return null;
+      let row: HTMLElement | null = h3.parentElement;
+      for (let i = 0; i < 6 && row; i++) {
+        const s = getComputedStyle(row);
+        const hasAdd = [...row.querySelectorAll("button")].some((b) =>
+          /Add Item/i.test(b.textContent || ""),
+        );
+        if (s.display === "flex" && hasAdd) break;
+        row = row.parentElement;
+      }
+      if (!row) return null;
+      const rcs = getComputedStyle(row);
+      const rr = row.getBoundingClientRect();
+      const hcs = getComputedStyle(h3);
+      const hr = h3.getBoundingClientRect();
+      const addBtn = [...row.querySelectorAll("button")].find((b) =>
+        /Add Item/i.test(b.textContent || ""),
+      );
+      const ar = addBtn ? addBtn.getBoundingClientRect() : null;
+      return {
+        row: {
+          display: rcs.display,
+          align: rcs.alignItems,
+          justify: rcs.justifyContent,
+          mb: rcs.marginBottom,
+          mt: rcs.marginTop,
+          h: Math.round(rr.height),
+          w: Math.round(rr.width),
+          childCount: row.children.length,
+        },
+        sectionH3: {
+          text: (h3.textContent || "").trim().slice(0, 16),
+          tag: h3.tagName,
+          fs: hcs.fontSize,
+          fw: hcs.fontWeight,
+          color: hcs.color,
+          lh: hcs.lineHeight,
+          h: Math.round(hr.height),
+          margin: hcs.margin,
+        },
+        addBtnCtx: ar ? { w: Math.round(ar.width), h: Math.round(ar.height) } : null,
+        junction: {
+          h3CenterY: Math.round(hr.y + hr.height / 2),
+          rowCenterY: Math.round(rr.y + rr.height / 2),
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The section row's flex chrome — never pinned at ANY viewport
+    // before this pin (the mb-4 flex items-center justify-between row;
+    // the h 32 governed by the 32px addBtn, the w 720 by the panel's
+    // content width).
+    expect(census!.row).toEqual({
+      display: "flex",
+      align: "center",
+      justify: "space-between",
+      mb: "16px",
+      mt: "0px",
+      h: 32,
+      w: 720,
+      childCount: 2,
+    });
+    // The "Line Items" h3's computed typography — the family every
+    // dialog census walked past (font-semibold + the inline forestDark
+    // token; the margins Tailwind-preflight-reset to 0).
+    expect(census!.sectionH3).toEqual({
+      text: "Line Items",
+      tag: "H3",
+      fs: "16px",
+      fw: "600",
+      color: "rgb(26, 58, 46)",
+      lh: "24px",
+      h: 24,
+      margin: "0px",
+    });
+    // The addBtn as CONTEXT ONLY (the v81 pin holds its full chrome);
+    // re-walked to anchor the row's identity.
+    expect(census!.addBtnCtx).toEqual({ w: 110, h: 32 });
+    // The junction: the items-center alignment read live — the h3's
+    // y-center coincides with the row's y-center (the absolute y is
+    // the data-state axis, never pinned).
+    expect(census!.junction.h3CenterY).toBe(census!.junction.rowCenterY);
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+
+    // Read-only pin — no fixtures to clean up; just close the dialog.
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+  });
+});
