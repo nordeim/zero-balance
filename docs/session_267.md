@@ -115,21 +115,28 @@ insert-worklog-v109.py: the worklog Session 144 entry) + session_267.md
 
 **The ship**: the pre-ship checks clean (src/ untouched — PIN-ONLY
 confirmed [git diff src/ = 0]; the vitest.config.ts comment the one
-documented config-only delta; .env.example matching). Commit via the
-message file (the v107 display-corruption lesson). The push: the runbook
-re-read, the operator key materialized outside the repo at 0600, the
-fingerprint verified against the documented key, paramiko installed, the
-Appendix A shim extracted — the invocation carrying `--remote
+documented config-only delta; .env.example matching the codebase's env
+surface exactly [DATABASE_URL / NEXT_PUBLIC_SITE_URL / AUTH_SECRET —
+NODE_ENV is Next-managed]). Commit **2ed782c** (32 files) via the message
+file (the v107 display-corruption lesson). The push: the runbook re-read,
+the operator key materialized outside the repo at 0600, the fingerprint
+verified (**SHA256:3ddaNlFhMz1JXiGEDgVEaRsUzI4Ev0Ip-GEEB7NnU4PU** —
+matching the documented key), paramiko 5.1.0 installed for python3.13
+(the default python3 is a 3.12 venv — the shim's shebang pinned to
+/usr/bin/python3.13), the Appendix A shim extracted from the runbook into
+the workspace bin. The invocation carrying `--remote
 git@github.com:nordeim/zero-balance.git` (the v108 wrong-remote lesson:
 the wrapper's DEFAULT remote is the sibling task-management repo).
-Dry-run green → the real push → **remote main == local HEAD, the
-tracking ref synced, the wrapper's temp key shredded, the operator key
-shredded, the push DOUBLE-VERIFIED** (the SSH wrapper + the independent
-HTTPS ls-remote). The tree clean.
+**Dry-run green (83cb174..2ed782c, fast-forward, auth verified) → the
+real push → remote main @ 2ed782c == local HEAD, the tracking ref
+synced, the wrapper's temp key shredded, the operator key shredded, the
+push DOUBLE-VERIFIED** (the SSH wrapper + the independent HTTPS
+ls-remote: 2ed782c1b1f12bdf5be311333380f73e69ec46aa both reads). The
+tree clean.
 
 The v109 cycle is complete and shipped. Here's the summary:
 
-## ✅ v109 Cycle Delivered & Pushed — `main` (double-verified, keys shredded)
+## ✅ v109 Cycle Delivered & Pushed — `main @ 2ed782c` (double-verified, keys shredded)
 
 **The cycle (PIN-ONLY, +1 e2e = 312; one config-comment exception):**
 - **Baseline all green** on the fresh-clone workspace — seedcheck exact ·
