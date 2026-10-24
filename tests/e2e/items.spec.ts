@@ -4027,3 +4027,229 @@ test.describe("goal-card action-menu panel + menuitem-resting interior census at
     await page.keyboard.press("Escape");
   });
 });
+
+// ---------------------------------------------------------------------------
+// v109 — plan F4 (docs/remediation-plan-v109.md): the v103-era items pair's
+// EIGHTH re-run (v57 → v64 → v70 → v79 → v85 → v91 → v97 → v103 → v109)
+// found NO NEW GAP (every census axis byte-identical — the arbit-v109
+// two-half census reproducing the v103/v97 values exactly; every VLM flag
+// DOM-arbitrated to the documented classes: the v57 payment-chip
+// DATA-CONDITIONAL [the reference's OWN income card renders the "Bank
+// Account" chip — footer childCount 2 — its expense items simply ship no
+// payment method], the v57 badge-wrap/classification-VALUE classes, the
+// Base44 platform-chrome FAB re-arbitrated live [fabCount 0 on both
+// sides], the user-identity avatar, the seed-data classes), so the
+// iteration deepens the coverage instead: the ITEMS VIEWS' PAGE-HEADER
+// ROW INTERIOR at 1280 — the family the v65 pin holds on the SAVINGS
+// variant only. The coverage map: the v65 pin (the row/chip/icon/h1/
+// subtitle/Add-button chrome on /savings at 1280); the v52 pin (the 390
+// STACKED state on /income); the tokens G2 pin (the Add icon's w 16 +
+// the shadow layers); NEVER pinned at ANY viewport: the header row's
+// computed chrome on the INCOME/EXPENSES variants at 1280 AND the LEFT
+// BLOCK's interior (the chip-to-title junction row — flex/center/gap 12)
+// on ANY variant. Measured BYTE-IDENTICAL on BOTH sides on BOTH variants
+// by the one-shot census header-arbit-v109.sh; the pin's expected values
+// are that census's own measured values.
+test.describe("items page-header row interior census at 1280 (v109 — plan F4)", () => {
+  test("the income + expenses header row, left block, chip, title, and Add button chrome (v109 F4)", async ({ page }) => {
+    // The walk (the v65 finder): the Add button → UP to the container
+    // holding the visible h1; the left block = the row's first element
+    // child; the chip = the left block's first element child; the h1 =
+    // the VISIBLE h1 (the reference carries a hidden zero-size app-shell
+    // h1 first in its DOM — the v65 lesson).
+    const readHeader = () =>
+      page.evaluate(() => {
+        const addBtn = [...document.querySelectorAll("main button")].find(
+          (b) =>
+            (b.textContent || "").trim().startsWith("Add") &&
+            b.getBoundingClientRect().top < 200,
+        );
+        if (!addBtn) return null;
+        let row: HTMLElement | null = null;
+        let cur: HTMLElement | null = addBtn.parentElement;
+        for (let i = 0; i < 6 && cur; i++) {
+          if (cur.querySelector("h1") && cur !== addBtn) {
+            row = cur;
+            break;
+          }
+          cur = cur.parentElement;
+        }
+        if (!row) return null;
+        const rcs = getComputedStyle(row);
+        const left = row.firstElementChild as HTMLElement;
+        const lcs = getComputedStyle(left);
+        const chip = left.firstElementChild as HTMLElement;
+        const ccs = getComputedStyle(chip);
+        const chipIcon = chip.querySelector("svg");
+        const h1 = [...row.querySelectorAll("h1")].find(
+          (h) => h.getBoundingClientRect().height > 0,
+        ) as HTMLElement;
+        const h1cs = getComputedStyle(h1);
+        const sub = h1.parentElement?.querySelector("p") ?? null;
+        const scs = sub ? getComputedStyle(sub) : null;
+        const abcs = getComputedStyle(addBtn);
+        const plusIcon = addBtn.querySelector("svg");
+        return {
+          row: {
+            display: rcs.display,
+            justify: rcs.justifyContent,
+            align: rcs.alignItems,
+            gap: rcs.columnGap,
+            mb: rcs.marginBottom,
+            h: Math.round(row.getBoundingClientRect().height),
+            childCount: row.children.length,
+          },
+          left: {
+            display: lcs.display,
+            align: lcs.alignItems,
+            gap: lcs.columnGap,
+            h: Math.round(left.getBoundingClientRect().height),
+            childCount: left.children.length,
+          },
+          chip: {
+            w: Math.round(chip.getBoundingClientRect().width),
+            h: Math.round(chip.getBoundingClientRect().height),
+            radius: ccs.borderRadius,
+            bg: ccs.backgroundImage,
+          },
+          chipIcon: chipIcon
+            ? {
+                w: Math.round(chipIcon.getBoundingClientRect().width),
+                h: Math.round(chipIcon.getBoundingClientRect().height),
+                color: getComputedStyle(chipIcon).color,
+              }
+            : null,
+          h1: {
+            fs: h1cs.fontSize,
+            fw: h1cs.fontWeight,
+            lh: h1cs.lineHeight,
+            color: h1cs.color,
+          },
+          subtitle: scs
+            ? { fs: scs.fontSize, fw: scs.fontWeight, color: scs.color }
+            : null,
+          addBtn: {
+            text: (addBtn.textContent || "").trim().slice(0, 20),
+            w: Math.round(addBtn.getBoundingClientRect().width),
+            h: Math.round(addBtn.getBoundingClientRect().height),
+            radius: abcs.borderRadius,
+            pad: abcs.padding,
+            fs: abcs.fontSize,
+            fw: abcs.fontWeight,
+            color: abcs.color,
+            bg: abcs.backgroundImage,
+          },
+          addIcon: plusIcon
+            ? {
+                w: Math.round(plusIcon.getBoundingClientRect().width),
+                h: Math.round(plusIcon.getBoundingClientRect().height),
+                mr: getComputedStyle(plusIcon).marginRight,
+              }
+            : null,
+          docSW: document.documentElement.scrollWidth,
+        };
+      });
+
+    // --- The INCOME variant -------------------------------------------
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/income");
+    await expect(page.getByRole("heading", { name: "Income" })).toBeVisible();
+
+    const income = await readHeader();
+    expect(income).not.toBeNull();
+    // The header row: flex space-between/center/gap 16/mb 32/h 60.
+    expect(income!.row).toEqual({
+      display: "flex",
+      justify: "space-between",
+      align: "center",
+      gap: "16px",
+      mb: "32px",
+      h: 60,
+      childCount: 2,
+    });
+    // The LEFT BLOCK — the never-pinned interior: the chip-to-title
+    // junction row (flex/center/gap 12; the h1 36 + the p 24 = 60).
+    expect(income!.left).toEqual({
+      display: "flex",
+      align: "center",
+      gap: "12px",
+      h: 60,
+      childCount: 2,
+    });
+    // The gradient chip (h-12 w-12 rounded-xl) + its white 24×24 icon.
+    expect(income!.chip).toEqual({
+      w: 48,
+      h: 48,
+      radius: "12px",
+      bg: "linear-gradient(135deg, rgb(143, 188, 63), rgb(184, 216, 126))",
+    });
+    expect(income!.chipIcon).toEqual({
+      w: 24,
+      h: 24,
+      color: "rgb(255, 255, 255)",
+    });
+    // The h1 + the count subtitle (the subtitle TEXT is the data class;
+    // the chrome — 16px/400/gray-500 — is the pin).
+    expect(income!.h1).toEqual({
+      fs: "30px",
+      fw: "700",
+      lh: "36px",
+      color: "rgb(26, 58, 46)",
+    });
+    expect(income!.subtitle).toEqual({
+      fs: "16px",
+      fw: "400",
+      color: "rgb(107, 114, 128)",
+    });
+    // The Add button — the .zb-btn-add chrome with the lime gradient +
+    // the 16×16 plus icon at mr 8.
+    expect(income!.addBtn).toEqual({
+      text: "Add Income",
+      w: 147,
+      h: 36,
+      radius: "6px",
+      pad: "8px 16px",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(255, 255, 255)",
+      bg: "linear-gradient(135deg, rgb(143, 188, 63), rgb(184, 216, 126))",
+    });
+    expect(income!.addIcon).toEqual({ w: 16, h: 16, mr: "8px" });
+    // The no-overflow guard on the same surface.
+    expect(income!.docSW).toBe(1280);
+
+    // --- The EXPENSES twin ---------------------------------------------
+    await page.goto("/expenses");
+    await expect(page.getByRole("heading", { name: "Expenses" })).toBeVisible();
+
+    const expenses = await readHeader();
+    expect(expenses).not.toBeNull();
+    // The same row + left-block chrome (the structural family), the
+    // ORANGE accents on the chip + the Add button, the "Add Expense"
+    // label's own width (155 — the fixed label's width).
+    expect(expenses!.row).toEqual(income!.row);
+    expect(expenses!.left).toEqual(income!.left);
+    expect(expenses!.chip).toEqual({
+      w: 48,
+      h: 48,
+      radius: "12px",
+      bg: "linear-gradient(135deg, rgb(224, 122, 59), rgb(245, 169, 98))",
+    });
+    expect(expenses!.chipIcon).toEqual(income!.chipIcon);
+    expect(expenses!.h1).toEqual(income!.h1);
+    expect(expenses!.subtitle).toEqual(income!.subtitle);
+    expect(expenses!.addBtn).toEqual({
+      text: "Add Expense",
+      w: 155,
+      h: 36,
+      radius: "6px",
+      pad: "8px 16px",
+      fs: "14px",
+      fw: "500",
+      color: "rgb(255, 255, 255)",
+      bg: "linear-gradient(135deg, rgb(224, 122, 59), rgb(245, 169, 98))",
+    });
+    expect(expenses!.addIcon).toEqual(income!.addIcon);
+    expect(expenses!.docSW).toBe(1280);
+  });
+});

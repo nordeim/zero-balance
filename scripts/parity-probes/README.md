@@ -7213,15 +7213,76 @@ screenshots 9/16 byte-identical + seven fresh-seed deltas arbitrated
   — each half gets its own per-file hit count, keeping the
   single-line-safe discipline (the v107 lesson's applied form).
 
-The v109 queue (suggestions — verify against the rotation ledger before
+### The v109 cycle (Session 144) — the v103-lineage derivation
+
+- `derive-v109-series.py` (persisted) — the v109 series derived from the
+  v103 lineage: vlm-shots-v109.sh + clone-vlmshots-v109.sh +
+  vlm-compare-v109.mjs + arbit-v109.sh; the generic swaps + the FIVE
+  exact-fragment history corrections (last-re-shot v97->v103, SIXTH-
+  era SEVENTH->EIGHTH, the re-run bracket extension
+  v91->v97->v103->v109, the later-pairs list [savings v98...v102 ->
+  v104...v108] as TWO single-line halves) — 5/5 on the FIRST run (11
+  hit-checks), zero residuals, line-count-preserving on all four
+  (56/48/49/284).
+- `build-twohalf-v109.py` — the two-half builder (CENSUS_JS 193
+  lines, md5 b55dcd29 — the v97/v103 census block VERBATIM, the
+  block itself version-free but for the v70b finder provenance):
+  ref-arbit-v109.sh + clone-arbit-v109.sh, the census JS
+  byte-identical across the halves.
+- `derive-standing-v109.py` — the 103rd standing pair
+  (ref-standing-v103.sh + standing-checks-v103.sh) from the v102
+  pair, the THREE token families (the ordinal token's suffix flip
+  102nd->103rd), normalize-back verified version-bump-only.
+- `base44-fab-arbit-v109.sh` — the ONE-SHOT both-sides arbitration
+  for the cycle's FAB flag (fabCount 0 + bodyHasBase44 false on
+  BOTH sides at 1280 on /expenses — the v97/v103/v108 standing
+  disproof form, run because a FAB flag WAS raised).
+- `header-arbit-v109.sh` — the ONE-SHOT both-sides census of the
+  ITEMS VIEWS' PAGE-HEADER ROW INTERIOR family (the v109 pin's own
+  axes measured byte-identical on both sides on BOTH variants before
+  the pin): the row {flex/space-between/center/gap 16/mb 32/h 60} +
+  the left block {flex/center/gap 12/h 60/childCount 2} + the chip
+  {48x48/12px/the per-type gradient} + the icon {24x24/white} + the
+  h1 {30px/700/36px/forestDark} + the subtitle {16px/400/gray} + the
+  Add button {147x36 income/155x36 expenses, 6px, 8px 16px, 14px/500,
+  white, the per-type gradient} + the plus {16x16/mr 8px}.
+- `crop-07-v109.mjs` + `vlm-read-07-v109.mjs` — the screenshot
+  arbitration pair for the one fresh-seed delta: the band-crop + the
+  VLM read ('10/23/2026' -> '10/24/2026' — the modal's default-date
+  field rolling with the UTC day).
+
+### D6 — the operational lessons this cycle (v109)
+
+- THE SINGLE-AXIS CASCADE RULE (a mutation-selection note): when the
+  pin's family lives in a SHARED component (items-view.tsx serves
+  income + expenses + savings), the mutation target must be an axis NO
+  OTHER SPEC asserts in ANY variant — the left block's gap-3 (never
+  asserted anywhere) passes; the row's own gap-4/mb-8 would cascade
+  into the v65 savings + v52 mobile pins (multi-spec failures). The
+  mutation-selection discipline extends from single-axis to
+  single-axis AND single-spec-by-construction.
+- THE DATE-ROLL ARBITRATION (a screenshot note): a single-band
+  maxD-200+ pixel delta in a regenerated set decomposes via the
+  band-crop + VLM read — the 07-add-item-modal's one 22-row band read
+  as '10/23/2026' -> '10/24/2026' (the default-date field rolling
+  with the UTC day) — the documented fresh-seed date-roll class (the
+  v104/v105 precedent), the updated set committed.
+- THE VERDICT-VARIATION FORM (a VLM note): the pair's verdict may
+  vary across re-runs within the documented class set — v103 read
+  BOTH DIFFERENT, v109 read INCOME IDENTICAL + EXPENSES DIFFERENT; the
+  income side's documented flags were all-data classes, so the
+  IDENTICAL verdict is the cleaner outcome on the same chrome (the
+  v105 LOGIN-IDENTICAL precedent) — the CLASSES, not the verdict
+  string, are the contract.
+
+The v110 queue (suggestions — verify against the rotation ledger before
 executing): (1) the re-run cadence rotates to the next-oldest candidate
-after the v102-era MOBILE TWINS pair (the v103-era ITEMS pair — the
-INCOME + EXPENSES view pair at desktop 1280x800 FULL-PAGE, the
-v57-era items pair's surfaces, last re-shot v103 — now the oldest
-remaining [v103 < v104 < v105 < v106 < v107 < v108]; the pair's
-EIGHTH re-run bracket [v57 -> v64 -> v70 -> v79 -> v85 -> v91 -> v97 ->
-v103 -> v109] to be verified against vlm-shots-v103.sh's own header
-before the derivation), (2) the axe-core watch at its next re-check
-point (only a 5.x wrapper changes the calculus), (3) the deferred
-reference-write censuses (unchanged — out of bounds under the v46
-read-only rule).
+after the v103-era ITEMS pair (the v104-era SAVINGS pair — the SAVINGS
+view at desktop 1280x800 FULL-PAGE, the v58-era savings pair's surface,
+last re-shot v104 — now the oldest remaining [v104 < v105 < v106 <
+v107 < v108 < v109]; the pair's EIGHTH re-run bracket [v58 -> v65 ->
+v74 -> v80 -> v86 -> v92 -> v98 -> v104 -> v110] to be verified against
+vlm-shots-v104.sh's own header before the derivation), (2) the axe-core
+watch at its next re-check point (only a 5.x wrapper changes the
+calculus), (3) the deferred reference-write censuses (unchanged — out
+of bounds under the v46 read-only rule).
