@@ -7275,14 +7275,96 @@ screenshots 9/16 byte-identical + seven fresh-seed deltas arbitrated
   v105 LOGIN-IDENTICAL precedent) — the CLASSES, not the verdict
   string, are the contract.
 
-The v110 queue (suggestions — verify against the rotation ledger before
+### The v110 cycle (Session 145) — the v104-lineage derivation
+
+- `derive-v110-series.py` (persisted) — the v110 series derived from
+  the v104 lineage: vlm-shots-v110.sh + clone-vlmshots-v110.sh +
+  vlm-compare-v110.mjs + arbit-v110.sh; the generic swaps + the NINE
+  exact-fragment history corrections (the plan-source fragment reads
+  `v103 plan's` NOT `the v103 plan's` — the 'the' sits at the END of
+  the preceding line, a live derivation discovery; last-re-shot
+  v98->v104, the era marker v98-era->v104-era, SEVENTH->EIGHTH, the
+  re-run bracket extension [v58 -> ... -> v98 -> v104 -> v110], the
+  oldest-remaining bracket [v104 < v105 < ... < v109],
+  TWENTY-SEVENTH->THIRTY-THIRD, the queue-source v103 plan -> v109
+  plan) — 9/9 on the FIRST run (11 hit-checks), zero residuals,
+  line-count-preserving on all four (49/41/38/261).
+- `derive-build-twohalf-v110.py` (persisted) + `build-twohalf-v110.py`
+  — the builder derivation (the swap-order lesson: the GENERIC version
+  swap FIRST, the lineage-note fixups LAST so no later swap re-touches
+  the inserted tokens; normalize-back verified) + the two-half builder
+  (SV_CENSUS_JS 153 lines, md5 891ab9b6 — the v98/v104 census block
+  VERBATIM, the builder-form md5 verified against the EXISTING v104
+  halves): ref-arbit-v110.sh + clone-arbit-v110.sh, the census JS
+  byte-identical across the halves.
+- `derive-standing-v110.py` — the 104th standing pair
+  (ref-standing-v104.sh + standing-checks-v104.sh) from the v103
+  pair, the THREE token families (the ordinal token's suffix flip
+  103rd->104th), normalize-back verified version-bump-only.
+- `nav-arbit-v110.sh` — the ONE-SHOT both-sides census of the RAIL's
+  NAV-BLOCK INTERIOR family (the v110 pin's own axes measured
+  byte-identical on both sides at 1280x800 on /savings before the
+  pin): the 'Navigation' label {32px/12px/600/uppercase/0.6px/
+  rgb(45,90,74)/8px 12px/6px radius} + the UL {flex column/gap 4/5
+  links/215 wide} + the LI {relative/mb 0/36px} + the link box
+  controls + the nav ICON {16x16} + the span truncate family + the
+  ACTIVE link {the 135deg gradient/white/500/32px}. The
+  reference-side finder is STRUCTURAL (the reference renders NO nav
+  landmark — its documented no-landmark bug): the ul is found by its
+  5-anchor shape, the label by the wrapper-sibling walk with the
+  childless-uppercase-div fallback, the active link by
+  aria-current OR the gradient OR the text.
+- `vlm-read-crops-v110.mjs` — the screenshot arbitration read for the
+  SIX fresh-seed deltas (the +1-day date rolls VLM glyph-read: 'Oct
+  18' -> 'Oct 19', 'Oct 13' -> 'Oct 14', 'October 14, 2026' ->
+  'October 15, 2026'; the 08/16 y817-900 bands the v105-documented
+  backdrop-blur scrim rounding drift [maxDelta 1-2, zero glyphs] —
+  zero structural bands, the updated set committed).
+
+### D6 — the operational lessons this cycle (v110)
+
+- THE SECURITY-BUMP RE-VERIFICATION PATH (a dependency note): the
+  first production-dependency change since v68 ran through the full
+  parity apparatus — npm audit added to the F0b audit (a NEW standing
+  audit step), the exposure analysis FIRST (all three next paths
+  unexposed; the zod exposure real but rate-limit-bounded), the
+  minimal in-range fix (package.json untouched, 43 lockfile pins),
+  then the standing checks + the VLM pair + the census + the ship
+  chain + the screenshots byte-compare ALL re-run against the bumped
+  tree — 10/16 byte-identical proves the bump produced ZERO visual
+  drift (the six deltas all the documented date-roll/scrim classes).
+- THE PHANTOM-GLITCH DISPEL (a tooling note): the v107-era 'save
+  glitch' never existed — od-hexdump verifies ALL committed dev
+  scripts (v107/v108/v109) carry the byte-correct a[href*=
+  "income"]:visible locator on disk; the perceived '[h' loss is a
+  DISPLAY-layer artifact (the tool-output pipeline eats the [h
+  sequence — escape-sequence filtering), never a file defect. The
+  v108/v109 comments described fixing a phantom. ANY tool output
+  showing a bracket-h sequence must be od-verified before acting on
+  it.
+- THE NO-LANDMARK FINDER RULE (a census note): a census finder must
+  never assume the clone's element semantics exist on the reference —
+  the reference's documented no-landmark bug means NO nav element on
+  its side; the first nav-arbit-v110 run returned 'no nav' until the
+  finder was rewalked STRUCTURALLY (the ul by its 5-anchor shape).
+  The reference's OWN bugs are part of the finder contract.
+- THE SWAP-ORDER RULE (a derivation note): when deriving a builder
+  script with token swaps PLUS lineage-note fixups that insert
+  version tokens, the GENERIC version swap runs FIRST and the
+  fixups LAST — else the generic swap re-touches the inserted tokens
+  (the first derive-build-twohalf-v110 attempt failed its
+  normalize-back on exactly this).
+
+The v111 queue (suggestions — verify against the rotation ledger before
 executing): (1) the re-run cadence rotates to the next-oldest candidate
-after the v103-era ITEMS pair (the v104-era SAVINGS pair — the SAVINGS
-view at desktop 1280x800 FULL-PAGE, the v58-era savings pair's surface,
-last re-shot v104 — now the oldest remaining [v104 < v105 < v106 <
-v107 < v108 < v109]; the pair's EIGHTH re-run bracket [v58 -> v65 ->
-v74 -> v80 -> v86 -> v92 -> v98 -> v104 -> v110] to be verified against
-vlm-shots-v104.sh's own header before the derivation), (2) the axe-core
+after the v104-era SAVINGS pair (the v105-era LOGIN + CALCULATOR pair —
+the LOGIN view + the CALCULATOR dialog at desktop 1280x800, last re-shot
+v105 — now the oldest remaining [v105 < v106 < v107 < v108 < v109 <
+v110]; the pair's EIGHTH re-run bracket [v59 -> v66 -> v75 -> v81 ->
+v87 -> v93 -> v99 -> v105 -> v111] to be verified against
+vlm-shots-v105.sh's own header before the derivation), (2) the axe-core
 watch at its next re-check point (only a 5.x wrapper changes the
-calculus), (3) the deferred reference-write censuses (unchanged — out
-of bounds under the v46 read-only rule).
+calculus), (3) the npm-audit watch at its re-check point (the NEW
+standing audit step — only a new advisory in the next/zod ranges
+changes the calculus), (4) the deferred reference-write censuses
+(unchanged — out of bounds under the v46 read-only rule).

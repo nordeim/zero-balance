@@ -423,3 +423,178 @@ test.describe("rail brand-block subtitle + row census at 1280 (v104 — plan F4)
     expect(census!.icon).toEqual({ w: "24px", h: "24px" });
   });
 });
+
+// v110 — plan F4 (docs/remediation-plan-v110.md): the rail's NAV-BLOCK
+// INTERIOR census at 1280 — the block BETWEEN the v104-pinned brand-block
+// (above) and the v103-pinned user-footer (below); the family the v110
+// savings-pair evidence walked past on every full-page shot. The
+// session-5 pins hold the link BOX on links[0] only; the v8 G2a pin the
+// inactive color; the v36 S3 bands the y positions. NEVER pinned at ANY
+// viewport in ANY spec: the "Navigation" label's computed chrome, the
+// UL's flex family, the LI's box, the nav ICON's computed w/h (the
+// glyph-parity spec holds the icons' PATH data only), the label SPAN's
+// truncate family, and the desktop ACTIVE link's computed chrome (the
+// v10 pin holds the mobile SHEET variant; the v7-era desktop test is
+// class-string only). Measured byte-identical on BOTH sides via
+// nav-arbit-v110.sh at 1280x800 on /savings (the cycle's pair surface —
+// the Savings row is the active link). The finders are STRUCTURAL: the
+// reference renders NO nav landmark (its documented no-landmark bug), so
+// the ul is found by its 5-anchor shape, the label by the wrapper-sibling
+// walk (childless + short text; the childless-uppercase-div fallback),
+// and the active link by aria-current OR the gradient background OR the
+// text — never by tag alone.
+test.describe("rail nav-block interior census at 1280 (v110 — plan F4)", () => {
+  test("the Navigation label + the ul/li interiors + the icon + the truncate span + the active link chrome (v110 F4)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/savings");
+    await expect(page.getByText("2 items · $1250.00")).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // the rail: the v103 fallback chain (the clone renders an aside;
+      // the reference's rail is a DIV)
+      const rail = document.querySelector("aside") || [...document.querySelectorAll("nav,aside,div")].find(d => {
+        const r = d.getBoundingClientRect();
+        return r.width > 180 && r.width < 320 && r.height > 700 && r.left === 0;
+      });
+      if (!rail) return null;
+      // the ul: STRUCTURAL (the reference has no <nav> landmark)
+      const ul = [...rail.querySelectorAll("ul")].find(u => {
+        const r = u.getBoundingClientRect();
+        return u.querySelectorAll("a").length >= 4 && r.width > 100 && r.height > 100;
+      });
+      if (!ul) return null;
+      // the section label: the ul wrapper's previous element sibling,
+      // validated childless + short text (the childless-uppercase fallback)
+      const wrap = ul.parentElement;
+      let label = wrap ? wrap.previousElementSibling : null;
+      if (!label || label.children.length > 0 || (label.textContent || "").trim().length === 0 || (label.textContent || "").trim().length > 20) {
+        label = [...rail.querySelectorAll("div")].find(d => {
+          const cs2 = getComputedStyle(d);
+          const r2 = d.getBoundingClientRect();
+          return cs2.textTransform === "uppercase" && !d.children.length && (d.textContent || "").trim().length > 0 && (d.textContent || "").trim().length <= 20 && r2.height > 0 && r2.height <= 40;
+        }) || null;
+      }
+      const li = ul.firstElementChild as HTMLElement | null;
+      const link = li ? li.querySelector("a") : null;
+      const span = link ? link.querySelector("span") : null;
+      const icon = link ? link.querySelector("svg") : null;
+      // the active link: aria-current OR the gradient bg OR the Savings text
+      const activeLink = [...ul.querySelectorAll("a")].find(a => a.getAttribute("aria-current") === "page")
+        || [...ul.querySelectorAll("a")].find(a => {
+          const g = getComputedStyle(a).backgroundImage;
+          return g && g !== "none" && g.includes("gradient");
+        })
+        || [...ul.querySelectorAll("a")].find(a => (a.textContent || "").trim() === "Savings");
+      const lcs = label ? getComputedStyle(label) : null;
+      const ucs = getComputedStyle(ul);
+      const lic = li ? getComputedStyle(li) : null;
+      const kcs = link ? getComputedStyle(link) : null;
+      const scs = span ? getComputedStyle(span) : null;
+      const ir = icon ? icon.getBoundingClientRect() : null;
+      const acs = activeLink ? getComputedStyle(activeLink) : null;
+      return {
+        docSW: document.documentElement.scrollWidth,
+        label: label && lcs ? {
+          text: (label.textContent || "").trim().slice(0, 16),
+          h: Math.round(label.getBoundingClientRect().height),
+          fs: lcs.fontSize, fw: lcs.fontWeight,
+          transform: lcs.textTransform, spacing: lcs.letterSpacing,
+          color: lcs.color, pad: lcs.padding, radius: lcs.borderRadius,
+          display: lcs.display, align: lcs.alignItems,
+        } : null,
+        ul: {
+          display: ucs.display, dir: ucs.flexDirection, gap: ucs.rowGap,
+          w: Math.round(ul.getBoundingClientRect().width), childCount: ul.children.length,
+        },
+        li: li && lic ? {
+          position: lic.position, mb: lic.marginBottom,
+          h: Math.round(li.getBoundingClientRect().height),
+        } : null,
+        linkBox: link && kcs ? {
+          h: Math.round(link.getBoundingClientRect().height),
+          pad: kcs.padding, columnGap: kcs.columnGap,
+          fs: kcs.fontSize, fw: kcs.fontWeight, radius: kcs.borderRadius,
+          display: kcs.display, align: kcs.alignItems,
+        } : null,
+        icon: ir ? { w: Math.round(ir.width), h: Math.round(ir.height) } : null,
+        span: span && scs ? {
+          fs: scs.fontSize, overflow: scs.overflow,
+          textOverflow: scs.textOverflow, whiteSpace: scs.whiteSpace,
+        } : null,
+        active: activeLink && acs ? {
+          text: (activeLink.textContent || "").trim().slice(0, 12),
+          bg: acs.backgroundImage, color: acs.color, fw: acs.fontWeight,
+          h: Math.round(activeLink.getBoundingClientRect().height),
+        } : null,
+        linkCount: ul.querySelectorAll("a").length,
+        iconCount: ul.querySelectorAll("a svg").length,
+      };
+    });
+    expect(census).not.toBeNull();
+    expect(census!.docSW).toBe(1280);
+
+    // The "Navigation" section label — the never-pinned chrome (the
+    // shadcn group-label row: uppercase, tracking-wider, forest-medium).
+    expect(census!.label).toEqual({
+      text: "Navigation",
+      h: 32,
+      fs: "12px",
+      fw: "600",
+      transform: "uppercase",
+      spacing: "0.6px",
+      color: "rgb(45, 90, 74)",
+      pad: "8px 12px",
+      radius: "6px",
+      display: "flex",
+      align: "center",
+    });
+
+    // The UL + the LI — the stack family (flex column, the 4px row gap,
+    // the 36px li box).
+    expect(census!.ul).toEqual({
+      display: "flex",
+      dir: "column",
+      gap: "4px",
+      w: 215,
+      childCount: 5,
+    });
+    expect(census!.li).toEqual({ position: "relative", mb: "0px", h: 36 });
+
+    // The link box — the session-5 controls re-walked as context.
+    expect(census!.linkBox).toEqual({
+      h: 32,
+      pad: "10px 12px",
+      columnGap: "12px",
+      fs: "14px",
+      fw: "400",
+      radius: "8px",
+      display: "flex",
+      align: "center",
+    });
+
+    // The nav ICON's computed w/h — THE never-pinned axis.
+    expect(census!.icon).toEqual({ w: 16, h: 16 });
+
+    // The label SPAN's truncate family.
+    expect(census!.span).toEqual({
+      fs: "14px",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    });
+
+    // The ACTIVE link's computed chrome (the Savings row on /savings):
+    // the 135deg forest-medium→lime gradient, white text, fw 500.
+    expect(census!.active).toEqual({
+      text: "Savings",
+      bg: "linear-gradient(135deg, rgb(45, 90, 74), rgb(143, 188, 63))",
+      color: "rgb(255, 255, 255)",
+      fw: "500",
+      h: 32,
+    });
+
+    // The counts: five links, five icons.
+    expect(census!.linkCount).toBe(5);
+    expect(census!.iconCount).toBe(5);
+  });
+});
