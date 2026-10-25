@@ -47,6 +47,23 @@
   .space-y-1\.5 > * + * {
     margin-block-start: 0.375rem; /* 6px — v3's space-y-1.5 */
   }
+  /* v117 F4 (docs/remediation-plan-v117.md): the SM:TIER member of the
+     space-y-2 restore — trap 4b's completion. The restores above carry
+     class specificity (0-1-2), which FROZE OUT v4's zero-specificity
+     :where(.sm\:space-y-N) media variant at >=640: the login h1 block
+     (the reference's own `space-y-2 sm:space-y-3` classes — the ONLY
+     sm-paired tier in the codebase) computed its subtitle gap at the
+     base 8px forever (the block 104px / the card 742px) where the
+     reference's v3 engine lets the sm: tier win at >=640 (12px / 108 /
+     746 — the strip-arbit-v117 one-shot census + the cardheight
+     drill-down). The v50 zb-sm6 precedent's form: the media query + the
+     same selector family, restoring v3's sm:space-y-3. Source order
+     after the base restore decides the same-specificity tie. */
+  @media (min-width: 640px) {
+    .sm\:space-y-3 > * + * {
+      margin-block-start: 0.75rem; /* 12px — v3's sm:space-y-3 */
+    }
+  }
   /* v50 F1 (docs/remediation-plan-v50.md): the auth card's non-signin
      MODE containers (signup / forgot / verify) — the reference's
      `space-y-4 [sm:space-y-6]` under v3's margin-top-on-following-

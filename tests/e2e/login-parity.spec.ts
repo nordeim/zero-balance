@@ -1527,3 +1527,124 @@ test.describe("login auth-mode action row census at 1280 (v105 — plan F4)", ()
     });
   });
 });
+
+// v117 — plan F4 (docs/remediation-plan-v117.md): the login card's
+// TOP-ACCENT-STRIP + H1-BLOCK census at 1280x800 — the never-pinned strip
+// geometry + THE SM:TIER FIX's axes.
+//
+// The coverage map (all specs grepped, source tokens AND spec-side
+// aliases): the v7 G2 pin holds the strip's gradient COLORS via toContain
+// only (its "bar" variable — backgroundImage stops); NO spec anywhere
+// pins the strip's geometry {position/top/right/left/h/w} at ANY viewport;
+// NO spec pins the h1-block's height, the subtitle's margin, or the card's
+// height (the 742/746/104/108/12px axes: zero hits).
+//
+// THE FIX THIS PIN GUARDS (the cycle's production-code change): the login
+// h1 block ships the reference's own verbatim classes `space-y-2
+// sm:space-y-3` (login-card.tsx:574, the ONLY sm-paired tier in the
+// codebase). The v9 G3 mitigation restores v3 space-y semantics for the
+// BASE tiers with class-specificity rules — which FROZE OUT v4's
+// zero-specificity :where(.sm\:space-y-3) media variant: the subtitle's
+// gap computed at the base 8px forever (block 104 / card 742) where the
+// reference's v3 engine lets the sm: tier win at >=640 (12px / 108 /
+// 746). The fix: the sm:-variant restore in globals.css's @layer
+// utilities (the v50 zb-sm6 precedent's form). Measured on BOTH sides by
+// the one-shot strip-arbit-v117.sh + the cardheight drill-down
+// (cardheight-arbit-v117.sh): the strip byte-identical; the sm:TIER axes
+// the reference's 12px/108/746.
+test.describe("login strip + h1-block census at 1280 (v117 — plan F4)", () => {
+  test("the top accent strip's geometry + the h1 block's sm:TIER spacing + the card's full-stack height", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/login");
+    await expect(page.getByRole("heading", { name: "Welcome to ZeroBudget" })).toBeVisible();
+
+    const census = await page.evaluate(() => {
+      // The card: walk UP from the form to the rounded container (the
+      // standing login census's own finder — radius > 8 + bg + w 300-700).
+      const form = document.querySelector("form");
+      if (!form) return null;
+      let card: HTMLElement | null = form as HTMLElement;
+      while (card && card !== document.body) {
+        const c = getComputedStyle(card);
+        if (
+          parseFloat(c.borderRadius) > 8 &&
+          c.backgroundColor !== "rgba(0, 0, 0, 0)" &&
+          card.getBoundingClientRect().width > 300 &&
+          card.getBoundingClientRect().width < 700
+        )
+          break;
+        card = card.parentElement;
+      }
+      if (!card || card === document.body) return null;
+      const cr = card.getBoundingClientRect();
+
+      // The strip: the card's own child that is absolutely positioned,
+      // thin (h <= 8), and pinned to the card's top — STRUCTURAL, the
+      // class strings never trusted (the v72 class).
+      const strip = [...card.children].find((el) => {
+        const s = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        return s.position === "absolute" && r.height <= 8 && Math.abs(r.top - cr.top) <= 1;
+      });
+      if (!strip) return null;
+      const ss = getComputedStyle(strip);
+      const sr = strip.getBoundingClientRect();
+
+      // The h1 block (the reference's `space-y-2 sm:space-y-3` container)
+      // + its subtitle (the sm:TIER gap carrier).
+      const h1 = card.querySelector("h1");
+      if (!h1) return null;
+      const block = h1.parentElement as HTMLElement;
+      const sub = block.querySelector("p");
+      if (!sub) return null;
+
+      return {
+        strip: {
+          tag: strip.tagName,
+          position: ss.position,
+          top: ss.top,
+          right: ss.right,
+          left: ss.left,
+          h: Math.round(sr.height),
+          w: Math.round(sr.width),
+          bgImage: ss.backgroundImage,
+        },
+        block: {
+          h: Math.round(block.getBoundingClientRect().height),
+          subMt: getComputedStyle(sub).marginTop,
+        },
+        card: {
+          w: Math.round(cr.width),
+          h: Math.round(cr.height),
+        },
+        docSW: document.documentElement.scrollWidth,
+      };
+    });
+    expect(census).not.toBeNull();
+
+    // The STRIP family — the never-pinned geometry, byte-identical both
+    // sides (the v7 G2 pin holds the gradient colors; this holds the box).
+    expect(census!.strip).toEqual({
+      tag: "DIV",
+      position: "absolute",
+      top: "0px",
+      right: "0px",
+      left: "0px",
+      h: 4,
+      w: 448,
+      bgImage:
+        "linear-gradient(to right, rgb(226, 232, 240), rgb(203, 213, 225), rgb(226, 232, 240))",
+    });
+
+    // The FIXED family — the sm:TIER axes (the reference's own values:
+    // the subtitle's 12px sm:space-y-3 gap at >=640 + the 108px block).
+    expect(census!.block).toEqual({ h: 108, subMt: "12px" });
+
+    // The CARD context — the full-stack consequence (the static sign-in
+    // surface's deterministic arithmetic: 48px pt + 658 content + 40px pb).
+    expect(census!.card).toEqual({ w: 448, h: 746 });
+
+    // The no-overflow guard on the same surface.
+    expect(census!.docSW).toBe(1280);
+  });
+});
