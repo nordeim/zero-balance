@@ -93,6 +93,58 @@ and `docs/remediation-plan-v122.md` (the v122 cycle — Session 157).
 
 ---
 
+## Session 158 — Parity iteration v123: the re-run cycle's next-oldest candidate (the v117-era LOGIN + CALCULATOR pair's TENTH re-run) + the axe watch (NO DRIFT) + the npm-audit watch (0 vulnerabilities — the standing step's fourteenth cycle) + the 117th standing checks + the calculator line-item DELETE-CONFIRM BAR census pin at 1280 (PIN-ONLY — the never-pinned FOURTH member of the confirm-bar family) (2026-10-26)
+
+The v117-era LOGIN + CALCULATOR pair (the LOGIN view + the CALCULATOR
+dialog at desktop 1280x800, the v59-era family, the TENTH re-run
+[v59 → v66 → v75 → v81 → v87 → v93 → v99 → v105 → v111 → v117 → v123];
+the FORTY-SIXTH consecutive queue/ledger agreement — verified against
+vlm-shots-v117.sh's own header before the derivation). PIN-ONLY for
+src/ (zero production-code changes, the twelfth cycle since v46 without
+one). The baseline FULLY GREEN ON THE FIRST CHAIN — zero repairs (the
+v122 date-axis repair verified holding; lint · typecheck · 108 unit ·
+build · 325 e2e zero flakes [328 executions in 4 chunks] · 35/35 smoke;
+the production-seam audit clean; the post-push commits audited
+session-log-only). The watches: axe NO DRIFT (4.14.0, only the canary
+beyond, the v68 dedupe holds); npm audit 0 vulnerabilities (the v110
+bump holds — fourteenth re-check). The 117th standing checks ALL GREEN
+(the reference's four bugs live; the data census clean on the FIRST
+reads; the clone's mobile menu VERIFIED WORKING the 117th consecutive
+time; zero overflow at 390 on all five views; the seedcheck exact after
+the clone half). The VLM pair: CALCULATOR DIFFERENT ×2 / LOGIN
+IDENTICAL ×2 — every flag DOM-arbitrated (the pointer-position/
+hover-state screenshot artifact [the reference shots script captures
+before parking its pointer — the census actionsAtRest identical both
+sides], the VLM row misread [row.h 102 byte-identical], the seed-data
+note, the platform-chrome FAB disproven live). The two-half census: 106
+axes — 97 identical + 9 documented-class deltas, ZERO new. THE PIN: the
+calculator line-item DELETE-CONFIRM BAR census at 1280 (+1 e2e = 326) —
+the never-pinned FOURTH member of the confirm-bar family (the v121
+item-card pin's twin by identical class strings; the calculator-specific
+mt-3 12px axis + the +60 bar-open delta [the row 102 → 162] + the
+shadow-sm visible layer); the clone-only form (the reference's row
+delete destroys immediately — its R6 bug); the pin-sanity p-3→p-4
+line-scoped mutation sole-failure verified live (the pin alone red at
+the pad + h axes; the 19 others green; the items file 48/48 post-restore
+— the v121/v122 pins' different-file immunity). The census script's own
+first-run bug fixed live: the agent-browser `mouse move` takes x y as
+TWO args — the single-arg "x,y" form moves nowhere. The ship: 326 e2e
+zero flakes (329 executions); 35/35 smoke; the screenshots 16/16
+byte-identical (the same-day-seed law — no day-rollover this cycle);
+the dev evidence 4/4 byte-identical + VLM-verified (the menu proof:
+/income, docSW 390, navLandmark true). Docs D1–D7 aligned (AGENTS the
+v123 paragraph [D0 checked clean — the anchor fragment unique]; CLAUDE
+326 + the v123 clause; README counts + the v123 plan row; the SKILL
+Session 158 row + the state line; PAD v1.1.80; the probe README's v123
+section + the v124 queue [the v118-era NETWORTH + drill-down pair]; the
+derived probe series v123 + the standing pair 117 + the dev-shots v123
++ the one-shot confirmbar-arbit-v123.sh + append-pin-v123.py +
+align-docs-v123.py + derive-v123-series.py + derive-build-twohalf-v123.py
++ derive-compare-v123.py + derive-standing-v123.py + build-twohalf-v123.py
++ compare-v123-census.py all persisted). The workspace the RESET class
+(re-cloned from main @ cbc38e9; the v108 fresh-clone provisioning
+end-to-end). Delivery record: `docs/session_302.md`.
+
 ## Session 157 — Parity iteration v122: the re-run cycle's next-oldest candidate (the v116-era SAVINGS pair's TENTH re-run) + the axe watch (NO DRIFT) + the npm-audit watch (0 vulnerabilities — the standing step's thirteenth cycle) + the 116th standing checks + THE BASELINE FIND: the v120 pin's date-axis time-bomb repaired tests-only + the savings goal-card kebab-trigger OPEN-MENU reveal census pin at 1280 (PIN-ONLY — the never-pinned reveal PATH) (2026-10-26)
 
 **The cycle** (`docs/remediation-plan-v122.md` — the plan validated against the codebase before execution; the delivery record: `docs/session_299.md`): the re-run cadence's next-oldest candidate — the v116-era SAVINGS pair (the SAVINGS view at desktop 1280×800 FULL-PAGE, the v58-era savings pair's surface family, last re-shot v116 — now the oldest remaining [v116 < v117 < v118 < v119 < v120 < v121]; the pair's TENTH re-run bracket [v58 → v65 → v74 → v80 → v86 → v92 → v98 → v104 → v110 → v116 → v122]; the FORTY-FIFTH consecutive queue/ledger agreement — the surface names verified against vlm-shots-v116.sh's own header BEFORE the derivation, the NINTH ordinal CONSISTENT with the 10-entry bracket [no off-by-one this lineage]).

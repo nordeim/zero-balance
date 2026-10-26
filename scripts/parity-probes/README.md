@@ -7693,6 +7693,91 @@ advisory in the next/zod ranges changes the calculus), (4) the
 deferred reference-write censuses (unchanged — out of bounds under the
 v46 read-only rule).
 
+## The v123 cycle (the v117-era LOGIN + CALCULATOR pair's TENTH re-run — Session 158)
+
+The re-run cadence's next-oldest candidate: the v117-era LOGIN +
+CALCULATOR pair — the LOGIN view + the CALCULATOR dialog at desktop
+1280x800, the v59-era pair's surface family, last re-shot v117 — now the
+oldest remaining [v117 < v118 < v119 < v120 < v121 < v122]; the pair's
+TENTH re-run bracket [v59 -> v66 -> v75 -> v81 -> v87 -> v93 -> v99 ->
+v105 -> v111 -> v117 -> v123]; the FORTY-SIXTH consecutive queue/ledger
+agreement — the surface names verified against vlm-shots-v117.sh's own
+header BEFORE the derivation (the v117 header's own NINTH ordinal
+CONSISTENT with its 10-entry bracket [v59 the original — no off-by-one
+this lineage]). **A PIN-ONLY cycle for src/ — zero production-code
+changes** + one e2e pin; the cycle's standing items: the axe watch (NO
+DRIFT — 4.14.0 holds, only the canary sha prerelease beyond, the v68
+dedupe verified), the npm-audit watch at its fourteenth re-check (0
+vulnerabilities — the v110 bump holds), the 117th standing checks (ALL
+GREEN — the reference's four bugs live; the data census clean on the
+FIRST reads; the clone's mobile menu VERIFIED WORKING the 117th
+consecutive time; zero overflow at 390 on all five views; the seedcheck
+exact after the clone half).
+
+The baseline FULLY GREEN ON THE FIRST CHAIN — zero repairs this cycle
+(the v122 date-axis repair verified holding on the new day: the v120
+liability-card pin green with its computed seedDay form). The verdict:
+**CALCULATOR DIFFERENT ×2 / LOGIN IDENTICAL ×2** (the consistent form —
+no variation this cycle) — every flag DOM-arbitrated: the row action
+buttons + the "shorter row" the POINTER-POSITION/HOVER-STATE screenshot
+artifact + the VLM MISREAD (the census `actionsAtRest {opacity "0",
+btnCount 2}` IDENTICAL both sides + `row.h 102` byte-identical; the
+mechanism: the REFERENCE shots script captures BEFORE parking its
+pointer — still at the Calculate button, INSIDE the opened dialog —
+while the CLONE script parks at (5,5) BEFORE its capture; the shots
+scripts' own structure, inherited verbatim from the v59 lineage); the
+"Will update category total" note the SEED-DATA class; the login
+"Edit with Base44" badge the PLATFORM-CHROME class disproven live
+(base44-fab-arbit-v123.sh: fabCount 0 + bodyHasBase44 false BOTH
+sides). The two-half census (build-twohalf-v123.py from the v117
+builder — the TWO blocks CALC_CENSUS_JS 61 lines + LOGIN_CENSUS_JS 36
+lines byte-identical across the halves, the md5 line-block contract
+verified by direct python extraction; compare-v123-census.py with the
+census-era corrections + the /tmp/vlm-path explicit swap [the bare
+v117 swap cannot touch 'vlm117' — no 'v117' substring]): **106 axes —
+97 identical + 9 documented-class deltas, ZERO new**.
+
+The pin: the CALCULATOR line-item DELETE-CONFIRM BAR census at 1280
+(confirmbar-arbit-v123.sh — the one-shot CONFIRM-LADDER census; the
+never-pinned FOURTH member of the confirm-bar family: the v121 pin
+holds the item-card bar, the net-worth twins are held BY CONSTRUCTION
+via the identical class strings, the calculator's mt-3 variant held by
+NO spec; the CLONE-ONLY form — the reference's row delete destroys
+immediately, its R6 bug, and a reference-side measurement would need a
+DESTRUCTIVE click under the v46 read-only rule): the bar {mt "12px" /
+flex / center / space-between / radius "8px" / pad "12px" / w 686 /
+h 48} + the label 14px/400 + the pills {4px 12px / 6px / 12px/500 /
+h 24} + the shadow-sm VISIBLE layer + **the +60 bar-open delta (the
+row card 102 -> 162)** + the Cancel path. The pin-sanity mutation
+(p-3 -> p-4 at calculator-dialog.tsx:279, line-scoped, the mt-4 family
+twins untouched): the SOLE FAILURE verified live — the pin ALONE red at
+the pad + h axes, the full calculator file's 19 others green. The
+census script's own first-run bug fixed live: the agent-browser
+`mouse move` takes x y as TWO args — the single-arg "x,y" form moves
+nowhere. The ship: 326 e2e zero flakes (87+86+74+82 = 329 executions =
+326 unique); 35/35 smoke; the screenshots 16/16 byte-identical (the
+same-day-seed law — no day-rollover this cycle); the dev evidence 4/4
+byte-identical + VLM-verified (the menu proof: /income, docSW 390,
+navLandmark true; the dev-shots scripts derived v122 -> v123 with the
+version-swap-only verification).
+
+The v124 queue (suggestions — verify against the rotation ledger before
+executing): (1) the re-run cadence rotates to the next-oldest candidate
+after the v117-era LOGIN + CALCULATOR pair (the v118-era NETWORTH +
+drill-down-DASHBOARD pair — the /networth view + the dashboard
+drill-down at desktop 1280x800, the v60-era pair's surface family,
+last re-shot v118 — now the oldest remaining [v118 < v119 < v120 <
+v121 < v122 < v123]; the pair's ELEVENTH re-run bracket [v60 -> v67 ->
+v76 -> v82 -> v88 -> v94 -> v100 -> v106 -> v112 -> v118 -> v124] to be
+verified against vlm-shots-v118.sh's own header before the derivation —
+the v118 header's own TENTH ordinal should be consistent with its
+11-entry bracket [v60 the original], so v124 = the ELEVENTH re-run by
+the same convention), (2) the axe-core watch at its next re-check point
+(only a 5.x wrapper changes the calculus), (3) the npm-audit watch at
+its re-check point (only a new advisory in the next/zod ranges changes
+the calculus), (4) the deferred reference-write censuses (unchanged —
+out of bounds under the v46 read-only rule).
+
 ## The v121 cycle (the v115-era ITEMS pair's TENTH re-run — Session 156)
 
 The re-run cadence's next-oldest candidate: the v115-era ITEMS pair —
