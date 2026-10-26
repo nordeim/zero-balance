@@ -3355,6 +3355,19 @@ test.describe("networth liability-card census at 390 (v120 — plan F4)", () => 
       rowGap: 8,
       rowCount: 3,
     });
+    // The Updated row's date text — the SEED-DAY axis, COMPUTED (the v122
+    // repair of the v120 pin's time-bomb: the original literal "Oct 25,
+    // 2026" was green only on its own seed day and reds every day after —
+    // prisma/seed.ts stamps lastUpdated: isoDate(0) [TODAY] and the card
+    // renders it via formatDate's toLocaleDateString; this spec runs in the
+    // same process/TZ class as the seed, so the same rule reproduces the
+    // rendered string. The midnight-crossing window [seed 23:59, assert
+    // 00:01] is accepted per the same-day-seed law.)
+    const seedDay = new Date().toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
     // The three rows — the shared row chrome family.
     expect(census!.rows).toEqual([
       {
@@ -3374,7 +3387,7 @@ test.describe("networth liability-card census at 390 (v120 — plan F4)", () => 
         icon: { w: 12, h: 12 },
       },
       {
-        txt: "Updated Oct 25, 2026",
+        txt: `Updated ${seedDay}`,
         display: "flex",
         align: "center",
         gap: "8px",
