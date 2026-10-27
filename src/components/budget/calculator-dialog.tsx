@@ -135,7 +135,7 @@ export function CalculatorDialog() {
           <button
             type="button"
             aria-label="Close"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent hover:text-accent-foreground"
             onClick={closeModals}
           >
             {/* Reference calculator X (measured live): 36×36 button, 16px
@@ -236,7 +236,7 @@ export function CalculatorDialog() {
                       <button
                         type="button"
                         aria-label={`Edit ${li.name}`}
-                        className="zb-row-action inline-flex h-8 w-8 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring"
+                        className="zb-row-action inline-flex h-8 w-8 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring"
                         onClick={() => openLineItemModal({ mode: "edit", lineItem: li })}
                       >
                         <PenIcon className="h-4 w-4" />
@@ -244,7 +244,7 @@ export function CalculatorDialog() {
                       <button
                         type="button"
                         aria-label={`Delete ${li.name}`}
-                        className="zb-row-action inline-flex h-8 w-8 items-center justify-center rounded-md text-[#dc2626] transition-colors hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring"
+                        className="zb-row-action inline-flex h-8 w-8 items-center justify-center rounded-md text-[#dc2626] transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring"
                         onClick={() => setConfirmingId(confirmingId === li.id ? null : li.id)}
                       >
                         <Trash2Icon className="h-4 w-4" />
