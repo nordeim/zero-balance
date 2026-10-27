@@ -1,3 +1,72 @@
+The workspace carries over from the v124 cycle. Let me refresh it and check the current state, then review the session docs to confirm this cycle's scope (v125).
+Workspace carried over from v124 (main @ c1dfda2, clean tree). `session_305.md` is missing — it's this cycle's doc to create. Per the v124 queue, this cycle is **v125: the v119-era DASHBOARD pair (BUDGET GUIDELINES + QUICK-ACTION below-the-fold surfaces, TENTH re-run)**. Let me set up the plan and review the docs.
+The pull brought in `docs/session_305.md` (committed as ca35ae3). Let me review the session docs and plan for this cycle.
+`session_305.md` is the v124 cycle's transcript. Now let me review the formal v124 delivery record, the remediation plan (with the v125 queue), and the repo worklog.
+Docs are compact enough to read directly. Let me read the formal records and find the probe scripts location.
+The v124 record is clear. Now let me verify the v125 queue against `vlm-shots-v119.sh`'s own header (the corrected entries-minus-one convention) and check the v119 lineage + environment state.
+The v119 header confirms the v125 queue: **NINTH re-run bracket [v61 → … → v119] (10 entries) → v125 = the TENTH re-run**. The worklog is newest-first. Let me read Session 159's entry and the v119 plan structure.
+The v125 queue is verified against the v119 header. Now let me verify the carried-over environment state (zod, playwright, .env, db, seedcheck) and audit the post-push commit ca35ae3.
+zod 840/840 intact. Running the seedcheck, then starting the F0 baseline gates.
+**Seedcheck EXACT (7/1850/2235/0/3/2)** — the environment is the carried-over class, fully provisioned. Now the F0 baseline: orphan check + watches, then the gates.
+Watches green: **axe NO DRIFT** (npm-latest 4.14.0 == engine, only canary beyond, dedupe holds) and **npm audit 0 vulnerabilities (16th)**. A stale dev server holds :3000 (PID 17093) — I'll reap it at the dev-evidence phase. Let me confirm the e2e port isolation, then start the gates.
+E2E uses isolated port 3100 — no interference from the stale :3000 server. Starting the F0 gates: lint → typecheck → unit.
+Lint ✓ · typecheck ✓ · 108/108 unit ✓. Now the production build.
+Build ✓ (robots + sitemap prerendered). Deriving the authoritative e2e count, then running the 4 chunks.
+**327 tests in 24 files** — matches the v124 ship form exactly. Verifying per-file counts for the chunk composition, then running chunk 1.
+The grep pattern missed digit-containing filenames (a11y). Let me get the exact count for it.
+All counts verified: 326 spec + 1 setup = 327; chunk composition reproduces the v124 ship form (ch1=88, ch2=86, ch3=74, ch4=82 = 330 executions). Running chunk 1.
+Chunk 1: **88/88 green** (the v124 pin holding inside). Chunk 2 next.
+**F0 e2e: 88+86+74+82 = 330 executions = 327 unique, ZERO flakes.** Now the 35-step smoke suite.
+**F0 baseline FULLY GREEN on the first chain** — lint · typecheck · 108 unit · build · 327 e2e zero flakes · 35/35 smoke · 0 vulnerabilities · axe NO DRIFT. Now the quick production-seam audit.
+Production-seam audit clean. Now **F2: the 119th standing checks**. Let me study the v124 derivation form.
+The form is clear. Writing `derive-standing-v125.py` (the 119th pair from the v118 pair).
+119th pair derived cleanly. Executing the reference side first.
+**Reference side ALL GREEN** — the four bugs live (toast-blocker, sheet-trap overlayCount:1, no-landmark, docSW 464), data census clean on FIRST reads, SEO pair live. Reaping the browser, then the clone half.
+**F2: the 119th standing checks ALL GREEN** — mobile menu VERIFIED WORKING the 119th consecutive time, zero overflow at 390 on all five views. Verifying the seedcheck after the clone half.
+F2 complete. Now **F3: deriving the v125 probe series from the v119 lineage**. Let me study the v124 derivation script (the most recent form) and the full v119 series.
+The v124 form is clear (note: its residual-check has a latent `textax` typo that never fired — I'll write the correct form). Let me read the full v119 series headers to build the exact correction fragments.
+Now let me check the v124 series headers (the most recent evolved form) to see how the "re-proves after" line and the ref-arbit/clone-arbit files are handled.
+The two-half structure is clear. Let me check the v119-era events (for the "re-proves after" correction line) by reading the v119 plan's pin summary and the v113/v119 lineage events.
+Let me survey the v107→v119 plan titles to build the "re-proves after" correction line for the v125 headers.
+Let me check the exact "re-proves after" line evolution across the v107/v113/v119 headers.
+The pattern is confirmed: window end bumps to the previous re-run, parenthetical fixed. Let me verify the v119 verdict (for the arbit verdict reference) and grep all v113-era tokens across the four v119 files.
+v119's verdict was IDENTICAL (confirmed). Let me check the compare script's body for the PAIR banner text and all FORTY-SECOND occurrences.
+The compare has a PAIR banner too (line 38). Now let me check the v119-lineage two-half builder and comparator forms (the v119 lineage has THREE census blocks, so I must derive from the v119 forms, not v124's).
+The builder form is clear. Now let me read the comparator form (compare-v119-census.py).
+Now I have the complete picture. Let me check all v119 occurrences in the four series files to ensure the generic swap is safe, then write the derivation script.
+All tokens accounted for. Writing `derive-v125-series.py` with the generic swaps + the seven history-correction families.
+**Series derived on the FIRST run — 7/7 corrections, zero residual, line counts preserved (58/43/46/259).** Now the two-half builder + comparator derivations. Let me check the v124 verify form first.
+The v119 lineage uses different block markers. Writing all three derivation/verification scripts now.
+All derivations clean — the md5 contracts (b500dd29 / da04e995 / 7a381755) match the v101/v107/v113/v119 lineage values VERBATIM. Executing F3: reference shots first.
+Both sides captured (first-attempt logins). Running the VLM pairwise comparison — pass 1 of 2.
+**Verdict: IDENTICAL ×2 — the consistent form, zero layout/style flags** (only the expected data classes flagged). Now the two-half census — reference half first.
+Reference half captured — all values matching the v119 census exactly. Reaping, then the clone half.
+**F3 complete: 154 axes — 144 identical + 10 documented-class deltas, ZERO new** (rendered geometry byte-identical: cardBottom 1122 / gridTop 1462 / gap 340). Let me verify the v119 census counts for the drift-re-check record.
+**The v125 census REPRODUCES the v119 values EXACTLY** — same 154/144/10 split, zero drift. **NO NEW CLONE GAP — the v125 iteration is PIN-ONLY for src/.** Now F4: the pin-candidate survey on the below-the-fold family.
+Let me examine the existing pins' coverage in detail to find the never-pinned member.
+The v61 F2 holds the card chrome + FIRST tile's box only. Let me check the v113 pin's coverage (tile label-row) to map the remaining gaps.
+The v113 holds the label-row flex chrome + rhythm. Let me check the v77 "interior-text" pin — it may hold the tiles' text chrome.
+The guidelines tiles are fully held (v77 F4). Let me check the v107 quick-action interior pin and the v89 transition pin for the QA-side coverage map.
+The QA interior is heavily pinned. Let me check the cross-row gap (PART X) family and the v61 F3 grid coverage for remaining never-pinned axes.
+The X family is held by v83. Let me examine the QA button source for its full hover-state form (the v45 pin holds only the shadow layer).
+The at-rest QA family is fully held by v61 F3. Let me check the QuickActionCard source for its hover/focus paths (the v45 pin holds only the shadow layer).
+The QA card has THREE hover paths: `hover:shadow-lg` (held by v45), `group-hover:scale-110` on the tile, and `group-hover:opacity-100` on the plus. Let me check the v45 pin and search for the other two paths' coverage.
+Line 2332 mentions the plus's group-hover idiom — let me check that context and the v89 transition family's hover coverage.
+The v95 pin holds the TIMING family only — the hover END-STATES (tile `group-hover:scale-110`, plus `group-hover:opacity-100`) are never-pinned. Let me verify no other spec reads these hover states across the whole suite.
+No conflicts — the candidate is confirmed: **the QA card family's HOVER END-STATES** (tile `group-hover:scale-110` + plus `group-hover:opacity-100`), never pinned (v45 holds the shadow only; v61/v107 at-rest; v95 timing). Let me study the v124 one-shot census form, then write the v125 census.
+The form is clear. Let me check an existing both-sides one-shot census structure (the v45-era hover probes) to follow the house style.
+The both-sides form is clear. Writing `qahover-arbit-v125.sh` — the one-shot census for the QA hover end-states.
+Wait — the heredoc can't receive positional args. Let me check how the established scripts inject the census JS into the with-server heredoc (the v73 lesson form).
+The correct form is env-injection. Rewriting the census script with the v73 heredoc lesson form.
+Two issues: the JSON escaping broke the sed extraction (the v116 lesson — return bare "x,y"), and the reference's tile finder failed. Let me probe the reference's button structure first.
+The reference's tile is a DIV inside a DIV row (the clone uses spans — the v107 DIV-vs-SPAN lesson). Fixing the finder (tag-agnostic) + the coord extraction (bare comma pair, the v116 convention).
+The finder now returns a bare comma pair, but agent-browser quotes the output — let me check the v124 extraction form to strip quotes correctly.
+Updating both extraction sites to the v124 form (`tr -d '"'` + parameter expansion).
+**The census measured cleanly on BOTH sides — the full hover ladder.** The rendered parity is byte-identical (tile 40→44×44, plus 0.5→1, shadow-lg layers), with the predicted computed-form class (ref v3 `transform: matrix(1.1,...)` vs clone v4 `scale: 1.1` — the v95 class's hover-state twin). Let me verify the mutation line, then write the remediation plan BEFORE the pin (the protocol).
+Mutation targets confirmed (lines 890/899). Writing the remediation plan BEFORE the pin append (the protocol). Let me check the v124 plan's ToDo structure first.
+I have the complete form. Writing `docs/remediation-plan-v125.md` BEFORE the pin append (the protocol).
+Writing the v125 remediation plan (before the pin append — the protocol).
+
 工作区已保留。工作日志显示 v124 已交付至 `main @ c1dfda2` 分支，且附带的会话日志显示 v125 周期在进行到一半时中断了——具体是在 F4 阶段，即 `docs/remediation-plan-v125.md` 的编写过程中（在 pin append 之前）。让我核实一下仓库的确切状态。
 仓库完好无损，处于 `main @ ca35ae3`（v124 版本后的会话日志尾部），除 18 个 v125 探针/推导脚本外，工作区其余部分均干净——F0–F3 已完成，且 F4 正好停在其协议边界上：**在追加 pin 之前撰写修复计划**（尚未存在——`docs/` 中没有计划，没有 `append-pin-v125.py`，且 `src/` 中没有 pin）。让我来设置恢复 TODO 列表并验证 F4 证据的确切状态。
 `docs/remediation-plan-v125.md` 确认缺失 —— 正好是协议中断点。16 张截图目录完整。现在让我验证 F4 证据：QA hover census 脚本及其记录的结果，以及 QuickActionCard 的变异目标（第 890/899 行）。
