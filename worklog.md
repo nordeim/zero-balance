@@ -93,6 +93,78 @@ and `docs/remediation-plan-v122.md` (the v122 cycle — Session 157).
 
 ---
 
+## Session 159 — Parity iteration v124: the re-run cycle's next-oldest candidate (the v118-era NETWORTH + drill-down-DASHBOARD pair's TENTH re-run — the queue prose's ordinal off-by-one caught by the header verification) + the axe watch (NO DRIFT) + the npm-audit watch (0 vulnerabilities — the standing step's fifteenth cycle) + the 118th standing checks + the networth kebab-trigger OPEN-MENU reveal census pin at 1280 (PIN-ONLY — the reveal family's open path on the never-pinned networth file) (2026-10-27)
+
+The v118-era NETWORTH + drill-down-DASHBOARD pair (the /networth view +
+the dashboard drill-down EXPANDED state at desktop 1280x800, the v60-era
+family, the TENTH re-run [v60 → v67 → v76 → v82 → v88 → v94 → v100 →
+v106 → v112 → v118 → v124]; the FORTY-SEVENTH consecutive queue/ledger
+agreement — verified against vlm-shots-v118.sh's own header before the
+derivation, **which REFUTED the queue prose's "ELEVENTH re-run" ordinal:
+the v118 header's own NINTH/10-entry bracket makes v124 the TENTH by the
+same convention that made v123 the TENTH from v117's NINTH; the chain
+verified backwards v106 SEVENTH → v112 EIGHTH → v118 NINTH — the
+off-by-one lived in the prose, not the lineage; the corrected convention
+now carried in the v125 queue**). PIN-ONLY for src/ (zero
+production-code changes, the thirteenth cycle since v46 without one).
+The baseline FULLY GREEN ON THE FIRST CHAIN — zero repairs (lint ·
+typecheck · 108 unit · build · 326 e2e zero flakes [329 executions in 4
+chunks] · 35/35 smoke; the v122 date-axis repair verified holding; the
+production-seam audit clean; the post-push commits audited
+session-log-only). The watches: axe NO DRIFT (4.14.0, only the canary
+beyond, the v68 dedupe holds); npm audit 0 vulnerabilities (the v110
+bump holds — fifteenth re-check). The 118th standing checks ALL GREEN
+(the reference's four bugs live; the data census clean on the FIRST
+reads; the clone's mobile menu VERIFIED WORKING the 118th consecutive
+time; zero overflow at 390 on all five views; the seedcheck exact after
+the clone half). The VLM pair: NETWORTH IDENTICAL ×2 / DRILL-DOWN
+DIFFERENT ×2 — every flag DOM-arbitrated (the nav-highlight v56 superset
++ perception [bg transparent both sides], the avatar user-identity, the
+progress pct, the donut labels data+perception [count/fs/sectors
+identical both sides], the trend-icons v67 path-signature misread
+[glyphSig byte-identical], the networth groups seed-data). The two-half
+census: 73 axes — 67 identical + 6 documented-class deltas, ZERO new
+(the v106/v112/v118 values reproduced EXACTLY). THE PIN: the networth
+asset-card kebab-trigger's OPEN-MENU reveal census at 1280 (+1 e2e =
+327) — the reveal family's open path on the never-pinned networth file
+(net-worth-view.tsx:82/192, the v122 pin's different-file twin by
+identical class strings; the open+parked opacity-1 axis with the pointer
+off the card + the unchanged 36×36 box chrome); the clone-only form (the
+reference's trigger stays invisible when its menu opens — its own
+superset-#7 bug; the reference's net-worth kebab flow never safe to
+probe past the menu open). **The pin-sanity mutation's CONDITIONAL-FORM
+discovery**: the v122 unconditional form (the token replaced outright
+with opacity-90) reddens the v46 at-rest census TOO — the unconditional
+token beats opacity-0 in the Tailwind utilities cascade, leaking the
+at-rest state to 0.9 (the v122 form worked only because the items file
+holds no at-rest assertion for the item-card kebab); the corrected
+CONDITIONAL form (data-[state=open]:opacity-90) isolates the open path —
+the SOLE FAILURE verified live (the pin alone red at the opacity axis,
+the 36 others green, the items file 48/48 — the v122 pin's
+different-file immunity re-verified). The ship: 327 e2e zero flakes (330
+executions); 35/35 smoke; the screenshots 15/16 byte-identical + 1
+day-rollover refresh (the add-item modal's capture-day date input —
+234 pixels in a 16×22 bbox, VLM-verified date-only, zero chrome drift);
+the dev evidence 4/4 byte-identical + VLM-verified (the menu proof:
+/income, docSW 390, navLandmark true; the stale dev-server LOCK reaped —
+the PID-direct kill after the port-scan reaper missed the hung process).
+Docs D1–D7 aligned (AGENTS the v124 paragraph [D0 checked clean]; CLAUDE
+327 + the v124 clause; README counts + the v124 plan row; the SKILL
+Session 159 row + the state line; PAD v1.1.81; the probe README's v124
+section + the v125 queue [the v119-era DASHBOARD pair — the BUDGET
+GUIDELINES + QUICK-ACTION below-the-fold surfaces, the TENTH re-run by
+the corrected entries-minus-one convention]; the derived probe series
+v124 + the standing pair 118 + the dev-shots v124 + the one-shot
+kebabopen-arbit-v124.sh + verify-twohalf-v124.py + verify-modal-shot-
+v124.mjs + append-pin-v124.py + align-docs-v124.py +
+align-probereadme-worklog-v124.py + insert-skillrow-v124.py +
+derive-v124-series.py + derive-build-twohalf-v124.py +
+derive-compare-v124.py + derive-standing-v124.py + build-twohalf-v124.py
++ compare-v124-census.py all persisted). The workspace the CARRIED-OVER
+class (git pull from main @ 333c2cb — no re-provisioning needed: zod
+840/840 intact, both v1243 playwright pairs verified, the seedcheck
+exact). Delivery record: `docs/session_304.md`.
+
 ## Session 158 — Parity iteration v123: the re-run cycle's next-oldest candidate (the v117-era LOGIN + CALCULATOR pair's TENTH re-run) + the axe watch (NO DRIFT) + the npm-audit watch (0 vulnerabilities — the standing step's fourteenth cycle) + the 117th standing checks + the calculator line-item DELETE-CONFIRM BAR census pin at 1280 (PIN-ONLY — the never-pinned FOURTH member of the confirm-bar family) (2026-10-26)
 
 The v117-era LOGIN + CALCULATOR pair (the LOGIN view + the CALCULATOR
