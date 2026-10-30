@@ -19,7 +19,14 @@ import { defineConfig, devices } from "@playwright/test";
 // up twice).
 
 const PORT = Number(process.env.E2E_PORT ?? 3100);
-const BASE_URL = `http://localhost:${PORT}`;
+// v135: pinned to the IPv4 literal — the standalone server binds 0.0.0.0
+// (IPv4-only; verified live: [::1]:3100 → connection REFUSED), so the
+// "localhost" name resolution can race ::1-first and surface the RST as
+// net::ERR_CONNECTION_REFUSED (the captured not-found:111 flake mechanism —
+// page.goto refused, the next goto fine: a resolver race, not a dead
+// listener). The IPv4 literal removes the class; no spec references either
+// literal string (verified by grep).
+const BASE_URL = `http://127.0.0.1:${PORT}`;
 const E2E_DATABASE_URL = "file:../db/e2e.db";
 const AUTH_STATE = "tests/e2e/.auth/user.json";
 

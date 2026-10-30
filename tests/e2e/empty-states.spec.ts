@@ -88,7 +88,14 @@ test.describe("empty states + content column (v6)", () => {
     // Fixture: remove both seeded liabilities via the API (the spec shares
     // the seeded DB with the whole suite — restore in the same test).
     const list = await page.request.get("/api/liabilities");
-    const { data } = (await list.json()) as { data: Array<Record<string, unknown>> };
+    // v135 diagnostic guard: the captured intermittent (once, unreproduced)
+    // sent this GET out with NO Cookie header → 401 {"error"} → `data`
+    // undefined → the cryptic "Cannot read properties of undefined (reading
+    // 'map')". Hard-assert ok FIRST so a recurrence reads as a precise
+    // "expected true, received false" on the authenticated fixture call.
+    expect(list.ok(), "liabilities fixture GET must be authenticated (200)").toBe(true);
+    const body = (await list.json()) as { data?: Array<Record<string, unknown>> };
+    const data = body.data ?? [];
     const original = data.map((l) => ({
       type: l.type,
       name: l.name,

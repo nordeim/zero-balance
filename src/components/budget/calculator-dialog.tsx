@@ -135,7 +135,7 @@ export function CalculatorDialog() {
           <button
             type="button"
             aria-label="Close"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent hover:text-accent-foreground"
+            className="zb-row-action inline-flex h-9 w-9 items-center justify-center rounded-md text-[#0a0a0a] transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring"
             onClick={closeModals}
           >
             {/* Reference calculator X (measured live): 36×36 button, 16px
