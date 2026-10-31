@@ -19,14 +19,21 @@ import { defineConfig, devices } from "@playwright/test";
 // up twice).
 
 const PORT = Number(process.env.E2E_PORT ?? 3100);
-// v135: pinned to the IPv4 literal — the standalone server binds 0.0.0.0
-// (IPv4-only; verified live: [::1]:3100 → connection REFUSED), so the
-// "localhost" name resolution can race ::1-first and surface the RST as
-// net::ERR_CONNECTION_REFUSED (the captured not-found:111 flake mechanism —
-// page.goto refused, the next goto fine: a resolver race, not a dead
-// listener). The IPv4 literal removes the class; no spec references either
-// literal string (verified by grep).
-const BASE_URL = `http://127.0.0.1:${PORT}`;
+// v136: back to the "localhost" NAME, with the server bound DUAL-STACK
+// (HOSTNAME="::" in webServer.env below). The v135 IPv4-literal pin fixed
+// the not-found:111 resolver race ([::1] → REFUSED under the IPv4-only bind)
+// but introduced a second-order defect: Playwright's Node-side cookie store
+// (coreBundle Cookie.matches → isLocalHostname) grants the Secure-cookie
+// exemption ONLY to the string "localhost" — NOT the 127.0.0.1 literal —
+// so every authenticated page.request call (the empty-states G6 fixture)
+// went out with NO Cookie header → 401 (the v135 "empty-states:85
+// intermittent", deterministically reproduced + root-caused this cycle —
+// see docs/remediation-plan-v136.md F0). With HOSTNAME="::" the standalone
+// server accepts BOTH stacks (verified live: 127.0.0.1 → 200 AND [::1] →
+// 200), so the ::1-vs-IPv4 race class is dead outright and the name can
+// safely return to localhost — where the Secure cookie attaches. No spec
+// references any host literal (verified by grep).
+const BASE_URL = `http://localhost:${PORT}`;
 const E2E_DATABASE_URL = "file:../db/e2e.db";
 const AUTH_STATE = "tests/e2e/.auth/user.json";
 
@@ -67,6 +74,14 @@ export default defineConfig({
     env: {
       ...process.env,
       PORT: String(PORT),
+      // v136: bind [::] — dual-stack (IPv6 + IPv4-mapped), so "localhost"
+      // connects whichever stack the resolver picks (kills the not-found:111
+      // race class) and the Secure session cookie attaches to page.request
+      // calls (Playwright's isLocalHostname honors "localhost" only). The
+      // sandbox shell's HOSTNAME is bash-local (never exported), so this
+      // override is deterministic; smoke-test.sh uses the same explicit-bind
+      // pattern.
+      HOSTNAME: "::",
       NODE_ENV: "production",
       DATABASE_URL: E2E_DATABASE_URL,
       AUTH_SECRET: "playwright-e2e-session-secret",
