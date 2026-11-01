@@ -88,7 +88,7 @@ flowchart TB
 │                                  #   auth, rate-limit, serializers, db-path
 ├── 📂 tests/
 │   ├── 📄 *.test.ts               # Vitest unit suites (108 tests)
-│   └── 📂 e2e/                    # Playwright specs (345 tests) + global setup
+│   └── 📂 e2e/                    # Playwright specs (346 tests) + global setup
 ├── 📂 scripts/
 │   ├── 📄 smoke-test.sh           # 35-step production API smoke test
 │   └── 📄 capture-screenshots.mjs # docs/screenshots generator
@@ -145,7 +145,7 @@ npm start            # boots .next/standalone/server.js
 
 ```bash
 npm test            # Vitest unit suite (108 tests) — pure domain seams
-npm run test:e2e    # Playwright e2e (345 tests) — needs `npm run build` first
+npm run test:e2e    # Playwright e2e (346 tests) — needs `npm run build` first
 bash scripts/smoke-test.sh   # 35-step production API smoke (own server, port 3210)
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint (react-hooks v6 rules enforced)
@@ -304,6 +304,7 @@ Measured from the reference's `:root` (computed styles as ground truth):
 | [`docs/remediation-plan-v139.md`](docs/remediation-plan-v139.md) | **The re-run cycle's next-oldest candidate (the v133-era ITEMS pair's THIRTEENTH re-run — the ITEMS view [income + expenses] at desktop 1280x800 FULL-PAGE, the SIXTY-SECOND consecutive queue/ledger agreement; the v127–v132 rotation pool exhausted — the cadence's SECOND PASS [the v133–v138 pool], the v133-era pair the oldest remaining) + the filter-card Select trigger own-hover ladder pin at 1280 (PIN-ONLY — src/ zero changes, the ninth PIN-ONLY cycle in the last ten; the census measured the ladder CLEAN on BOTH triggers — the INERT-HOVER contract, the at-rest chrome persisting under each trigger's own hover, IDENTICAL both sides at every rung; the FAB claim disproven live [fabCount 0 both sides]; the pin-sanity mutation the HOVER-TINT form on the SelectTrigger className — hover-scoped, the sole failure verified on the full items sweep: 1 failed + 52 passed; the post-restore regression 146/146) — the 133rd standing checks ALL GREEN (the mobile menu the 133rd consecutive; the four reference bugs live; the census clean on the FIRST reads), the watches green (0 vulnerabilities --omit=dev — the thirtieth; axe-core NO DRIFT), the VLM BOTH PAIRS DIFFERENT ×2 (the pair's documented verdict class — every flag DOM-arbitrated to a documented class), the census 187 axes — 163 identical + 24 documented, ZERO new (the v133 values reproduced EXACTLY), the ship chain 342 e2e zero flakes (345 executions) + 35/35 smoke, the screenshots 16/16 byte-identical (the same-day law), the dev evidence 4/4 + VLM-verified). |
 | [`docs/remediation-plan-v140.md`](docs/remediation-plan-v140.md) | **The re-run cycle's second-pass next-oldest candidate (the v134-era SAVINGS pair's THIRTEENTH re-run — the SAVINGS view at desktop 1280x800 FULL-PAGE, the SIXTY-THIRD consecutive queue/ledger agreement; the savings filter-card search input's own-hover ladder pin at 1280 — the never-pinned hover path of the pinned search family, the INERT-HOVER contract measured byte-identical both sides; PIN-ONLY: src/ zero changes, 343 e2e)** |
 | [`docs/remediation-plan-v141.md`](docs/remediation-plan-v141.md) | **The re-run cycle's second-pass next-oldest candidate (the v135-era LOGIN + CALCULATOR pair's THIRTEENTH re-run — the LOGIN view + the CALCULATOR dialog at desktop 1280x800, the SIXTY-FOURTH consecutive queue/ledger agreement; the login sign-in submit's own-hover ladder pin at 1280 — the never-pinned hover path of the pinned submit family, the TINTED contract measured byte-identical both sides; PIN-ONLY: src/ zero changes, 344 e2e)** |
+| [`docs/remediation-plan-v143.md`](docs/remediation-plan-v143.md) | **The re-run cycle's second-pass next-oldest candidate (the v137-era DASHBOARD pair's THIRTEENTH re-run — the DASHBOARD at desktop 1280x800 FULL-PAGE, the SIXTY-SIXTH consecutive queue/ledger agreement; the quick-action cards' focus-visible ladder pin at 1280 — the never-pinned keyboard path of the pinned quick-action family, the UA-default ring contract + the UNCHANGED focus ≠ hover chrome measured byte-identical both sides; PIN-ONLY: src/ zero changes, 346 e2e)** |
 | [`docs/remediation-plan-v142.md`](docs/remediation-plan-v142.md) | **The re-run cycle's second-pass next-oldest candidate (the v136-era NETWORTH + drill-down-DASHBOARD pair's THIRTEENTH re-run — the NETWORTH view + the DASHBOARD's drill-down EXPANDED state at desktop 1280x800, the SIXTY-FIFTH consecutive queue/ledger agreement; the dashboard drill-down rows' own-hover ladder pins at 1280 — the never-pinned hover paths of the pinned drill-down family, the two-contract form [the section row's TINTED + the category row's INERT] measured byte-identical both sides; PIN-ONLY: src/ zero changes, 345 e2e)** |
 
 
