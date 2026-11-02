@@ -1,0 +1,33 @@
+# Session 375 — v147 周期记录（第 182 次会话）
+
+工作空间为 SAME-PERSISTED 类（v146 会话环境完整保持：node_modules 354 项、双 chromium 对 [1200 + 1243]、.env [DATABASE_URL="file:../db/custom.db"] 与仓库根部的 db/ 携带规范化持久种子 [10 月 31 日戳记现场验证：items 的 date 字段 2026-10-21..29、assets/liabilities 的 lastUpdated 2026-10-31]；仓库拉取干净至 main @ aa88e7c [fast-forward，新增 docs/session_373.md]）。
+
+读取 session_372 + session_373 + v146 计划 + worklog + 探针 README 的 v147 队列；验证 v141 谱系记录：v141 计划自身 header 在 14 项括号 [v59 为原始对，一项] 上记录 THIRTEENTH 序数 → v147 = FOURTEENTH（15 项括号）。第 70 次连续一致性；第二遍池 [v133–v138] 在 v144 处耗尽，v139 项 ITEMS 对 v145 重跑、v140 项 SAVINGS 对 v146 重跑，第三遍池中 v141 项 LOGIN + CALCULATOR 对为最旧剩余。
+
+**F0 基线：首跑即全绿（本周期无修复）。** seedcheck 精确 7/1850/2235/0/3/2（env -u 纪律下）；lint ✓ · typecheck ✓ · 108/108 单元 ✓ · build ✓（robots + sitemap 预渲染）· 权威 --list：24 个文件 349 项（v146 发布形态）· 4 分块 e2e [97+95+78+82 = 352 次执行 = 349 唯一，零抖动] · 35/35 冒烟 ✓ · 生产接缝审计干净（auth.ts:77 secure 标志、db-path 接缝及其单元文件、SEO 对、Tailwind v4 缓解族、三层测试、v146 pin 在位 [ch1 运行中验证]、skills/ 排除、.env.example 在位）。
+
+**F0b 监视双绿。** npm-audit 监视：0 漏洞（第 38 次复查——v110 升级保持 [next 16.4.3 + zod 4.6.7]）。axe-core 监视：无漂移（4.14.0 == 4.14.0，v68 去重保持）。
+
+**F2：第 141 次常设检查全绿。** 经 derive-standing-v147.py（三个 token 族：140th→141st th→st 平替 [后缀随数字英文形式，与 v122 的 121st/v132 的 131st 同族]、ref140/clone140→ref141/clone141、v140→v141；逆向归一 diff 干净、零旧 token、两半 bash -n 干净；行数保持 119/74）。参考侧四 bug 俱在（toast-blocker hitIsBurgerChild:false、sheet-trap overlayCount:1、no-landmark navLandmark:false、/networth 464px 溢出）；数据普查首读即净；SEO 对两侧俱在。克隆侧：移动菜单连续第 141 次验证可用（R1 hitIsBurgerChild:true + sheet 打开；R2 导航即关——url /income、sheetGone、overlayGone；R3 navLandmark:true；R4 五视图 390 零溢出）；克隆半后 seedcheck 精确。
+
+**F3：v147 重跑对——VLM 判定 CALCULATOR DIFFERENT ×2 / LOGIN IDENTICAL ×2（该对已记录判定-变体族）。** 探针系列经 derive-v147-series.py 从 v141 谱系派生（通用替换含六个显式会话 token 族 + 历史修正片段 [时代标记 last re-shot v135→v141、最旧剩余清单 v135..v138→v141..v144、队列来源 v140 计划→v146 计划、一致性序数 SIXTY-FOURTH→SEVENTIETH、重跑序数 THIRTEENTH→FOURTEENTH、四文件括号扩展]，首次运行全部命中、零残留、行数保持 102/166/65/355；bash -n + node --check 干净；派生前清扫再证常设发现——时代 token 全部限于文件头）+ login-shots 子系列（30/30）+ 两半构建器（derive-build-twohalf-v147.py——通用替换 + 课训区间 v92..v140→v92..v146 + 谱系注记 fixup "build-twohalf-v135.py"→"build-twohalf-v141.py" 最后）+ 比较器（derive-compare-v147.py——出处引用重指 v141 测量 [谱系序数 THIRTEENTH→FOURTEENTH；记录链扩展 +v141]）+ 校验脚本（derive-verify-twohalf-v147.py——引用链扩展 v124..v140→v124..v146；摘要不变）。两半构建完成，TWO-block md5 契约经直接三方 python 提取验证：CALC_CENSUS_JS 61 行 md5 e1092d12d06677a4 + LOGIN_CENSUS_JS 36 行 md5 9e5a52d2ab0f2ab9，跨 arbit-v147.sh + ref-arbit-v147.sh + clone-arbit-v147.sh 字节一致——v123/v129/v135/v141 登录+计算器谱系契约逐字保持。
+
+资源纪律在每半之间执行（每半前收割浏览器守护进程；两半与两组截图均首试登录；完整日志经运行器重定向捕获——/tmp/vlm147/{ref,clone}-arbit-full.log）。
+
+VLM 成对比较带完整日志运行两次（/tmp/vlm147/vlm-pass{1,2}.log）：两遍均 CALCULATOR DIFFERENT / LOGIN IDENTICAL——该对已记录判定-变体族（登录判定跨重跑变动：v105/v129 IDENTICAL、v135 第二遍 DIFFERENT、v141 IDENTICAL ×2、本次 IDENTICAL ×2）。登录两遍唯一注记为参考站自身的 "Edit with Base44" FAB（PLATFORM-CHROME 类）——经 base44-fab-arbit-v147.sh 现场证伪（fabCount 0 + bodyHasBase44 false，两侧俱然 @1280 /login——v97..v141 常设证伪形态再确认）。计算器每个 flag 均归入已记录类且免仲裁：行项悬停操作按钮为 POINTER-POSITION/HOVER-STATE 截图伪象（普查 actionsAtRest {opacity 0, btnCount 2} 两侧一致）；"Will update category total" 注记 + totalCard 高度 + 行高后果为 SEED-DATA 类（hasWillUpdateSpan ref false vs clone true）。
+
+两侧普查逐轴比较（compare-v147-census.py）：106 轴——97 一致 + 9 已记录类差异，零新增——v141 普查值精确复现（同样的 106/97/9 分布，每轴零漂移：login card.border 零宽计算色伪象、login card.shadow 与 calc panel.shadow 的 v3/v4 构造零层前导类、5 个 close.* 轴的 v99 查找器伪象 [克隆单侧存在，不对称方向保持]、calc totalCard.hasWillUpdateSpan 种子数据类）。克隆半后 seedcheck 精确。普查轴上无新克隆缺口。
+
+**F4 [PIN-ONLY]：登录页 LOGO 的 OWN-HOVER 阶梯 @1280（src/ 零改动；+1 e2e = 350）。** 候选普查（登录+计算器表面按 spec 自身断言清扫——SPEC-ALIAS 教训）：计算器族全保持（X 静态 chrome [v87]、X 自悬停色 [v129]、X focus-visible 环 [v135]、行操作 focus-visible 族 [v32]、行操作自悬停色 [v129]、行悬停阴影+显现 [v45]、面板/合计卡/行 chrome [v45 F2a/v59/v66]、scrim [v73]；Add Item 按钮设计即惰性 [v11 G4 记录]）；登录族全保持（Google 按钮静态 chrome [v7] + 自悬停 [v13 族] + 悬停 shadow-sm [v45 F4]、输入框 focus 族 [v13]、提交按钮 focus-visible 环 [v25]、提交静态 chrome [v7] + 静态 shadow-sm [v45 F4]、提交 OWN-HOVER 阶梯 [v141 pin]、环静态色 [v7 G3 pin——.zb-logo-ring 元素]、logo img 几何 [v75 F4 pin]）——**logo 的自悬停终态无任何 spec 在任何视口钉住**（套件清扫：rg 'logo'——24 处匹配全为静态 chrome；auth.spec.ts 自身注释记录 span "keeps its shadow-lg / group-hover:shadow-xl"——构造已记录、从未钉住）。最强形态：任何视口从未钉住、双侧可测（发现脚本现场测绘参考站自身 logo 构造）、在本对自身表面、本对自身 1280 视口、表面的身份元素。
+
+被测构造（双侧发现测绘的 DOM）：logo 组（div.group）携带 BLUR HALO 层（opacity-30 blur-xl transition-opacity duration-300 group-hover:opacity-40——login-card.tsx:56）+ CHIP span（shadow-lg transition-all duration-300 group-hover:shadow-xl——login-card.tsx:68）+ img（96×96）。预期自悬停终态：halo 不透明度 0.3→0.4 + chip shadow-lg→shadow-xl，滤镜/几何/过渡族不变。
+
+发现脚本 logohover-discovery-v147.sh 先行映射两侧 DOM（REF 的 span 内联携带 white/50 环 + 阴影族；CLONE 将环分离至 .zb-logo-ring 层 [v7 G3 构造]——可见层一致）。双侧一次性普查 logohover-arbit-v147.sh（v141 submithover 形态适配 logo 轴：结构查找器 [img[alt*="logo"]→组]、(5,5) 驻留阶梯、活读中心、READ-ONLY——装饰性 div 上的鼠标移动不分发点击；logo 绝不点击）测得阶梯**无缺口**：静态档 {haloOpacity 0.3 + blur(24px) + chip shadow-lg 可见环境对 + 几何 96×96 + 过渡常量} 两侧一致；悬停档 {groupHover true + haloOpacity 0.4——强化光晕契约 + chip shadow-xl 可见环境对 [0px 20px 25px -5px / 0px 8px 10px -6px] + 滤镜/几何不变} 两侧一致（logo 中心 REF (640,123) / CLONE (640,123)）；恢复档回归静态契约；唯一差异为 chip 静态不可见前导层构造（REF v3 形态内联环 vs CLONE TW v4 五槽形态 + 分离 .zb-logo-ring 层——v7 G3 构造类，可见环境对字节一致，从未钉住）。
+
+pin 附加（append-pin-v147.py——静态档 → LOGO-HOVERED 档 {groupHover true + haloOpacity 0.4 + chip shadow-xl 环境对 toContain + 滤镜/几何不变} → 恢复档；V7-G3/V75-碰撞安全轴集；结构查找器；logo 绝不点击——仅鼠标移动；首跑即绿；权威 --list：24 个文件 350 项）。
+
+PIN-SANITY 突变——HALO-OPACITY-REMOVAL 形态：group-hover:opacity-40 自 login-card.tsx:56 剥除（单一 utility；更宽影响面已注记——LogoMark 服务全部认证模式，突变悬停作用域，静态普查不受影响）——正是 pin 存在所防守的 CSS 清理漂移类（扼杀微交互光晕强化的"合并"——对每个静态普查不可见的回归）：静态档不变，悬停档失败 [halo 卡在 0.3]。**唯一失败现场验证——完整 login-parity 清扫 1 失败 [仅 pin] + 33 通过**，失败 diff 恰为预测的悬停档 halo 轴（收到 opacity "0.3" vs 期望 "0.4"，groupHover true + 滤镜/几何/alt 轴保留）；恢复 [git diff src/ = 0 行] + 完整重建 + 恢复后回归 34 通过（v141 pin 异行免疫性现场验证）。
+
+**F5 发布链**：lint ✓ · typecheck ✓ · 108 单元 ✓ · 0 漏洞审计 ✓ · **350 e2e 零抖动**（97+95+79+82 = 353 次执行 = 350 唯一——+1 落在 ch3 [login-parity]）· 35/35 冒烟 ✓ · **截图 16/16 采集——全部字节一致**（同日法则：v146 周期已提交采集与本周期采集均在 11 月 2 日 UTC 运行——本周期无 WALL-CLOCK 类）· 开发证据 4/4 字节一致 + VLM 验证（菜单证明 {"url":"/income","docSW":390,"navLandmark":true}；dev-shots 脚本 v146→v147 派生，两侧仅版本替换验证）。
+
+**文档 D1–D7 对齐**（D0 先行核验——每个插入锚点 1-hit）：AGENTS v147 段落 · CLAUDE 350 + v147 从句 · README 两行计数 + v147 计划行 · SKILL Session 182 行 + 状态行 108/350/35 · PAD v1.2.4 · 探针 README v147 节 + v148 队列 [v142 项 NETWORTH + drill-down-DASHBOARD 对——FOURTEENTH 重跑括号待对 v142 谱系记录验证] · session_374.md（交付记录，两部分惯例——验证段落后补）· session_376.md（会话录）· worklog Session 182 条目；.env.example 验证未动。经 SSH 包装器交付至 main（无新分支）。
