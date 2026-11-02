@@ -1,0 +1,29 @@
+# Session 371 — v146 周期记录（第 181 次会话）
+
+工作空间为 SAME-PERSISTED 类（v145 会话环境完整保持：node_modules 354 项、双 chromium 对 [1200 + 1243]、.env [DATABASE_URL="file:../db/custom.db"] 与仓库根部的 db/ 携带规范化持久种子 [10 月 31 日戳记现场验证：items 的 date 字段 2026-10-21..29、assets/liabilities 的 lastUpdated 2026-10-31]；仓库拉取干净至 main @ 65ad18a [fast-forward，新增 docs/session_369.md]）。
+
+读取 session_368 + session_369 + v145 计划 + worklog + 探针 README 的 v146 队列；验证 v140 谱系记录：v140 计划自身 header 在 14 项括号 [v58 为原始对，一项] 上记录 THIRTEENTH 序数 → v146 = FOURTEENTH（15 项括号）。第 69 次连续一致性；第二遍池 [v133–v138] 在 v144 处耗尽，v139 项 ITEMS 对于 v145 重跑，第三遍池中 v140 项 SAVINGS 对为最旧剩余。
+
+**F0 基线：首跑即全绿（本周期无修复）。** seedcheck 精确 7/1850/2235/0/3/2（env -u 纪律下）；lint ✓ · typecheck ✓ · 108/108 单元 ✓ · build ✓（robots + sitemap 预渲染）· 权威 --list：24 个文件 348 项（v145 发布形态）· 4 分块 e2e [96+95+78+82 = 351 次执行 = 348 唯一，零抖动] · 35/35 冒烟 ✓ · 生产接缝审计干净（auth.ts:77 secure 标志、db-path 接缝及其单元文件、SEO 对、Tailwind v4 缓解族、三层测试、v145 pin 在位 [ch1 运行中验证]、skills/ 排除、.env.example 在位）。
+
+**F0b 监视双绿。** npm-audit 监视：0 漏洞（第 37 次复查——v110 升级保持 [next 16.4.3 + zod 4.6.7]）。axe-core 监视：无漂移（4.14.0 == 4.14.0，v68 去重保持）。
+
+**F2：第 140 次常设检查全绿。** 经 derive-standing-v146.py（三个 token 族：139th→140th th→th 平替、ref139/clone139→ref140/clone140、v139→v140；逆向归一 diff 干净、零旧 token、两半 bash -n 干净；行数保持 119/74）。参考侧四 bug 俱在（toast-blocker hitIsBurgerChild:false、sheet-trap overlayCount:1、no-landmark navLandmark:false、/networth 464px 溢出）；数据普查首读即净；SEO 对两侧俱在。克隆侧：移动菜单连续第 140 次验证可用（R1 hitIsBurgerChild:true + sheet 打开；R2 导航即关——url /income、sheetGone、overlayGone；R3 navLandmark:true；R4 五视图 390 零溢出）；克隆半后 seedcheck 精确。
+
+**F3：v146 重跑对——VLM 判定 DIFFERENT ×2（一致判定形态，SAVINGS 对已记录判定类）。** 探针系列经 derive-v146-series.py 从 v140 谱系派生（通用替换含四个显式会话 token 族 + 历史修正片段 [时代标记 last re-shot v134→v140、最旧剩余清单 v134..v138→v140..v144、队列来源 v139 计划→v145 计划、一致性计数 SIXTY-THIRD→SIXTY-NINTH、序数 THIRTEENTH→FOURTEENTH、四文件括号扩展]，首次运行全部命中、零残留、行数保持 50/42/39/262；bash -n + node --check 干净）+ 两半构建器（derive-build-twohalf-v146.py——断言的 refarbit140→refarbit146 先行 + 通用替换 + 课训区间 v92..v139→v92..v145 + 谱系注记 fixup "build-twohalf-v134.py"→"build-twohalf-v140.py" 最后）+ 比较器（derive-compare-v146.py——出处引用重指 v140 测量）+ 校验脚本（derive-verify-twohalf-v146.py——谱系引用链扩展 +v140；摘要不变）。两半构建完成，md5 契约经直接三方 python 提取验证：CENSUS_JS 153 行 md5 891ab9b6，跨 arbit-v146.sh + ref-arbit-v146.sh + clone-arbit-v146.sh 字节一致——v122/v128/v134/v140 储蓄谱系契约逐字保持（savings 普查 JS 块不含版本 token，摘要跨周期不变）。
+
+资源纪律在每半之间执行（每半前收割浏览器守护进程；两半与两组截图均首试登录；完整日志经运行器重定向捕获——/tmp/vlm146/{ref,clone}-arbit.log）。
+
+VLM 成对比较带完整日志运行两次（/tmp/vlm146/vlm-pass{1,2}.log）：第一遍 DIFFERENT / 第二遍 DIFFERENT——一致判定形态，SAVINGS 对已记录判定类。每个 flag 均经 DOM 仲裁归入已记录类：头像字母 USER-IDENTITY 类（"D" vs "U"）；卡片网格/页脚结构 SEED-COUNT + v58 DATA-CONDITIONAL 类（普查验证：grid childCount 1 vs 2、页脚 childCount 1 vs 2——参考站自身的 savings 项不带账户类型标签故页脚仅渲染一个子元素，克隆携带 "Brokerage"/"Bank Account" chip）；徽章颜色/值 classification-VALUE 类（参考 "need" 红 vs 克隆 "savings" 绿）；"Recurring" chip 与更高的卡片为普查白名单内的克隆 Recurring 超集 chip 及换行后果（badgeRow h 22 vs 52、badgeCount 3 vs 4、card.h 200 vs 230）；卡片内容 SEED-DATA 类。**本周期两遍均无 FAB/平台外观主张**（该常设 flag 类未出现——无需现场证伪；证伪形态保留待用）。
+
+两侧普查逐轴比较（compare-v146-census.py）：120 轴——80 一致 + 40 已记录类差异，零新增——v140 普查值精确复现（同样的 120/80/40 分布，每轴零漂移）。克隆半后 seedcheck 精确。普查轴上无新克隆缺口。
+
+**F4 [PIN-ONLY]：/savings 页头 Add Savings 按钮在 1280 的 FOCUS-VISIBLE 阶梯（src/ 零改动；+1 e2e = 349）。** 候选勘察（savings 对表面交互族对规格自身断言的全面清查——SPEC-ALIAS 课训）：各族均已覆盖——v140 savings 搜索框 own-hover（本对表面）、v139 选择触发器 own-hover（同组件族）、v37 S2 搜索框 focus-visible、v127 徽章悬停、v65 页头行静态外观（savings 变体：Add 按钮 150×36 蓝渐变）、tokens v11 G4 悬停不褪色、v115 md 带、v52 移动普查——**savings 页头 Add Savings 按钮的聚焦态无任何规格在任何视口覆盖**（全套清查：rg 'Add Savings' 于 tests/e2e/*.spec.ts——10 处匹配、零 focus/ladder；v35 S2 为不同元素的 dashboard 页头 "Add Item"；v144 为 networth 实例于 390；v145 为 income 实例于 1280）——FAMILY-EXTENSION 形态（v92 模式：Add 按钮聚焦阶梯族第四档——dashboard v35 @1280 → networth v144 @390 → income v145 @1280 → savings v146 @1280）。构造：globals.css v11 G2c 复合体（.zb-btn-add 族，items-view.tsx:154，内联蓝渐变 [ADD_BUTTON_GRADIENTS.savings]）——outline 2px 透明 + offset 2px（v3 outline-none 形态）+ 四层 box-shadow（白色零扩散前导 + shadcn 1px #0a0a0a 环 + 两层环境阴影），聚焦下渐变与 opacity 不变（v11 G4 focus != hover 族）。
+
+双侧一次性普查 addfocus-arbit-v146.sh（v145 focusqa 形态适配 savings 对自身表面：v109 查找器族、真实 Chromium focus({focusVisible:true})、(5,5) 驻留指针、只读——按钮绝不点击、scrollIntoView + 300ms 沉降、blur 复原）在两侧测得阶梯：**无缺口——聚焦档字节一致**（静态档、聚焦档、失焦档在每一构造轴上两侧一致；仅有的差异为静态档 outlineColor 计算形态 [rgba vs lab——v4 计算形态族] 与静态档不可见前导层构造 [v66 类]，均不 pin）。计划先行（remediation-plan-v146.md），随后 pin 附加（append-pin-v146.py——静态档 → 聚焦档 {fv true + v3 outline-none 形态 + 四层复合体 + opacity/渐变不变} → 失焦档；V95/V66/V65-COLLISION-safe 轴集；ROLE 查找器；首跑即绿；权威 --list：24 个文件 349 项）。
+
+pin 消费性突变——COMPOSITE-REMOVAL 形态（globals.css 的 .zb-btn-add:focus-visible 块禁用——pin 所防御的 CSS 清理漂移类；更宽影响面已注记 [该块服务所有 zb-btn-add 实例——同文件中的 v145 income pin 在突变下同样失败，其失败差异同为复合体轴，已记录；判据在完整 items 清扫上以预测的 2 失败形态验证]）：**现场验证——2 failed {v146 savings pin + v145 income pin——已记录的同文件影响面重叠} + 54 passed**，失败差异恰为预测的聚焦档复合体轴（outlineStyle solid→auto / outlineColor rgba(0,0,0,0)→lab(…0.5) / outlineWidth 2px→1px / outlineOffset 2px→0px——focused/fv/opacity 轴保留）；复原（git diff src/ = 0 行）+ 完整重建 + 复原后回归 **56 passed**（完整 items 清扫——v146 pin + v145 pin 与全部 54 个既有 items pin 的同文件免疫性现场验证）。
+
+**F5 发布链：** lint ✓ · typecheck ✓ · 108 单元 ✓ · 0 漏洞审计 ✓ · **349 e2e 零抖动**（97+95+78+82 = 352 次执行 = 349 唯一——+1 落在 ch1 [items]）· 35/35 冒烟 ✓ · 截图 16/16 捕获——**全部字节一致**（同日律：v145 周期的已提交捕获与本周期捕获均于 11 月 2 日 UTC 运行，所有含日期表面渲染一致——本周期无 WALL-CLOCK 类；同种子律完好）· 开发证据 4/4 字节一致 + VLM 验证（菜单证明 {"url":"/income","docSW":390,"navLandmark":true}；开发截图脚本 v145→v146 派生并经仅版本替换验证）。
+
+**D1–D7 文档对齐**（D0 先行——每个插入锚点写入前验证 1 命中）：AGENTS v146 段落 · CLAUDE 349 + v146 子句 · README 计数 + v146 计划行 · SKILL Session 181 行 + 状态行 108/349/35 · PAD v1.2.3 · 探针 README v146 节 + v147 队列 [v141 时代 LOGIN + CALCULATOR 对——FOURTEENTH 重跑括号待对 v141 谱系自身记录验证] · session_370.md 交付记录 · worklog Session 181 条目；.env.example 验证未动。变更集：src/ 零改动（PIN-ONLY 形态）；tests/ +1 pin；scripts/ v146 探针谱系 + 辅助脚本；docs/ 计划 v146 + 五份对齐文档 + 记录；docs/screenshots/ 无变更（16 张全部字节一致——同日律）。
