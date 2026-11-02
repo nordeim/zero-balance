@@ -4,7 +4,12 @@
 // day); the canonical db was seeded Oct 31 and persisted through the
 // v141..v143 cycles. This script subtracts one day from every DISPLAYED
 // date field (budgetItem.date, asset.lastUpdated, liability.lastUpdated,
-// expenseLineItem.date) — amounts untouched, the seedcheck contract intact.
+// expenseLineItem.startDate/endDate) — amounts untouched, the seedcheck
+// contract intact.
+// v145 correction: the ExpenseLineItem model carries startDate/endDate
+// (NOT `date` — the v144 cycle committed this script after its typecheck
+// gate ran, so the field-name error slipped through; caught by the v145 F0
+// baseline chain).
 import { PrismaClient } from '@prisma/client';
 
 const db = new PrismaClient();
@@ -30,8 +35,11 @@ async function main() {
   }
   const lineItems = await db.expenseLineItem.findMany();
   for (const li of lineItems) {
-    if (li.date) {
-      await db.expenseLineItem.update({ where: { id: li.id }, data: { date: minusOneDay(li.date) } });
+    const data: { startDate?: string; endDate?: string } = {};
+    if (li.startDate) data.startDate = minusOneDay(li.startDate);
+    if (li.endDate) data.endDate = minusOneDay(li.endDate);
+    if (Object.keys(data).length > 0) {
+      await db.expenseLineItem.update({ where: { id: li.id }, data });
     }
   }
   console.log(JSON.stringify({
