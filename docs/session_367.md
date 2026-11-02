@@ -1,0 +1,31 @@
+# Session 367 — v145 周期记录（第 180 次会话）
+
+工作空间为 SAME-PERSISTED 类（v144 会话环境完整保持：node_modules 354 项、双 chromium 对 [1200 + 1243]、.env [DATABASE_URL="file:../db/custom.db"] 与仓库根部的 db/ 携带 v144 周期的规范化种子；幂等重播种保留了规范的 10 月 31 日戳记——现场验证：items 的 date 字段 2026-10-21..29、assets/liabilities 的 lastUpdated 2026-10-31；仓库位于 main @ 7d004fb，拉取干净）。
+
+读取 session_365 + session_364 + v144 计划 + worklog + 探针 README 的 v145 队列；验证 v139 谱系记录：v139 计划自身 header 在 14 项括号 [v57 为原始对，一项] 上记录 THIRTEENTH 序数 → v145 = FOURTEENTH（15 项括号）。第 68 次连续一致性；第二遍池 [v133–v138] 在 v144 处耗尽，第三遍池 [v139–v144] 中 v139 项 ITEMS 对为最旧剩余。
+
+**F0 基线：一次工具修复后全绿。** 首次 typecheck 失败——scripts/align-seed-dates-v144.ts(33)：ExpenseLineItem 块引用了不存在的 `date` 字段（模型实为 `startDate`/`endDate`）。根因：v144 周期在其 typecheck 门槛已运行之后才写出该脚本并提交（F0 基线所要拦截的过程失误类）。修复：该块改为读模型的实际字段 `startDate`/`endDate`（各在存在时回移一天；canonical 状态下 lineItems = 0，循环体不执行——seedcheck 契约不变）。修复后：lint ✓ · typecheck ✓ · 108/108 单元 ✓ · build ✓（robots + sitemap 预渲染）· 权威 --list：24 个文件 347 项（v144 发布形态）· 4 分块 e2e [350 次执行 = 347 唯一，零抖动] · 35/35 冒烟 ✓ · 生产接缝审计干净（auth.ts:77 secure 标志、db-path 接缝及其单元文件、SEO 对、Tailwind v4 缓解族、三层测试、v144 pin 在位、skills/ 排除、.env.example 在位）。
+
+**F0b 监视双绿。** npm-audit 监视：0 漏洞（第 36 次复查——v110 升级保持 [next 16.4.3 + zod 4.6.7]）。axe-core 监视：无漂移（4.14.0 == 4.14.0，v68 去重保持）。
+
+**F2：第 139 次常设检查全绿。** 经 derive-standing-v145.py（三个 token 族：138th→139th th→th 平替、ref138/clone138→ref139/clone139、v138→v139；逆向归一 diff 干净、零旧 token、两半 bash -n 干净；行数保持 119/74）。参考侧四 bug 俱在（toast-blocker hitIsBurgerChild:false、sheet-trap overlayCount:1、no-landmark navLandmark:false、/networth 464px 溢出）；数据普查首读即净；SEO 对两侧俱在。克隆侧：移动菜单连续第 139 次验证可用（R1 hitIsBurgerChild:true + sheet 打开；R2 导航即关——url /income、sheetGone、overlayGone；R3 navLandmark:true；R4 五视图 390 零溢出）；克隆半后 seedcheck 精确。
+
+**F3：v145 重跑对——VLM 判定 BOTH PAIRS DIFFERENT ×2（一致判定形态，该对已记录判定类）。** 探针系列经 derive-v145-series.py 从 v139 谱系派生（通用替换含四个显式会话 token 族 + 历史修正片段 [时代标记 last re-shot v133→v139、后续对清单 v134..v138→v140..v144、序数 THIRTEENTH→FOURTEENTH、四文件括号扩展]，首次运行全部命中、零残留、行数保持 57/49/50/285）+ 两半构建器（derive-build-twohalf-v145.py——会话 token clonearbit139→clonearbit145 先行 + 通用替换 + 课训区间 v92..v138→v92..v144 + 谱系注记 fixup 最后）+ 比较器（derive-compare-v145.py——出处引用重指 v139 测量）+ 校验脚本（derive-verify-twohalf-v145.py——谱系引用链扩展 +v139；摘要不变）。两半构建完成，md5 契约经直接三方 python 提取验证：CENSUS_JS 193 行 md5 b55dcd29，跨 arbit-v145.sh + ref-arbit-v145.sh + clone-arbit-v145.sh 字节一致——v103/v109/v115/v121/v127/v133/v139 谱系契约逐字保持（items 普查 JS 块不含版本 token，摘要跨周期不变）。
+
+资源纪律在每半之间执行（每半前收割浏览器守护进程；两半与两组截图均首试登录；完整日志经运行器重定向捕获——/tmp/vlm145/{ref,clone}-arbit.log）。
+
+VLM 成对比较带完整日志运行两次（/tmp/vlm145/vlm-pass{1,2}.log）：第一遍 BOTH PAIRS DIFFERENT / 第二遍 BOTH PAIRS DIFFERENT——一致判定形态，该对已记录判定类。每个 flag 均经 DOM 仲裁归入已记录类：头像字母 USER-IDENTITY 类（"D" vs "U"）；网格布局 SEED-COUNT 类（普查验证：income childCount 1 vs 2、expenses 4 vs 3，模板列字节一致 309.328px 族）；表头统计与卡片内容 SEED-DATA 类；expense 页脚支付方式 chip 为 v57 DATA-CONDITIONAL 类（参考站的 expense 项不带支付方式——页脚 childCount 1 vs 克隆 2）；徽章换行为 v57 wrap/classification-VALUE 类（badgeRow h 22 vs 52、badgeCount 3 vs 4——普查白名单内的克隆 Recurring 超集 chip 及换行后果）。**本周期两遍均无 FAB/平台外观主张**（该常设 flag 类未出现——无需现场证伪；证伪形态保留待用）。
+
+两侧普查逐轴比较（compare-v145-census.py）：187 轴——163 一致 + 24 已记录类差异，零新增——v139 普查值精确复现（同样的 187/163/24 分布，每轴零漂移）。克隆半后 seedcheck 精确。普查轴上无新克隆缺口。
+
+**F4 [PIN-ONLY]：/income 页头 Add Income 按钮在 1280 的 FOCUS-VISIBLE 阶梯（src/ 零改动；+1 e2e = 348）。** 候选勘察（items 对表面交互族对规格自身断言的全面清查——SPEC-ALIAS 课训）：各族均已覆盖——v139 选择触发器 own-hover（本对表面）、v140 savings 搜索框 own-hover（同组件族）、v37 S2 搜索框 focus-visible、v127 徽章悬停、v133 动作按钮阶梯、v109 页头行静态外观、tokens v11 G4 悬停不褪色、v115 md 带、v52 移动普查——**income 页头 Add Income 按钮的聚焦态无任何规格在任何视口覆盖**（全套清查：rg 'Add Income' 于 tests/e2e/*.spec.ts——63 处匹配、零 focus/ladder；v35 S2 为不同元素的 dashboard 页头 "Add Item"；dashboard.spec.ts:5321 为不同元素的快捷动作卡片 [UA 默认环族，非复合体]；v144 为 networth 实例于 390）。构造：globals.css v11 G2c 复合体（.zb-btn-add 族，items-view.tsx:154）——outline 2px 透明 + offset 2px（v3 outline-none 形态）+ 四层 box-shadow（白色零扩散前导 + shadcn 1px #0a0a0a 环 + 两层环境阴影），聚焦下渐变与 opacity 不变（v11 G4 focus != hover 族）。
+
+双侧一次性普查 addfocus-arbit-v145.sh（v144 focusqa 形态适配 items 对自身表面：v109 查找器族、真实 Chromium focus({focusVisible:true})、(5,5) 驻留指针、只读——按钮绝不点击、scrollIntoView + 300ms 沉降、blur 复原）在两侧测得阶梯：**无缺口——聚焦档字节一致**（静态档、聚焦档、失焦档在每一构造轴上两侧一致；仅有的差异为静态档 outlineColor 计算形态 [rgba vs lab——v4 计算形态族] 与静态档不可见前导层构造 [v66 类]，均不 pin）。计划先行（remediation-plan-v145.md），随后 pin 附加（append-pin-v145.py——静态档 → 聚焦档 {fv true + v3 outline-none 形态 + 四层复合体 + opacity/渐变不变} → 失焦档；V95/V66/V109-COLLISION-safe 轴集；ROLE 查找器；首跑即绿；权威 --list：24 个文件 348 项）。
+
+pin 消费性突变——COMPOSITE-REMOVAL 形态（globals.css 的 .zb-btn-add:focus-visible 块禁用——pin 所防御的 CSS 清理漂移类；更宽影响面已注记 [该块服务所有 zb-btn-add 实例]，唯一失败判据在完整 items 清扫上单独验证）：**唯一失败现场验证——1 failed [仅该 pin] + 54 passed**，失败差异恰为预测的聚焦档复合体轴（outlineStyle/outlineColor/outlineWidth/outlineOffset——focused/fv/opacity 轴保留）；复原（git diff src/ = 0 行）+ 完整重建 + 复原后回归 **55 passed**（完整 items 清扫——v145 pin 与全部 54 个既有 items pin 的同文件免疫性现场验证）。
+
+**F5 发布链：** lint ✓ · typecheck ✓ · 108 单元 ✓ · 0 漏洞审计 ✓ · **348 e2e 零抖动**（96+95+78+82 = 351 次执行 = 348 唯一——+1 落在 ch1 [items]）· 35/35 冒烟 ✓ · 截图 16/16 捕获——**15/16 字节一致 + 1 项已记录的 WALL-CLOCK 类**（07-add-item-modal.png——对话框 todayIso() 日期默认值跨过午夜 [11/01/2026 → 11/02/2026，像素差异定位 {154 像素、一位数字宽的 bbox} + VLM 裁剪区确认；与 v117/v122/v124/v131/v133/v135/v136/v138 同样的重提交惯例；其余表面同种子律完好——规范化持久种子状态 [10 月 31 日戳记现场验证：幂等重播种保留]）· 开发证据 4/4 字节一致 + VLM 验证（菜单证明 {"url":"/income","docSW":390,"navLandmark":true}；开发截图脚本 v144→v145 派生并经仅版本替换验证）。
+
+**D1–D7 文档对齐**（D0 先行——每个插入锚点写入前验证 1 命中）：AGENTS v145 段落 · CLAUDE 348 + v145 子句 · README 计数 + v145 计划行 · SKILL Session 180 行 + 状态行 108/348/35 · PAD v1.2.2 · 探针 README v145 节 + v146 队列 [v140 时代 SAVINGS 对——FOURTEENTH 重跑括号待对 v140 谱系自身记录验证] · session_366.md 交付记录 · worklog Session 180 条目；.env.example 验证未动。变更集：src/ 零改动（PIN-ONLY 形态）；tests/ +1 pin（items.spec.ts +135 行）；scripts/ v145 探针谱系 + 工具修复（align-seed-dates-v144.ts 的 ExpenseLineItem 字段名修复）+ 辅助脚本；docs/ 计划 v145 + 五份对齐文档 + 本记录；docs/screenshots/ 07-add-item-modal.png（WALL-CLOCK 类）。
+
+**验证（推送后）：** 奇偶校验提交 **89ea664**（40 个文件；session_367.md + session_368.md 按两部分惯例留待会话日志提交）经 SSH 包装器推送至 git@github.com:nordeim/zero-balance.git 的 refs/heads/main（显式 --remote；密钥在仓库外 0600 物化、指纹对谱系密钥验证 [SHA256:4FSV1Prot…]、dry-run 干净 [7d004fb..89ea664 fast-forward]、真实推送自校验：**远端 refs/heads/main @ 89ea664 == 本地 HEAD** + tracking-ref 同步 + 包装器临时密钥粉碎）。操作密钥已粉碎（os.urandom 覆写 + 删除），远端经 HTTPS 复核：**89ea6644cd31440ca7dbedc593e14ae200ee5cb5 refs/heads/main —— 与本地 HEAD 逐字节一致**。无新分支；仅落于 main。
