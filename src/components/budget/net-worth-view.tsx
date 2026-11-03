@@ -406,7 +406,28 @@ export function NetWorthView() {
             <CircleArrowUpIcon className="mr-2 h-4 w-4" />
             Assets
           </TabsTrigger>
-          <TabsTrigger value="liabilities">
+          {/* v148 F4 (measured live on the reference — the follow-up
+              census): the reference color-codes the tab POLARITY — the
+              Liabilities trigger's active state carries the ORANGE pair
+              (bg-orange-100/text-orange-900 on the reference = the
+              computed rgb(255,237,213)/rgb(124,45,18)). Arbitrary hex —
+              v4's orange-100/900 would emit oklch and drift from the
+              measured values (the v5 G3 green-pair lesson). The cn()
+              last-occurrence rule resolves the pair over the base's
+              green; the inactive/at-rest states untouched. */}
+          {/* v148 F4 (measured live on the reference — the follow-up
+              census): the reference color-codes the tab POLARITY — the
+              Liabilities trigger's active state carries the ORANGE pair
+              (bg-orange-100/text-orange-900 on the reference = the
+              computed rgb(255,237,213)/rgb(124,45,18)). Arbitrary hex —
+              v4's orange-100/900 would emit oklch and drift from the
+              measured values (the v5 G3 green-pair lesson). The cn()
+              last-occurrence rule resolves the pair over the base's
+              green; the inactive/at-rest states untouched. */}
+          <TabsTrigger
+            value="liabilities"
+            className="data-[state=active]:bg-[#ffedd5] data-[state=active]:text-[#7c2d12]"
+          >
             <CircleArrowDownIcon className="mr-2 h-4 w-4" />
             Liabilities
           </TabsTrigger>
